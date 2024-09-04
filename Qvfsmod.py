@@ -495,28 +495,336 @@ class qvfsmod:
         """Method to run the calibration for hydrograph"""
         #If "inverse" folder does not exist, then create it
         self.create_folder_calibration()
+        
+        
+        
+        #Move prj to the inverse folder and in inverse/inputs put the inputs
+        self.move_files_calibration()
+        
+        #Create file for hydrograph calibration and change inputs if "Change" is selected
+        self.create_inverse_file_hydrograph()
+            
+        #Update bat for calibration and execute
+        self.update_bat_calibration_hydrograph()
+        subprocess.run(self.plugin_directory+"\\executables\\execution.bat")
+    
+    
+    def update_bat_calibration_hydrograph(self):
+        """Method to update the bat of the hydrograph"""
+        f = open(self.plugin_directory+"\\executables\\execution.bat","w+")
+        linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\inverse\\"')
+        linea_dos = f"{self.plugin_directory}\\executables\\start_inv.exe"
+        linea_tres = "Pause"
+        f.write("{} \n".format(linea_uno))
+        f.write("{} \n".format(linea_dos))
+        f.write("{} \n".format(linea_tres))
+        f.close()
+    
+    def move_files_calibration(self):
+        """Method to move files to the corresponding folders for calibration"""
+        #Move prj to inverse
+        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.vfs_project.text()), self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{self.dlg_calibration_hydrograph.vfs_project.text()}")
+        #Move the rest
+        def copy_paste(type_input):
+            ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.{type_input}" 
+            ruta = self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.vfs_project.text())
+            #First we open .prj and obtain the direction of the copying file
+            with open(ruta, "r") as archivo:
+                lineas = archivo.readlines()
+            for i in lineas:
+                if i[:3]==type_input:
+                    ikw = i.split("=")[-1]
+            if not os.path.isabs(ikw): #relative path
+                ikw = os.path.join(os.path.dirname(ruta), ikw)
+            ikw = ikw.replace("\n", "") #take out the line jumps
+            print(ikw,ruta_pegar)
+            shutil.copyfile(ikw, ruta_pegar)
+        
+        #IKW
+        copy_paste("ikw")
+        #ISO
+        copy_paste("iso")
+        #IGR
+        copy_paste("igr")
+        #ISD
+        copy_paste("isd")
+        #IRN
+        copy_paste("irn")
+        #IRO
+        copy_paste("iro")
+        #IWQ
+        ruta = self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.vfs_project.text())
+        with open(ruta, "r") as archivo:
+            lineas = archivo.readlines()
+        self.water_quality = False
+        for i in lineas:
+            if i[:3]=="iwq":
+                self.water_quality = True
+        if self.water_quality:
+            copy_paste("iwq")
+        
+        #Modify prj
+        self.modify_prj_calibration_hydrograph()
+    
+    def modify_prj_calibration_hydrograph(self):
+        """Method to modify the prj when doing the calibration of hydrograph"""
+        prj_file = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{self.dlg_calibration_hydrograph.vfs_project.text()}"
+        #Create file
+        with open(prj_file, 'w') as archivo:
+            archivo.write(f"ikw=inputs\\inverse.ikw  \n")
+            archivo.write(f"iso=inputs\\inverse.iso  \n")
+            archivo.write(f"igr=inputs\\inverse.igr  \n")
+            archivo.write(f"isd=inputs\\inverse.isd  \n")
+            archivo.write(f"irn=inputs\\inverse.irn  \n")
+            archivo.write(f"iro=inputs\\inverse.iro  \n")
+            if self.water_quality:
+                archivo.write(f"iwq=inputs\\inverse.iwq  \n")
+            archivo.write(f"og1=output\\inverse.og1  \n")
+            archivo.write(f"og2=output\\inverse.og2  \n")
+            archivo.write(f"ohy=output\\inverse.ohy  \n")
+            archivo.write(f"osm=output\\inverse.osm  \n")
+            archivo.write(f"osp=output\\inverse.osp  \n")
+            if self.water_quality:
+                archivo.write(f"owq=output\\inverse.owq  \n")
+        
+    def create_inverse_file_hydrograph(self):
+        """Method to create the inverse file for hydrograph calibration"""
         #Inputs
+        #Function to return the value needed for the inverse calibration file
+        def calibration(radio_button_one,radio_button_two):
+            if radio_button_one.isChecked():
+                return 2
+            elif radio_button_two.isChecked():
+                return "nan"
+            else:
+                return -1
+            
         if self.dlg_calibration_advanced_settings.plot_yes.isChecked():plot = "y"
         else: plot = "n"
         if self.dlg_calibration_advanced_settings.constrain_yes.isChecked():constrain = "y"
         else: constrain = "n"
+        vertical = calibration(self.dlg_calibration_hydrograph.change_vertical,self.dlg_calibration_hydrograph.calibrate_vertical)
+        average = calibration(self.dlg_calibration_hydrograph.change_average,self.dlg_calibration_hydrograph.calibrate_average)
+        saturated = calibration(self.dlg_calibration_hydrograph.change_saturated,self.dlg_calibration_hydrograph.calibrate_saturated)
+        initial = calibration(self.dlg_calibration_hydrograph.change_initial,self.dlg_calibration_hydrograph.calibrate_initial)
+        maximum = calibration(self.dlg_calibration_hydrograph.change_maximum,self.dlg_calibration_hydrograph.calibrate_maximum)
+        fraction = calibration(self.dlg_calibration_hydrograph.change_fraction,self.dlg_calibration_hydrograph.calibrate_fraction)
+        width = calibration(self.dlg_calibration_hydrograph.change_width,self.dlg_calibration_hydrograph.calibrate_width)
+        length = calibration(self.dlg_calibration_hydrograph.change_length,self.dlg_calibration_hydrograph.calibrate_length)
+        manning = calibration(self.dlg_calibration_hydrograph.change_manning,self.dlg_calibration_hydrograph.calibrate_manning)
+        slope = calibration(self.dlg_calibration_hydrograph.change_slope,self.dlg_calibration_hydrograph.calibrate_slope)
+        
+        #Change inputs if "Change" has selected
+        self.change_inputs_calibration_hydrograph([vertical,average,saturated,initial,maximum,fraction,width,length,manning,slope])
         
         #Create file for the calibration
         path = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.cfg"
         with open(path, 'w') as archivo:
             archivo.write("Indicate project name\n")
-            archivo.write(f"{self.dlg_calibration_hydrograph.hydrograph_file.text()}\n\n")
-            archivo.write(f"Give file for fitted parameters\n{self.dlg_calibration_advanced_settings.fittedparam.text()}.out\n")
-            archivo.write(f"Give file for measured hydrograph\n{self.dlg_calibration_hydrograph.hydrograph_file.text()}\n")
-            archivo.write("Give file for measured sedimentograph\nno_name.out\n")
+            archivo.write(f"{self.dlg_calibration_hydrograph.vfs_project.text()}\n\n")
+            archivo.write(f"Give file for fitted parameters\n{self.dlg_calibration_advanced_settings.exit_file.text()}.out\n\n")
+            archivo.write(f"Give file for measured hydrograph\n{self.dlg_calibration_hydrograph.hydrograph_file.text()}\n\n")
+            archivo.write("Give file for measured sedimentograph\nno_name.out\n\n")
             archivo.write(f"Fix number of iterations for GMCS or use 0 for setting automatically iter=100*np^2\n {self.dlg_calibration_advanced_settings.iterations.text()}\n\n")
             archivo.write(f"Plot Inverse simulation (y/n)\n{plot}\n\n")
             archivo.write(f"Constrain NMS to parameter space (y/n)\n{constrain}\n\n")
-            archivo.write(f"VFSmod parameters\nIndicate values for fixed parameters and use nan for parameters to be\noptimized\n")
-        #Update bat for calibration
+            archivo.write(f"VFSmod parameters\nIndicate values for fixed parameters and use nan for parameters to be\noptimized\n[nan    lower limit    upper limit\n\n")
+            archivo.write(f"Flow module parameters\n")
+            if vertical == "nan":
+                archivo.write(f"{vertical}  {self.dlg_calibration_hydrograph.min_vertical.text()}  {self.dlg_calibration_hydrograph.max_vertical.text()} % Vertical saturated K (m/s)\n")
+            else:
+                archivo.write(f"{vertical} % Vertical saturated K (m/s)\n")
+                
+            if average == "nan":
+                archivo.write(f"{average}  {self.dlg_calibration_hydrograph.min_average.text()}  {self.dlg_calibration_hydrograph.max_average.text()} % Average suction at the wetting front (m)\n")
+            else:
+                archivo.write(f"{average} % Average suction at the wetting front (m)\n")
+            
+            if saturated == "nan":
+                archivo.write(f"{saturated}  {self.dlg_calibration_hydrograph.min_saturated.text()}  {self.dlg_calibration_hydrograph.max_saturated.text()} % Saturated water content (m3/m3)\n")
+            else:
+                archivo.write(f"{saturated} % Saturated water content (m3/m3)\n")
+            
+            if initial == "nan":
+                archivo.write(f"{initial}  {self.dlg_calibration_hydrograph.min_initial.text()}  {self.dlg_calibration_hydrograph.max_initial.text()} % Initial water content (m3/m3)\n")
+            else:
+                archivo.write(f"{initial} % Initial water content (m3/m3)\n")
+            
+            if maximum == "nan":
+                archivo.write(f"{maximum}  {self.dlg_calibration_hydrograph.min_maximum.text()}  {self.dlg_calibration_hydrograph.max_maximum.text()} % Maximum surface storage (m)\n")
+            else:
+                archivo.write(f"{maximum} % Maximum surface storage (m)\n")
+            
+            if fraction == "nan":
+                archivo.write(f"{fraction}  {self.dlg_calibration_hydrograph.min_fraction.text()}  {self.dlg_calibration_hydrograph.max_fraction.text()} % Filter fraction where ponding is checked\n")
+            else:
+                archivo.write(f"{fraction} % Filter fraction where ponding is checked\n")
+            
+            if width == "nan":
+                archivo.write(f"{width}  {self.dlg_calibration_hydrograph.min_width.text()}  {self.dlg_calibration_hydrograph.max_width.text()} % Filter width\n")
+            else:
+                archivo.write(f"{width} % Filter width\n")
+            
+            if length == "nan":
+                archivo.write(f"{length}  {self.dlg_calibration_hydrograph.min_length.text()}  {self.dlg_calibration_hydrograph.max_length.text()} % Filter length\n")
+            else:
+                archivo.write(f"{length} % Filter length\n")
+            
+            if manning == "nan":
+                archivo.write(f"{manning}  {self.dlg_calibration_hydrograph.min_manning.text()}  {self.dlg_calibration_hydrograph.max_manning.text()} % nk\n")
+            else:
+                archivo.write(f"{manning} % nk\n")
+            
+            if slope == "nan":
+                archivo.write(f"{slope}  {self.dlg_calibration_hydrograph.min_slope.text()}  {self.dlg_calibration_hydrograph.max_slope.text()} % Sok\n")
+            else:
+                archivo.write(f"{slope} % Sok\n")
+            
+            archivo.write("\nSediment module parameters\n-1 %Spacing for grass stems (cm)\n-1 %Roughness- grass Manning's (s/cm^1/3)\n-1 %Height of grass (cm)\n-1 %Roughness- bare surface Manning's n (s/m^1/3)\n-1 % Coarse sediment fraction d>0.0037cm (g/g)\n-1 % Incoming Flow sediment concentration, (g/cm3)\n-1 % Porosity of deposited sediment (m3/m3)\n-1 % Sediment particle class, diameter d50 (cm)\n-1 % Sediment particle density\n\n")
+            archivo.write("Non-optimizable parameters\n-1 % Feedback the change in slope and roughness (Yes=1, No=0)\n-1 % Incoming sediment particle class")
+    
+    def change_inputs_calibration_hydrograph(self,inputs):
+        """Method to change the inputs in the calibration of hydrograph if change is selected"""
+        #Function to modify inputs
+        def modify_inputs(filepath, row, column, new_value):
+            filepath = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\{filepath}"
+            with open(filepath, 'r') as file:
+                lineas = file.readlines()
+            
+            numbers_str = lineas[row]
+            # Use regex to find all numbers in the string
+            matches = re.findall(r'\S+', numbers_str)
+            # Replace the specific number at the given index
+            matches[column] = str(new_value)
+            # Rebuild the string by replacing only the specific number
+            lineas[row] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+            with open(filepath, 'w') as archivo:
+                for i in lineas:
+                    archivo.write(i)
+        
+        #vertical
+        if inputs[0]==2:
+            modify_inputs("inverse.iso",0,0,self.dlg_calibration_hydrograph.new_vertical.text())
+        #average
+        if inputs[1]==2:
+            modify_inputs("inverse.iso",0,1,self.dlg_calibration_hydrograph.new_average.text())
+        #saturated
+        if inputs[2]==2:
+            modify_inputs("inverse.iso",0,2,self.dlg_calibration_hydrograph.new_saturatedl.text())
+        #initial
+        if inputs[3]==2:
+            modify_inputs("inverse.iso",0,3,self.dlg_calibration_hydrograph.new_initial.text())
+        #maximum
+        if inputs[4]==2:
+            modify_inputs("inverse.iso",0,4,self.dlg_calibration_hydrograph.new_maximum.text())
+        #fraction
+        if inputs[5]==2:
+            modify_inputs("inverse.iso",0,5,self.dlg_calibration_hydrograph.new_fraction.text())
+        #width
+        if inputs[6]==2:
+            modify_inputs("inverse.ikw",1,0,self.dlg_calibration_hydrograph.new_width.text())
+        #length
+        if inputs[7]==2:
+            self.modify_ikw_file_calibration(self.dlg_calibration_hydrograph.new_length.text())
+        #manning
+        if inputs[8]==2:
+            self.modify_mannign_slope_hydrograph_calibration(1,self.dlg_calibration_hydrograph.new_manning.text())
+        #slope
+        if inputs[9]==2:
+            self.modify_mannign_slope_hydrograph_calibration(2,self.dlg_calibration_hydrograph.new_slope.text())
         
     
+    def modify_mannign_slope_hydrograph_calibration(self,column,new_value):
+        """Method to modify the manning and slope for hydrograph calibration"""
+        #We obtain information of ikw file
+        ikw = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.ikw"
+        with open(ikw, "r") as archivo:
+            lineas = archivo.readlines()
         
+        for row in range(4,len(lineas)):
+            numbers_str = lineas[row]
+            # Use regex to find all numbers in the string
+            matches = re.findall(r'\S+', numbers_str)
+            # Replace the specific number at the given index
+            if len(matches)==1:
+                break
+            matches[column] = str(new_value)
+            # Rebuild the string by replacing only the specific number
+            lineas[row] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+            
+            with open(ikw, 'w') as archivo:
+                for i in lineas:
+                    archivo.write(i)
+            
+    def modify_ikw_file_calibration(self,value_change):
+        """Metod to modify the ikw file for the hydrograph calibration"""
+        #We obtain information of ikw file
+        ikw = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.ikw"
+        #We substitute value of length
+        with open(ikw, "r") as archivo:
+            lineas = archivo.readlines()
+
+        def modify_number_in_string(numbers_str, index, new_value):
+            # Use regex to find all numbers in the string
+            matches = re.findall(r'\S+', numbers_str)
+            # Replace the specific number at the given index
+            matches[index] = str(new_value)
+            # Rebuild the string by replacing only the specific number
+            return re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+        lineas[2] = modify_number_in_string(lineas[2],0,value_change)
+        
+        #Then we update the segments
+        number_segments = int(lineas[3])
+        length = list(map(float, lineas[2].split()))[0]
+        new_interval = length/number_segments
+
+        #Data frame    
+        df = pd.DataFrame(data = {"Distance":[list(map(float, lineas[x].split()))[0] for x in range(4,4+number_segments)],
+                             "Manning":[list(map(float, lineas[x].split()))[1] for x in range(4,4+number_segments)],
+                             "Slope":[list(map(float, lineas[x].split()))[2] for x in range(4,4+number_segments)]})
+        
+        #We update the dataframe
+        new_distances = np.linspace(new_interval, new_interval * number_segments, number_segments)
+        def weighted_average(df, new_distances, new_interval, column):
+            averages = []
+            for dist in new_distances:
+                start, end = dist - new_interval, dist
+                
+                # Calcular el solapamiento entre los intervalos originales y el nuevo intervalo
+                overlap = np.minimum(df["Distance"], end) - np.maximum(df["Distance"].shift(fill_value=0), start)
+                
+                # Asegurarse de que el solapamiento sea positivo o al menos cero
+                overlap = np.clip(overlap, 0, new_interval)
+                
+                # Calcular los pesos basados en el solapamiento
+                weights = overlap / new_interval
+                
+                # Verificar si la suma de los pesos es mayor que cero para evitar NaN
+                total_weight = np.sum(weights)
+                if total_weight > 0:
+                    avg = np.sum(weights * df[column]) / total_weight
+                    averages.append(round(avg, 6))
+                else:
+                    # Si no hay pesos válidos, usar el valor del intervalo anterior o un valor predeterminado
+                    averages.append(df[column].iloc[0])  # o cualquier otro valor predeterminado
+            return averages
+
+        new_df = pd.DataFrame({
+            "Distance": new_distances,
+            "Manning": weighted_average(df, new_distances, new_interval, "Manning"),
+            "Slope": weighted_average(df, new_distances, new_interval, "Slope")
+        })
+        #Add to the file information
+        contenido = ""
+        for i in lineas[:4]:    
+            contenido+=f"{i}"
+        for i in range(len(new_df)):
+            contenido +=f" {new_df.iloc[i,0]}   {new_df.iloc[i,1]}   {new_df.iloc[i,2]}\n"
+        for i in lineas[-8:]:    
+            contenido+=f"{i}"
+        with open(ikw, 'w') as archivo:
+            archivo.write(contenido)
+    
     def create_folder_calibration(self):
         """Method to create the folder needed to calibration"""
         def create_folder(name_folder): #function to create a folder
@@ -530,6 +838,10 @@ class qvfsmod:
             
         if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\inverse"):
             create_folder("inverse")
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\inverse\inputs"):
+            create_folder("inverse\inputs")
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\inverse\output"):
+            create_folder("inverse\output")
     
     def draw_calibration_hydrology(self):
         """Method to draw the dialog in calibration of hydrology"""
@@ -1220,8 +1532,6 @@ class qvfsmod:
                 "Manning": weighted_average(df, new_distances, new_interval, "Manning"),
                 "Slope": weighted_average(df, new_distances, new_interval, "Slope")
             })
-            if np.isnan(new_df.iloc[-1,-1]):
-                1/0
             #Add to the file information
             contenido = ""
             for i in lineas[:4]:    

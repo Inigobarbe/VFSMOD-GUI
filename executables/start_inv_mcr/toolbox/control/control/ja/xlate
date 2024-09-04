@@ -1,0 +1,2075 @@
+% Copyright 1999-2007 The MathWorks, Inc.
+%   $Revision: 1.9.4.18 $  $Date: 2007/06/22 18:53:43 $
+<(ltiview)PLOTTYPE must be a valid LTI Viewer string or cell array.
+>(ltiview)PLOTTYPE は､適切な LTI Viewer 文字列またはセル配列でなければなりません
+<(ltiview)PLOTTYPE may contain no more then six entries.
+>(ltiview)PLOTTYPE は､要素を6つしかもちません。
+<(ltiview)Invalid input arguments for the CURRENT option.
+>(ltiview)CURRENT オプションの入力引数が無効です。
+<(ltiview)Extra input arguments only allowed when PLOTTYPE has a single entry.
+>(ltiview)余分な入力引数は､PLOTTYPE の要素が1つであるときにのみ許可されています。
+<(slview)Invalid Simulink diagram handle.
+>(slview)Simulink ブロック線図のハンドルが無効です。
+<(slview)This new LTI Viewer will not be linked to the
+>(slview)この新規の LTI Viewer は､Simulink ブロック線図とは
+<(slview)Simulink diagram.
+>(slview)リンクされません。
+<(slview)Do you wish to continue?
+>(slview)作業を続けますか ?
+<(slview)Opening a new LTI Viewer
+>(slview)新規のLTI Viewerを開いています
+<(slview)The operating point has changed.
+>(slview)操作点は変更されました。
+<(slview)Do you want to generate a new linear model of
+>(slview)この点について Simulink ブロック線図の新規線形モデルを
+<(slview)the Simulink diagram about this point?
+>(slview)生成しますか ?
+<(slview)Invalid ACTION specified
+>(slview)指定した ACTION が無効です
+<(slview)Simulink LTI Viewer Warning
+>(slview)Simulink LTI Viewer の警告
+<(slview)Get Linearized Model
+>(slview)線形化したモデルを取得
+<(slview)Set Operating Point...
+>(slview)操作点の設定
+<(slview)To construct an analysis model, drag and drop the 
+>(slview)解析モデルを作成するには、Simulink ブロック線図内の
+<(slview)Input and Output Point blocks onto the desired input and
+>(slview)希望する入力信号と出力信号上に Input と Output Point ブロックを
+<(slview)output signals in the Simulink diagram.
+>(slview)ドラッグアンドドロップしてください。
+<(slview)There are no Input Point blocks in the Simulink diagram
+>(slview)Simulink ブロック線図内に､Input Point ブロックがありません｡
+<(slview)To construct an analysis model, drag and drop Input Point 
+>(slview)解析モデルを作成するには、Simulink ブロック線図内の希望する
+<(slview)blocks onto the desired input signals in the Simulink diagram.
+>(slview)入力信号上に Input Point ブロックをドラッグアンドドロップしてください。
+<(slview)There are no Output Point blocks in the Simulink diagram
+>(slview)SImulink ブロック線図には､Output Point ブロックがありません｡
+<(slview)To construct an analysis model, drag and drop Output Point 
+>(slview)解析モデルを作成するには、Simulink ブロック線図内の希望する
+<(slview)blocks onto the desired output signals in the Simulink diagram.
+>(slview)出力信号上に Output Point ブロックをドラッグアンドドロップしてください。
+<(slview)Linearizing Simulink diagrams
+>(slview)Simulink ブロック線図の線形化
+<(slview)Simulink LTI Viewer Error
+>(slview)Simulink LTI Viewer のエラー
+<(slview)The states in the Simulink diagram have changed.
+>(slview)Simulink ブロック線図内の状態が変更されました｡
+<(slview)When specifying user-defined state values, all state names in the Simulink
+>(slview)ユーザ定義の状態値を指定する場合、Simulink ブロック線図内のすべての状態名は、
+<(slview)diagram must match those listed in the Set Operating Points window.
+>(slview)操作点の設定 ウィンドウにリストされたものと一致しなければなりません。
+<(slview)Open the Set Operating Points window to specify values for these
+>(slview)操作点の設定 ウィンドウを開いて､これらの新規状態に対する値を
+<(slview)new states.
+>(slview)設定してください｡
+<(slview)Inports on the Simulink diagram have changed. These are being set 
+>(slview)Simulink ブロック線図の Inport が変更されました｡ これらは線形化のために
+<(slview)to zero for linearization
+>(slview)0 に設定されています
+<(slview)The Simulink diagram '
+>(slview)Simulink ブロック線図 '
+<(slview)' could not be linearized
+>(slview)' を入出力点のカレントの設定に対して
+<(slview)for the current set of Input/Output Points. 
+>(slview)線形化できませんでした。
+<(slview)Operating Point: %s
+>(slview)操作点: %s
+<(slview)Linearize about
+>(slview)線形化について
+<(slview)Initial states in Simulink diagram
+>(slview)Simulink ブロック線図の初期状態
+<(slview)Zero state values
+>(slview)0 の状態値
+<(slview)User-defined state values
+>(slview)ユーザ定義の状態値
+<(slview)Select Simulink -> Get Linearized Model to import system.
+>(slview)Simulink の選択 -> システムをインポートするために線形化モデルを取得します。
+<[slview](slview)States
+>[slview](slview)状態
+<[slview](slview)Linearize about
+>[slview](slview)線形化について
+<[slview](slview)Names
+>[slview](slview)名前
+<[slview](slview)Value
+>[slview](slview)値
+<[slview](slview)Inputs
+>[slview](slview)入力
+<(slview)Help
+>(slview)ヘルプ
+<(slview)Cancel
+>(slview)キャンセル
+%
+<(sisotool)Use Import Model... off the File menu to import the plant data.
+>(sisotool)インポートモデルの利用... プラントデータの読み込みのために ファイル メニューをオフにします。
+<(sisotool)Right-click on the plots for more design options.
+>(sisotool)追加設計オプションのためにプロットを右クリックしてください。
+%
+<(ltimask)I/O delays are ignored by the LTI block.
+>(ltimask)I/O 遅延は LTI ブロックで無視されます。
+<(ltimask)The LTI block does not support improper models.
+>(ltimask)LTI ブロックはプロパーでないモデルをサポートしません。
+<(ltimask)The LTI block does not support arrays of LTI models.
+>(ltimask)LTI ブロックは LTI モデルの配列をサポートしません。
+<(ltimask)The LTI block does not support FRD models.
+>(ltimask)LTI ブロックは FRD モデルをサポートしません。
+<(ltimask)The LTI system variable must be a valid LTI model.
+>(ltimask)LTI システム変数は、有効な LTI モデルでなければなりません。
+<(ltimask)Your Simulink model uses an old version of the LTI Block.
+>(ltimask)この Simulink モデルは LTI ブロックの古いバージョンを使用しています。
+<(ltimask)LTI Block Warning
+>(ltimask)LTI ブロックの警告
+<(ltimask)LTI Block Error
+>(ltimask)LTI ブロックのエラー
+<(ltimask)Simulink Initialization Error
+>(ltimask)Simulink 初期化エラー
+<(sisotool)%s: Starting SISO Tool for system: %s
+>(sisotool)%s: つぎのシステムに対して SISO Tool を開始: %s
+<(sisotool)The SISO Design Tool is an interactive graphical user interface that facilitates the design of compensators for single-input, single-output (SISO) feedback loops.
+>(sisotool)SISO 設計ツールは、1入力、1出力 (SISO) フィードバックループ系の補償器の設計機能を備えた対話型のグラフィカルユーザインタフェースです。
+<(sisotool)Click the Help button to find out more about the SISO Design Tool.
+>(sisotool)SISO Design Tool の詳細についてはヘルプボタンをクリックしてください。
+<(sisotool)SISO Design GUI is loading. Please wait...
+>(sisotool)SISO 設計ツール GUI を読み込み中。 お待ちください。
+
+<(ltiview)The LTI Viewer is a graphical user interface that simplifies the analysis of linear, time-invariant systems.
+>(ltiview)LTI Viewer は、線形時不変システムの解析機能を備えたグラフィカルユーザインタフェースです。
+<(ltiview)Click the Help button to find out more about the LTI Viewer.
+>(ltiview)LTI Viewer の詳細についてはヘルプボタンをクリックしてください。
+<(ltiview)LTI Viewer is being launched. Please wait...
+>(ltiview)LTI Viewer を起動中。 お待ちください。
+<()ltiview)Getting Started with the LTI Viewer
+>()ltiview)LTI Viewer の Getting Started
+<(sisotool)Getting Started with the SISO Design Tool
+>(sisotool)SISO 設計ツールの Getting Started
+<()Stability Margins
+>()安定余裕
+
+<(cstextras.mdl)Transport Delay, with direct feedthrough when Delay Time is equal to zero.
+>(cstextras.mdl)遅延時間が 0 の場合はダイレクトフィードスルーとなるTransport Delayです。
+<(cstextras.mdl)Delay Time
+>(cstextras.mdl)遅延時間
+<(cstextras.mdl)Initial Input
+>(cstextras.mdl)初期入力
+<(cstextras.mdl)Initial Buffer Size
+>(cstextras.mdl)初期バッファサイズ
+
+% the following two lines are together
+<(ltimask)Use the function CSTUPDATE to update all LTI Blocks in the 
+>(ltimask)関数 CSTUPDATE を使って、Simulink モデル内のすべての LTI ブロックを
+<(ltimask)Simulink model.
+>(ltimask)更新してください。
+<(ltimask)The LTI block does not support models with complex coefficients.
+>(ltimask)LTI ブロックは複素係数を使ったモデルをサポートしません。
+<(ltimask)Length of Initial State vector does not match number of states.\nUsing zero Initial State instead.
+>(ltimask)初期状態ベクトルの長さが状態数と一致しません。 \n代わりに初期状態に 0 を使用します。
+
+
+%%  /toolbox/control/control/slview.m
+<(slview)The product Simulink Control Design is required to launch the linear analysis tool
+>(slview)プロダクト Simulink Control Design は、線形解析ツールを起動する必要があります。
+
+%%  /toolbox/control/control/gcare.m
+<(gcare)Cannot order eigenvalues: spectrum too near the imaginary axis.
+>(gcare)固有値を並び替えられません: スペクトルが虚軸に近すぎます。
+<(gcare)Matrices H and J must be the same size.
+>(gcare)行列 H と J は同じサイズでなければなりません。
+<(gcare)Size of H matrix must be even when size of A is not specified.
+>(gcare)H 行列のサイズは、A のサイズが指定されない場合、偶数でなければなりません。
+<(gcare)Solution X is not finite.
+>(gcare)解 X は有限ではありません。
+
+%%  /toolbox/control/control/care.m
+<(care)E must be nonsingular.
+>(care)E は特異にはできません。
+<(care)R matrix must be nonsingular.
+>(care)R 行列は特異にはできません。
+
+%%  /toolbox/control/control/damp.m
+<(damp)Input must be a vector or a square matrix.
+>(damp)入力はベクトルか正方行列でなければなりません。
+<(damp)Second input must be a scalar.
+>(damp)2番目の入力はスカラでなければなりません。
+
+%%  /toolbox/control/control/dlyap.m
+<(dlyap)Cannot solve equation with complex data and E matrix.
+>(dlyap)複素数データと E 行列をもつ式を解くことはできません。
+<(dlyap)DLYAP expects double arrays as inputs.
+>(dlyap)DLYAP は、入力として double の配列が必要です。
+<(dlyap)Second argument Q must be symmetric when E matrix is specified.
+>(dlyap)2番目の入力 Q は、E 行列が指定された場合、対称でなければなりません。
+
+%%  /toolbox/control/control/dss.m
+<(dss)All five A,B,C,D,E matrices must be specified.
+>(dss)5つの A,B,C,D,E 行列すべてが指定されなければなりません。
+<(dss)Two many numerical inputs.
+>(dss)数値入力が多すぎます。
+
+%%  /toolbox/control/control/lyap.m
+<(lyap)LYAP expects double arrays as inputs.
+>(lyap)LYAP は、入力として double の配列が必要です。
+
+%%  /toolbox/control/control/pade.m
+<(pade)Step response of %d%s-order Pade approximation
+>(pade)%d%s 次のパデ近似のステップ応答
+<(pade)T and N must be non negative.
+>(pade)T と N は非負でなければなりません。
+<(pade)Zero delay: no plot drawn.
+>(pade)0 遅延: プロットはありません。
+
+%%  /toolbox/control/control/ctrb.m
+<(ctrb)A must be square and have the same number of rows as B.
+>(ctrb)A は正方行列で、B と同じ行数でなければなりません。
+
+%%  /toolbox/control/control/lqrd.m
+<(lqrd)Q is not symmetric and has been replaced by (Q+Q')/2).
+>(lqrd)Q は非対称で、(Q+Q')/2) で置き換えられました。
+<(lqrd)R is not symmetric and has been replaced by (R+R')/2).
+>(lqrd)R は非対称で、(R+R')/2) で置き換えられました。
+<(lqrd)The A and Q matrices must be the same size.
+>(lqrd)A と Q 行列は同じサイズでなければなりません。
+<(lqrd)The B and N matrices must be the same size.
+>(lqrd)B と N 行列は同じサイズでなければなりません。
+<(lqrd)The R matrix must be positive definite.
+>(lqrd)R 行列は、正定値でなければなりません。
+<(lqrd)The R matrix must be square with as many columns as B.
+>(lqrd)R 行列は B と同じ列数をもつ正方行列でなければなりません。
+<(lqrd)The matrix [Q N;N' R] must be positive semi-definite.
+>(lqrd)行列 [Q N;N' R] は半正定値でなければなりません。
+
+%%  /toolbox/control/control/sumblk.m
+<(sumblk)Input names must be specified as a cell array of strings
+>(sumblk)入力名は文字列のセル配列として指定されなければなりません。
+<(sumblk)Length of SIGNS argument does not match number of input signals.
+>(sumblk)SIGNS の引数の長さは、入力信号の数と一致していません。
+<(sumblk)Output name must be a string.
+>(sumblk)出力名は文字列でなければなりません。
+<(sumblk)Signs must be specified as a string of '+' or '-' characters.
+>(sumblk)符号は '+' or '-' キャラクタの文字列として指定されなければなりません。
+
+%%  /toolbox/control/control/drss.m
+<(drss)Input arguments must be non negative integers.
+>(drss)入力引数は非負の整数でなければなりません。
+
+%%  /toolbox/control/control/filt.m
+<(filt)Too many numerical inputs.
+>(filt)数値入力が多すぎます。
+
+%%  /toolbox/control/control/gensig.m
+<(gensig)Signal TYPE must be a string.
+>(gensig)信号 TYPE は文字列でなければなりません
+
+%%  /toolbox/control/control/ltimodels.m
+<(ltimodels)MODELTYPE must be a string.
+>(ltimodels)MODELTYPE は文字列でなければなりません。
+<(ltimodels)Unknown model type '%s'.
+>(ltimodels)不明なモデルタイプ '%s' があります。
+
+%%  /toolbox/control/control/ngrid.m
+<(ngrid)Nichols chart not available for this type of response.
+>(ngrid)ニコルス線図は、この応答タイプには利用可能ではありません。
+
+%%  /toolbox/control/control/obsv.m
+<(obsv)A must be square and have the same number of columns as C.
+>(obsv)A は正方行列で、C と同じ列数でなければなりません。
+
+%%  /toolbox/control/control/place.m
+<(place)A matrix must be square.
+>(place)A 行列は正方行列でなければなりません。
+<(place)B matrix must have as many rows as A.
+>(place)B 行列は A と同じ行数でなければなりません。
+<(place)Can't place eigenvalues there.
+>(place)ここに固有値を置くことはできません。
+<(place)Can't place poles with multiplicity greater than rank(B).
+>(place)rank(B) より大きい重複度をもつ極を置けません。
+<(place)Desired poles are not given as complex conjugate pairs, complex controller gains required.
+>(place)希望する極は複素共役の組で与えられていません。 複素数のコントローラゲインが必要です。
+<(place)P must have the same number of states as A.
+>(place)P は A と同じ状態数でなければなりません。
+<(place)Rank of B is zero
+>(place)B のランクは 0 です。
+
+%%  /toolbox/control/control/sgrid.m
+<(sgrid)S-plane grid not available for this type of response.
+>(sgrid)S-平面のグリッドは、この応答タイプには利用可能ではありません。
+
+%%  /toolbox/control/control/zgrid.m
+<(zgrid)Z-plane grid not available for this type of response.
+>(zgrid)Z-平面のグリッドは、この応答タイプには利用可能ではありません。
+
+%%  /toolbox/control/control/dlyapchol.m
+<(dlyapchol)LYAPCHOL expects double arrays as inputs.
+>(dlyapchol)LYAPCHOL は、入力として double の配列が必要です。
+
+%%  /toolbox/control/control/imargin.m
+<(imargin)Can only plot margins for a single SISO system.
+>(imargin)単一 SISO システムに対する余裕のみプロット可能です。
+<(imargin)Inputs MAG and PHASE must be 2D arrays.
+>(imargin)入力の MAG と PHASE は2次元配列でなければなりません。
+
+%%  /toolbox/control/control/cstupdate.m
+<(cstupdate)You must open the model '%s' first before using cstupdate.
+>(cstupdate)cstupdate を使う前にまずモデル '%s' を開かなければなりません。
+<(cstupdate)You must specify a model name to update.
+>(cstupdate)更新のためのモデル名を指定しなければなりません。
+
+%%  /toolbox/control/control/ltiview.m
+<(ltiview)Extra input arguments are not applicable for this ltiview specification.
+>(ltiview)余分な入力引数は、この ltiview 仕様に適用できません。
+<(ltiview)Getting Started with the LTI Viewer
+>(ltiview)LTI Viewer の Getting Started
+<(ltiview)PLOTTYPE may contain no more then six plot types.
+>(ltiview)PLOTTYPE は､6つしかプロットタイプをもちません。
+<(ltiview)PLOTTYPE must be a valid plot type string or plot type list.
+>(ltiview)PLOTTYPE は、有効なプロットタイプの文字列、またはプロットタイプリストでなければなりません。
+<(ltiview)The CURRENT option requires valid LTI Viewer handles.
+>(ltiview)CURRENT オプションは、有効な LTI Viewer のハンドルが必要です。
+
+%%  /toolbox/control/control/sisotool.m
+<(sisotool)Compensator location must be either 'feedback' or 'forward'.
+>(sisotool)補償器の位置は 'feedback' または 'forward' のいずれかでなければなりません。
+<(sisotool)Compensator location must be specified as a string.
+>(sisotool)補償器の位置は文字列で指定されなければなりません。
+<(sisotool)Feedback sign must be either -1 or +1.
+>(sisotool)フィードバックの符号は、-1 まはた +1 のいずれかでなければなりません。
+<(sisotool)Open-loop editors are only available for feedback compensators.
+>(sisotool)開ループエディタは、フィードバック補償器でのみ利用可能です。
+<(sisotool)Supported VIEWS are 'rlocus', 'bode', 'nichols', and 'filter'.
+>(sisotool)サポートされる VIEWS は、'rlocus', 'bode', 'nichols', 'filter' です。
+<(sisotool)The SISO Tool can only display six graphical editors at a time.
+>(sisotool)SISO ツールは、1度に6つのグラフィカルエディタしか表示することができません。
+
+%%  /toolbox/control/control/@ltipack/utCheckAssignValueSize.m
+<(utCheckAssignValueSize)Assigned value is incompatible with size of model array.
+>(utCheckAssignValueSize)割り当てられた値はモデル配列のサイズと互換性がありません。
+
+%%  /toolbox/control/control/@ltipack/@frddata/bandwidth.m
+<(bandwidth)BANDWIDTH is not supported for FRD models.
+>(bandwidth)BANDWIDTH は FRD モデルに対してサポートされていません。
+
+%%  /toolbox/control/control/@ltipack/@frddata/dispsys.m
+<(dispsys)\n%sFrom %s to:\n
+>(dispsys)\n%s から %s へ:\n
+<(dispsys)input "%s"
+>(dispsys)入力 "%s"
+<(dispsys)input %d
+>(dispsys)入力 %d
+<(dispsys)output %d
+>(dispsys)出力 %d
+
+%%  /toolbox/control/control/@ltipack/@frddata/evalfr.m
+<(evalfr)Not supported for FRD models. Use FREQRESP instead.
+>(evalfr)FRD モデルに対してサポートされていません。 代わりに FREQRESP を使用してください。
+
+%%  /toolbox/control/control/@ltipack/@frddata/getFinalValue.m
+<(getFinalValue)Not defined for FRD models.
+>(getFinalValue)FRD モデルが定義されていません。
+
+%%  /toolbox/control/control/@ltipack/@frddata/inv.m
+<(inv)Cannot invert systems with delays.
+>(inv)遅延をもつシステムを逆変換できません。
+<(inv)Frequency response is infinite at some frequencies.
+>(inv)周波数応答は、いくつかの周波数で無限になっています。
+
+%%  /toolbox/control/control/@ltipack/@frddata/minreal.m
+<(minreal)Not supported for FRD models.
+>(minreal)FRD モデルに対してサポートされていません。
+
+%%  /toolbox/control/control/@ltipack/@frddata/order.m
+<(order)Order is not defined for FRD models.
+>(order)順序は FRD モデルで定義されていません。
+
+%%  /toolbox/control/control/@ltipack/@frddata/pade.m
+<(pade)For FRD models, use DELAY2Z to accurately absorb delays into the frequency response.
+>(pade)FRD モデルに対して、遅延を周波数応答に正確に取り込むには、DELAY2Z を使用してください。
+
+%%  /toolbox/control/control/@ltipack/@frddata/pole.m
+<(pole)Not available for FRD models.
+>(pole)FRD モデルには利用可能ではありません。
+
+%%  /toolbox/control/control/@ltipack/@frddata/repsys.m
+<(repsys)Only available for SISO models.
+>(repsys)SISO モデルでのみ利用可能です。
+
+%%  /toolbox/control/control/@ltipack/@frddata/setsubsys.m
+<(setsubsys)Frequency vector of left-hand side cannot be modified.
+>(setsubsys)左辺の周波数ベクトルを修正できません。
+
+%%  /toolbox/control/control/@ltipack/@frddata/ss.m
+<(ss)Cannot convert FRD models to state space.
+>(ss)FRD モデルを状態空間に変換できません。
+
+%%  /toolbox/control/control/@ltipack/@frddata/tf.m
+<(tf)Cannot convert FRD models to the TF representation.
+>(tf)FRD モデルを TF 表現に変換できません。
+
+%%  /toolbox/control/control/@ltipack/@frddata/utCheckData.m
+<(utCheckData)Ambiguous dimensioning of the response data array.
+>(utCheckData)応答データ配列の不明瞭な次元です。
+<(utCheckData)Size mismatch between frequency vector and response data.
+>(utCheckData)周波数ベクトルと応答データ間でサイズが一致していません。
+
+%%  /toolbox/control/control/@ltipack/@frddata/utShowDelay.m
+<(utShowDelay)%sI/O delay (for all I/O pairs): %0.5g
+>(utShowDelay)%sI/O 遅延 (すべての I/O 組): %0.5g
+<(utShowDelay)%sI/O delay: %0.5g
+>(utShowDelay)%sI/O 遅延: %0.5g
+<(utShowDelay)%sI/O delays:
+>(utShowDelay)%sI/O 遅延:
+<(utShowDelay)%sInput delay: %0.5g
+>(utShowDelay)%s入力遅延: %0.5g
+<(utShowDelay)%sOutput delay: %0.5g
+>(utShowDelay)%s出力遅延: %0.5g
+
+%%  /toolbox/control/control/@ltipack/@frddata/zpk.m
+<(zpk)Cannot convert FRD models to the ZPK representation.
+>(zpk)FRD モデルを ZPK 表現に変換できません。
+
+%%  /toolbox/control/control/@ltipack/@ltidata/allmargin.m
+<(allmargin)Not applicable to FRD models or state-space models with internal delays.
+>(allmargin)内部遅延をもつ FRD モデル、または状態空間モデルに適用できません。
+<(allmargin)Not supported for models with complex data.
+>(allmargin)複素数データをもつモデルに対してサポートされていません。
+
+%%  /toolbox/control/control/@ltipack/@ltidata/exp.m
+<(exp)EXP is only available for TF and ZPK models.
+>(exp)EXP は TF と ZPK モデルでのみ利用可能です。
+
+%%  /toolbox/control/control/@ltipack/@ltidata/freqresp.m
+<(freqresp)Frequency grid must be specified for this model due to internal delays.
+>(freqresp)内部遅延により、周波数グリッドをこのモデルに指定しなければなりません。
+
+%%  /toolbox/control/control/@ltipack/@ltidata/rlocus.m
+<(rlocus)Not supported for models with delays or complex data.
+>(rlocus)遅延、または複素数データをもつモデルに対してサポートされていません。
+<(rlocus)Root locus is only available for SISO models.
+>(rlocus)根軌跡は SISO モデルでのみ利用可能です。
+
+%%  /toolbox/control/control/@ltipack/@ltidata/setIODelay.m
+<(setIODelay)I/O delay matrix must have as many rows as outputs and as many columns as inputs.
+>(setIODelay)I/O 遅延行列は、出力の同じ行数と入力の同じ列数をもたなければなりません。
+
+%%  /toolbox/control/control/@ltipack/@ltidata/timeresp.m
+<(timeresp)Length of initial condition X0 must match number of states.
+>(timeresp)初期条件 X0 の長さは、状態数と一致しなければなりません。
+<(timeresp)Not supported for models with more zeros than poles.
+>(timeresp)零点が極よりも多いモデルに対してサポートされていません。
+
+%%  /toolbox/control/control/@ltipack/@ltidata/utCheckComputability.m
+<(utCheckComputability)INITIAL is only available for state-space models.
+>(utCheckComputability)INITIAL は状態空間モデルでのみ利用可能です。
+<(utCheckComputability)Input data U must have as many columns as system inputs.
+>(utCheckComputability)入力データ U は、システム入力と同じ列数をもたなければなりません。
+
+%%  /toolbox/control/control/@ltipack/@ltidata/utCheckData_lti.m
+<(utCheckData_lti)I/O delays must be integer-valued for discrete-time models.
+>(utCheckData_lti)I/O 遅延は、離散時間モデルに対して整数値でなければなりません。
+<(utCheckData_lti)Input delays must be integers for discrete-time models.
+>(utCheckData_lti)入力遅延は離散時間モデルに対して整数でなければなりません。
+<(utCheckData_lti)InputDelay and InputName must have the same length.
+>(utCheckData_lti)InputDelay と InputName は同じ長さでなければなりません。
+<(utCheckData_lti)Internal delays must be integer-valued for discrete-time models.
+>(utCheckData_lti)内部遅延は、離散時間モデルに対して整数値でなければなりません。
+<(utCheckData_lti)Negative sample time not allowed (except Ts=-1 to mean unspecified).
+>(utCheckData_lti)負のサンプル時間は受け入れられません (未設定の意味となる Ts=-1 を除く)。
+<(utCheckData_lti)Output delays must be integers for discrete-time models.
+>(utCheckData_lti)出力遅延は離散時間モデルに対して整数でなければなりません。
+<(utCheckData_lti)OutputDelay and OutputName must have the same length.
+>(utCheckData_lti)OutputDelay と OutputName は同じ長さでなければなりません。
+<(utCheckData_lti)Sample time T must be a real number.
+>(utCheckData_lti)サンプル時間 T は実数でなければなりません。
+<(utCheckData_lti)Size mismatch between I/O delay matrix, InputName, and OutputName.
+>(utCheckData_lti)I/O 遅延行列、InputName、OutputName 間のサイズが一致しません。
+
+%%  /toolbox/control/control/@ltipack/@ltidata/utCheckPadeOrders.m
+<(utCheckPadeOrders)Approximation orders must be arrays of nonnegative integers.
+>(utCheckPadeOrders)近似次数は非負の整数の配列でなければなりません。
+<(utCheckPadeOrders)The matrix NINT of approximation orders for I/O delays is not properly sized.
+>(utCheckPadeOrders)I/O 遅延に対する近似次数の行列 NINT は適切なサイズではありません。
+<(utCheckPadeOrders)The vector NINT of approximation orders for internal delays is not properly sized.
+>(utCheckPadeOrders)内部遅延に対する近似次数のベクトル NINT は適切なサイズではありません。
+<(utCheckPadeOrders)The vector NU of approximation orders for input delays must have as many entries as inputs.
+>(utCheckPadeOrders)入力遅延に対する近似次数のベクトル NU は、入力と同じ要素でなければなりません。
+<(utCheckPadeOrders)The vector NY of approximation orders for output delays must have as many entries as outputs.
+>(utCheckPadeOrders)出力遅延に対する近似次数のベクトル NY は、出力と同じ要素でなければなりません。
+
+%%  /toolbox/control/control/@ltipack/@ltidata/utCheckTimeVector.m
+<(utCheckTimeVector)Time step must match sample time of discrete-time models.
+>(utCheckTimeVector)時間ステップは、離散時間モデルのサンプル時間と一致しなければなりません。
+
+%%  /toolbox/control/control/@ltipack/@ltidata/utEqualizeSampleTime.m
+<(utEqualizeSampleTime)Inconsistent sample times.
+>(utEqualizeSampleTime)サンプル時間が矛盾しています。
+
+%%  /toolbox/control/control/@ltipack/@ltidata/utMtimes.m
+<(utMtimes)Convert models to state space when interconnection gives rise to internal delays.
+>(utMtimes)内部結合が内部遅延を発生させる場合、モデルを状態空間に変換してください。
+<(utMtimes)Use the state-space representation for more efficient modeling of discrete-time delays.
+>(utMtimes)離散時間遅延のより効果的なモデリングにするために状態空間表現を使用してください。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/balreal.m
+<(balreal)BALREAL is not applicable to models with more zeros then poles.
+>(balreal)BALREAL は、零点より多い極をもつモデルに適用できません。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/c2d.m
+<(c2d)Bad choice of sample time Ts: (E-A*Ts/2) is nearly singular.
+>(c2d)サンプル時間 Ts の選択が良くありません: (E-A*Ts/2) は特異値に近くなります。
+<(c2d)Bad choice of sample time Ts: (I-A*Ts/2) is nearly singular.
+>(c2d)サンプル時間 Ts の選択が良くありません: (I-A*Ts/2) は特異値に近くなります。
+<(c2d)Not available for state-space models with internal delays.
+>(c2d)内部遅延をもつ状態空間モデルには利用可能ではありません。
+<(c2d)Overflow in matrix exponential due to unstable poles with large real part.
+>(c2d)大きな実部をもつ不安定な極により行列の指数でオーバーフローします。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/covar.m
+<(covar)COVAR is not applicable to models with more zeros then poles.
+>(covar)COVAR は、零点より多い極をもつモデルに適用できません。
+<(covar)Not supported for continuous-time models with arbitrary delays.
+>(covar)任意の遅延をもつ連続時間モデルに対してサポートされていません。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/d2c.m
+<(d2c)Tustin approximation: cannot handle discrete systems with pole at z=-1.
+>(d2c)Tustin (双一次) 近似: z=-1 で極をもつ離散時間システムを設定できません。
+<(d2c)Tustin approximation: cannot handle discrete systems with pole near z=-1.
+>(d2c)Tustin (双一次) 近似: z=-1 に近い極をもつ離散時間システムを設定できません。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/d2d.m
+<(d2d)D2D cannot handle descriptor models with singular E matrix.
+>(d2d)D2D は、特異な E 行列をもつ記述子モデルを設定できません。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/dcgain.m
+<(dcgain)Cannot evaluate DC equivalent due to singular E matrix or internal delays.
+>(dcgain)特異な E 行列、または内部遅延により DC 等価値を実行できません。
+
+
+%%  /toolbox/control/control/@ltipack/@ssdata/delay2z.m
+<(delay2z)DELAY2Z expects a discrete-time model.
+>(delay2z)DELAY2Z は離散時間モデルが必要です。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/dispsys.m
+<(dispsys)     Empty matrix: %d-by-%d
+>(dispsys)     空行列: %d×%d
+
+%%  /toolbox/control/control/@ltipack/@ssdata/getABCD.m
+<(getABCD)Cannot compute explicit form for state-space models with singular E matrix.
+>(getABCD)特異な E 行列をもつ状態空間モデルにで明示的な形式を計算できません。
+<(getABCD)E matrix is nearly singular or badly scaled. Results may be inaccurate.
+>(getABCD)E 行列は特異値に近いか、悪いスケーリングです。 結果は不正確になります。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/getBlockData.m
+<(getBlockData)No explicit form for descriptor models with singular E matrix.
+>(getBlockData)特異な E 行列をもつ記述子モデルに明示的な形式がありません。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/gram.m
+<(gram)Some eigenvalue of A or A' lies in the unstable region.
+>(gram)A、または A' のいくつかの固有値は、不安定な領域内にあります。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/hsvd.m
+<(hsvd)HSVD is not applicable to models with more zeros then poles.
+>(hsvd)HSVD は、零点より多い極をもつモデルに適用できません。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/inv.m
+<(inv)Cannot invert system with input or output delays (inverse is non causal).
+>(inv)入力、または出力遅延をもつシステムを逆変換できません (逆行列は因果性がありません)。
+<(inv)Frequency response is singular at all frequencies or inverse is not causal.
+>(inv)周波数応答がすべての周波数で特異値か、あるいは逆行列は因果性がありません。
+<(inv)Frequency response is singular at all frequencies.
+>(inv)周波数応答は、すべての周波数で特異値になっています。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/zero.m
+<(zero)Cannot compute zeros when internal delays are set to zero (algebraic loop).
+>(zero)内部遅延を 0 に設定した場合、零点を計算できません (代数ループ)。
+<(zero)Computing zeros with all internal delays set to zero.
+>(zero)すべての内部遅延が 0 に設定されている場合の零点を計算中です。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/lsim.m
+<(lsim)Input signal is undersampled. Sample every %0.2g second or faster.
+>(lsim)入力信号はアンダーサンプルです。 %0.2g 秒おきか、それ以上の速さでサンプルしてください。
+<(lsim)LSIM with nonzero initial condition not supported for systems with internal delays.
+>(lsim)非ゼロの初期条件をもつ LSIM は、内部遅延をもつシステムに対してサポートされていません。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/modsep.m
+<(modsep)Decomposition failed. Some poles are too close to the region boundaries.
+>(modsep)分解できませんでした。 いくつかの極が、領域の境界に近すぎます。
+<(modsep)Invalid region-selecting function REGIONFCN.
+>(modsep)領域選択関数 REGIONFCN が無効です。
+<(modsep)MODSEP is not applicable to models with more zeros then poles.
+>(modsep)MODSEP は、零点より多い極をもつモデルに適用できません。
+<(modsep)MODSEP is not applicable to models with singular E matrix.
+>(modsep)MODSEP は、特異な E 行列をもつモデルに適用できません。
+<(modsep)REGIONFCN must return region indices between 1 and N.
+>(modsep)REGIONFCN は、1 と N 間の領域インデックスを返さなければなりません。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/normh2.m
+<(normh2)Nonzero feedthrough: H2 norm is infinite.
+>(normh2)非ゼロのフィードスルー: H2 ノルムは無限です。
+<(normh2)Unstable system: H2 norm is infinite.
+>(normh2)不安定なシステム: H2 ノルムは無限です。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/norminf.m
+<(norminf)Cannot compute L-infinity for models with internal delays.
+>(norminf)内部遅延をもつモデルでL-無限大を計算することができません。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/pole.m
+<(pole)Cannot compute poles when internal delays are set to zero (algebraic loop).
+>(pole)内部遅延を 0 に設定した場合、極を計算できません (代数ループ)。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/ss2ss.m
+<(ss2ss)Coordinate transformation is incompatible with I/O delay representation.
+>(ss2ss)座標変換は、I/O 遅延表現と互換性がありません。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/stabsep.m
+<(stabsep)STABSEP is not applicable to models with more zeros then poles.
+>(stabsep)STABSEP は、零点より多い極をもつモデルに適用できません。
+<(stabsep)STABSEP is not applicable to models with singular E matrix.
+>(stabsep)STABSEP は、特異な E 行列をもつモデルに適用できません。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/tf.m
+<(tf)Models with internal delays cannot be represented as TF objects.
+>(tf)内部遅延をもつモデルは、TF オブジェクトとして表現することができません。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/times.m
+<(times)The .* operator is not supported for state-space models.
+>(times).* 演算子は、状態空間に対してサポートされていません。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/utCheckData.m
+<(utCheckData)Length of StateName must match number of states.
+>(utCheckData)StateName の長さは状態数と一致しなければなりません。
+<(utCheckData)Modification of A,B,C,D is incompatible with I/O delay representation.
+>(utCheckData)A,B,C,D の修正は、I/O 遅延表現と互換性がありません。
+<(utCheckData)The A and B matrices must have the same number of rows.
+>(utCheckData)A と B 行列は同じ行数でなければなりません。
+<(utCheckData)The A and C matrices must have the same number of columns.
+>(utCheckData)A と C 行列は同じ列数でなければなりません。
+<(utCheckData)The A and E matrices have incompatible dimensions.
+>(utCheckData)A と E 行列は、非互換の次元でなければなりません。
+<(utCheckData)The A and E matrices must be square.
+>(utCheckData)A と E 行列は正方行列でなければなりません。
+<(utCheckData)The column sizes of B and D must agree with the number of inputs.
+>(utCheckData)B と D の列のサイズは、入力数が正しくなければなりません。
+<(utCheckData)The row sizes of C and D must agree with the number of outputs.
+>(utCheckData)C と D の行のサイズは、出力数が正しくなければなりません。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/utGenFreqGrid.m
+<(utGenFreqGrid)Delay = %.3g: %% intervals needing finer gridding = %.3f
+>(utGenFreqGrid)遅延 = %.3g: %% より細かいグリッドが必要な区間 = %.3f
+<(utGenFreqGrid)New grid length = %d
+>(utGenFreqGrid)新規グリッド長 = %d
+<(utGenFreqGrid)\nFinal length = %d
+>(utGenFreqGrid)\n最終長 = %d
+<(utGenFreqGrid)\nRefining range %.3g to %.3g. Init grid length = %d
+>(utGenFreqGrid)\n改良範囲 %.3g - %.3g. 初期グリッド長 = %d
+
+%%  /toolbox/control/control/@ltipack/@ssdata/utInvDiscretizeZOH.m
+<(utInvDiscretizeZOH)Accuracy of D2C conversion may be poor.
+>(utInvDiscretizeZOH)D2C の変換精度が良くない可能性があります。
+<(utInvDiscretizeZOH)Cannot compute continuous-time equivalent due to internal delay structure.
+>(utInvDiscretizeZOH)内部遅延の構成による等価な連続時間を計算できません。
+<(utInvDiscretizeZOH)D2C cannot handle models with real negative poles and I/O delays.
+>(utInvDiscretizeZOH)D2C は、実数の負の極と I/O 遅延をもつモデルを設定できません。
+<(utInvDiscretizeZOH)Model order was increased to handle real negative poles.
+>(utInvDiscretizeZOH)モデルの次数は、実数の非負の極を設定するために増加しました。
+<(utInvDiscretizeZOH)ZOH method cannot handle models with poles near z=0.
+>(utInvDiscretizeZOH)ZOH メソッドは、z=0 に近い極をもつモデルを設定できません。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/utSISOLFT.m
+<(utSISOLFT)Algebraic loop
+>(utSISOLFT)代数ループ
+
+%%  /toolbox/control/control/@ltipack/@ssdata/utShowDelay.m
+<(utShowDelay)%sInput delays (listed by channel): 
+>(utShowDelay)%s入力遅延 (チャンネルでリストされた):
+<(utShowDelay)%sInternal delays: 
+>(utShowDelay)%s内部遅延:
+<(utShowDelay)%sOutput delays (listed by channel): 
+>(utShowDelay)%s出力遅延 (チャンネルでリストされた):
+
+%%  /toolbox/control/control/@ltipack/@ssdata/zpk.m
+<(zpk)Models with internal delays cannot be represented as ZPK objects.
+>(zpk)内部遅延をもつモデルは、ZPK オブジェクトとして表現することができません。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/utResizeIOS.m
+<(utResizeIOS)Cannot use SET to modify the I/O size of models with internal delays.
+>(utResizeIOS)内部遅延をもつモデルの I/O サイズを修正するために SET を使用することはできません。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/iodynamics.m
+<(iodynamics)Cannot compute the poles and zeros (algebraic loop when internal delays set to zero).
+>(iodynamics)極と零点を計算できません (内部遅延が 0 に設定された場合に代数ループになるため)。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/minreal.m
+<(minreal)Coordinate transformation U is not available for models with singular E matrix.
+>(minreal)座標変換 U は、特異な E 行列をもつモデルには利用可能ではありません。
+<(minreal)MINREAL is not supported for state-space models with complex data.
+>(minreal)MINREAL は、複素数データをもつ状態空間モデルに対してサポートされていません。
+<(minreal)MINREAL is only supported for proper state-space models.
+>(minreal)MINREAL は適切な状態空間モデルのみをサポートします。
+
+%%  /toolbox/control/control/@ltipack/@ssdata/private/c2dSetUp.m
+<(c2dSetUp)Cannot discretize models with state delays in state equation.
+>(c2dSetUp)状態方程式の状態遅延をもつモデルを離散化できません。
+
+%%  /toolbox/control/control/@ltipack/@tfdata/exp.m
+<(exp)In exp(M*s), M must have non positive entries for causality.
+>(exp)exp(M*s) で、M は因果関係に対して正でない入力をもたなければなりません。
+
+%%  /toolbox/control/control/@ltipack/@tfdata/feedback.m
+<(feedback)Algebraic loop: feedback interconnection is singular.
+>(feedback)代数ループ: フィードバック内部結合が特異値です。
+<(feedback)triggers algebraic loop warning
+>(feedback)代数ループの警告をトリガ
+
+%%  /toolbox/control/control/@ltipack/@tfdata/fresp.m
+<(fresp)Frequency response is infinite at some frequencies due to poles on frequency axis.
+>(fresp)周波数応答は、周波数軸の極のため、いくつかの周波数で無限になります。
+
+%%  /toolbox/control/control/@ltipack/@tfdata/inv.m
+<(inv)Cannot invert systems with I/O delays.
+>(inv)I/O 遅延をもつシステムを逆変換できません。
+<(inv)Cannot invert transfer function with zero gain.
+>(inv)0 ゲインをもつ伝達関数を逆変換できません。
+
+%%  /toolbox/control/control/@ltipack/@tfdata/slss.m
+<(slss)Cannot simulate transfer functions with more zeros than poles.
+>(slss)極よりも大きい零点をもつ伝達関数をシミュレーションできません。
+<(slss)Only applicable to SISO transfer functions.
+>(slss)SISO 伝達関数にのみ適用可能です。
+
+%%  /toolbox/control/control/@ltipack/@zpkdata/c2d.m
+<(c2d)Matched pole-zero method only applicable to SISO systems.
+>(c2d)混合極-零点法は、SISO システムにのみ適用可能です。
+<(c2d)Overflow in C2D conversion with matched pole/zero method.
+>(c2d)一致する極/零点メソッドをもつ C2D 変換はオーバーフローします。
+
+%%  /toolbox/control/control/@ltipack/@zpkdata/d2c.m
+<(d2c)Matched D2C: cannot handle negative real poles with odd multiplicity.
+>(d2c)一致する D2C: 奇数の重複度をもつ負の次数の極を設定できません。
+<(d2c)Matched D2C: cannot handle negative real zeros with odd multiplicity.
+>(d2c)一致する D2C: 奇数の重複度をもつ負の次数の零点を設定できません。
+<(d2c)Matched D2C: cannot handle systems with poles or zeros at z=0.
+>(d2c)一致する D2C: z=0 で極、または零点をもつシステムを設定できません。
+
+%%  /toolbox/control/control/@ltipack/@zpkdata/inv.m
+<(inv)Cannot invert ZPK models with zero gain.
+>(inv)0 ゲインをもつ ZPK モデルを逆変換できません。
+
+%%  /toolbox/control/control/@ltipack/@zpkdata/slss.m
+<(slss)Cannot simulate zero-pole-gain models with more zeros than poles.
+>(slss)0 よりも大きい極をもつ零点-極-ゲインをシミュレーションできません。
+<(slss)Only applicable to SISO ZPK models.
+>(slss)SISO ZPK モデルにのみ適用可能です。
+
+%%  /toolbox/control/control/@ltipack/@zpkdata/tf.m
+<(tf)Overflow in conversion to transfer function (TF) form.
+>(tf)伝達関数 (TF) 形式への変換でオーバーフローが発生しました。
+
+%%  /toolbox/control/control/@ltipack/@zpkdata/utCheckData.m
+<(utCheckData)The sizes of the Z,P,K arrays are incompatible with the number of inputs or outputs.
+>(utCheckData)Z,P,K 配列のサイズは、入力、または出力数と互換性がありません。
+
+%%  /toolbox/control/control/@frd/fcat.m
+<(fcat)All inputs to FCAT must have the same I/O and array sizes.
+>(fcat)FCAT へのすべての入力は同じ I/O と配列サイズをもたなければなりません。
+<(fcat)FCAT only takes FRD models.
+>(fcat)FCAT は、FRD モデルのみ取ります。
+<(fcat)FCAT requires at least one input argument.
+>(fcat)FCAT は、少なくとも1つの入力引数が必要です。
+<(fcat)Frequency vectors must not intersect.
+>(fcat)周波数ベクトルは交差してはいけません。
+
+%%  /toolbox/control/control/@frd/diag.m
+<(diag)DIAG expects an N-by-1 or 1-by-N frequency response.
+>(diag)DIAG は N×1、または 1×N の周波数応答が必要です。
+
+%%  /toolbox/control/control/@frd/fnorm.m
+<(fnorm)The only norms available are 1, 2, inf, and 'fro'.
+>(fnorm)利用可能なノルムは、1, 2, inf, 'fro' だけです。
+
+%%  /toolbox/control/control/@frd/interp.m
+<(interp)W must be a vector of real frequencies.
+>(interp)W は実周波数のベクトルでなければなりません。
+
+%%  /toolbox/control/control/@frd/frd.m
+<(frd)Conversion from string to tf is not possible.
+>(frd)文字列から tf に変換することはできません。
+<(frd)First input must contain only numerical data
+>(frd)1番目の入力は数値データのみ含まなければなりません。
+<(frd)Need to specify 2 or 3 numerical inputs.
+>(frd)2つ、または3つの数値入力を指定する必要があります。
+<(frd)Too many LTI arguments or missing numerical data
+>(frd)LTI の引数が多すぎるか、あるいは数値データが見つかりません。
+<(frd)Too many numerical inputs
+>(frd)数値入力が多すぎます。
+<(frd)Use INTERP to interpolate over a new frequency grid.
+>(frd)新規の周波数グリッドを超える補間は INTERP を使用してください。
+<(frd)Use SET to modify the properties of TF objects.
+>(frd)TF オブジェクトのプロパティを修正するには SET を使用してください。
+
+%%  /toolbox/control/control/@frd/frdata.m
+<(frdata)Index exceeds model array dimensions.
+>(frdata)インデックスがモデル配列の次元を超えました。
+<(frdata)Obsolete syntax. Use the property InputDelay to access input delays.
+>(frdata)古いシンタックスです。 入力遅延にアクセスするためにプロパティ InputDelay を使用してください。
+<(frdata)Subscripts must reference a single model.
+>(frdata)添字は単一のモデルを参照しなければなりません。
+
+%%  /toolbox/control/control/@frd/size.m
+<(size)%s array of FRD models.
+>(size)FRD モデルの %s 配列です。
+<(size)Each model has %d output%s, %d input%s, and %d frequency point%s.\n
+>(size)各モデルは %d 個の出力 %s、%d 個の入力 %s、%d 個の周波数点 %s をもちます。\n
+<(size)FRD model with %d output%s, %d input%s, and %d frequency point%s.
+>(size)%d 個の出力 %s、%d 個の入力 %s、%d 個の周波数点 %s をもつ FRD モデルです。
+<(size)Second argument must be a non negative integer.
+>(size)2番目の引数は非負の整数でなければなりません。
+<(size)Second input argument must be an integer or the string 'frequency'.
+>(size)2番目の入力引数は、整数か文字列 'frequency' でなければなりません。
+
+%%  /toolbox/control/control/@frd/pvset.m
+<(pvset)The Units property must be set to a string.
+>(pvset)Units プロパティは文字列に設定されなければなりません。
+<(pvset)The Units property must be set to either 'rad/s' or 'Hz'
+>(pvset)Units プロパティは、'rad/s' または 'Hz' のいずれかに設定されなければなりません。
+
+%%  /toolbox/control/control/@frd/fselect.m
+<(fselect)Frequency indices must be monotonically increasing.
+>(fselect)周波数インデックスは、単調増加でなければなりません。
+<(fselect)Index exceeds number of frequency points.
+>(fselect)インデックスが周波数点数を超えました。
+
+%%  /toolbox/control/control/@frd/utAssignCast.m
+<(utAssignCast)Left-hand side and right-hand side have incompatible frequency vectors.
+>(utAssignCast)左辺と右辺は互換性のない周波数ベクトルをもっています。
+
+%%  /toolbox/control/control/@frd/chgunits.m
+<(chgunits)Second argument to CHGUNITS must be a UNITS string
+>(chgunits)CHGUNITS への2番目の引数は UNITS の文字列でなければなりません。
+<(chgunits)Unrecognized UNITS string.
+>(chgunits)認識されない UNITS 文字列です。
+
+%%  /toolbox/control/control/@frd/display.m
+<(display)%s array of continuous-time frequency responses.
+>(display)連続時間の周波数応答の %s 配列です。
+<(display)%s array of discrete-time frequency responses.
+>(display)離散時間の周波数応答の %s 配列です。
+<(display)%s array of static gains.
+>(display)静的なゲインの %s 配列です。
+<(display)Model %s(:,:,%s)
+>(display)モデル %s(:,:,%s)
+
+%%  /toolbox/control/control/@frd/mldivide.m
+<(mldivide)Cannot invert non-square models.
+>(mldivide)正方行列でないモデルを逆変換できません。
+<(mldivide)In SYS1\SYS2, SYS1 and SYS2 must have compatible I/O dimensions.
+>(mldivide)SYS1\SYS2 で、SYS1 と SYS2 は互換性のある I/O の次元でなければなりません。
+<(mldivide)In SYS1\SYS2, model arrays SYS1 and SYS2 must have compatible dimensions.
+>(mldivide)SYS1\SYS2 で、モデル配列 SYS1 と SYS2 は互換性のある次元でなければなりません。
+
+%%  /toolbox/control/control/@frd/mrdivide.m
+<(mrdivide)In SYS1/SYS2, SYS1 and SYS2 must have compatible I/O dimensions.
+>(mrdivide)SYS1/SYS2 で、SYS1 と SYS2 は互換性のある I/O の次元でなければなりません。
+<(mrdivide)In SYS1/SYS2, model arrays SYS1 and SYS2 must have compatible dimensions.
+>(mrdivide)SYS1/SYS2 で、モデル配列 SYS1 と SYS2 は互換性のある次元でなければなりません。
+
+%%  /toolbox/control/control/@frd/private/getfreqindex.m
+<(getfreqindex)Syntax sys(...,'freq',ind) is obsolete. Use FSELECT instead.
+>(getfreqindex)シンタックス sys(...,'freq',ind) は、古い関数です。 代わりに FSELECT を使用してください。
+
+%%  /toolbox/control/control/@frd/private/checkFRDData.m
+<(checkFRDData)Frequency points cannot be repeated.
+>(checkFRDData)周波数点は繰り返せません。
+<(checkFRDData)Frequency points must be non negative and finite.
+>(checkFRDData)周波数点は非負で有限でなければなりません。
+<(checkFRDData)Frequency response data must be an array of complex numbers.
+>(checkFRDData)周波数応答データは、複素数配列でなければなりません。
+<(checkFRDData)Frequency vector must be a vector of real numbers.
+>(checkFRDData)周波数ベクトルは、実数のベクトルでなければなりません。
+
+%%  /toolbox/control/control/@frd/private/mrgfreq.m
+<(mrgfreq)All frequency vectors must have the same number of elements.
+>(mrgfreq)すべての周波数ベクトルは、同じ数の要素をもたなくてはなりません。
+<(mrgfreq)Frequency points don't match (taking units into account).
+>(mrgfreq)周波数点は一致しません (単位を考慮すると) 。
+
+%%  /toolbox/control/control/@lti/rlocus.m
+<(rlocus)RLOCUS takes a single model when used with output arguments.
+>(rlocus)RLOCUS は、出力引数と共に使用された場合、単一モデルを取ります。
+
+%%  /toolbox/control/control/@lti/c2d.m
+<(c2d)Initial condition mapping G is not available for "matched" option.
+>(c2d)初期条件マッピング G は、"matched" オプションには利用可能ではありません。
+<(c2d)Initial condition mapping G is not available for model arrays.
+>(c2d)初期条件マッピング G は、モデル配列には利用可能ではありません。
+<(c2d)METHOD must be a string.
+>(c2d)METHOD は文字列でなければなりません。
+<(c2d)Prewarping frequency W must be a positive scalar.
+>(c2d)プリワーピング周波数 W は正のスカラでなければなりません。
+<(c2d)Sample time TS must be a positive scalar.
+>(c2d)サンプル時間 TS は正のスカラでなければなりません。
+<(c2d)System is already discrete. Use D2D.
+>(c2d)システムは既に離散です。 D2D を使用してください。
+<(c2d)The critical frequency must be specified when using prewarp method.
+>(c2d)臨界周波数は、プリワープのメソッドを使用する場合に指定しなければなりません。
+<(c2d)Unknown discretization method %s.
+>(c2d)不明な離散化メソッド %s があります。
+
+%%  /toolbox/control/control/@lti/inv.m
+<(inv)Cannot invert system with input or output delays.
+>(inv)入力、または出力遅延をもつシステムを逆変換できません。
+
+%%  /toolbox/control/control/@lti/bode.m
+<(bode)BODE takes a single model when used with output arguments.
+>(bode)BODE は、出力引数と共に使用された場合、単一モデルを取ります。
+
+%%  /toolbox/control/control/@lti/hsvd.m
+<(hsvd)Cannot be applied to multiple models at once.
+>(hsvd)1度に複数のモデルに適用できません。
+<(hsvd)Invalid syntax. Options must be specified as name/value pairs.
+>(hsvd)シンタックスが無効です。 オプションは 名前/値 の組み合わせで指定されなければなりません。
+<(hsvd)Not applicable to models without inputs or outputs.
+>(hsvd)入力、または出力がないモデルに適用できません。
+<(hsvd)Not available for models of class %s.
+>(hsvd)クラス %s のモデルには利用可能ではありません。
+
+%%  /toolbox/control/control/@lti/append.m
+<(append)Model arrays must have compatible dimensions.
+>(append)モデル配列は互換性のある次元でなければなりません。
+
+%%  /toolbox/control/control/@lti/get.m
+<(get)Property name must be a string or a cell vector of strings.
+>(get)プロパティ名は文字列か文字列のセル配列でなければなりません。
+
+%%  /toolbox/control/control/@lti/damp.m
+<(damp)Display not available for model arrays.
+>(damp)Display はモデル配列には利用可能ではありません。
+
+%%  /toolbox/control/control/@lti/covar.m
+<(covar)Delays mapped to poles at z=0: discarding state covariance.
+>(covar)z=0 で極にマッピングされた遅延: 状態の共分散を取り除きます。
+<(covar)Noise covariance W must be a 2D numeric matrix.
+>(covar)ノイズの共分散 W は、2次元の数値行列でなければなりません。
+<(covar)Noise covariance W must be positive semi-definite.
+>(covar)ノイズの共分散 W は、半正定値でなければなりません。
+<(covar)State covariance not available for ragged arrays of state-space models.
+>(covar)状態の共分散は状態空間モデルの不規則な配列には利用可能ではありません。
+<(covar)Unstable models have infinite output covariance.
+>(covar)不安定なモデルは、無限の出力の共分散をもちます。
+<(covar)W must be a square matrix with as many columns as inputs in SYS.
+>(covar)W は SYS の入力と同じ列をもつ正方行列でなければなりません。
+
+%%  /toolbox/control/control/@lti/evalfr.m
+<(evalfr)Use FREQRESP for the vector case.
+>(evalfr)ベクトルの場合 FREQRESP を使用してください。
+
+%%  /toolbox/control/control/@lti/d2c.m
+<(d2c)D2C requires a discrete-time model.
+>(d2c)D2C は離散時間モデルが必要です。
+<(d2c)FOH conversion to continuous time is not supported.
+>(d2c)連続時間への FOH 変換はサポートされません。
+<(d2c)Sample time of discrete-time model is unspecified (Ts=-1).
+>(d2c)離散時間モデルのサンプル時間が指定されていません (Ts=-1)。
+
+%%  /toolbox/control/control/@lti/lft.m
+<(lft)Algebraic loop in LFT interconnection.
+>(lft)LFT 内部結合の代数ループです。
+<(lft)Ambiguous configuration: please specify the dimensions of u and y.
+>(lft)不明瞭な設定: u と y の次元を指定してください。
+<(lft)LFT interconnection is nearly an algebraic loop.
+>(lft)LFT 内部結合は、ほぼ代数ループです。
+<(lft)Model arrays SYS1 and SYS2 must have compatible dimensions.
+>(lft)モデル配列 SYS1 と SYS2 は互換性のある次元でなければなりません。
+<(lft)NU exceeds number of inputs of SYS1 or number of outputs of SYS2.
+>(lft)NU は SYS1 の入力数、あるいは SYS2 の出力数を超えました。
+<(lft)NY exceeds number of inputs of SYS2 or number of outputs of SYS1.
+>(lft)NY は SYS2 の入力数、あるいは SYS1 の出力数を超えました。
+
+%%  /toolbox/control/control/@lti/d2d.m
+<(d2d)D2D requires a discrete-time model.
+>(d2d)D2D は離散時間モデルが必要です。
+<(d2d)Last argument ND must be a vector of integers.
+>(d2d)最後の引数 ND は整数のベクトルでなければなりません。
+<(d2d)Length of ND must match number of inputs.
+>(d2d)ND の長さは入力数と一致しなければなりません。
+<(d2d)Sample time TS must be a positive scalar
+>(d2d)サンプル時間 TS は正のスカラでなければなりません。
+<(d2d)Sample time of resampled system is unspecified (Ts=-1).
+>(d2d)リサンプルしたシステムのサンプル時間が指定されていません (Ts=-1)。
+
+%%  /toolbox/control/control/@lti/balred.m
+<(balred)Approximation order cannot exceed the model order (%d).
+>(balred)近似次数はモデルの次数 (%d) を超えることはできません。
+<(balred)Approximation order will be at least %d (number of unstable poles).
+>(balred)近似次数は少なくとも %d (不安定な極の数) になります。
+<(balred)Approximation orders must be specified as a vector of positive integers.
+>(balred)近似次数は正の整数のベクトルが指定されなければなりません。
+<(balred)Approximations of order > %d may be inaccurate due to pole/zero cancellations.
+>(balred)次数 > %d の近似は、極/零点相殺により不正確になります。
+<(balred)Invalid value for balancing data structure.
+>(balred)データ構造体の平衡化に対する値が無効です。
+<(balred)Options must be specified in name/value pairs.
+>(balred)オプションは、名前/値 の組み合わせで指定しなければなりません。
+
+%%  /toolbox/control/control/@lti/exp.m
+<(exp)EXP can only be used for continuous-time models.
+>(exp)EXP は連続時間モデルでのみ使用できます。
+
+%%  /toolbox/control/control/@lti/frd.m
+<(frd)Cannot call FRD with several LTI arguments.
+>(frd)いくつかの LTI 引数をもつ FRD を呼び出すことはできません。
+<(frd)Frequency vector is required for conversion to FRD.
+>(frd)周波数ベクトルは FRD への変換に必要です。
+<(frd)Incorrect syntax for conversion to FRD. Try FRD(SYS,FREQ,'Units',UNITS).
+>(frd)FRD への変換に対するシンタックスが正しくありません。 FRD(SYS,FREQ,'Units',UNITS) を試してください。
+
+%%  /toolbox/control/control/@lti/lsim.m
+<(lsim)LSIM requires input and time vectors to be specified when using output arguments
+>(lsim)LSIM は出力引数を使用する場合、入力と時間ベクトルの指定が必要です。
+<(lsim)LSIM takes a single model when used with output arguments.
+>(lsim)LSIM は、出力引数と共に使用された場合、単一モデルを取ります。
+<(lsim)Simulation will start at the nonzero initial time T(1).
+>(lsim)シミュレーションは非ゼロの初期時間 T(1) で開始します。
+
+%%  /toolbox/control/control/@lti/pade.m
+<(pade)Model is discrete. Mapping all delays into poles at z=0.
+>(pade)モデルは離散です。 z=0 ですべての遅延を極にマッピングします。
+
+%%  /toolbox/control/control/@lti/mpower.m
+<(mpower)MPOWER is only applicable to models with the same number of inputs and outputs.
+>(mpower)MPOWER は、入力と出力の同じ数をもつモデルにのみ適用可能です。
+<(mpower)Power must be a scalar.
+>(mpower)Power はスカラでなければなりません。
+<(mpower)Power must be an integer.
+>(mpower)Power は整数でなければなりません。
+
+%%  /toolbox/control/control/@lti/mtimes.m
+<(mtimes)In SYS1*SYS2, SYS1 and SYS2 must have compatible I/O dimensions.
+>(mtimes)SYS1*SYS2 で、SYS1 と SYS2 は互換性のある I/O の次元でなければなりません。
+<(mtimes)In SYS1*SYS2, model arrays SYS1 and SYS2 must have compatible dimensions.
+>(mtimes)SYS1*SYS2 で、モデル配列 SYS1 と SYS2 は互換性のある次元でなければなりません。
+
+%%  /toolbox/control/control/@lti/plus.m
+<(plus)In SYS1+SYS2, SYS1 and SYS2 must have the same number of inputs and outputs.
+>(plus)SYS1+SYS2 で、SYS1 と SYS2 は、同じ入力と出力数でなければなりません。
+<(plus)In SYS1+SYS2, model arrays SYS1 and SYS2 must have compatible dimensions.
+>(plus)SYS1+SYS2 で、モデル配列 SYS1 と SYS2 は互換性のある次元でなければなりません。
+
+%%  /toolbox/control/control/@lti/margin.m
+<(margin)Can only plot margins for a single system.
+>(margin)単一システムに対する余裕のみプロット可能です。
+<(margin)MARGIN operates only on SISO models.
+>(margin)MARGIN は、SISO モデルでのみ機能します。
+<(margin)The closed-loop system is unstable.
+>(margin)閉ループシステムは不安定です。
+
+%%  /toolbox/control/control/@lti/pole.m
+<(pole)Computing poles with all internal delays set to zero.
+>(pole)すべての内部遅延が 0 に設定されている場合の極を計算中です。
+
+%%  /toolbox/control/control/@lti/norm.m
+<(norm)Only NORM(SYS,Inf) supported for FRD models.
+>(norm)NORM(SYS,Inf) のみ、FRD モデルでサポートされます。
+<(norm)Second argument should be 2 or inf.
+>(norm)2番目の引数は、2 または inf となる必要があります。
+
+%%  /toolbox/control/control/@lti/ss.m
+<(ss)Cannot call SS with several LTI arguments.
+>(ss)いくつかの LTI 引数をもつ SS を呼び出すことはできません。
+
+%%  /toolbox/control/control/@lti/ssdata.m
+<(ssdata)Not applicable to systems of class %s
+>(ssdata)クラス %s のシステムに適用できません。
+<(ssdata)Use [A,B,C,D] = ssdata(sys,'cell') for arrays of LTI models with varying order.
+>(ssdata)可変次数をもつ LTI モデルの配列に対して [A,B,C,D] = ssdata(sys,'cell') を使用してください。
+
+%%  /toolbox/control/control/@lti/series.m
+<(series)Index out of range in INPUTS2.
+>(series)INPUTS2 で範囲外のインデックスがあります。
+<(series)Index out of range in OUTPUTS1.
+>(series)OUTPUTS1 で範囲外のインデックスがあります。
+<(series)Length of INPUTS2 exceeds number of inputs in SYS2.
+>(series)INPUTS2 の長さが、SYS2 の入力数を超えました。
+<(series)Length of OUTPUTS1 exceeds number of outputs in SYS1.
+>(series)OUTPUTS1 の長さが、SYS1 の出力数を超えました。
+<(series)Vectors OUTPUTS1 and INPUTS2 must have matching lengths.
+>(series)ベクトル OUTPUTS1 と INPUTS2 は、一致する長さをもたなければなりません。
+
+%%  /toolbox/control/control/@lti/pvset.m
+<(pvset)I/O delays must be non negative numbers.
+>(pvset)I/O 遅延は非負の数でなければなりません。
+<(pvset)Input delays must be non negative numbers.
+>(pvset)入力遅延は非負の数でなければなりません。
+<(pvset)Not modifiable when internal delays cannot be expressed as I/O delays.
+>(pvset)内部遅延が I/O 遅延として表せない場合は修正できません。
+<(pvset)Output delays must be non negative numbers.
+>(pvset)出力遅延は非負の数でなければなりません。
+<(pvset)Sample time must be a real number.
+>(pvset)サンプル時間は実数でなければなりません。
+
+%%  /toolbox/control/control/@lti/tf.m
+<(tf)Cannot call TF with several LTI arguments.
+>(tf)いくつかの LTI 引数をもつ TF を呼び出すことはできません。
+
+%%  /toolbox/control/control/@lti/set.m
+<(set)First argument to SET must be a named variable.
+>(set)SET の1番目の引数は名前付き変数でなければなりません。
+<(set)Output argument allowed only in SET(SYS) or SET(SYS,Property).
+>(set)出力引数は SET(SYS) または SET(SYS,Property) 内でのみ受け入れられます。
+<(set)Property/value pairs must come in even number.
+>(set)プロパティ/値 の組み合わせは偶数でなければなりません。
+<(set)\nType "ltiprops %s" for more details.
+>(set)\n詳細については "ltiprops %s" をタイプしてください。
+
+%%  /toolbox/control/control/@lti/pvget.m
+<(pvget)Internal delays cannot be expressed as I/O delays.
+>(pvget)内部遅延は I/O 遅延として表せません。
+
+%%  /toolbox/control/control/@lti/stack.m
+<(stack)First argument must be a positive integer.
+>(stack)1番目の引数は正の整数でなければなりません。
+<(stack)I/O size mismatch.
+>(stack)I/O サイズが一致しません。
+<(stack)Sizes of stacked model arrays can only differ along array dimension #%d.
+>(stack)スタックされたモデル配列のサイズは、配列の次元 #%d に沿ってのみ異なります。
+
+%%  /toolbox/control/control/@lti/zero.m
+<(zero)Second output only available for SISO systems.
+>(zero)2番目の出力は SISO システムでのみ利用可能です。
+
+%%  /toolbox/control/control/@lti/step.m
+<(step)STEP takes a single model when used with output arguments.
+>(step)STEP は、出力引数と共に使用された場合、単一モデルを取ります。
+
+%%  /toolbox/control/control/@lti/sigma.m
+<(sigma)SIGMA takes a single model when used with output arguments.
+>(sigma)SIGMA は、出力引数と共に使用された場合、単一モデルを取ります。
+
+%%  /toolbox/control/control/@lti/times.m
+<(times)In SYS1.*SYS2, SYS1 and SYS2 must have the same I/O dimensions.
+>(times)SYS1.*SYS2 で、SYS1 と SYS2 は I/O と同じ次元でなければなりません。
+<(times)In SYS1.*SYS2, model arrays SYS1 and SYS2 must have compatible dimensions.
+>(times)SYS1.*SYS2 で、モデル配列 SYS1 と SYS2 は互換性のある次元でなければなりません。
+
+%%  /toolbox/control/control/@lti/zpk.m
+<(zpk)Cannot call ZPK with several LTI arguments.
+>(zpk)いくつかの LTI 引数をもつ ZPK を呼び出すことはできません。
+
+%%  /toolbox/control/control/@lti/pzmap.m
+<(pzmap)PZMAP takes a single model when used with output arguments.
+>(pzmap)PZMAP は、出力引数と共に使用された場合、単一モデルを取ります。
+
+%%  /toolbox/control/control/@lti/delay2z.m
+<(delay2z)Initial state mapping G is not available for model arrays.
+>(delay2z)初期状態マッピング G は、モデル配列には利用可能ではありません。
+
+%%  /toolbox/control/control/@lti/hsvplot.m
+<(hsvplot)Invalid HSVPLOT options.
+>(hsvplot)HSVPLOT オプションが無効です。
+<(hsvplot)Options must be specified as name/value pairs.
+>(hsvplot)オプションは、名前/値 の組み合わせで指定しなければなりません。
+
+%%  /toolbox/control/control/@lti/allmargin.m
+<(allmargin)Open-loop model SYS must be SISO.
+>(allmargin)開ループモデル SYS は SISO でなければなりません。
+
+%%  /toolbox/control/control/@lti/ctranspose.m
+<(ctranspose)Time delays makes pertransposed model non causal.
+>(ctranspose)時間遅延は、因果性のない pertransposed モデルになります。
+
+%%  /toolbox/control/control/@lti/feedback.m
+<(feedback)Algebraic loop. Closed-loop model is not proper.
+>(feedback)代数ループです。 閉ループモデルは適切ではありません。
+<(feedback)FEEDIN and FEEDOUT must be vectors of indices.
+>(feedback)FEEDIN と FEEDOUT は、インデックスのベクトルでなければなりません。
+<(feedback)FEEDIN indices are out of range
+>(feedback)FEEDIN インデックスは、範囲外です。
+<(feedback)FEEDOUT indices are out of range
+>(feedback)FEEDOUT インデックスは、範囲外です。
+<(feedback)Feedback channels FEEDIN and FEEDOUT must be compatible with I/O sizes of SYS2.
+>(feedback)フィードバックチャンネル FEEDIN と FEEDOUT は、SYS2 の I/O サイズと互換性がなければなりません。
+<(feedback)Feedback interconnection has a near-algebraic loop.
+>(feedback)フィードバック内部結合は、ほぼ代数ループになります。
+<(feedback)Named-based interconnection: All I/O names of SYS2 must have a match in SYS1.
+>(feedback)名前に基づく内部結合: SYS2 のすべての I/O 名は、SYS1 と一致しなければなりません。
+<(feedback)SYS1 and SYS2 must have compatible I/O sizes.
+>(feedback)SYS1 と SYS2 は互換性のある I/O サイズでなければなりません。
+
+%%  /toolbox/control/control/@lti/getDelayModel.m
+<(getDelayModel)Not available for model arrays.
+>(getDelayModel)モデル配列には利用可能ではありません。
+
+%%  /toolbox/control/control/@lti/horzcat.m
+<(horzcat)In [SYS1,SYS2], model arrays SYS1 and SYS2 must have compatible dimensions.
+>(horzcat)[SYS1,SYS2] で、モデル配列 SYS1 と SYS2 は互換性のある次元でなければなりません。
+
+%%  /toolbox/control/control/@lti/impulse.m
+<(impulse)IMPULSE takes a single model when used with output arguments.
+>(impulse)IMPULSE は、出力引数と共に使用された場合、単一モデルを取ります。
+
+%%  /toolbox/control/control/@lti/initial.m
+<(initial)INITIAL takes a single model when used with output arguments.
+>(initial)INITIAL は、出力引数と共に使用された場合、単一モデルを取ります。
+
+%%  /toolbox/control/control/@lti/initialplot.m
+<(initialplot)Initial condition X0 must be a vector of real numbers.
+>(initialplot)初期条件 X0 は、実数のベクトルでなければなりません。
+
+%%  /toolbox/control/control/@lti/nyquist.m
+<(nyquist)NYQUIST takes a single model when used with output arguments.
+>(nyquist)NYQUIST は、出力引数と共に使用された場合、単一モデルを取ります。
+
+%%  /toolbox/control/control/@lti/loadobj.m
+<(loadobj)Blanks in the input/output group names have been replaced with an underscore ('_').
+>(loadobj)入力/出力のグループ名の空白は、下線 ('_') で置き換えられました。
+% Cannot translate Group%d, which is part of path.
+%<(loadobj)Group%d
+%>(loadobj)グループ%d
+<(loadobj)Repeated channels in the input/output groups have been removed.
+>(loadobj)入出力グループ内の繰り返されるチャンネルは、削除されました。
+
+%%  /toolbox/control/control/@lti/lsimplot.m
+<(lsimplot)Input data U and initial condition X0 must be real valued.
+>(lsimplot)入力データ U と初期条件 X0 は実数値でなければなりません。
+
+%%  /toolbox/control/control/@lti/nichols.m
+<(nichols)NICHOLS takes a single model when used with output arguments.
+>(nichols)NICHOLS は、出力引数と共に使用された場合、単一モデルを取ります。
+
+%%  /toolbox/control/control/@lti/parallel.m
+<(parallel)Index out of range in INP1.
+>(parallel)INP1 で範囲外のインデックスがあります。
+<(parallel)Index out of range in INP2.
+>(parallel)INP2 で範囲外のインデックスがあります。
+<(parallel)Index out of range in OUT1.
+>(parallel)OUT1 で範囲外のインデックスがあります。
+<(parallel)Index out of range in OUT2.
+>(parallel)OUT2 で範囲外のインデックスがあります。
+<(parallel)Length of INP1 exceeds number of inputs in SYS1.
+>(parallel)INP1 の長さが、SYS1 の入力数を超えました。
+<(parallel)Length of INP2 exceeds number of inputs in SYS2.
+>(parallel)INP2 の長さが、SYS2 の入力数を超えました。
+<(parallel)Length of OUT1 exceeds number of outputs in SYS1.
+>(parallel)OUT1 の長さが、SYS1 の出力数を超えました。
+<(parallel)Length of OUT2 exceeds number of outputs in SYS2.
+>(parallel)OUT2 の長さが、SYS2 の出力数を超えました。
+<(parallel)Vectors INP1 and INP2 must have matching lengths.
+>(parallel)ベクトル INP1 と INP2 は、一致する長さをもたなければなりません。
+<(parallel)Vectors OUT1 and OUT2 must have matching lengths.
+>(parallel)ベクトル OUT1 と OUT2 は、一致する長さをもたなければなりません。
+<(parallel)Wrong number of arguments (must be 2, 3, or 6).
+>(parallel)引数の数に誤りがあります (2, 3, または 6 でなければなりません)。
+
+%%  /toolbox/control/control/@lti/rlocfind.m
+<(rlocfind)RLOCFIND must be used with SISO systems.
+>(rlocfind)RLOCFIND は、SISO システムで使用されなければなりません。
+
+%%  /toolbox/control/control/@lti/subsref.m
+<(subsref)Unknown reference type: %s
+>(subsref)不明なリファレンスタイプ: %s
+
+%%  /toolbox/control/control/@lti/vertcat.m
+<(vertcat)In [SYS1;SYS2], model arrays SYS1 and SYS2 must have compatible dimensions.
+>(vertcat)[SYS1;SYS2] で、モデル配列 SYS1 と SYS2 は互換性のある次元でなければなりません。
+
+%%  /toolbox/control/control/@lti/reshape.m
+<(reshape)Cannot reshape I/O dimensions. RESHAPE is only applicable to the array dimensions.
+>(reshape)I/O の次元を変形できません。 RESHAPE は、配列の次元にのみ適用可能です。
+<(reshape)In RESHAPE operations, the number of LTI models must not change.
+>(reshape)RESHAPE 操作で、LTI モデルの数は変更してはいけません。
+<(reshape)Not enough inputs.
+>(reshape)入力が足りません。
+
+%%  /toolbox/control/control/@lti/stepinfo.m
+<(stepinfo)STEPINFO does not take LTI arrays.
+>(stepinfo)STEPINFO は LTI 配列を取りません。
+
+%%  /toolbox/control/control/@lti/subsasgn.m
+<(subsasgn)Unknown type: %s
+>(subsasgn)不明なタイプ: %s
+
+%%  /toolbox/control/control/@lti/bandwidth.m
+<(bandwidth)BANDWIDTH is only applicable to SISO models.
+>(bandwidth)BANDWIDTH は、SISO モデルにのみ適用可能です。
+<(bandwidth)BANDWIDTH returns NaN for models with infinite DC gain.
+>(bandwidth)BANDWIDTH は、無限の DC ゲインをもつモデルに対して NaN を返します。
+<(bandwidth)Gain drop must be a real negative value expressed in dB.
+>(bandwidth)ゲインを下げるのは、dB で表現された実数の負の値でなければなりません。
+
+%%  /toolbox/control/control/@lti/connect.m
+<(connect)Output signal names cannot be repeated in the block diagram.
+>(connect)出力信号名は、ブロック線図内で繰り返すことはできません。
+<(connect)Some external inputs do not appear in any block.
+>(connect)いくつかの外部入力は、任意のブロックに現れません。
+<(connect)Some external outputs do not appear in any block.
+>(connect)いくつかの外部出力は、任意のブロックに現れません。
+<(connect)Some indices in row %d of Q are out of range.
+>(connect)Q の行 %d 内のいくつかのインデックスは、範囲外です。
+<(connect)Specified INPUTS/OUTPUTS indices are invalid or out of range.
+>(connect)指定した INPUTS/OUTPUTS インデックスは、無効か、あるいは範囲外です。
+
+%%  /toolbox/control/control/@lti/dssdata.m
+<(dssdata)Use [A,B,C,D,E] = dssdata(sys,'cell') for arrays of LTI models with varying order.
+>(dssdata)可変次数をもつ LTI モデルの配列に対して [A,B,C,D,E] = dssdata(sys,'cell') を使用してください。
+
+%%  /toolbox/control/control/@lti/stabsep.m
+<(stabsep)Absolute tolerance must be a scalar between 0 and 1.
+>(stabsep)絶対許容誤差は、0 と 1 の間のスカラでなければなりません。
+<(stabsep)Invalid mode value.
+>(stabsep)無効なモード値です。
+<(stabsep)Not supported for arrays of models.
+>(stabsep)モデルの配列に対してサポートされていません。
+<(stabsep)Offset must be a scalar value.
+>(stabsep)Offset はスカラでなければなりません。
+<(stabsep)Relative tolerance must be a scalar between 0 and 1.
+>(stabsep)相対許容誤差は、0 と 1 の間のスカラでなければなりません。
+
+%%  /toolbox/control/control/@lti/totaldelay.m
+<(totaldelay)Not applicable to systems with internal delays.
+>(totaldelay)内部遅延をもつシステムに適用できません。
+
+%%  /toolbox/control/control/@ss/canon.m
+<(canon)CANON is not applicable to models with more zeros then poles.
+>(canon)CANON は、零点より多い極をもつモデルに適用できません。
+<(canon)Canonical form must be specified as a string.
+>(canon)正準型は文字列で指定されなければなりません。
+<(canon)Not available for arrays of state-space models.
+>(canon)状態空間モデルの配列には利用可能ではありません。
+<(canon)System must be controllable from the first input.
+>(canon)システムは、1番目の入力から制御可能でなければなりません。
+<(canon)TYPE must be either 'modal' or 'companion'.
+>(canon)TYPE は 'modal' または 'companion' のいずれかでなければなりません。
+
+%%  /toolbox/control/control/@ss/estim.m
+<(estim)Index in KNOWN out of range.
+>(estim)KNOWN のインデックスは範囲外です。
+<(estim)Index in SENSORS out of range.
+>(estim)SENSORS のインデックスは範囲外です。
+<(estim)L must have as many rows as states and as many columns as measurements y.
+>(estim)L は状態と同じ行で、測定値 y と同じ列でなければなりません。
+<(estim)Not supported for arrays of state-space models.
+>(estim)状態空間モデルの配列に対してサポートされていません。
+<(estim)Not supported for continuous-time systems with delays.
+>(estim)遅延をもつ連続時間システムに対してサポートされていません。
+
+%%  /toolbox/control/control/@ss/modsep.m
+<(modsep)MODSEP is not supported for arrays of models.
+>(modsep)MODSEP は、モデルの配列に対してサポートされていません。
+<(modsep)Number of regions N must be a positive integer.
+>(modsep)領域数 N は、正の整数でなければなりません。
+
+%%  /toolbox/control/control/@ss/ss.m
+<(ss)Arrays A,B,C,D,E have incompatible dimensions.
+>(ss)配列 A,B,C,D,E は、次元と互換性がなければなりません。
+<(ss)Conversion from string to ss is not possible.
+>(ss)文字列から ss に変換することはできません。
+<(ss)First input must contain numerical data.
+>(ss)1番目の入力は数値データを含まなければなりません。
+<(ss)Too many LTI arguments or missing numerical data.
+>(ss)LTI の引数が多すぎるか、あるいは数値データが見つかりません。
+<(ss)Undefined C and D matrices.
+>(ss)C と D 行列が定義されていません。
+<(ss)Undefined D matrix.
+>(ss)D 行列が定義されていません。
+<(ss)Use SET to modify the properties of SS objects.
+>(ss)SS オブジェクトのプロパティを修正するには SET を使用してください。
+
+%%  /toolbox/control/control/@ss/gram.m
+<(gram)Computing gramians with all delays set to zero.
+>(gram)すべての遅延が 0 に設定されている場合のグラミアンを計算中です。
+<(gram)GRAM requires two input arguments.
+>(gram)GRAM は2つの入力引数が必要です。
+<(gram)Not applicable to arrays of models with variable number of states.
+>(gram)可変の状態数をもつモデルの配列に適用できません。
+<(gram)Second input must be either 'c' or 'o'.
+>(gram)2番目の入力は 'c' または 'o' のいずれかでなければなりません。
+
+%%  /toolbox/control/control/@ss/kalman.m
+<(kalman)Length of KNOWN and size of Qn should add up to the number of inputs in SYS.
+>(kalman)KNOWN の長さと Qn のサイズは、SYS の入力数に合わせる必要があります。
+<(kalman)NN must be a real matrix with as many rows as QN and as many columns as RN.
+>(kalman)NN は、同じ QN の行と、RN の列をもつ実数行列でなければなりません。
+<(kalman)Number of measurements y must be positive.
+>(kalman)測定値 y の数は、正でなければなりません。
+<(kalman)QN is not symmetric and has been replaced by (QN+QN')/2).
+>(kalman)QN は非対称で、(QN+QN')/2) で置き換えられました。
+<(kalman)QN must be a real square matrix with at most %d rows.
+>(kalman)QN は多くとも %d 行をもつ実数の正方行列でなければなりません。
+<(kalman)RN is not symmetric and has been replaced by (RN+RN')/2).
+>(kalman)RN は非対称で、(RN+RN')/2) で置き換えられました。
+<(kalman)RN must be a real square matrix with %d rows.
+>(kalman)RN は %d 行をもつ実数の正方行列でなければなりません。
+<(kalman)The covariance matrix\n
+>(kalman)共分散行列\n
+<(kalman)The matrix [G 0;H I]*[Qn Nn;Nn' Rn]*[G 0;H I]' should be positive semi-definite.
+>(kalman)行列 [G 0;H I]*[Qn Nn;Nn' Rn]*[G 0;H I]' は、半正定値にする必要があります。
+
+%%  /toolbox/control/control/@ss/kalmd.m
+<(kalmd)C and D must be nonempty.
+>(kalmd)C と D は空にはできません。
+<(kalmd)Cannot handle case with direct feedthrough from w to y.
+>(kalmd)w から y のダイレクトフィードスルーをもつケースを設定できません。
+<(kalmd)Qn is not symmetric and has been replaced by (Q+Q')/2).
+>(kalmd)Qn は非対称で、(Q+Q')/2) で置き換えられました。
+<(kalmd)Qn must be square with fewer columns than inputs in SYS.
+>(kalmd)Qn は SYS の入力より少ない列をもつ正方行列でなければなりません。
+<(kalmd)Rn is not symmetric and has been replaced by (R+R')/2).
+>(kalmd)Rn は非対称で、(R+R')/2) で置き換えられました。
+<(kalmd)Rn must be square with as many rows as measured outputs.
+>(kalmd)Rn は測定結果と同じ行をもつ正方行列でなければなりません。
+<(kalmd)The covariance matrix Rn must be positive definite.
+>(kalmd)共分散行列 Rn は、正定値でなければなりません。
+<(kalmd)Use KALMAN for discrete plants SYS.
+>(kalmd)離散プラント SYS に対して KALMAN を使用してください。
+
+%%  /toolbox/control/control/@ss/modred.m
+<(modred)Incorrect number of inputs.
+>(modred)入力数が正しくありません。
+<(modred)MODRED is not applicable to arrays of state-space models.
+>(modred)MODRED は、状態空間モデルの配列に適用できません。
+<(modred)Some index in ELIM is out of range or appears multiple times.
+>(modred)ELIM のいくつかのインデックスは範囲外か、あるいは複数回現れます。
+
+%%  /toolbox/control/control/@ss/lqg.m
+<(lqg)Not supported for systems with delays.
+>(lqg)遅延をもつシステムに対してサポートされていません。
+<(lqg)The QWV matrix must have %d rows and columns
+>(lqg)QWV 行列は %d 個の行と列をもたなければなりません。
+<(lqg)The QXU matrix must have %d rows and columns
+>(lqg)QXU 行列は %d 個の行と列をもたなければなりません。
+
+%%  /toolbox/control/control/@ss/lqgreg.m
+<(lqgreg)I-KMD is singular: "current" LQG regulator is non causal.
+>(lqgreg)I-KMD は特異値です: "現在の" LQG レギュレータは因果性がありません。
+<(lqgreg)Index in CONTROLS is out of range.
+>(lqgreg)CONTROLS のインデックスは範囲外です。
+<(lqgreg)K must have LENGTH(CONTROLS) rows.
+>(lqgreg)K は LENGTH(CONTROLS) 行をもたなければなりません。
+<(lqgreg)K must have as many columns as states of KEST.
+>(lqgreg)K は KEST の状態と同じ列をもたなければなりません。
+<(lqgreg)Kalman estimator KEST should have more outputs than states.
+>(lqgreg)Kalman 推定器 KEST は、状態より多くの出力をもたなければなりません。
+<(lqgreg)Not available for delay systems.
+>(lqgreg)遅延システムには利用可能ではありません。
+<(lqgreg)Row dimension of K exceeds input dimension of KEST.
+>(lqgreg)K の行の次元は、KEST の入力次元を超えています。
+<(lqgreg)The gain K must be a 2-D matrix.
+>(lqgreg)ゲイン K は2次元行列でなければなりません。
+
+%%  /toolbox/control/control/@ss/lqr.m
+<(lqr)The matrix [Q N;N' R] should be positive semi-definite.
+>(lqr)行列 [Q N;N' R] は半正定値である必要があります。
+<(lqr)The weight matrices Q, R, N must be real valued.
+>(lqr)重み付き行列 Q, R, N は、実数値でなければなりません。
+
+%%  /toolbox/control/control/@ss/lqry.m
+<(lqry)Q must be symmetric with as many rows as C.
+>(lqry)Q は C と同じ行をもち、対称でなければなりません。
+<(lqry)The D and N matrices must be the same size.
+>(lqry)D と N は同じサイズでなければなりません。
+<(lqry)The matrix R+D'*Q*D+N'*D+D'*N must be positive definite.
+>(lqry)行列 R+D'*Q*D+N'*D+D'*N は、正定値でなければなりません。
+<(lqry)[C D;0 I]'*[Q N;N' R]*[C D;0 I] should be positive semi-definite.
+>(lqry)[C D;0 I]'*[Q N;N' R]*[C D;0 I] は半正定値である必要があります。
+
+%%  /toolbox/control/control/@ss/reg.m
+<(reg)Combined length of KNOWN and CONTROLS exceeds input dimension of SYS.
+>(reg)KNOWN と CONTROLS の結合した長さが、SYS の入力次元を超えています。
+<(reg)Index in CONTROLS out of range.
+>(reg)CONTROLS のインデックスは範囲外です。
+<(reg)K must have as many rows as controls u and as many columns as states.
+>(reg)K はコントロール u と同じ行で、状態と同じ列でなければなりません。
+
+%%  /toolbox/control/control/@ss/size.m
+<(size)%s array of state-space models
+>(size)状態空間モデルの %s 配列
+<(size)Each model has %d output%s, %d input%s, and %d state%s.\n
+>(size)各モデルは %d 個の出力 %s、%d 個の入力 %s、%d 個の状態 %s をもちます。\n
+<(size)Each model has %d output%s, %d input%s, and between %d and %d states.\n
+>(size)各モデルは %d 個の出力 %s、%d 個の入力 %s、%d から %d 個の状態をもちます。\n
+<(size)Second input argument must be an integer or the string 'order.'
+>(size)2番目の入力引数は、整数か文字列 'order' でなければなりません。
+<(size)State-space model with %d output%s, %d input%s, and %d state%s.
+>(size)%d 個の出力 %s、%d 個の入力 %s、%d 個の状態 %s をもつ状態空間モデルです。
+
+%%  /toolbox/control/control/@ss/pvset.m
+<(pvset)%s\n%sStateName must be set to a 2D array of padded strings (like ['a' ; 'b' ; 'c'])or a cell vector of strings (like {'a' ; 'b' ; 'c'}).
+>(pvset)%s\n%sStateName は (['a' ; 'b' ; 'c'] のような) 付加された文字列の2次元配列か、あるいは ({'a' ; 'b' ; 'c'} のような) 文字列のセルのベクトルに設定されなければなりません。
+<(pvset)All cell entries of StateName must be single-line strings.
+>(pvset)StateName のすべてのセルの入力は、1行の文字列でなければなりません。
+<(pvset)Cannot modify the number of internal delays.
+>(pvset)内部遅延の数を修正できません。
+<(pvset)Internal delays must be non negative numbers.
+>(pvset)内部遅延は非負の数でなければなりません。
+
+%%  /toolbox/control/control/@ss/ssbal.m
+<(ssbal)SSBAL cannot be applied to state-space arrays with varying number of states.
+>(ssbal)SSBAL は、可変の状態数をもつ状態空間配列に適用できません。
+
+%%  /toolbox/control/control/@ss/ss2ss.m
+<(ss2ss)Not defined for state-space arrays with varying number of states.
+>(ss2ss)可変の状態数をもつ状態空間が定義されていません。
+<(ss2ss)State coordinate transformation T is close to singular or badly scaled.
+>(ss2ss)状態の座標変換 T は特異値に近いか、悪いスケーリングです。
+<(ss2ss)State coordinate transformation T is singular to working precision.
+>(ss2ss)状態の座標変換 T は作業精度に特異です。
+<(ss2ss)State coordinate transformation T must be a square 2D matrix.
+>(ss2ss)状態の座標変換 T は正方の2次元行列でなければなりません。
+<(ss2ss)State coordinate transformation T must have as many rows as states in the model.
+>(ss2ss)状態の座標変換 T は、モデルの状態と同じ行でなければなりません。
+
+%%  /toolbox/control/control/@ss/utBinOpExitCheck.m
+<(utBinOpExitCheck)Interconnection gives rise to delay-dependent state dynamics.
+>(utBinOpExitCheck)内部結合は遅延依存の状態ダイナミクスを発生させます。
+
+%%  /toolbox/control/control/@ss/augstate.m
+<(augstate)Only applicable to model arrays with uniform number of states.
+>(augstate)一定の状態数をもつモデル配列にのみ適用可能です。
+
+%%  /toolbox/control/control/@ss/balreal.m
+<(balreal)BALREAL is not applicable to arrays of LTI models.
+>(balreal)BALREAL は、LTI モデルの配列に適用できません。
+
+%%  /toolbox/control/control/@ss/display.m
+<(display)%s array of continuous-time state-space models.
+>(display)連続時間の状態空間モデルの %s 配列です。
+<(display)%s array of discrete-time state-space models.
+>(display)離散時間の状態空間モデルの %s 配列です。
+
+%%  /toolbox/control/control/@ss/minreal.m
+<(minreal)%d %s removed.
+>(minreal)%d 個の %s を削除しました。
+<(minreal)Syntax [MSYS,U]=MINREAL(SYS) is not available for arrays of state-space models.
+>(minreal)シンタックス [MSYS,U]=MINREAL(SYS) は、状態空間モデルには利用可能ではありません。
+<(minreal)Tolerance TOL must be real valued.
+>(minreal)許容誤差 TOL は実数値でなければなりません。
+
+%%  /toolbox/control/control/@ss/private/checkMatrixData.m
+<(checkMatrixData)Sparse matrix %s converted to full.
+>(checkMatrixData)スパース行列 %s はフルに変換されました。
+
+%%  /toolbox/control/control/@tf/tf.m
+<(tf)Call with single input requires a numeric array as input (static gains).
+>(tf)単一の入力を使った呼び出しは、入力 (静的なゲイン) として数値配列が必要です。
+<(tf)Cell arrays NUM and DEN have incompatible dimensions.
+>(tf)配列 NUM と DEN の呼び出しは、互換性のない次元をもっています。
+<(tf)Transfer function has complex coefficients.
+>(tf)伝達関数は複素係数をもちます。
+
+%%  /toolbox/control/control/@tf/size.m
+<(size)%s array of transfer functions
+>(size)伝達関数の %s 配列
+<(size)Each model has %d output%s and %d input%s.\n
+>(size)各モデルは %d 個の出力 %s と %d 個の入力 %s をもちます。\n
+<(size)Transfer function with %d output%s and %d input%s.
+>(size)%d 個の出力 %s と %d 個の入力 %s をもつ伝達関数です。
+
+%%  /toolbox/control/control/@tf/pvset.m
+<(pvset)Invalid value for Variable property.
+>(pvset)Variable プロパティに対する値が無効です。
+<(pvset)Variable property must be set to a string.
+>(pvset)Variable プロパティは文字列に設定されなければなりません。
+
+%%  /toolbox/control/control/@tf/utCheckSystem.m
+<(utCheckSystem)Variable %s cannot be used for continuous-time systems.
+>(utCheckSystem)Variable %s は連続時間システムで使用できません。
+<(utCheckSystem)Variable %s cannot be used for discrete-time systems.
+>(utCheckSystem)Variable %s は離散時間システムで使用できません。
+
+%%  /toolbox/control/control/@tf/display.m
+<(display)%s array of continuous-time transfer functions.
+>(display)連続時間の伝達関数の %s 配列です。
+<(display)%s array of discrete-time transfer functions.
+>(display)離散時間の伝達関数の %s 配列です。
+
+%%  /toolbox/control/control/@tf/private/checkNumDenData.m
+<(checkNumDenData)Denominators must be nonzero vectors.
+>(checkNumDenData)分母は非ゼロのベクトルでなければなりません。
+<(checkNumDenData)Numerator and denominator data must be numeric.
+>(checkNumDenData)分子と分母のデータは数値でなければなりません。
+<(checkNumDenData)Numerators and denominators must be specified as non-empty row vectors.
+>(checkNumDenData)分子と分母は空でない行ベクトルで指定されなければなりません。
+
+%%  /toolbox/control/control/@zpk/zpk.m
+<(zpk)Call with single input requires numeric array as input (static gain).
+>(zpk)単一の入力を使った呼び出しは、入力 (静的なゲイン) として数値配列が必要です。
+<(zpk)Cell arrays Z,P and double array K must have matching dimensions.
+>(zpk)セル配列 Z, P と double の配列 K は、次元が一致しなければなりません。
+<(zpk)Conversion from string to zpk is not possible.
+>(zpk)文字列から zpk に変換することはできません。
+<(zpk)Missing input K
+>(zpk)入力 K が見つかりません。
+<(zpk)Not all complex roots come in conjugate pairs (transfer function has complex coefficients).
+>(zpk)すべての複素根が共役組にはなりません (伝達関数が複素係数をもつ)。
+<(zpk)Use SET to modify the properties of ZPK objects.
+>(zpk)ZPK オブジェクトのプロパティを修正するには SET を使用してください。
+
+%%  /toolbox/control/control/@zpk/size.m
+<(size)%s array of zero-pole-gain models
+>(size)零点-極-ゲインモデルの %s 配列
+<(size)Zero-pole-gain model with %d output%s and %d input%s.
+>(size)%d 個の出力 %s と %d 個の入力 %s をもつ零点-極-ゲインモデルです。
+
+%%  /toolbox/control/control/@zpk/pvset.m
+<(pvset)Display "%s" is incompatible with variable %s
+>(pvset)Display "%s" は変数 %s と互換性がありません。
+<(pvset)Invalid value for DisplayFormat property.
+>(pvset)DisplayFormat プロパティに対する値が無効です。
+<(pvset)Property "DisplayFormat" must be set to a string.
+>(pvset)プロパティ "DisplayFormat" は文字列に設定されなければなりません。
+<(pvset)Property "Variable" must be set to a string.
+>(pvset)プロパティ "Variable" は文字列に設定されなければなりません。
+
+%%  /toolbox/control/control/@zpk/display.m
+<(display)%s array of continuous-time zero-pole-gain models.
+>(display)連続時間零点-極-ゲインモデルの %s 配列です。
+<(display)%s array of discrete-time zero-pole-gain models.
+>(display)離散時間零点-極-ゲインモデルの %s 配列です。
+
+%%  /toolbox/control/control/@zpk/private/checkZPKData.m
+<(checkZPKData)Gain data must be a numeric array.
+>(checkZPKData)ゲインデータは数値配列でなければなりません。
+<(checkZPKData)Zero and pole data must be free of Inf's or NaN's.
+>(checkZPKData)零点と極データには、Inf、または NaN があってはなりません。
+<(checkZPKData)Zero and pole data must be numeric.
+>(checkZPKData)零点と極データは数値でなければなりません。
+<(checkZPKData)Zero and pole data must be specified as vectors (SISO) or cell arrays of vectors (MIMO).
+>(checkZPKData)零点と極データは、ベクトル (SISO)、あるいはベクトルのセル配列 (MIMO) として指定されなければなりません。
+
+%%  /toolbox/control/control/private/arecheckin.m
+<(arecheckin)A and Q must be the same size.
+>(arecheckin)A と Q は同じサイズでなければなりません。
+<(arecheckin)E and A must be the same size.
+>(arecheckin)E と A は同じサイズでなければなりません。
+<(arecheckin)Q must be symmetric.
+>(arecheckin)Q は対称でなければなりません。
+<(arecheckin)R must be a square matrix with as many columns as the B matrix.
+>(arecheckin)R は B 行列と同じ列をもつ正方行列でなければなりません。
+<(arecheckin)R must be symmetric.
+>(arecheckin)R は対称でなければなりません。
+<(arecheckin)S and B must be the same size.
+>(arecheckin)S と B は同じサイズでなければなりません。
+
+%%  /toolbox/control/control/private/arecheckout.m
+<(arecheckout)Solution may be inaccurate due to poor scaling or eigenvalues near the stability boundary.
+>(arecheckout)解は、精度のよくないスケーリングか、あるいは安定境界に近い固有値により不正確になります。
+
+%%  /toolbox/control/control/@dynamicsys/plus.m
+<(plus)Group clash. All input groups deleted.
+>(plus)グループが衝突しています。 すべての入力グループが削除されました。
+<(plus)Group clash. All output groups deleted.
+>(plus)グループが衝突しています。 すべての出力グループが削除されました。
+<(plus)Name clash. All input names deleted.
+>(plus)名前が衝突しています。 すべての入力名が削除されました。
+<(plus)Name clash. All output names deleted.
+>(plus)名前が衝突しています。 すべての出力名が削除されました。
+
+%%  /toolbox/control/control/@dynamicsys/pvset.m
+<(pvset)All cell entries of %s must be single-line strings.
+>(pvset)%s のすべてのセルの入力は、1行の文字列でなければなりません。
+<(pvset)I/O names are not unique.
+>(pvset)I/O 名が固有ではありません。
+<(pvset)Name property expects a string value.
+>(pvset)Name プロパティは文字列値が必要です。
+<(pvset)Unexpected property name.
+>(pvset)予期せぬプロパティ名です。
+
+%%  /toolbox/control/control/@dynamicsys/subsasgn.m
+<(subsasgn)Input group clash. RHS groups ignored.
+>(subsasgn)入力のグループが衝突しています。 RHS グループが無視されました。
+<(subsasgn)Input name clash. Conflicting RHS names ignored.
+>(subsasgn)入力名が衝突しています。 競合する RHS 名が無視されました。
+<(subsasgn)Output group clash. RHS groups ignored.
+>(subsasgn)出力のグループが衝突しています。 RHS グループが無視されました。
+<(subsasgn)Output name clash. Conflicting RHS names ignored.
+>(subsasgn)出力名が衝突しています。 競合する RHS 名が無視されました。
+
+%%  /toolbox/control/control/@dynamicsys/subsref.m
+<(subsref)Some I/O names have been duplicated.
+>(subsref)いくつかの I/O 名が重複しています。
+
+%%  /toolbox/control/control/@dynamicsys/utAsgnCheck.m
+<(utAsgnCheck)Empty assignments SYS(i1,..,ik)=[] can have only one non-colon index.
+>(utAsgnCheck)空の代入 SYS(i1,..,ik)=[] は、1つのコロンでないインデックスのみもつことができます。
+<(utAsgnCheck)In empty assignment, number of indexes must match number of dimensions.
+>(utAsgnCheck)空の代入で、インデックスの数は、次元数と一致しなければなりません。
+<(utAsgnCheck)Index out of range in empty assignment.
+>(utAsgnCheck)空の代入で範囲外のインデックスがあります。
+<(utAsgnCheck)Logical subscript #%i has wrong length.
+>(utAsgnCheck)論理添字 #%i は間違った長さです。
+
+%%  /toolbox/control/control/@dynamicsys/utCheckSystem.m
+<(utCheckSystem)InputGroup channel indices are out of range.
+>(utCheckSystem)InputGroup チャンネルインデックスは、範囲外です。
+<(utCheckSystem)InputGroup channels cannot be repeated.
+>(utCheckSystem)InputGroup チャンネルは繰り返せません。
+<(utCheckSystem)InputGroup channels must be specified as row vectors of indices.
+>(utCheckSystem)InputGroup チャンネルは、インデックスの行ベクトルとして指定されなければなりません。
+<(utCheckSystem)Invalid value for InputGroup property.
+>(utCheckSystem)InputGroup プロパティに対する値が無効です。
+<(utCheckSystem)OutputGroup channel indices are out of range.
+>(utCheckSystem)OutputGroup チャンネルインデックスは、範囲外です。
+<(utCheckSystem)OutputGroup channels cannot be repeated.
+>(utCheckSystem)OutputGroup チャンネルは繰り返せません。
+<(utCheckSystem)OutputGroup channels must be specified as row vectors of indices.
+>(utCheckSystem)OutputGroup チャンネルは、インデックスの行ベクトルとして指定されなければなりません。
+
+%%  /toolbox/control/control/@dynamicsys/utMatchName.m
+<(utMatchName)All I/O names must be defined in named-based interconnections.
+>(utMatchName)すべての I/O 名は、名前に基づく内部結合で定義されなければなりません。
+
+%%  /toolbox/control/control/@dynamicsys/utNameRef.m
+<(utNameRef)Index #%d cannot be processed.
+>(utNameRef)インデックス #%d は処理できません。
+<(utNameRef)Multiple matches for channel name '%s'.
+>(utNameRef)チャンネル名 '%s' と複数一致します。
+<(utNameRef)Multiple matches for group name '%s'.
+>(utNameRef)グループ名 '%s' と複数一致します。
+<(utNameRef)Name reference '%s' matches both a channel and a group.
+>(utNameRef)名前の参照 '%s' は、チャンネルとグループの両方で一致します。
+<(utNameRef)Name-based index must be a nonempty string.
+>(utNameRef)名前に基づくインデックスは、空でない文字列でなければなりません。
+<(utNameRef)Unmatched name reference '%s'.
+>(utNameRef)名前の参照 '%s' が一致しません。
+<(utNameRef)Use cell vector of strings for channel or group names.
+>(utNameRef)チャンネル、またはグループ名に対する文字列のセルベクトルを使用してください。
+
+%%  /toolbox/control/control/@dynamicsys/utRefCheck.m
+<(utRefCheck)Logical subscript #%d has wrong length.
+>(utRefCheck)論理添字 #%d は間違った長さです。
+<(utRefCheck)Subscript #%d cannot be processed.
+>(utRefCheck)添字 #%d は処理できません。
+<(utRefCheck)Subscript #%d is out of range.
+>(utRefCheck)添字 #%d は範囲外です。
+
+%%  /toolbox/control/control/@dynamicsys/vertcat.m
+<(vertcat)Name clash. All input name(s) deleted.
+>(vertcat)名前が衝突しています。 すべての入力名が削除されました。
+
+%%  /toolbox/control/control/@dynamicsys/private/formatsubs.m
+<(formatsubs)Use multiple indexing for MIMO models or LTI arrays, as in SYS(i,j).
+>(formatsubs)SYS(i,j) のように、MIMO モデル、または LTI 配列で複数のインデックスを使用してください。
+
+%%%% After 11/23
+<()SISO Design Task
+>()SISO 設計作業
+
+
+%%%%% 7a %%%%%%
+%%toolbox\control\control/@frd/display.m
+<(display)Continuous-time frequency response.
+>(display)連続時間の周波数応答。
+<(display)Discrete-time frequency response.
+>(display)離散時間の周波数応答。
+<(display)Empty frequency response model.
+>(display)空の周波数応答モデル。
+
+%%toolbox\control\control/@frd/isstable.m
+<(isstable)Cannot assess stability of FRD models.
+>(isstable)FRD モデルの安定性を評価できません。
+
+%%toolbox\control\control/@frd/pade.m
+<(pade)Use DELAY2Z to absorb time delays into the frequency response data.
+>(pade)DELAY2Z を使用して周波数応答データに時間遅れを取り込んでください。
+
+%%toolbox\control\control/@lti/display.m
+<(display)Sampling time: unspecified
+>(display)サンプル時間: 指定なし
+
+%%toolbox\control\control/@lti/feedback.m
+<(feedback)Interconnection contains nearly singular algebraic loops.
+>(feedback)内部結合は特異値に近い代数ループを含んでいます。
+
+%%toolbox\control\control/@lti/freqresp.m
+<(freqresp)Frequency response is infinite at some frequencies due to poles on stability boundary.
+>(freqresp)周波数応答は、安定境界上に極があるため、いくつかの周波数で無限になります。
+
+%%toolbox\control\control/@lti/hsvplot.m
+<(hsvplot)HSVD is not applicable to models with more zeros than poles.
+>(hsvplot)HSVD は、極より多い零点をもつモデルに適用できません。
+<(hsvplot)Not supported for models with internal delays.
+>(hsvplot)内部遅延をもつモデルに対してサポートされていません。
+
+%%toolbox\control\control/@lti/isproper.m
+<(isproper)Second output not available for model arrays.
+>(isproper)2 番目の出力は、モデル配列には利用可能ではありません。
+
+%%toolbox\control\control/@lti/isstable.m
+<(isstable)Use STEP or IMPULSE to assess stability of models with internal delays.
+>(isstable)STEP または IMPULSE を使用して内部遅延をもつモデルの安定性を評価してください。
+
+%%toolbox\control\control/@lti/pole.m
+<(pole)Use POLE(DELAY2Z(SYS)) to compute the extended set of discrete poles.
+>(pole)POLE(DELAY2Z(SYS)) を使用して離散系の極の拡張した集合を計算してください。
+
+%%toolbox\control\control/@lti/private/utPIDGetPolygon.m
+<(utPIDGetPolygon)No line is defined.
+>(utPIDGetPolygon)定義されたラインはありません。
+
+%%toolbox\control\control/@lti/private/utPID_ParameterSpace.m
+<(utPID_ParameterSpace)Parameter space based PID tuning method currently does not support discrete system.
+>(utPID_ParameterSpace)PID 調整メソッドに基づくパラメータ空間は、現在離散系をサポートしません。
+<(utPID_ParameterSpace)Parameter space based PID tuning methods failed to find a stablizing controller.
+>(utPID_ParameterSpace)PID 調整メソッドに基づくパラメータ空間は、安定化コントローラを見つけられません。
+
+%%toolbox\control\control/@lti/private/utPID_SingularDiscrete.m
+<(utPID_SingularDiscrete)Singular frequency based PIDF tuning requires that N is greater than 2/Ts.
+>(utPID_SingularDiscrete)特異な周波数に基づく PIDF 調整は、N が 2/Ts より大きいことが必要です。
+
+%%toolbox\control\control/@lti/pvget.m
+<(pvget)See LTIPROPS for details.
+>(pvget)詳細については LTIPROPS を参照してください。
+
+%%toolbox\control\control/@lti/rlocfind.m
+<(rlocfind)Select a point in the graphics window
+>(rlocfind)グラフィックスウィンドウ内のポイントを選択してください。
+
+%%toolbox\control\control/@lti/utTuningIMC.m
+<(utTuningIMC)Closed loop system has been stabilized. However, the feedback controller is unstable.
+>(utTuningIMC)閉ループシステムは安定しています。しかし、フィードバックコントローラは不安定です。
+<(utTuningIMC)Dominant closed loop time constant has to be a positive real number.
+>(utTuningIMC)主要な閉ループの時定数は、正の実数でなければなりません。
+<(utTuningIMC)This tuning method failed to produce a stable feedback loop. Please adjust tuning settings or try another tuning method.
+>(utTuningIMC)この調整メソッドは、安定なフィードバックループを生成できません。設定を調整するか、別の調整メソッドを試してください。
+<(utTuningIMC)This tuning method requires a SISO LTI model.
+>(utTuningIMC)この調整メソッドは、SISO LTI モデルを必要とします。
+<(utTuningIMC)This tuning method requires a proper or biproper model.
+>(utTuningIMC)この調整メソッドは、プロパー、またはバイプロパーのモデルを必要とします。
+
+%%toolbox\control\control/@lti/utTuningLQG.m
+<(utTuningLQG)Available tuning preferences are: 'tracker' and 'regulator'.
+>(utTuningLQG)利用可能な調整設定: 'tracker', 'regulator'
+<(utTuningLQG)Exact tracking cannot be achieved for plants with fewer inputs than outputs.
+>(utTuningLQG)正確なトラッキングは、出力よりも少ない入力をもつプラントで実行できません。
+
+%%toolbox\control\control/@lti/utTuningPID.m
+<(utTuningPID)Available PID tuning methods are: 'parameter', 'zn_open', 'zn_closed' and 'imc'.
+>(utTuningPID)利用可能な PID 調整メソッド: 'parameter', 'zn_open', 'zn_closed', 'imc'
+<(utTuningPID)Available PID types are: 'p', 'pi', 'pid' or 'pidf'.
+>(utTuningPID)利用可能な PID タイプ: 'p', 'pi', 'pid', 'pidf' のいずれか
+<(utTuningPID)Available performance metrics are: 'IAE', 'ISE', 'ITAE' or 'ITSE'.
+>(utTuningPID)利用可能な性能の判定基準: 'IAE', 'ISE', 'ITAE', 'ITSE' のいずれか
+<(utTuningPID)Available tuning formulas are: 'ORIGINAL', 'LUYBEN' and 'ASTROM'.
+>(utTuningPID)利用可能な調整式: 'ORIGINAL', 'LUYBEN', 'ASTROM'
+<(utTuningPID)Available tuning preferences are: 'SETPOINT' and 'LOAD'.
+>(utTuningPID)利用可能な調整設定: 'SETPOINT', 'LOAD'
+<(utTuningPID)Derivative filter pole has to be a positive real number.
+>(utTuningPID)微分フィルタの極は、正の実数でなければなりません。
+<(utTuningPID)The closed loop system may be marginally stable.
+>(utTuningPID)閉ループシステムはわずかに安定する可能性があります。
+<(utTuningPID)This PID tuning method requires a asympototically stable model.
+>(utTuningPID)この PID 調整メソッドは、漸近安定なモデルを必要とします。
+<(utTuningPID)Tolerance for marginal stability test has to be a positive real number.
+>(utTuningPID)安定性テストに対する許容誤差は、正の実数でなければなりません。
+
+%%toolbox\control\control/@ltipack/@frddata/utCreateLTI.m
+<(utCreateLTI)Only supported for single LTI model.
+>(utCreateLTI)1 つの LTI モデルのみをサポートしています。
+
+%%toolbox\control\control/@ltipack/@frddata/utShowDelay.m
+<(utShowDelay)%sInput delays (listed by channel): %s
+>(utShowDelay)%s入力遅延 (チャンネルでリストされた): %s
+<(utShowDelay)%sOutput delays (listed by channel): %s
+>(utShowDelay)%s出力遅延 (チャンネルでリストされた): %s
+
+%%toolbox\control\control/@ltipack/@ltidata/utCheckPadeOrders.m
+<(utCheckPadeOrders)Specify the approximation orders NINT for internal delays instead.
+>(utCheckPadeOrders)代わりに内部遅延に対する近似次数 NINT を指定してください。
+
+%%toolbox\control\control/@ltipack/@ssdata/balreal.m
+<(balreal)BALREAL is not applicable to models with more zeros than poles.
+>(balreal)BALREAL は、極よりより多い零点をもつモデルに適用できません。
+
+%%toolbox\control\control/@ltipack/@ssdata/c2d.m
+<(c2d)Use ISPROPER to first extract an equivalent causal model.
+>(c2d)最初に等価な因果性のあるモデルを抽出するために ISPROPER を使用してください。
+<(c2d)Use ZOH or FOH methods for more accurate delay handling.
+>(c2d)より正確な遅延を扱うために ZOH または FOH を使用してください。
+<(c2d)ZOH, FOH, and IMP methods are not supported for models with more zeros than poles.
+>(c2d)ZOH, FOH, IMP メソッドは、極より多い零点をもつモデルに対してサポートされていません。
+
+%%toolbox\control\control/@ltipack/@ssdata/covar.m
+<(covar)COVAR is not applicable to models with more zeros than poles.
+>(covar)COVAR は、極より多い零点をもつモデルに適用できません。
+
+%%toolbox\control\control/@ltipack/@ssdata/d2c.m
+<(d2c)ZOH method is not supported for models with more zeros than poles.
+>(d2c)ZOH メソッドは、極より多い零点をもつモデルに対してサポートされていません。
+
+%%toolbox\control\control/@ltipack/@ssdata/d2d.m
+<(d2d)D2D is not supported for models with more zeros than poles.
+>(d2d)D2D は、極より多い零点をもつモデルに対してサポートされていません。
+
+%%toolbox\control\control/@ltipack/@ssdata/d2d.m
+<(dispsys)(d value when setting all internal delays to zero)\n
+>(dispsys)(すべての内部遅延を 0 に設定したときの d 値)\n
+<(dispsys)(a,b,c,d values when setting all internal delays to zero)\n
+>(dispsys)(すべての内部遅延を 0 に設定したときの a,b,c,d 値)\n
+<(dispsys)(a,b,c,d,e values when setting all internal delays to zero)\n
+>(dispsys)(すべての内部遅延を 0 に設定したときの a,b,c,d,e 値)\n
+
+%%toolbox\control\control/@ltipack/@ssdata/getABCD.m
+<(getABCD)No explicit form for state-space models with more zeros than poles.
+>(getABCD)極より多い零点をもつ状態空間モデルに対する明示的な形式がありません。
+
+%%toolbox\control\control/@ltipack/@ssdata/gram.m
+<(gram)Not supported for models with singular E matrix.
+>(gram)特異な E 行列をもつモデルに対してサポートされていません。
+<(gram)Singular algebraic loops when setting internal delays to zero.
+>(gram)内部遅延を 0 に設定した場合の特異な代数ループです。
+
+%%toolbox\control\control/@ltipack/@ssdata/normh2.m
+<(normh2)Cannot compute H2 norm for discrete-time models with more zeros than poles.
+>(normh2)極より多い零点をもつ離散時間モデルに対して H2 ノルムを計算できません。
+<(normh2)Cannot compute H2 norm for models with internal delays.
+>(normh2)内部遅延をもつモデルに対して H2 ノルムを計算できません。
+<(normh2)Improper system: H2 norm is infinite.
+>(normh2)プロパーでないシステム: H2 ノルムが無限です。
+
+%%toolbox\control\control/@ltipack/@ssdata/norminf.m
+<(norminf)Cannot compute L-infinity norm for models with internal delays.
+>(norminf)内部遅延をもつモデルでL-無限大ノルムを計算することができません。
+
+%%toolbox\control\control/@ltipack/@ssdata/pade.m
+<(pade)Pade approximation gives rise to singular algebraic loops.
+>(pade)パデ近似は特異な代数ループを発生させます。
+
+%%toolbox\control\control/@ltipack/@ssdata/private/getClosedLoop.m
+<(getClosedLoop)Feedback interconnection contains singular algebraic loops.
+>(getClosedLoop)フィードバック内部結合は、特異な代数ループを含んでいます。
+
+%%toolbox\control\control/@ltipack/@ssdata/utElimZeroDelay.m
+<(utElimZeroDelay)Model has singular algebraic loops.
+>(utElimZeroDelay)モデルは特異な代数ループをもちます。
+
+%%toolbox\control\control/@ltipack/@ssdata/utGetLoopData.m
+<(utGetLoopData)Unexpected failure of descriptor-to-explicit reduction.
+>(utGetLoopData)記述子の明示的な低次元化で予期せぬ失敗がありました。
+
+%%toolbox\control\control/@ltipack/@ssdata/zero.m
+<(zero)Use ZERO(DELAY2Z(SYS)) to compute the extended set of discrete zeros.
+>(zero)ZERO(DELAY2Z(SYS)) を使用して離散系の零点の拡張した集合を計算してください。
+
+%%toolbox\control\control/@ss/canon.m
+<(canon)CANON is not applicable to models with more zeros than poles.
+>(canon)CANON は、極より多い零点をもつモデルに適用できません。
+
+%%toolbox\control\control/@ss/display.m
+<(display)Continuous-time model.
+>(display)連続時間モデル
+<(display)Discrete-time model.
+>(display)離散時間モデル
+<(display)Empty state-space model.
+>(display)空の状態空間モデルです。
+<(display)Static gain.
+>(display)静的ゲインです。
+
+%%toolbox\control\control/@ss/private/checkMatrixData.m
+<(checkMatrixData)Invalid model: %s matrix contains Inf or NaN.
+>(checkMatrixData)無効なモデル: %s 行列は Inf または NaN を含んでいます。
+<(checkMatrixData)Invalid model: %s matrix must be a numeric array.
+>(checkMatrixData)無効なモデル: %s 行列は数値配列でなければなりません。
+
+%%toolbox\control\control/@ss/pvget.m
+<(pvget)Use SYS(:,:,k).InternalDelay to access or modify the delays of individual models.
+>(pvget)SYS(:,:,k).InternalDelay を使用して個々のモデルの遅延にアクセス、または修正してください。
+
+%%toolbox\control\control/@ss/pvset.m
+<(pvset)Cannot modify %s matrix when model has internal delays.
+>(pvset)モデルが内部遅延をもつ場合、%s 行列を修正できません。
+<(pvset)Use SYS(:,:,k).StateName to modify the state names of a particular model.
+>(pvset)SYS(:,:,k).StateName を使用して特定のモデルの状態名を修正してください。
+
+%%toolbox\control\control/@tf/display.m
+<(display)Empty transfer function.
+>(display)空の伝達関数です。
+
+%%toolbox\control\control/@zpk/display.m
+<(display)Empty zero-pole-gain model.
+>(display)空の零点/極/ゲインモデルです。
+
+%%toolbox\control\control/@zpk/utCheckSystem.m
+<(utCheckSystem)Display mode "%s" is incompatible with variable %s.
+>(utCheckSystem)表示モード "%s" は変数 %s と互換性がありません。
+
+%%toolbox\control\control/allmargin.m
+<(allmargin)Magnitude and phase arrays must have as many elements as frequency vector.
+>(allmargin)振幅と位相の配列は、周波数ベクトルと同じ要素をもたなければなりません。
+
+%%toolbox\control\control/delayss.m
+<(delayss)Delay values must be nonnegative integers.
+>(delayss)遅延値は非負の整数でなければなりません。
+<(delayss)Delay values must be nonnegative scalars.
+>(delayss)遅延値は非負のスカラでなければなりません。
+<(delayss)Delayed terms must be specified as a struct array with fields a, b, c, d, delay.
+>(delayss)遅れの項は、フィールド a, b, c, d, delay をもつ構造体配列で指定されなければなりません。
+<(delayss)Matrix size mismatch in A,B,C,D data.
+>(delayss)行列サイズは A,B,C,D データ内で一致していません。
+<(delayss)Matrix size mismatch in delayed term %d.
+>(delayss)行列サイズは遅れの項 %d 内で一致していません。
+
+%%toolbox\control\control/place.m
+<(place)Warning: Plant is real and K is complex
+>(place)警告: プラントは実数で、Ｋ は複素数です
+
+%%toolbox\control\control/sisotool.m
+<(sisotool)Load Error
+>(sisotool)読み込みエラー
+<(sisotool)Loaded session from file %s.mat
+>(sisotool)%s.mat から読み込まれたセッション
+<(sisotool)Selected MAT file does not contain a valid SISO Tool session.
+>(sisotool)選択した MAT ファイルは有効な SISO ツールのセッションを含んでいません。
+<(sisotool)Type HELP SISOTOOL for details.
+>(sisotool)詳細については HELP SISOTOOL とタイプしてください。
+
+%%toolbox\control\control/sumblk.m
+<(sumblk)All input signals must have the same width as the output signal.
+>(sumblk)すべての入力信号は、出力信号と同じ幅でなければなりません。
+<(sumblk)Input names must be specified as strings or cell array of strings.
+>(sumblk)入力名は文字列、または文字列のセル配列として指定されなければなりません。
+<(sumblk)OutputNames name(s) must be specified as a string or a cell array of strings.
+>(sumblk)OutputNames の名前は、文字列、または文字列のセル配列として指定されなければなりません。
+
+%%toolbox\control\control/@lti/hsvplot.m
+<(hsvplot)HSVD is not applicable to arrays of LTI models.
+>(hsvplot)HSVD は、LTI モデルの配列に適用できません。
+
+%%toolbox\control\control/@ltipack/@ssdata/utInvDiscretizeZOH.m
+<(utInvDiscretizeZOH)Cannot compute continuous-time equivalent for this internal delay structure.
+>(utInvDiscretizeZOH)この内部遅延の構成に対して等価な連続時間を計算できません。
+
+%%toolbox\control\control/@ltipack/utNoDelaySupport.m
+<(utNoDelaySupport)Not supported for models with internal delays.\nUse PADE to approximate delays.
+>(utNoDelaySupport)内部遅延をもつモデルに対してサポートされていません。\nPADE を使用して遅延を近似してください。
+<(utNoDelaySupport)Not supported for models with internal delays.\nUse DELAY2Z to absorb delays into model dynamics.
+>(utNoDelaySupport)内部遅延をもつモデルに対してサポートされていません。\nDELAY2Z を使用してモデルのダイナミクスに遅延を取り込んでください。
+<(utNoDelaySupport)Not supported for models with delays.\nUse PADE to approximate delays.
+>(utNoDelaySupport)遅延をもつモデルに対してサポートされていません。\nPADE を使用して遅延を近似してください。
+<(utNoDelaySupport)Not supported for models with delays.\nUse DELAY2Z to absorb delays into model dynamics.
+>(utNoDelaySupport)遅延をもつモデルに対してサポートされていません。\nDELAY2Z を使用してモデルのダイナミクスに遅延を取り込んでください。
+
+%% toolbox\control\control\@dynamicsys\display.m
+<(display)Name
+>(display)名前
+<(display)Channels
+>(display)チャンネル
+<(diaplay)Input groups:
+>(display)入力グループ:
+<(display)Output groups:
+>(display)出力グループ:
+
+%% toolbox\control\control\@zpk\display.m
+<(display)with w = (z-1)/Ts
+>(display)w = (z-1)/Ts
+<(display)with w = (z-1)
+>(display)w = (z-1)
+
+% control\control\@lti\utTuningPID.m
+<(utTuningPID)Frequency N has to be a positive real number.
+>(utTuningPID)周波数 N は、正の実数でなければなりません。
+
+%%  /toolbox/control/control/@lti/balred.m 
+<(balred)Minimum approximation order is %d (number of unstable poles).
+>(balred)最小の近似次数は %d です (不安定な極の数)。
+<(balred)Maximum approximation order is %d due to pole/zero cancellations.
+>(balred)最大の近似次数は、極/零点相殺のため %d です。
+
+

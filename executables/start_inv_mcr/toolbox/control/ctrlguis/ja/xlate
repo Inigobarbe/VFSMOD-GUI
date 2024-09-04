@@ -1,0 +1,2367 @@
+% Copyright 1999-2007 The MathWorks, Inc.
+%   $Revision: 1.21.4.23 $  $Date: 2007/06/07 14:36:56 $
+<(configax)Do you want to continue and remove these plots from the Viewer?
+>(configax)作業を続けて、Viewer からこれらのプロットを削除しますか ?
+<(configax)Response type
+>(configax)応答タイプ
+<(cstupdate)You must specify a model name to update.
+>(cstupdate)更新のためのモデル名を指定しなければなりません。
+<(cstupdate)You must open the model '%s' first before using cstupdate.
+>(cstupdate)cstupdate を使う前にまずモデル '%s' を開かなければなりません。
+%<(import)1 valid system imported
+%>(import)1つの有効なシステムがインポートされました。
+<(export)LTI Viewer Export
+>(export)LTI Viewer のエクスポート
+<(export)There are no systems to export.
+>(export)エクスポートするシステムがありません。
+<(export)Export Warning
+>(export)エクスポートの警告
+<(export)Export to Disk
+>(export)ディスクにエクスポート
+<(export)You must select some variables in the list box
+>(export)リストボックス内のいくつかの変数を選択しなければなりません。
+<(export)At least one of the items you are exporting to
+>(export)ワークスペースにエクスポートする項目の少なくとも1つが
+<(export)the workspace already exists.
+>(export)既に存在しています。
+<(export)Exporting will overwrite the existing variables.
+>(export)エクスポート操作は既存の変数を上書きします。
+<(export)Do you want to continue?
+>(export)続けますか ?
+<(export)Variable Name Conflict
+>(export)変数名の競合
+<(export)Invalid Export action
+>(export)無効なエクスポート操作
+<(export)Export List
+>(export)エクスポートリスト
+<(export)All
+>(export)すべて
+<(export)Export to Workspace
+>(export)ワークスペースにエクスポート
+<(importcomp)Import Warning
+>(importcomp)インポートの警告
+<(importcomp)MAT-file name:
+>(importcomp)MAT-ファイル:
+<(importfcn)The second input argument must be a valid figure handle.
+>(importfcn)2番目の入力引数は、有効な figure のハンドルでなければなりません。
+<(importfcn)Import file:
+>(importfcn)インポートするファイル:
+<(importfcn)You must enter a valid SISO LTI model or a scalar.
+>(importfcn)有効な SISO LTI モデル、またはスカラを入力しなければなりません。
+<(importfcn)LTI Blocks
+>(importfcn)LTI ブロック
+<(importfcn)Simulink Diagram:
+>(importfcn)Simulink ブロック線図:
+<(importfcn)A Simulink model with the same name is already open.
+>(importfcn)同じ名前をもつ Simulink モデルが既に開かれています。
+<(importfcn)Do you want to replace the open model with the specified model?
+>(importfcn)開いているモデルを指定したモデルと置き換えますか ?
+<(importfcn)Save %s before closing? 
+>(importfcn)閉じる前に %s を保存しますか ? 
+<(importfcn)Closing %s
+>(importfcn)%s を閉じています
+<(importfcn)LTI Block
+>(importfcn)LTI ブロック
+<(importfcn)One of the LTI Blocks contains an invalid LTI Object.
+>(importfcn)LTI ブロックの1つが、無効な LTI オブジェクトを含んでいます。
+<(importlti)Feedback Structure
+>(importlti)フィードバック構造
+<(importlti)Design Model
+>(importlti)設計モデル
+<(legdstr)Invalid color specification
+>(mxErr.uisetget)無効なカラー指定
+<(loopstruct)Feedback Structures
+>(loopstruct)フィードバック構造
+<(loopstruct)Compensator in the Forward path
+>(loopstruct)フォワードパスの補償器
+<(loopstruct)Compensator in the Feedback path
+>(loopstruct)フィードバックパスの補償器
+<(loopstruct)Select a configuration
+>(loopstruct)設定の選択
+<(ltibrowse)Select the systems to import
+>(ltibrowse)インポートするシステムの選択
+<(ltibrowse)Select the systems to delete
+>(ltibrowse)削除するシステムの選択
+<(ltibrowse)Invalid Type in call to LTIBROWSE.
+>(ltibrowse)LTIBROWSE への呼び出しのタイプが無効です。
+<(ltibrowse)LTI Browser
+>(ltibrowse)LTI ブラウザ
+<(ltibrowse)Class
+>(ltibrowse)クラス
+<(ltibrowse)Help
+>(ltibrowse)ヘルプ
+<(ltibrowse)Name
+>(ltibrowse)名前
+<(ltibrowse)Size
+>(ltibrowse)サイズ
+<(paramsel)Model Selector for LTI Arrays
+>(paramsel)LTI 配列のモデルセレクタ
+<(paramsel)Selection Criteria
+>(paramsel)選択基準
+<(paramsel)Index into Dimensions
+>(paramsel)次元のインデックス
+<(paramsel)Bound on Characteristics
+>(paramsel)特性の範囲
+<(paramsel)Show selected plots
+>(paramsel)選択プロットの表示
+<(paramsel)Please enter a valid MATLAB expression for range
+>(paramsel)範囲に対する有効な MATLAB 式を入力してください
+<(paramsel)Model Selector Warning
+>(paramsel)モデルセレクタの警告
+<(paramsel)Values must be between 1 and 
+>(paramsel)値は 1 との間でなければなりません
+<(paramsel)Enter a MATLAB expression using '$' to refer to the 
+>(paramsel)注目する変数 (定常状態、立ち上がり時間,...) を参照するために、
+<(paramsel)variable of  interest (steady-state, rise time, ...). For example: $>2 & $ <5.
+>(paramsel)'$' を使って MATLAB 式を入力してください。 例: $>2 & $ <5
+<(paramsel) See help for more examples.
+>(paramsel) 例はヘルプを参照してください。
+<(paramsel)Show selected plot(s)
+>(paramsel)選択したプロットの表示
+<(paramsel)See Help for more examples.
+>(paramsel)例はヘルプを参照してください。
+<(paramsel)The previously selected models are still shown.
+>(paramsel)前回選択したモデルがまだ表示されています。
+<(paramsel)Press Apply or OK to map the selection criteria to this Response Type.
+>(paramsel)この応答タイプに選択基準をマッピングするには、適用、または OK を押してください。
+<(paramsel)Peak Response
+>(paramsel)ピーク応答
+<(paramsel)Settling Time (Sec)
+>(paramsel)整定時間 (秒)
+<(paramsel)Rise Time (Sec)
+>(paramsel)立ち上がり時間 (秒)
+<(paramsel)Steady State
+>(paramsel)定常状態
+<(paramsel)Selection Criterion Setup
+>(paramsel)選択基準の設定
+<(paramsel)show all
+>(paramsel)すべて表示
+<(paramsel)show selected
+>(paramsel)選択を表示
+<(paramsel)hide selected
+>(paramsel)選択を隠す
+<(paramsel)Error while evaluating 
+>(paramsel)評価中にエラーが発生
+<(paramsel) constraint.. no selection was applied.
+>(paramsel) .. 選択は適用されていません。
+<(paramsel)  Expression must use $ to reference 
+>(paramsel)  式は参照のために $ を使わなければなりません。
+<(paramsel)Size of expression does not match array dimensions.
+>(paramsel)式のサイズは配列の次元と一致しません。
+<(paramsel) Stability margins are not calculated for FRD's.
+>(paramsel) 安定余裕は FRD に対して計算されません。
+<(paramsel)Selection resulted in %d visible model(s).%s
+>(paramsel)選択は %d 個のモデルの表示を行いました。 %s
+<(paramsel)Gain Margin
+>(paramsel)ゲイン余裕
+<(paramsel)Phase Margin
+>(paramsel)位相余裕
+<(paramsel)Phase
+>(paramsel)位相
+<(paramsel)Mismatched parentheses.
+>(paramsel)括弧が一致しません。
+<(paramsel)Use multiple indexing for MIMO models or LTI arrays, as in $(i,j).
+>(paramsel)$(i,j) のように、MIMO モデル、または LTI 配列で複数のインデックスを使用してください。
+<(paramsel)Show unselected plot(s)
+>(paramsel)非選択プロットの表示
+<(plotmarg) Hertz
+>(plotmarg) ヘルツ
+<(plotmarg) rad/sec
+>(plotmarg) ラジアン/秒
+<(plotmarg) deg.
+>(plotmarg) 度.
+<(plotmarg) rad.
+>(plotmarg) ラジアン.
+<(plotmarg)System: 
+>(plotmarg)システム: 
+<(plotmarg)Frequency: 
+>(plotmarg)周波数: 
+<(plotmarg)Frequency
+>(plotmarg)周波数
+<(plotmarg)Frequency:
+>(plotmarg)周波数:
+<(respfcn)I/O Selector: %s
+>(respfcn)I/O セレクタ: %s
+<(respfcn)Stability Margins(Minimum only)
+>(respfcn)安定余裕 (最小値のみ)
+<(respfcn)Stability Margins(All crossings)
+>(respfcn)安定余裕 (すべてのクロッシング)
+<(respfcn)I/O channel selection is not available for SISO models
+>(respfcn)I/O チャンネルの選択は SISO モデルには利用可能ではありません。
+<(respfcn)I/O selection warning
+>(respfcn)I/O 選択の警告
+<(respfcn)I/O channel selection is not available for the current response type
+>(respfcn)I/O チャンネルの選択は、現在の応答タイプには利用できません
+<(respfcn)[ all ]
+>(respfcn)[ すべて ]
+<(respfcn)Rise Time: Inf (unstable)
+>(respfcn)立ち上がり時間: Inf (不安定)
+<(respfcn)Rise Time: %0.3g
+>(respfcn)立ち上がり時間: %0.3g
+<(respfcn)Rise Time: N/A
+>(respfcn)立ち上がり時間: N/A
+<(respfcn)Settling Time: Inf (unstable)
+>(respfcn)整定時間: Inf (不安定)
+<(respfcn)Settling Time: > %0.3g
+>(respfcn)整定時間: > %0.3g
+<(respfcn)Settling Time: %0.3g
+>(respfcn)整定時間: %0.3g
+<(respfcn)DC gain: Inf (unstable)
+>(respfcn)DC ゲイン: Inf (不安定)
+<(respfcn)DC gain: %0.3g
+>(respfcn)DCゲイン: %0.3g
+<(rguifcn)Wrong number of input arguments for "AddSystems" action.
+>(rguifcn)"AddSystems" アクションの入力引数の数に誤りがあります。
+<(rguifcn)The following systems already exist in the LTI Viewer:
+>(rguifcn)つぎのシステムは、既に LTI Viewer 内に存在します。
+<(rguifcn)Do you want to overwrite the old values of these systems
+>(rguifcn)これらのシステムの古い値を新しいバージョンに
+<(rguifcn)with the newer versions?
+>(rguifcn)上書きしますか ?
+<(rguifcn)Updating the LTI Viewer
+>(rguifcn)LTI Viewer の更新中
+<(rguifcn)Sampling time: 
+>(rguifcn)サンプル時間: 
+<(rguifcn) to 
+>(rguifcn) -
+<(rguifcn)Wrong number of input arguments for "SwitchPlot" callback.
+>(rguifcn)"SwitchPlot" コールバックの入力引数の数に誤りがあります。
+<(rguifcn)from the command line using the LSIM or INITIAL plot type.
+>(rguifcn)LSIM または INITIAL プロットタイプを使ってコマンドラインから
+<(rguifcn)Select the systems to export.
+>(rguifcn)エクスポートするシステムを選択してください。
+<(rguifcn)The following systems have a different number 
+>(rguifcn)つぎのシステムは、現在表示されているものと
+<(rguifcn)of inputs and/or outputs than those currently displayed
+>(rguifcn)入力および/または出力の数が異なります
+<(rguifcn)Select the systems to remove from the LTI Viewer.
+>(rguifcn)LTI Viewer から削除するシステムを選択してください。
+%<(rguifcn)LTI Viewer
+%>(rguifcn)LTI Viewer
+<(rguifcn)%s\nSampling time: %s
+>(rguifcn)%s\nサンプル時間: %s
+<(rguipopts)Linestyle Preferences
+>(rguipopts)ラインスタイル設定
+<(rguipopts)Color Order
+>(rguipopts)カラーの順番
+<(rguipopts)Marker Order
+>(rguipopts)マーカーの順番
+<(rguipopts)Linestyle Order
+>(rguipopts)ラインスタイルの順番
+<(rguipopts)Distinguish by:
+>(rguipopts)区別:
+<(rguiropts)Plot Option
+>(rguiropts)プロットオプション
+<(rguiropts) Absolute
+>(rguiropts) 絶対値
+<(rguiropts) Radians
+>(rguiropts) ラジアン
+<(rguiropts) Degrees
+>(rguiropts) 度
+<[rguiropts](rguiropts)to
+>[rguiropts](rguiropts)-
+<(rguiropts)Line Styles
+>(rguiropts)ラインスタイル
+<(rguizfcn)Invalid GUI action (guiAction) specified.
+>(rguizfcn)指定した GUI のアクション (guiAction) が無効です。
+<(rguizfcn)Zoom does not work for axes in a 3D view.
+>(rguizfcn)ズームは、3次元表示の座標軸で機能しません。
+<(rguizfcn)Zoom user data not found.  This should never happen!
+>(rguizfcn)ズームのユーザデータが見つかりません。 これは決して行われません !
+<(rguizfcn)Axis limits cannot be zoomed any further!
+>(rguizfcn)軸の範囲をこれ以上ズームできません !
+<(rguizfcn)Attempt to push axes onto zoom stack while zoom is inactive.\n
+>(rguizfcn)ズームがアクティブでない間にズームのスタック上に座標軸を入れようとしました。\n
+<(rguizfcn)No action taken.
+>(rguizfcn)操作は行われません。
+<(rguizfcn)Invalid axis limits.
+>(rguizfcn)軸の範囲が無効です。
+<(rguizfcn)Invalid zoomMode.
+>(rguizfcn)zoomMode が無効です。
+<(rguizfcn)Function must be a string
+>(rguizfcn)関数は文字列でなければなりません。
+<(rguizfcn)Attempt to set buttonfcn while zoom is inactive.\n
+>(rguizfcn)ズームがアクティブでない間に buttonfcn を設定しようとしました。\n
+<(rguizfcn)Zoom must be active in order to set axes groups.
+>(rguizfcn)座標軸のグループを設定するために、ズームはアクティブでなければなりません。
+<(rguizfcn)Axes groups must be cell arrays
+>(rguizfcn)座標軸のグループはセル配列でなければなりません。
+<(rguizfcn)Groups must be either a scalar or vector cell array.
+>(rguizfcn)グループは、スカラ、またはベクトルのセル配列のいずれかでなければなりません。
+<(rguizfcn)Invalid axes group.
+>(rguizfcn)座標軸のグループが無効です。
+<(rguizfcn)Invalid group type.
+>(rguizfcn)グループタイプが無効です。
+<(rguizoom)This action requires 3 input arguments
+>(rguizoom)このアクションは、3つの入力引数が必要です。
+<(rguizoom)Action must be a string
+>(rguizoom)アクションは文字列でなければなりません。
+<(rguizoom)Unsupported 3 argument action.
+>(rguizoom)3つの引数のアクションはサポートされません。
+<(rguizoom)Handle must be a valid axes handle.
+>(rguizoom)ハンドルは有効な座標軸のハンドルでなければなりません。
+<(rguizoom)Invalid zoom action.
+>(rguizoom)ズームアクションが無効です。
+%<(rlfcn)!    to be consistent with the plant
+%>(rlfcn)!    離散化されました
+%<(rlfcn)!!    to be consistent with the plant
+%>(rlfcn)!!    リサンプリングされました
+<(configax)impulse
+>(configax)インパルス
+<(configax)step
+>(configax)ステップ
+<(configax)bode
+>(configax)ボード
+<(configax)nyquist
+>(configax)ナイキスト
+<(configax)nichols
+>(configax)ニコルス
+<(configax)sigma
+>(configax)特異値
+<(rguiopts)Apply
+>(rguiopts)適用
+<(rguiopts)Cancel
+>(rguiopts)キャンセル
+<(rguiopts)Color
+>(rguiopts)色
+<(rguiopts)Linestyle
+>(rguiopts)ラインスタイル
+<(rguiopts)LineWidth
+>(rguiopts)ライン幅
+<(rguiopts)Marker
+>(rguiopts)マーカー
+<(rguiopts)MarkerSize
+>(rguiopts)マーカーサイズ
+<(rguiopts)Select...
+>(rguiopts)選択
+<(rguiopts)dashed
+>(rguiopts)破線
+<(rguiopts)dash-dot
+>(rguiopts)鎖線
+<(rguiopts)dotted
+>(rguiopts)点線
+<(rguiopts)none
+>(rguiopts)なし
+<(rguiopts)solid
+>(rguiopts)実線
+<(rguiopts)square
+>(rguiopts)四角形
+<(rguiopts)Systems
+>(rguiopts)システム
+<(rguiopts)Inputs
+>(rguiopts)入力
+<(rguiopts)Outputs
+>(rguiopts)出力
+<(rguiopts)Channels
+>(rguiopts)チャンネル
+<(rguiopts)blue
+>(rguiopts)青
+<(rguiopts)green
+>(rguiopts)緑
+<(rguiopts)red
+>(rguiopts)赤
+<(rguiopts)cyan
+>(rguiopts)水色
+<(rguiopts)magenta
+>(rguiopts)紫
+<(rguiopts)black
+>(rguiopts)黒
+<(rguiopts)yellow
+>(rguiopts)黄色
+<[rguipopts](rguipopts)No
+>(rguipopts)なし
+<[rguipopts](rguipopts)Distinction
+>(rguipopts)識別
+<(rguifcn)Axis
+>(rguifcn)軸
+<(compframe)Current Compensator
+>(compframe)現在の補償器
+<(rguihelper)System: %s(:,:%s)
+>(rguihelper)システム: %s(:,:%s)
+<(rguihelper)System: %s
+>(rguihelper)システム: %s
+<(rguihelper)System: %s(%d,:%s)
+>(rguihelper)システム: %s(%d,:%s)
+<(rguihelper)System: %s(%d,:)
+>(rguihelper)システム: %s(%d,:)
+<(rguihelper)System: %s(%d,%d%s)
+>(rguihelper)システム: %s(%d,%d%s)
+<(rguihelper)System: %s(%d,%d)
+>(rguihelper)システム: %s(%d,%d)
+<(rguifcn)%s\nI/O: %s to %s
+>(rguifcn)%s\nI/O: %s - %s
+<()Freq
+>()周波数
+% note that there is a space after Open-Loop in English but not in Japanese
+<(nicplot)Open-Loop Gain (%s)
+>(nicplot)開ループゲイン (%s)
+<(nicplot)Open-Loop Phase (%s)
+>(nicplot)開ループ位相 (%s)
+<(linescan)FontSize
+>(linescan)フォントサイズ
+<(linescan)Alignment
+>(linescan)配置
+<(linescan)Top-Right
+>(linescan)右上
+<(linescan)Top-Left
+>(linescan)左上
+<(linescan)Bottom-Right
+>(linescan)右下
+<(linescan)Bottom-Left
+>(linescan)左下
+<(linescan)Interpolation
+>(linescan)補間
+<(linescan)None
+>(linescan)なし
+<(linescan)Linear
+>(linescan)線形
+<(rguifcn)system
+>(rguifcn)システム
+<(paramsel)To view the %d selected model(s), check the system's name 
+>(paramsel)%d の選択したモデルを表示するには、応答座標軸を右クリックして
+<(paramsel)in the response axes'' right-click menu. 
+>(paramsel)メニュー内のシステム名をチェックしてください。 
+<(paramsel)Arrays:
+>(paramsel)配列:
+<(paramsel)Peak Response%s
+>(paramsel)ピーク応答%s
+<(paramsel)Gain Margin%s
+>(paramsel)ゲイン余裕%s
+<(paramsel)Phase Margin%s
+>(paramsel)位相余裕%s
+
+% stats
+
+<(configax)Change the number and type of response plots shown in this LTI Viewer.
+>(configax)この LTI Viewer 内に表示されている応答プロットの数とタイプを変更してください。
+<(linescan)Drag data marker to new location.
+>(linescan)データマーカーを新規の場所にドラッグしてください。
+<(linescan)Data marker deleted.
+>(linescan)データマーカーを削除しました。
+<(linescan)%d data markers deleted.
+>(linescan)%d 個のデータマーカーを削除しました。
+<(rguifcn)Import canceled.
+>(rguifcn)インポートをキャンセルしました。
+<(rguifcn)No valid systems imported
+>(rguifcn)インポートされた有効なシステムはありません
+<(rguifcn)1 valid system imported
+>(rguifcn)1つの有効なシステムをインポートしました
+<(rguifcn)%0.3g valid systems imported
+>(rguifcn)%0.3g の有効なシステムをインポートしました
+<(rguifcn)%s, 1 invalid system skipped.
+>(rguifcn)%s, 1つの無効なシステムをスキップしました。
+<(rguifcn)%s, %0.3g invalid systems skipped.
+>(rguifcn)%s, %0.3g の無効なシステムをスキップしました。
+<(rguifcn)No systems deleted.
+>(rguifcn)削除されたシステムはありません。
+<(rguifcn)1 system deleted.
+>(rguifcn)1つのシステムを削除しました。
+<(rguifcn)%0.3g systems deleted.
+>(rguifcn)%0.3g のシステムを削除しました。
+<(rguipopts)Change the line styles shown in this LTI Viewer.
+>(rguipopts)この LTI Viewer に表示されているラインスタイルを変更してください。
+<(hoverfig)Left-click to make this data marker persistent.
+>(hoverfig)このデータマーカーを保つには左クリックしてください。
+<(hoverfig)Left-click and drag to select region to magnify.
+>(hoverfig)拡大した領域を選択するには、左クリックでドラッグしてください。
+<(hoverfig)Left-click and drag to move data marker to new location.
+>(hoverfig)データマーカーを新規の場所に移動するには、左クリックでドラッグしてください。
+<(hoverfig)%s.  Left-click to add a data marker to this line.
+>(hoverfig)%s.  データマーカーをこのラインに追加するには左クリックしてください。
+<(hoverfig)Right-click for data marker options.
+>(hoverfig)データマーカーオプションについては右クリックしてください。
+%
+%<(ctrlgui.linescan)FontSize
+%>(ctrlgui.linescan)フォントサイズ
+%<(ctrlgui.linescan)Alignment
+%>(ctrlgui.linescan)配置
+%<(ctrlgui.linescan)Top-Right
+%>(ctrlgui.linescan)右上
+%<(ctrlgui.linescan)Top-Left
+%>(ctrlgui.linescan)左上
+%<(ctrlgui.linescan)Bottom-Right
+%>(ctrlgui.linescan)右下
+%<(ctrlgui.linescan)Bottom-Left
+%>(ctrlgui.linescan)左下
+%<(ctrlgui.linescan)Interpolation
+%>(ctrlgui.linescan)補間
+%<(ctrlgui.linescan)None
+%>(ctrlgui.linescan)無し
+%<(ctrlgui.linescan)Linear
+%>(ctrlgui.linescan)線形
+<(ctrlgui.linescan)Raise
+>(ctrlgui.linescan)表示を保つ
+<(ctrlgui.linescan)Delete
+>(ctrlgui.linescan)削除
+%
+<(refresh)Continue
+>(refresh)継続
+<(refresh)Refreshing systems...
+>(refresh)システムのリフレッシュ
+<(refresh)The following systems have a different number of
+>(refresh)つぎのシステムは、現在表示されているものと
+<(refresh)inputs and/or outputs than those currently displayed:
+>(refresh)入力および/または出力の数が異なります:
+<(refresh)These systems will not be imported.
+>(refresh)これらのシステムはインポートされません。
+<(refresh)The following systems are no longer in the workspace:
+>(refresh)つぎのシステムはワークスペース内にありません:
+<(refresh)Do you want to remove these systems from the LTI Viewer?
+>(refresh)LTI Viewer からこれらのシステムを削除しますか ?
+<(refresh)Removing old systems...
+>(refresh)古いシステムの削除中
+<(refresh)The following systems have changed in the workspace:
+>(refresh)つぎのシステムはワークスペース内で変更されました:
+<(refresh)Do you want to reflect these changes in the LTI Viewer?
+>(refresh)これらの変更を LTI Viewer に反映させますか ?
+<(refresh)Refresh canceled.
+>(refresh)リフレッシュがキャンセルされました。
+<(refresh)All systems now reflect the current Workspace values.
+>(refresh)すべてのシステムはカレントのワークスペース値を反映しています。
+<(refresh)Yes
+>(refresh)はい
+<(refresh)No
+>(refresh)いいえ
+%
+<(startupdlg)Do not show me this again
+>(startupdlg)次回から表示しない
+<(startupdlg)Close
+>(startupdlg)閉じる
+<(viewimportfcn)Systems in Workspace
+>(viewimportfcn)ワークスペース内のシステム
+<(ltiplottypes)Step
+>(ltiplottypes)ステップ
+<(ltiplottypes)Impulse
+>(ltiplottypes)インパルス
+<(ltiplottypes)Linear Simulation
+>(ltiplottypes)線形シミュレーション
+<(ltiplottypes)Initial Condition
+>(ltiplottypes)初期条件
+<(ltiplottypes)Bode
+>(ltiplottypes)ボード線図
+<(ltiplottypes)Bode Magnitude
+>(ltiplottypes)ボードゲイン
+<(ltiplottypes)Nyquist
+>(ltiplottypes)ナイキスト線図
+<(ltiplottypes)Nichols
+>(ltiplottypes)ニコルス線図
+<(ltiplottypes)Singular Value
+>(ltiplottypes)特異値プロット
+<(ltiplottypes)Pole/Zero
+>(ltiplottypes)極/ 零点
+<(ltiplottypes)I/O Pole/Zero
+>(ltiplottypes)I/O 極/零点
+<(ltiplottypes)Settling time
+>(ltiplottypes)整定時間
+<(ltiplottypes)Rise Time
+>(ltiplottypes)立ち上がり時間
+<(ltiplottypes)Stability (Minimum Crossing)
+>(ltiplottypes)安定値 (最小のクロッシング)
+<(ltiplottypes)Stability (All Crossings)
+>(ltiplottypes)安定値 (すべてのクロッシング)
+%
+<(viewimportfcn)Systems in File
+>(viewimportfcn)ファイル内のシステム
+<(SisoToolViewer)Real-Time Update
+>(SisoToolViewer)リアルタイムに更新
+<(SisoToolViewer)LTI Viewer for SISO Design Tool
+>(SisoToolViewer)SISO 設計ツールに対する LTI Viewer
+<()Upper gain limit
+>()ゲインリミットの上限
+<()Lower gain limit
+>()ゲインリミットの下限
+<()Gain & Phase margins
+>()ゲインと位相余裕
+<(edit)Magnitude:
+>(edit)振幅:
+<(edit)Magnitude
+>(edit)振幅
+<(edit)Slope (dB/decade):
+>(edit)勾配 (dB/decade):
+<(edit)to
+>(edit)-
+<()Open-Loop Nichols Editor (C)
+>()開ループニコルスエディタ (C)
+<()Open-Loop Gain (dB)
+>()開ループゲイン (dB)
+<()Use the limit stack to store & retrieve axes limits
+>()座標軸範囲の保存と取り出しを行うリミットスタックを使用
+<()Add current limits to stack
+>()現在の範囲をスタックに追加
+<()Retrieve previous stack entry
+>()前回のスタックの入力を取り出す
+<()Retrieve next stack entry
+>()次のスタックの入力を取り出す
+<()Remove current limits from stack
+>()現在の範囲をスタックから削除
+<()No action (stack is empty)
+>()アクションなし (スタックが空です)
+<()Labels
+>()ラベル
+<()Limits
+>()範囲
+<()Details on the Stability Margin Demo
+>()安定余裕のデモの詳細
+<()Minimum Stability Margins
+>()最小安定余裕
+<()All Stability Margins
+>()すべての安定余裕
+<()MATLAB array
+>()MATLAB 配列
+<()Loaded session from file %s.mat
+>()%s.mat から読み込まれたセッション
+<()Selected MAT file does not contain a valid SISO Tool session.
+>()選択した MAT ファイルは有効な SISO ツールのセッションを含んでいません。
+<()Saved session to file %s.mat
+>()セッションをファイル %s.mat に保存しました
+<()SISO Tool Error
+>()SISO ツールエラー
+<()Load Error
+>()読み込みエラー
+<()Conversion Warning
+>()変換の警告
+<()Added a differentiator to the %s.
+>()%s に微分器を追加しました。
+<()Characteristics
+>()特性
+<()Full View
+>()フルビュー
+<()Normalize
+>()正規化
+<()LTI Viewer Warning
+>()LTI Viewer の警告
+<()Zoomed in
+>()ズームイン
+<()Left-click and move this closed-loop pole to adjust the loop gain.
+>()ループゲインを調整するには、この閉ループの極を左クリックして移動してください。
+<()Left-click to move this pole of the %s.
+>()%s のこの極を移動するには左クリックしてください。
+<()Left-click to move this zero of the %s.
+>()%s のこの零点を移動するには左クリックしてください。
+<()Move the rulers left or right to adjust the notch width.
+>()ノッチ幅を調整するには、ルーラを左右に移動してください。
+<()Move the rulers along the curve to adjust the notch width.
+>()ノッチ幅を調整するには、ルーラを曲線に沿って移動してください。
+<()Drag this notch to adjust its depth and natural frequency.
+>()深さと固有振動数を調整するにはこのノッチをドラッグしてください。
+<()Drag this %s to the desired location.
+>()この %s を目的の場所にドラッグしてください。
+<()Drag this closed-loop pole along the locus to adjust the loop gain.
+>()ループゲインを調整するには、この閉ループ極を軌跡に沿ってドラッグしてください。
+<()Drag this %s to alter the notch location/shape.
+>()ノッチの場所/形状を変更するには、この %s をドラッグしてください。
+<()Added an integrator to the %s.
+>()%s に積分器を追加しました。
+<()Constraint parameters
+>()制約パラメータ
+
+<(initialize)Open-Loop Bode Editor (C)
+>(initialize)開ループボードエディタ (C)
+<(initialize)Root Locus Editor (C)
+>(initialize)根軌跡エディタ (C)
+<(initialize)Prefilter Bode Editor (F)
+>(initialize)プリフィルタのボードエディタ (F)
+<(initialize)Real Axis
+>(initialize)実軸
+<(initialize)Imag Axis
+>(initialize)虚軸
+
+
+%% toolbox/control/ctrlguis/spchart.m
+<(spchart)Units
+>(spchart)単位
+
+%% toolbox/control/ctrlguis/lticharmenu.m
+<(lticharmenu)Settling Time
+>(lticharmenu)整定時間
+
+%% toolbox/control/ctrlguis/ltiplotmenu.m
+
+%% toolbox/control/ctrlguis/rfinputs.m
+<(rfinputs)Cannot plot output spectra of idfrd models.
+>(rfinputs)idfrd モデルの出力スペクトルをプロットできません。
+<(rfinputs)Discrete-time models must have matching sample times.
+>(rfinputs)離散時間モデルは一致したサンプル時間をもたなくてはなりません。
+<(rfinputs)Final time must be a positive number.
+>(rfinputs)最終時間は正の数でなければなりません。
+<(rfinputs)Final time must be a real, double-precision number.
+>(rfinputs)最終時間は、実数で、倍精度でなければなりません。
+<(rfinputs)Final time must be an integer (no. of samples) when sample times are unspecified.
+>(rfinputs)最終時間は、サンプル時間が指定されない場合、整数 (サンプル数) でなければなりません。
+<(rfinputs)Frequency points must be specified as a vector of positive real numbers.
+>(rfinputs)周波数点は正の実数のベクトルで指定されなければなりません。
+<(rfinputs)Frequency range must be specified as a cell array {WMIN,WMAX}.
+>(rfinputs)周波数範囲はセル配列 {WMIN,WMAX} で指定されなければなりません。
+<(rfinputs)Frequency range must satisfy 0<WMIN<WMAX.
+>(rfinputs)周波数範囲は、0<WMIN<WMAX を満たさなければなりません。
+<(rfinputs)Initial condition X0 contains Inf or NaN.
+>(rfinputs)初期条件 X0 は Inf または NaN を含みます。
+<(rfinputs)Initial condition X0 is missing.
+>(rfinputs)初期条件 X0 が見つかりません。
+<(rfinputs)Initial condition X0 must be a vector of real double-precision numbers.
+>(rfinputs)初期条件 X0 は、実数で倍精度のベクトルでなければなりません。
+<(rfinputs)Initial condition X0 must be a vector.
+>(rfinputs)初期条件 X0 はベクトルでなければなりません。
+<(rfinputs)Input data U and time vector T must have the same number of samples.
+>(rfinputs)入力データ U と時間ベクトル T は同じサンプル数でなければなりません。
+<(rfinputs)Input data U contains Inf or NaN.
+>(rfinputs)入力データ U は、Inf または NaN を含みます。
+<(rfinputs)Input data U must be an array of real double-precision numbers.
+>(rfinputs)入力データ U は実数の倍精度の配列でなければなりません。
+<(rfinputs)Input data U must contain at least two samples.
+>(rfinputs)入力データ U は少なくとも2つのサンプルを含まなければなりません。
+<(rfinputs)Invalid style string "%s"
+>(rfinputs)無効なスタイルの文字列 "%s"
+<(rfinputs)Invalid syntax.
+>(rfinputs)シンタックスが無効です。
+<(rfinputs)Lower frequency WMIN must be a real scalar.
+>(rfinputs)下限の周波数 WMIN は実数のスカラでなければなりません。
+<(rfinputs)Some of the specified systems have no input and/or output.
+>(rfinputs)指定したシステムのいくつかは、入力および/または出力がありません。
+<(rfinputs)Start time must be greater than %0.3g.
+>(rfinputs)開始時間は %0.3g より大きくなければなりません。
+<(rfinputs)The time samples must be finite and monotonically increasing.
+>(rfinputs)時間サンプルは有限で単調増加でなければなりません。
+<(rfinputs)Time samples must be evenly spaced.
+>(rfinputs)時間サンプルは等間隔でなければなりません。
+<(rfinputs)Time vector T must be supplied for continuous-time models.
+>(rfinputs)時間ベクトル T は連続時間モデルで与えられなければなりません。
+<(rfinputs)Time vector must be a vector of real double-precision numbers.
+>(rfinputs)時間ベクトルは、実数で、倍精度のベクトルでなければなりません。
+<(rfinputs)Time vector must be specified when mixing specified and unspecified sample times.
+>(rfinputs)指定したサンプル時間と未指定のサンプル時間が混在した場合、時間ベクトルが指定されなければなりません。
+<(rfinputs)Types 1 through 3 only applicable to square systems.
+>(rfinputs)1 から 3 までのタイプは、正方のシステムにのみ適用可能です。
+<(rfinputs)Unknown format for time input.
+>(rfinputs)時間入力に対する不明な形式です。
+<(rfinputs)Unknown type of singular value plot.
+>(rfinputs)特異値プロットの不明なタイプです。
+<(rfinputs)Upper frequency WMAX must be a real scalar.
+>(rfinputs)上限の周波数 WMAX は実数のスカラでなければなりません。
+
+%% toolbox/control/ctrlguis/timerespcheck.m
+<(timerespcheck)Start time must be greater than %0.3g
+>(timerespcheck)開始時間は %0.3g より大きくなければなりません
+
+
+%% toolbox/control/ctrlguis/utTuning_IMC_1DF.m
+<(utTuning_IMC_1DF)IMC design method only works on stable process.
+>(utTuning_IMC_1DF)IMC 設計メソッドは、定常過程でのみ動作します。
+<(utTuning_IMC_1DF)IMC synthesis tool does not support fixed dynamics.
+>(utTuning_IMC_1DF)IMC 合成ツールは固定ダイナミクスをサポートしません。
+
+%% toolbox/control/ctrlguis/utTuning_LQG.m
+<(utTuning_LQG)LQG synthesis tool does not support fixed dynamics.
+>(utTuning_LQG)LQG 合成ツールは固定ダイナミクスをサポートしません。
+<(utTuning_LQG)LQG tuning method fails to produce a stabilizing cotnroller for this model.
+>(utTuning_LQG)LQG の調整メソッドは、このモデルに対して安定なコントローラを作成できません。
+
+%% toolbox/control/ctrlguis/utTuning_PID.m
+<(utTuning_PID)%s tuning method fails to produce a stabilizing %s cotnroller for this model.
+>(utTuning_PID)%s の調整メソッドは、このモデルに対して安定な %s のコントローラを作成できません。
+<(utTuning_PID)All the PID tuning methods currently only work on stable processes.
+>(utTuning_PID)すべての PID の調整メソッドは現在、定常過程でのみ動作します。
+<(utTuning_PID)Please remove the integrator from the Simulink PID block to get a Proportional-Only controller.
+>(utTuning_PID)比例項のみのコントローラを得るには、Simulink PID ブロックから積分項を削除してください。
+
+%% toolbox/control/ctrlguis/@lsimgui/@siminputtable/userinput.m
+<(userinput)Could not reload data from MAT file
+>(userinput)MAT ファイルからデータを再読み込みできません
+<(userinput)Could not reload data from workspace
+>(userinput)ワークスペースからデータを再読み込みできません
+<(userinput)Rows/cols must be contiguous
+>(userinput)行/列は、連続でなければなりません。
+<(userinput)Signal must be either a row or a column
+>(userinput)信号は、行か列のいずれかでなければなりません。
+<(userinput)Variable not found
+>(userinput)変数が見つかりません
+<(userinput)syntax error
+>(userinput)シンタックスエラー
+
+%% toolbox/control/ctrlguis/@sisogui/@bodeditor/addpz.m
+<(addpz)Add %s
+>(addpz)%s を追加
+
+%% toolbox/control/ctrlguis/@sisogui/@bodeditor/deletepz.m
+<(deletepz)Delete %s
+>(deletepz)%s を削除
+
+%% toolbox/control/ctrlguis/@sisogui/@bodeditor/newconstr.m
+<(newconstr)Can not add multiple gain and phase margin requirements to a Bode plot. \nTo add multiple gain and phase margin requirements to the same response use a Nichols plot.
+>(newconstr)ボード線図に必要な複数のゲインと位相余裕を追加できません。\n同じ応答に必要な複数のゲインと位相余裕を追加するには、ニコルス線図プロットを使用してください。
+
+%% toolbox/control/ctrlguis/@sisogui/@bodeditor/trackgain.m
+<(trackgain)%s gain changed to %0.3g
+>(trackgain)%s のゲインを %0.3g に変更しました
+<(trackgain)Drag the magnitude curve up or down to change the gain of .
+>(trackgain)ゲインを変更するには、振幅曲線を上下にドラッグしてください。
+
+%% toolbox/control/ctrlguis/@sisogui/@bodeditor/trackpz.m
+<(trackpz)Move %s
+>(trackpz)%s を移動
+
+%% toolbox/control/ctrlguis/@sisogui/@bodeditor/hoverstatus.m
+<(hoverstatus)%s For the current configuration of this loop, the gain is not editable.\n%s.
+>(hoverstatus)%s このループのカレントの設定に対して、ゲインは編集可能ではありません。\n%s
+<(hoverstatus)%s\nLeft click and move this curve up or down to adjust the gain of %s.
+>(hoverstatus)%s\n%s のゲインを調整するには、この曲線を左クリックして上下に移動してください。
+
+%% toolbox/control/ctrlguis/@sisogui/@bodeditorF/clview.m
+<(clview)Closed-loop response from %s to %s.
+>(clview)%s から %s への閉ループの応答です。
+
+%% toolbox/control/ctrlguis/@sisogui/@bodeditorF/update.m
+% g357805
+%<(update)%s magnitude plot
+%>(update)%s の振幅プロット
+%<(update)%s phase plot
+%>(update)%s の位相プロット
+
+%% toolbox/control/ctrlguis/@sisogui/@bodeditorF/configure.m
+<(configure)Bode Editor for %s
+>(configure)%s のボードエディタ
+<(configure)Bode Editor for %s (%s)
+>(configure)%s のボードエディタ (%s)
+
+%% toolbox/control/ctrlguis/@sisogui/@bodeditorOL/showmargin.m
+<(showmargin)G.M.: %0.3g %s\nFreq: %0.3g %s
+>(showmargin)G.M.: %0.3g %s\n周波数: %0.3g %s
+<(showmargin)G.M.: Inf\nFreq: %0.3g
+>(showmargin)G.M.: Inf\n周波数: %0.3g
+<(showmargin)P.M.: %0.3g %s\nFreq: %0.3g %s
+>(showmargin)P.M.: %0.3g %s\n周波数: %0.3g %s
+<(showmargin)P.M.: Inf\nFreq: %0.3g
+>(showmargin)P.M.: Inf\n周波数: %0.3g
+
+%% toolbox/control/ctrlguis/@sisogui/@bodeditorOL/configure.m
+<(configure)Open-Loop Bode Editor for %s
+>(configure)%s の開ループボードエディタ
+<(configure)Open-Loop Bode Editor for %s (%s)
+>(configure)%s の開ループボードエディタ (%s)
+
+%% toolbox/control/ctrlguis/@sisogui/@grapheditor/mouseevent.m
+<(mouseevent)This editor is disabled due to algebraic loop.
+>(mouseevent)このエディタは代数ループのため無効です。
+
+%% toolbox/control/ctrlguis/@sisogui/@grapheditor/addmenu.m
+<(addmenu)Design Requirements
+>(addmenu)設計要求
+<(addmenu)Design Snapshots
+>(addmenu)設計のスナップショット
+<(addmenu)Gain Target
+>(addmenu)ゲインのターゲット
+<(addmenu)Loop gain is not tunable in current configuration.
+>(addmenu)ループゲインは現在の設定で調整可能ではありません。
+<(addmenu)Select Compensator
+>(addmenu)補償器の選択
+
+%% toolbox/control/ctrlguis/@sisogui/@nicholseditor/deletepz.m
+<(deletepz)Deleted %s
+>(deletepz)%s を削除しました
+
+%% toolbox/control/ctrlguis/@sisogui/@nicholseditor/shapenotch.m
+<(shapenotch)%s\nNatural Frequency: %0.3g %s%sZero Damping: %0.3g%sPole Damping: %0.3g
+>(shapenotch)%s\n固有振動数: %0.3g %s%s零点の減衰: %0.3g%s極の減衰: %0.3g
+
+
+%% toolbox/control/ctrlguis/@sisogui/@nicholseditor/trackgain.m
+<(trackgain)Drag the Nichols curve up or down to to adjust the loop gain.\n%s.
+>(trackgain)ループゲインを調整するにはニコルス線図の曲線を上下にドラッグしてください。\n%s
+<(trackgain)Loop gain changed to %0.3g
+>(trackgain)ループゲインを %0.3g に変更しました
+
+%% toolbox/control/ctrlguis/@sisogui/@nicholseditor/trackpz.m
+<(trackpz)%s\nCurrent location: %0.3g
+>(trackpz)%s\n現在の場所: %0.3g
+<(trackpz)%s\nCurrent location: %0.3g %s %0.3gi %s%s
+>(trackpz)%s\n現在の場所: %0.3g %s %0.3gi %s%s
+<(trackpz)%s\nCurrent location: %0.3g %s%s
+>(trackpz)%s\n現在の場所: %0.3g %s%s
+<(trackpz)%s\nNatural Frequency: %0.3g %s%s%s
+>(trackpz)%s\n固有振動数: %0.3g %s%s%s
+<(trackpz)Cannot move roots with naturalfrequency beyond the Nyquist frequency.\nUse the Root Locus Editor to move such poles/zeros.
+>(trackpz)ナイキスト周波数を超えた固有振動数をもつ根を移動できません。\nそのような極/零点を移動するには根軌跡エディタを使用してください。
+<(trackpz)Damping: %0.3g%s Natural Frequency: %0.3g %s
+>(trackpz)減衰: %0.3g%s 固有振動数: %0.3g %s
+<(trackpz)Natural Frequency: %0.3g %s
+>(trackpz)固有振動数: %0.3g %s
+<(trackpz)Zero Damping: %0.3g%s Pole Damping: %0.3g
+>(trackpz)零点の減衰: %0.3g%s 極の減衰: %0.3g
+
+%% toolbox/control/ctrlguis/@sisogui/@nicholseditor/configure.m
+<(configure)Open-Loop Nichols Editor for %s
+>(configure)%s の開ループニコルスエディタ
+<(configure)Open-Loop Nichols Editor for %s (%s)
+>(configure)%s の開ループニコルスエディタ (%s)
+
+%% toolbox/control/ctrlguis/@sisogui/@nicholseditor/hoverstatus.m
+<(hoverstatus)%s Left click and move this curve up or down to adjust the loop gain.\n%s.
+>(hoverstatus)%s ループゲインを調整するにはこの曲線を左クリックして上下に移動してください。\n%s
+
+%% toolbox/control/ctrlguis/@sisogui/@pzeditor/buildcomptab_PZEditor.m
+<(buildcomptab_PZEditor) Dynamics 
+>(buildcomptab_PZEditor) ダイナミクス
+<(buildcomptab_PZEditor) Edit Selected Dynamics 
+>(buildcomptab_PZEditor) 選択したダイナミクスの編集
+<(buildcomptab_PZEditor)Damping (Pole)
+>(buildcomptab_PZEditor)減衰 (極)
+<(buildcomptab_PZEditor)Damping (Zero)
+>(buildcomptab_PZEditor)減衰 (零点)
+<(buildcomptab_PZEditor)Imaginary Part
+>(buildcomptab_PZEditor)虚部
+<(buildcomptab_PZEditor)Natural Frequency
+>(buildcomptab_PZEditor)固有振動数
+<(buildcomptab_PZEditor)Notch Depth (dB)
+>(buildcomptab_PZEditor)ノッチの深さ (dB)
+<(buildcomptab_PZEditor)Notch Width (Log)
+>(buildcomptab_PZEditor)ノッチ幅 (Log)
+<(buildcomptab_PZEditor)Real Part
+>(buildcomptab_PZEditor)実部
+<(buildcomptab_PZEditor)Real Pole
+>(buildcomptab_PZEditor)実極
+<(buildcomptab_PZEditor)Real Zero
+>(buildcomptab_PZEditor)実零点
+<(buildcomptab_PZEditor)Right-click to add or delete poles/zeros
+>(buildcomptab_PZEditor)極/零点を追加、または削除するには右クリックしてください
+<(buildcomptab_PZEditor)Select a single row to edit values
+>(buildcomptab_PZEditor)値を編集するには1行だけ選択してください
+<(buildcomptab_PZEditor)at Frequency
+>(buildcomptab_PZEditor)周波数
+
+%% toolbox/control/ctrlguis/@sisogui/@pzeditor/buildcomptab_ParaEditor.m
+<(buildcomptab_ParaEditor)Select a parameter in the table and tune it manually
+>(buildcomptab_ParaEditor)テーブル内のパラメータを選択して手動で調整してください
+
+%% toolbox/control/ctrlguis/@sisogui/@pzeditor/buildeditor.m
+<(buildeditor)Parameter
+>(buildeditor)パラメータ
+
+
+%% toolbox/control/ctrlguis/@sisogui/@pzeditor/buildcompdisppanel.m
+<(buildcompdisppanel) Select Compensator 
+>(buildcompdisppanel) 補償器の選択
+
+%% toolbox/control/ctrlguis/@sisogui/@rleditor/configure.m
+<(configure)Root Locus Editor for %s
+>(configure)%s の根軌跡エディタ
+<(configure)Root Locus Editor for %s (%s)
+>(configure)%s の根軌跡エディタ (%s)
+
+%% toolbox/control/ctrlguis/@sisogui/@rleditor/hoverstatus.m
+<(hoverstatus)The open-loop gain can not be adjusted for the current loop configuration.
+>(hoverstatus)開ループゲインは現在のループの設定に対して調整できません。
+
+%% toolbox/control/ctrlguis/@sisogui/@tooldlg/build.m
+<(build)Design requirement parameters
+>(build)設計要求パラメータ
+<(build)Design requirement: 
+>(build)設計要求: 
+<(build)Edit Design Requirements
+>(build)設計要求の編集
+
+%% toolbox/control/ctrlguis/@sisogui/@sisoprefs/ls_gui.m
+<(ls_gui)Feedback Compensators:
+>(ls_gui)フィードバック補償器:
+<(ls_gui)Feedforward Compensators:
+>(ls_gui)フィードフォワード補償器:
+<(ls_gui)Plant Components:
+>(ls_gui)プラント構成:
+
+%% toolbox/control/ctrlguis/@sisogui/@sisoprefs/cfmt_gui.m
+<(cfmt_gui)Select a compensator parameterization:
+>(cfmt_gui)補償器のパラメータ化の選択:
+<(cfmt_gui)Tuned Parameters
+>(cfmt_gui)調整パラメータ
+
+%% toolbox/control/ctrlguis/@sisogui/@sisotool/addlisteners.m
+<(addlisteners)SISO Design for %s
+>(addlisteners)%s に対する SISO 設計
+
+%% toolbox/control/ctrlguis/@sisogui/@sisotool/exportdlg.m
+<(exportdlg) Select design:  
+>(exportdlg) 設計の選択:
+<(exportdlg) Select models to export:
+>(exportdlg) エクスポートするモデルの選択:
+<(exportdlg)(current)
+>(exportdlg)(カレント)
+
+%% toolbox/control/ctrlguis/@sisogui/@sisotool/clearcomp.m
+<(clearcomp)Cleared the %s.
+>(clearcomp)%s をクリアしました。
+
+%% toolbox/control/ctrlguis/@sisogui/@sisotool/configapply.m
+<(configapply)Import Error
+>(configapply)インポートエラー
+
+%% toolbox/control/ctrlguis/@sisogui/@sisotool/viewmenu.m
+<(viewmenu)&Feedforward Bode
+>(viewmenu)フィードフォワードのボード線図(&F)
+<(viewmenu)&Filter Bode
+>(viewmenu)フィルタのボード線図(&F)
+<(viewmenu)The %s Bode editor for %s is now %s.
+>(viewmenu)現在、%s ボードエディタ (%s に対する) は %s です。
+<(viewmenu)The Open-Loop Bode editor for %s is now %s.
+>(viewmenu)現在、%s に対する開ループボードエディタは %s です。
+<(viewmenu)The Open-Loop Nichols editor for %s is now %s.
+>(viewmenu)現在、%s に対する開ループニコルスエディタは %s です。
+<(viewmenu)The Root Locus editor for %s is now %s.
+>(viewmenu)現在、%s に対する根軌跡エディタは %s です。
+
+%% toolbox/control/ctrlguis/@sisogui/@sisotool/figmenus.m
+<(figmenus)&Automated Tuning...
+>(figmenus)自動調整(&A)
+<(figmenus)&Closed-Loop Poles...
+>(figmenus)閉ループ極(&C)
+<(figmenus)&Design History...
+>(figmenus)設計履歴(&D)
+<(figmenus)&Edit Compensator...
+>(figmenus)補償器の編集(&E)
+<(figmenus)&Tuned Parameters...
+>(figmenus)調整パラメータ(&T)
+<(figmenus)&What's This?
+>(figmenus)これはなに ?
+<(figmenus)All Compensators
+>(figmenus)すべての補償器
+<(figmenus)Design &Plots Configuration...
+>(figmenus)設計とプロットの設定(&P)
+
+%% toolbox/control/ctrlguis/@sisogui/@DesignPlotConfig/buildPanel.m
+<(buildPanel)Design plots configuration
+>(buildPanel)設計とプロットの設定
+
+%% toolbox/control/ctrlguis/@sisogui/@DesignPlotConfig/getCurrentConfiguration.m
+<(getCurrentConfiguration)Open-Loop Bode
+>(getCurrentConfiguration)開ループのボード線図
+<(getCurrentConfiguration)Root Locus
+>(getCurrentConfiguration)根軌跡
+
+%% toolbox/control/ctrlguis/@sisogui/@OpenLoopConfigDialog/createNewOpenLoopDlg.m
+<(createNewOpenLoopDlg)Select New Loop Opening
+>(createNewOpenLoopDlg)新規ループの開始を選択
+<(createNewOpenLoopDlg)Select an open-loop analysis point using the signal browser below:
+>(createNewOpenLoopDlg)以下のシグナルブラウザを使用して開ループの解析点を選択:
+
+%% toolbox/control/ctrlguis/@sisogui/@OpenLoopConfigDialog/buildDialog.m
+<(buildDialog)Computing feedback loop
+>(buildDialog)フィードバックループの計算中
+<(buildDialog)Highlight feedback loop
+>(buildDialog)フィードバックループを強調
+<(buildDialog)Open-Loop Configuration Dialog
+>(buildDialog)開ループの設定ダイアログ
+<(buildDialog)Open-loop configuration for: 
+>(buildDialog)開ループの設定:
+<(buildDialog)Pick signal openings for the selected open-loop.
+>(buildDialog)選択した開ループの信号開始点を選択してください。
+<(buildDialog)Select a new loop opening ...
+>(buildDialog)新規ループの開始を選択
+<(buildDialog)The open-loop %s could not be analyzed due to the following error: \n\n %s
+>(buildDialog)開ループ %s は以下のエラーにより解析できませんでした: \n\n %s
+<(buildDialog)The signal at the outport of the block %s, port %d is not in a feedback loop when using the selected Open-Loop configuration.  Please select another configuration.
+>(buildDialog)選択した開ループ設定を使った場合、ブロック %s、端子 %d の出力端子の信号は、フィードバックループ内にありません。 別の設定を選択してください。
+<(buildDialog)Open
+>(buildDialog)開始点
+<(buildDialog)Output of Block
+>(buildDialog)ブロック出力
+<(buildDialog)Port
+>(buildDialog)端子
+
+%% toolbox/control/ctrlguis/@sisogui/@SISODesignTask/setTab.m
+<(setTab) is an unspecifed tab.
+>(setTab) 未指定のタブです。
+
+%% toolbox/control/ctrlguis/@sisogui/@SISODesignTask/buildPanel.m
+<(buildPanel)Analysis Plots
+>(buildPanel)解析プロット
+<(buildPanel)Architecture
+>(buildPanel)アーキテクチャ
+<(buildPanel)Automated Tuning
+>(buildPanel)自動調整
+<(buildPanel)Compensator Editor
+>(buildPanel)補償器エディタ
+<(buildPanel)Graphical Tuning
+>(buildPanel)グラフィカルな調整
+
+%% toolbox/control/ctrlguis/@sisogui/@SelectAnalysisResponseDlg/build.m
+<(build)Closed Loop - From %s to %s
+>(build)閉ループ - %s から %s
+<(build)Select New Loop to Tune
+>(build)調整する新規ループを選択
+<(build)Select the Response Type:
+>(build)応答タイプの選択:
+<(build)The closed-loop %s has already been selected.  Please select another loop.
+>(build)閉ループ %s は既に選択されています。 別のループを選択してください。
+<(build)The tuned block %s has already been selected.  Please select another tuned block.
+>(build)調整ブロック %s は既に選択されています。 別の調整ブロックを選択してください。
+<(build)Tuned Block - %s
+>(build)調整ブロック - %s
+
+%% toolbox/control/ctrlguis/@sisogui/@SelectAnalysisResponseDlg/buildClosedLoopPanel.m
+<(buildClosedLoopPanel)Closed Loop Input
+>(buildClosedLoopPanel)閉ループの入力
+<(buildClosedLoopPanel)Closed Loop Output
+>(buildClosedLoopPanel)閉ループの出力
+<(buildClosedLoopPanel)Closed-Loop Input
+>(buildClosedLoopPanel)閉ループの入力
+<(buildClosedLoopPanel)Closed-Loop Output
+>(buildClosedLoopPanel)閉ループの出力
+
+
+%% toolbox/control/ctrlguis/@sisogui/@SelectAnalysisResponseDlg/buildOpenLoopPanel.m
+<(buildOpenLoopPanel)Tuned Block
+>(buildOpenLoopPanel)調整ブロック
+
+%% toolbox/control/ctrlguis/@sisogui/@SelectNewLoopDlg/build.m
+<(build)Closed Loop %d
+>(build)閉ループ %d
+
+%% toolbox/control/ctrlguis/@sisogui/@SelectNewLoopDlg/buildClosedLoopPanel.m
+<(buildClosedLoopPanel)Initial Block to Tune
+>(buildClosedLoopPanel)調整する初期ブロック
+
+%% toolbox/control/ctrlguis/@sisogui/@configdlg/build.m
+<(build)Control Architecture
+>(build)制御アーキテクチャ
+<(build)Labels & Sign
+>(build)ラベル & 符号
+
+%% toolbox/control/ctrlguis/@sisogui/@configdlg/refreshtab.m
+<(refreshtab)< current value >
+>(refreshtab)<現在の値>
+
+%% toolbox/control/ctrlguis/@sisogui/@configdlg/maketab.m
+<(maketab)Blocks and Signals
+>(maketab)ブロックと信号
+<(maketab)Invalid value for %s
+>(maketab)%s に対する値が無効です
+<(maketab)Open-loop plant used for tuning %s
+>(maketab)%s の調整に使われた開ループプラント
+<(maketab)Select Control Architecture:
+>(maketab)制御アーキテクチャの選択:
+<(maketab)Signs
+>(maketab)符号
+
+
+%% toolbox/control/ctrlguis/@sisogui/@AutomatedTuning/buildPanel_SRO.m
+<(buildPanel_SRO)Optimization based tuning
+>(buildPanel_SRO)最適化ベースの調整
+<(buildPanel_SRO)Optimization based tuning of compensators requires the Simulink Response Optimization product.
+>(buildPanel_SRO)補償器の最適化ベースの調整は、Simulink Response Optimization プロダクトが必要です。
+<(buildPanel_SRO)Optimize Compensators...
+>(buildPanel_SRO)補償器の最適化
+<(buildPanel_SRO)Response Optimization
+>(buildPanel_SRO)応答の最適化
+<(buildPanel_SRO)You can use optimization-based tuning to create an initial compensator design or to refine the current compensator design:\n\nGraphically specify design requirements for your system by positioning bounds on design or analysis plots such as Bode, Nichols, or Step Response. Then, use optimization-based methods to automatically tune compensator elements to satisfy the design requirements. Compensator elements that are tunable via optimization-based tuning include gains, poles, and zeros.\n\n\nRequires the Simulink Response Optimization product.
+>(buildPanel_SRO)初期の補償器設計を作成する、あるいは現在の補償器設計の改良するために、最適化ベースの調整が行えます :\n\n設計または解析プロット (例 : ボード線図、ニコルス線図、またはステップ応答) 上で範囲を調整することにより、システムに対する設計要求をグラフィカルに指定します。そして、設計要求を満たすために、最適化ベースのメソッドを使用して、補償器の要素を自動的に調整します。最適化ベースの調整によって、調整可能な補償器の要素は、ゲインと極、零点です。\n\n\nSimulink Response Optimization プロダクトが必要です。
+%% toolbox/control/ctrlguis/@sisogui/@AutomatedTuning/buildPanel_IMC.m
+<(buildPanel_IMC) IMC Design Specifications 
+>(buildPanel_IMC) IMC 設計仕様
+<(buildPanel_IMC)Desired IMC controller order:
+>(buildPanel_IMC)希望する IMC コントローラ次数:
+<(buildPanel_IMC)Dominant closed-loop time constant:
+>(buildPanel_IMC)主要な閉ループの時定数:
+<(buildPanel_IMC)IMC Tuning
+>(buildPanel_IMC)IMC 調整
+<(buildPanel_IMC)Update Compensator
+>(buildPanel_IMC)補償器の更新
+
+%% toolbox/control/ctrlguis/@sisogui/@AutomatedTuning/buildPanel_LQG.m
+<(buildPanel_LQG) LQG Regulator Synthesis Specifications 
+>(buildPanel_LQG) LQG レギュレータの合成仕様
+<(buildPanel_LQG)Desired LQG controller order:
+>(buildPanel_LQG)希望する LQG コントローラ次数:
+<(buildPanel_LQG)LQG Tuning
+>(buildPanel_LQG)LQG 調整
+<(buildPanel_LQG)Noise covariance on controller output (u):
+>(buildPanel_LQG)コントローラ出力 (u) のノイズの共分散:
+<(buildPanel_LQG)Noise covariance on process measurement (y):
+>(buildPanel_LQG)プロセス測定 (y) のノイズの共分散:
+<(buildPanel_LQG)Weight on controller output (u):
+>(buildPanel_LQG)コントローラ出力 (u) の重み:
+<(buildPanel_LQG)Weight on process measurement (y):
+>(buildPanel_LQG)プロセス測定 (y) の重み:
+
+%% toolbox/control/ctrlguis/@sisogui/@AutomatedTuning/buildPanel_PID.m
+<(buildPanel_PID) PID Tuning Specifications 
+>(buildPanel_PID) PID 調整の仕様
+<(buildPanel_PID)Load Disturbance Rejection
+>(buildPanel_PID)外乱抑圧の読み込み
+<(buildPanel_PID)PID Design
+>(buildPanel_PID)PID 設計
+<(buildPanel_PID)PID with filtered derivative
+>(buildPanel_PID)不完全微分を用いた PID
+<(buildPanel_PID)Select a controller type:
+>(buildPanel_PID)コントローラタイプの選択:
+<(buildPanel_PID)Select a tuning algorithm:
+>(buildPanel_PID)調整アルゴリズムの選択:
+<(buildPanel_PID)Select a tuning preference:
+>(buildPanel_PID)調整設定の選択:
+<(buildPanel_PID)Set-Point Tracking
+>(buildPanel_PID)目標値追従
+
+%% toolbox/control/ctrlguis/@sisogui/@AutomatedTuning/buildpanels.m
+<(buildpanels)Design Method:
+>(buildpanels)設計手法:
+
+%% toolbox/control/ctrlguis/@sisogui/@AutomatedTuning/refreshspec.m
+<(refreshspec)IMC tuning methods can not be applied to an unstable process.
+>(refreshspec)IMC 調整メソッドは、不安定な過程に適用できません。
+<(refreshspec)IMC tuning methods can not produce a stabilizing controller for this process.
+>(refreshspec)IMC 調整メソッドは、この過程に対して安定なコントローラを作成できません。
+<(refreshspec)PID tuning methods can not be applied to an unstable process.
+>(refreshspec)PID 調整メソッドは、不安定な過程に適用できません。
+<(refreshspec)The process model contains %d pole(s) and %d zero(s).
+>(refreshspec)プロセスモデルは %d 個の極と %d 個の零点を含みます。
+
+%% toolbox/control/ctrlguis/@sisogui/@ImportDialog/buildDialog.m
+<(buildDialog)Browse ...
+>(buildDialog)選択
+<(buildDialog)System Data
+>(buildDialog)システムデータ
+<(buildDialog)Import Model
+>(buildDialog)モデルのインポート
+<(buildDialog)Show Diagram
+>(buildDialog)線図の表示
+
+%% toolbox/control/ctrlguis/@sisogui/@ImportDialog/refreshtable.m
+<(refreshtable)Data
+>(refreshtable)データ
+<(refreshtable)System
+>(refreshtable)システム
+
+%% toolbox/control/ctrlguis/@sisogui/@ImportDialogBrowser/ImportDialogBrowser.m
+<(ImportDialogBrowser)Available Models
+>(ImportDialogBrowser)利用可能なモデル
+<(ImportDialogBrowser)Import from:
+>(ImportDialogBrowser)インポート元:
+<(ImportDialogBrowser)Import model for 
+>(ImportDialogBrowser)モデルのインポート
+<(ImportDialogBrowser)MAT File: 
+>(ImportDialogBrowser)MATファイル: 
+<(ImportDialogBrowser)Model Import
+>(ImportDialogBrowser)モデルのインポート
+<(ImportDialogBrowser)Type
+>(ImportDialogBrowser)タイプ
+
+%% toolbox/control/ctrlguis/@sisogui/@SystemConfig/buildPanel.m
+<(buildPanel)Control Architecture ...
+>(buildPanel)制御アーキテクチャ
+<(buildPanel)Change the sample time of the design.
+>(buildPanel)設計のサンプル時間の変更
+<(buildPanel)Loop Configuration...
+>(buildPanel)ループ設定
+<(buildPanel)Configure additional loop openings for multi-loop design.
+>(buildPanel)複数のループ設計に対して追加するループの開始を設定します。
+<(buildPanel)Current Architecture: 
+>(buildPanel)現在のアーキテクチャ: 
+<(buildPanel)Design Architecture: 
+>(buildPanel)設計アーキテクチャ: 
+<(buildPanel)System Data ...
+>(buildPanel)システムデータ
+<(buildPanel)Import data for compensators and fixed systems.
+>(buildPanel)補償器と修正したシステムに対するデータをインポートします。
+<(buildPanel)Modify architecture, labels and feedback signs.
+>(buildPanel)アーキテクチャ、ラベル、フィードバックの符号を修正します。
+<(buildPanel)Sample Time Conversion ...
+>(buildPanel)サンプル時間の変換
+
+%% toolbox/control/ctrlguis/@sisodata/@pzgroup/describe.m
+<[describe](describe)Notch
+>[describe](describe)ノッチ
+
+%% toolbox/control/ctrlguis/@sisodata/@loopdata/checkdata.m
+<(checkdata)Cannot handle continuous-time models with delays.
+>(checkdata)遅延をもつ連続時間モデルを設定できません。
+<(checkdata)P must be specified during first import.
+>(checkdata)P は1番目のインポート中に指定されなければなりません。
+<(checkdata)The %s model is a time series model
+>(checkdata)%s のモデルは、時系列モデルです。
+<(checkdata)The %s model must be single input, single output.
+>(checkdata)%s のモデルは、単入力、単出力でなければなりません。
+<(checkdata)The %s model must have real coefficients.
+>(checkdata)%s のモデルは、実係数をもたなければなりません。
+<(checkdata)The SISO Tool cannot be used with arrays of models.
+>(checkdata)SISO ツールは、モデルの配列で使用できません。
+<(checkdata)The loop components must be either all continuous or all discrete.
+>(checkdata)ループの補償器は、すべて連続か、すべて離散のいずれかでなければなりません。
+<(checkdata)The loop components must share the same sample time.
+>(checkdata)ループの補償器は、同じサンプル時間を共有しなければなりません。
+<(checkdata)The plant model P model must have real coefficients.
+>(checkdata)プラントモデル P は、実係数をもたなければなりません。
+<(checkdata)The plant model P must be a state-space model.
+>(checkdata)プラントモデル P は状態空間モデルでなければなりません。
+<(checkdata)The plant model P must have at least %d inputs and outputs.
+>(checkdata)プラントモデル P は、少なくとも %d 個の入力と出力をもたなければなりません。
+
+%% toolbox/control/ctrlguis/@sisodata/@PZGroupComplex/describe.m
+<(describe)complex pair of compensator %ss at %s = %.3g %s %.3gi
+>(describe)補償器 %ss (%s = %.3g %s %.3gi) の複素数の組み合わせ
+
+%% toolbox/control/ctrlguis/@sisodata/@PZGroupLeadLag/describe.m
+<(describe)%s network with zero at %s = %.3g and pole at %s = %.3g
+>(describe)%s のネットワーク (%s = %.3g の零点と %s = %.3g の極をもつ)
+
+%% toolbox/control/ctrlguis/@sisodata/@PZGroupReal/describe.m
+<(describe)real compensator %s at %s = %.3g
+>(describe)実部の補償器 %s (%s = %.3g)
+
+%% toolbox/control/ctrlguis/@sisodata/@TunedLoop/setLoopConfig.m
+<(setLoopConfig)The signal at the outport of the block %s, port %d is not in a feedback loop when using the selected Open-Loop configuration.  Returning to the previous configuration.
+>(setLoopConfig)ブロック %s、端子 %d の出力端子の信号は、選択した開ループ設定を使った場合にフィードバックループがありません。 以前の設定に戻してください。
+
+%% toolbox/control/ctrlguis/@sisodata/@TunedLoop/utComputeNormalizedCompSS.m
+<(utComputeNormalizedCompSS)Only valid for feedback loops.
+>(utComputeNormalizedCompSS)フィードバックループでのみ有効です。
+
+%% toolbox/control/ctrlguis/@sisodata/@TunedLoop/computeTunedLoop.m
+
+%% toolbox/control/ctrlguis/@sisodata/@TunedZPK/addPZ.m
+<(addPZ)This type of pole can not be added to the compensator.
+>(addPZ)この極のタイプは、補償器に追加できません。
+
+%% toolbox/control/ctrlguis/@sisodata/@TunedZPK/deletePZ.m
+<(deletePZ)Selected pole/zero can not be deleted.
+>(deletePZ)選択した極/零点は削除できません。
+
+%% toolbox/control/ctrlguis/@sisodata/@design/design.m
+<(design)Fixed model names must be valid field names.
+>(design)修正したモデル名は、有効なフィールド名でなければなりません。
+<(design)Loop names must be valid field names.
+>(design)ループ名は、有効なフィールド名でなければなりません。
+<(design)Tuned model names must be valid field names.
+>(design)調整するモデル名は、有効なフィールド名でなければなりません。
+
+%% toolbox/control/ctrlguis/@sisodata/@design/loopviews.m
+<(loopviews)Closed Loop %s to %s
+>(loopviews)閉ループ %s から %s
+<(loopviews)Feedforward F
+>(loopviews)フィードフォワード F
+<(loopviews)Input Sensitivity 
+>(loopviews)入力感度
+<(loopviews)Minor-Loop Compensator C2
+>(loopviews)マイナーループの補償器 C2
+<(loopviews)Noise Sensitivity
+>(loopviews)ノイズ感度
+<(loopviews)Open Loop L
+>(loopviews)開ループ L
+<(loopviews)Output Sensitivity
+>(loopviews)出力感度
+<(loopviews)Plant G
+>(loopviews)プラント G
+<(loopviews)Prefilter F
+>(loopviews)プリフィルタ F
+<(loopviews)Primary Compensator C1
+>(loopviews)基本の補償器 C1
+<(loopviews)Sensor H
+>(loopviews)センサ H
+
+%% toolbox/control/ctrlguis/@sisodata/@plantconfig/loopviews.m
+<(loopviews)Input Sensitivity
+>(loopviews)入力感度
+
+%% toolbox/control/ctrlguis/@viewgui/@SisoToolViewer/createView.m
+<(createView)New...
+>(createView)新規作成...
+<(createView)Plot Types
+>(createView)プロットタイプ
+
+%% toolbox/control/ctrlguis/@viewgui/@ltiviewer/deletesys.m
+<(deletesys)%d system%s deleted from the Viewer.
+>(deletesys)ビューワから %d 個のシステム %s を削除しました。
+
+%% toolbox/control/ctrlguis/@viewgui/@ltiviewer/figmenus.m
+<(figmenus)Viewer Preferences
+>(figmenus)ビューワの設定
+
+%% toolbox/control/ctrlguis/@viewgui/@ltiviewer/importdlg.m
+<(importdlg)Import completed: %d system%s imported.
+>(importdlg)インポートの完了: %d 個のシステム %s がインポートされました。
+
+%% toolbox/control/ctrlguis/@viewgui/@ltiviewer/importsys.m
+<(importsys)Skipping empty systems
+>(importsys)空システムをスキップ
+
+%% toolbox/control/ctrlguis/@controlnodes/loadSROSession.m
+<(loadSROSession)Skipping loading resposne optimization settings as the Simulink Resposne Optimization toolbox is not installed.
+>(loadSROSession)Simulink Resposne Optimization toolbox がインストールされていないので、応答の最適化設定の読み込みをスキップします。
+
+%% toolbox/control/ctrlguis/@controlnodes/@DesignSnapshotFolder/getDialogSchema.m
+<(getDialogSchema)Please select a single design to be imported.
+>(getDialogSchema)インポートする単一の設計を選択してください。
+<(getDialogSchema)The initial design cannot be deleted.
+>(getDialogSchema)初期設計は削除できません。
+
+%% toolbox/control/ctrlguis/@controlnodes/@DesignSnapshotFolder/storeSnapshot.m
+<(storeSnapshot)The current design has been stored in the Design History folder as the node %s.
+>(storeSnapshot)現在の設計は設計履歴フォルダにノード %s として格納されています。
+
+%% toolbox/control/ctrlguis/@controlnodes/@SISODesignTask/getDialogSchema.m
+<(getDialogSchema)Store Design
+>(getDialogSchema)設計の保存
+
+<(clview)Select Feedback Loop: 
+>(clview)フィードバックループの選択: 
+<(loadSISOtool)Right-click on the plots for more design options.
+>(loadSISOtool)追加設計オプションはプロットを右クリックして設定します。
+<(loadSISOtool)SISO Design GUI is loading. Please wait...
+>(loadSISOtool)SISO 設計ツール GUI を読み込み中。 お待ちください。
+<(figmenus)&Designs
+>(figmenus)設計(&D)
+
+%% toolbox/control/ctrlguis/@lsimgui/@initialtable/edit.m
+<(edit)Import
+>(edit)インポート
+<(edit)Variable must be a vector
+>(edit)変数はベクトルでなければなりません。
+
+%% toolbox/control/ctrlguis/@lsimgui/@lsimguistate/timeimport.m
+<(timeimport)Import Time Vector From Workspace
+>(timeimport)ワークスペースから時間ベクトルをインポート
+<(timeimport)The selected time vector must be sorted and have length at least 3
+>(timeimport)選択した時間ベクトルはソートされ、少なくとも 3 の長さをもたなければなりません
+<(timeimport)The selected time vector must be uniformly sampled with a strictly positive interval
+>(timeimport)選択した時間ベクトルは、厳密に正の間隔で一様にサンプルされなければなりません
+
+%% toolbox/control/ctrlguis/@lsimgui/@lsimguistate/updatesummary.m
+<(updatesummary)Data for input: %s
+>(updatesummary)入力データ: %s
+<(updatesummary)Data for input: multi-select
+>(updatesummary)入力データ: 複数選択
+<(updatesummary)Data for input: no inputs selected
+>(updatesummary)入力データ: 選択した入力なし
+<(updatesummary)Multi-select
+>(updatesummary)複数選択
+<(updatesummary)No selection
+>(updatesummary)選択なし
+<(updatesummary)Use "Import signal..." or "Design signal..." buttons to assign data to inputs
+>(updatesummary)入力にデータを割り当てるために、"信号のインポート" または "信号の設計" ボタンを使用してください
+
+%% toolbox/control/ctrlguis/@lsimgui/@siminputtable/edit.m
+<(edit)ASCII file
+>(edit)ASCII ファイル
+<(edit)CSV file
+>(edit)CSV ファイル
+<(edit)Data Import
+>(edit)データインポート
+<(edit)MAT file
+>(edit)MAT ファイル
+<(edit)Workspace
+>(edit)ワークスペース
+<(edit)XLS file
+>(edit)XLS ファイル
+
+%% toolbox/control/ctrlguis/@lsimgui/@siminputtable/siggen.m
+<(siggen)%s is an invalid text box entry
+>(siggen)%s は無効なテキストボックスの入力です。
+<(siggen)Insert
+>(siggen)挿入
+<(siggen)Invalid entry
+>(siggen)無効な入力
+<(siggen)Signal Designer
+>(siggen)信号設計
+<(siggen)Signal attributes:
+>(siggen)信号属性
+<(siggen)Signal type:
+>(siggen)信号タイプ:
+<(siggen)Sine wave
+>(siggen)正弦波
+<(siggen)Square wave
+>(siggen)矩形波
+<(siggen)Step function
+>(siggen)ステップ関数
+<(siggen)Uniform
+>(siggen)等間隔
+<(siggen)White noise
+>(siggen)白色雑音
+<(siggen)Name:
+>(siggen)名前:
+<(siggen)Frequency (Hz):
+>(siggen)周波数 (Hz):
+<(siggen)Amplitude:
+>(siggen)振幅:
+<(siggen)Duration (secs):
+>(siggen)持続時間 (秒):
+<(siggen)Starting level:
+>(siggen)開始レベル:
+<(siggen)Step size:
+>(siggen)ステップサイズ:
+<(siggen)Transition time (secs):
+>(siggen)遷移時間 (秒):
+<(siggen)Mean:
+>(siggen)平均:
+<(siggen)Standard deviation:
+>(siggen)標準偏差:
+<(siggen)Probability density:
+>(siggen)確率密度:
+
+%% toolbox/control/ctrlguis/@lsimgui/@siminputtable/durationupdate.m
+<(durationupdate)Number of samples: %s
+>(durationupdate)サンプル数: %s
+
+%% toolbox/control/ctrlguis/@lsimgui/@siminputtable/initialize.m
+<(initialize)Copy signal
+>(initialize)信号のコピー
+
+%% toolbox/control/ctrlguis/@lsimgui/@siminputtable/menuselect.m
+<(menuselect)Cut signal
+>(menuselect)信号の切り取り
+<(menuselect)Delete signal
+>(menuselect)信号の削除
+<(menuselect)Insert signal
+>(menuselect)信号の挿入
+<(menuselect)Paste signal
+>(menuselect)信号の貼り付け
+
+%% toolbox/control/ctrlguis/@lsimgui/@siminputtable/pasteData.m
+<(pasteData)Inserting these signals will overwrite unselected inputs. Do you wish to continue?
+>(pasteData)これらの信号を挿入すると、未選択の入力を上書きします。 続けますか ?
+<(pasteData)Size mismatch: %s columns cannot be mapped to %s inputs
+>(pasteData)サイズの不一致: %s 列は %s の入力にマッピングできません
+<(pasteData)There is insufficient room in the table to insert the signals
+>(pasteData)信号を挿入するための十分な領域がテーブルにありません
+
+%% toolbox/control/ctrlguis/@lsimgui/@siminputtable/syncinterval.m
+<(syncinterval)Proceeding will reduce the number of data samples to %s. Do you wish to continue?
+>(syncinterval)実行すると、データサンプル数が %s に減少します。 続けますか ?
+
+%% toolbox/control/ctrlguis/@lsimgui/@siminputtable/updatetime.m
+<(updatetime)The end time must be strictly positive
+>(updatetime)終了時間は必ず正でなければなりません
+<(updatetime)The length of the specified data limits the simulation length to %s
+>(updatetime)指定したデータの長さは、 %s にシミュレーションの長さを制限します。
+<(updatetime)The time step must be strictly positive
+>(updatetime)時間ステップは必ず正でなければなりません
+
+%% toolbox/control/ctrlguis/@sisogui/@bodeditorF/bodeditorF.m
+<(bodeditorF)Cannot use this editor for feedback compensators.
+>(bodeditorF)フィードバック補償器に対してこのエディタを使用できません。
+
+%% toolbox/control/ctrlguis/@lsimgui/@siminputtable/addrows.m
+<(addrows)Insufficient room to add additional rows
+>(addrows)追加行を追加するための領域が足りません
+
+%% toolbox/control/ctrlguis/@lsimgui/@siminputtable/siggen.m
+<(siggen)Names cannot be empty
+>(siggen)名前を空にすることはできません。
+
+%% toolbox/control/ctrlguis/@lsimgui/@siminputtable/pasteData.m
+<(pasteData)No inputs are selected
+>(pasteData)入力が選択されていません
+
+%% toolbox/control/ctrlguis/@sisogui/@grapheditor/addPZDialog.m
+<(addPZDialog)Cannot add the selected pole/zero to a compensator
+>(addPZDialog)選択した極/零点を補償器に追加できません
+
+%% toolbox/control/ctrlguis/@sisogui/@grapheditor/addmenu.m
+<(addmenu)There are no design requirements to edit.
+>(addmenu)編集に必要な設計要求がありません。
+
+%% toolbox/control/ctrlguis/@sisogui/@pzeditor/setTableData.m
+<(setTableData)Please specify valid numeric values in the parameter table.
+>(setTableData)パラメータテーブルに有効な数値を指定してください。
+
+%% toolbox/control/ctrlguis/@sisogui/@pzeditor/setTableDataGainList.m
+<(setTableDataGainList)Please specify valid numeric values in the gain blocks.
+>(setTableDataGainList)ゲインブロックに有効な数値を指定してください。
+
+%% toolbox/control/ctrlguis/@sisogui/@sisotool/addlisteners.m
+<(addlisteners)Algebraic loop in inner loop G-H-F.
+>(addlisteners)内部ループ G-H-F に代数ループがあります。
+
+%% toolbox/control/ctrlguis/@sisogui/@sisotool/archivedlg.m
+<(archivedlg) You cannot mix Sample Times while retrieving models. 
+>(archivedlg) モデルの取得中にサンプル時間を混在させることはできません。 
+
+%% toolbox/control/ctrlguis/@sisogui/@sisotool/viewmenu.m
+<(viewmenu)The maximum of 6 views has been reached. To add a new view, you must first remove one of the current views.
+>(viewmenu)最多の6つのビューが表示されました。 新規ビューを追加するには、まず現在のビューの1つを削除しなければなりません。
+
+%% toolbox/control/ctrlguis/@sisodata/@loopdata/drawdiagram.m
+<(drawdiagram)SISO Tool Warning
+>(drawdiagram)SISO ツールの警告
+
+%% toolbox/control/ctrlguis/@viewgui/@SisoToolViewer/createView.m
+<(createView)There are no constraints to edit.
+>(createView)編集に制約がありません。
+
+%% toolbox/control/ctrlguis/@viewgui/@ltiviewer/figmenus.m
+<(figmenus)This feature requires  Java.
+>(figmenus)この機能は Java が必要です。
+
+%% toolbox/control/ctrlguis/@viewgui/@ltiviewer/importdeletegui.m
+<(importdeletegui)No system selected for import/delete.
+>(importdeletegui)インポート/削除のために選択したシステムがありません。
+
+%% toolbox/control/ctrlguis/@viewgui/@ltiviewer/importdlg.m
+<(importdlg)No system selected for importing.
+>(importdlg)インポートのために選択したシステムがありません。
+
+%% toolbox/control/ctrlguis/@viewgui/@ltiviewer/deletedlg.m
+<(deletedlg)Delete Error
+>(deletedlg)削除エラー
+
+%% toolbox/control/ctrlguis/@viewgui/@ltiviewer/exportdlg.m
+<(exportdlg)Export Error
+>(exportdlg)エクスポートエラー
+
+%% toolbox\control\ctrlguis\@sisogui\@sisotool\c2dtool.m
+<(c2dtool)Sample Time Conversion
+>(c2dtool)サンプル時間の変換
+
+%% toolbox\control\ctrlguis\@controlnodes\@SISODesignTask\getDialogSchema.m
+<(getDialogSchema)Show Architecture
+>(getDialogSchema)アーキテクチャの表示
+
+%%%% After 11/23
+<(buildpanels)PID tuning
+>(buildpanels)PID 調整
+<(buildpanels)IMC tuning
+>(buildpanels)IMC 調整
+<(buildpanels)LQG synthesis
+>(buildpanels)LQG 合成
+<()All Gain Blocks
+>()すべての Gain ブロック
+<()Compensator
+>()補償器
+<()Specifications
+>()仕様
+<()Controller response:
+>()コントローラの応答:
+<()Measurement noise:
+>()測定ノイズ:
+<()Design
+>()設計
+<(SISODesignTask)SISO Design Task Node.
+>(SISODesignTask)SISO 設計タスクノードです。
+<(DesignSnapshot)Design Snapshot.
+>(DesignSnapshot)設計のスナップショットです。
+<(DesignSnapshotFolder)Maintain your previous design snapshots.
+>(DesignSnapshotFolder)以前の設計スナップショットを管理します。
+<()Rename
+>()名前変更
+<()Design History
+>()設計履歴
+<()Identifier
+>()識別子
+<()Compensator C
+>()補償器 C
+<() Compensator 
+>() 補償器
+<() Specification 
+>() 仕様
+<() Specifications 
+>() 仕様
+<()Internal Model Control (IMC) tuning
+>()内部モデルコントロール (IMC) の調整
+<()Ziegler-Nichols open loop
+>()Ziegler-Nichols の開ループ
+<()Ziegler-Nichols closed loop
+>()Ziegler-Nichols の閉ループ
+<()Internal Model Control (IMC) based tuning
+>()内部モデルコントロール (IMC) ベースの調整
+<()Desired controller order
+>()希望するコントローラ次数
+<()Aggressive
+>()アグレッシブ
+<()Robust
+>()ロバスト
+<()    Small    
+>()    小規模    
+<()    Large    
+>()    大規模    
+<()LQG Design
+>()LQG 設計
+<()IMC Design
+>()IMC 設計
+<()LQG tuning method failed to produce a %s stabilizing controller for this model.
+>()LQG の調整メソッドは、このモデルに対する安定化コントローラ %s を作成できませんでした。
+<()IMC tuning method failed to produce a %s stabilizing controller for this model.
+>()IMC の調整メソッドは、このモデルに対する安定化コントローラ %s を作成できませんでした。
+<()%s tuning method failed to produce a %s stabilizing %s controller for this model.
+>()%s の調整メソッドは、このモデルに対する %s の安定化コントローラ %s を作成できませんでした。
+%
+<()Select New Response to View
+>()表示する新規応答を選択
+<()The selected pole can not be deleted because the number of poles of the compensator must be greater than or equal to the number of zeros.
+>()補償器の極の数は零点の数以上でなければならないため、選択した極を削除できません。
+<()Unable to add the selected pole/zero to a compensator for this loop.
+>()選択した極/零点をこのループに対する補償器に追加できません。
+<()Possible reasons include:
+>()考えられる理由はつぎのものがあります:
+<()The compensators have a constrained structure which would be violated.
+>()補償器は違反する制約付き構造体をもっています。
+<()The compensators have a constrained structure with a native sample time that differs from the current sample time of the design.
+>()補償器は、現在の設計のサンプル時間と異なるネイティブのサンプル時間をもつ制約付き構造体をもっています。
+<()There are no compensators that appear in series for this loop.
+>()このループに対する列に表示する補償器はありません。
+<()Unable to load the SISO Design Tool for this Project. Functions associated with the compensators can not be found on the path.
+>()このプロジェクトに対する SISO 設計ツールを読み込めません。 補償器に関連する関数はパス上にありません。
+<()Internal Model Control (IMC) design method requires a SISO LTI model.
+>()内部モデルコントロール (IMC) 設計手法は、SISO LTI モデルが必要です。
+<()Internal Model Control (IMC) design method works on stable models only.
+>()内部モデルコントロール (IMC) 設計手法は、安定モデル上でのみ機能します。
+<()Approximating the IMC compensator to the order %d will likely degrade stability and performance.  Selecting a higher order is recommended.
+>()IMC 補償器の次数 %d での近似は、おそらく安定性と性能を劣化させます。 より高い次数を選択することをお勧めします。
+<()Closed-loop stability was lost when approximating the IMC compensator to the order %d. Please increase the compensator order.
+>()閉ループの安定性は、IMC 補償器を次数 %d に近似するときに失われます。 補償器の次数を大きくしてください。
+<()Internal Model Control (IMC) method failed to produce a stable feedback loop. Please try another automated tuning method.
+>()内部モデルコントロール (IMC) メソッドは、安定なフィードバックループを作成できませんでした。 別の自動調整メソッドを試してください。
+<()LQG design method requires a LTI model.
+>()LQG 設計手法は、LTI モデルが必要です。
+<()Approximating the LQG compensator to the order %d will likely degrade stability and performance.  Selecting a higher order is recommended.
+>()LQG 補償器の次数 %d での近似は、おそらく安定性と性能を劣化させます。 より高い次数を選択することをお勧めします。
+<()Closed-loop stability was lost when approximating the LQG compensator to the order %d. Please increase the compensator order.
+>()閉ループの安定性は、LQG 補償器を次数 %d に近似するときに失われます。 補償器の次数を大きくしてください。
+<()LQG method failed to produce a stable feedback loop. Please try another automated tuning method.
+>()LQG メソッドは安定なフィードバックループを作成できませんでした。 別の自動調整メソッドを試してください。
+<()PID design method requires a SISO LTI model.
+>()PID 設計手法は、SISO LTI モデルが必要です。
+<()PID design method works on stable models only.
+>()PIC 設計メソッドは、安定モデル上でのみ機能します。
+<()PID method failed to produce a stable feedback loop. Please try another automated tuning method.
+>()PID メソッドは安定なフィードバックループを作成できませんでした。 別の自動調整メソッドを試してください。
+<()Desired controller order:
+>()希望するコントローラ次数:
+<()LQG Synthesis
+>()LQG 合成
+<()PID design methods can not be applied to an open-loop unstable process.
+>()PID 設計手法は、不安定な開ループの系には適用できません。
+<()Internal Model Control (IMC) design method can not be applied to an open-loop unstable process.
+>()内部モデルコントロール (IMC) 設計手法は、不安定な開ループの系には適用できません。
+
+%% control\ctrlguis\@controlnodes\@DesignSnapshot\updateSummary.m 
+<(updateSummary)<b>%sDesign Configuration #%d</b>
+>(updateSummary)<b>%s設計の設定 #%d</b>
+<(updateSummary)<b>%sTunable Elements</b>
+>(updateSummary)<b>%s調整可能な要素</b>
+<(updateSummary)<b>%sFixed Elements</b>
+>(updateSummary)<b>%s固定の要素</b>
+% "%sParameter" and "%sValue" need translation.
+<(updateSummary)<tr valign="top"><th bgcolor="#B2B2B2" valign="top">%sParameter</th></font><th bgcolor="#B2B2B2" valign="top">%sValue</font></th></tr>
+>(updateSummary)<tr valign="top"><th bgcolor="#B2B2B2" valign="top">%sパラメータ</th></font><th bgcolor="#B2B2B2" valign="top">%s値</font></th></tr>
+<(updateSummary)Gain
+>(updateSummary)ゲイン
+<(updateSummary)Zeros
+>(updateSummary)零点
+<(updateSummary)Poles
+>(updateSummary)極
+% "Parameter Values" need translation.
+<(updateSummary)<table cellspacing="0" cellpadding="4" class="body" summary="Parameter Values" border="1"><colgroup><col width="40%"><col width="40%"></colgroup>
+>(updateSummary)<table cellspacing="0" cellpadding="4" class="body" summary="パラメータ値" border="1"><colgroup><col width="40%"><col width="40%"></colgroup>
+
+%% slcontrol\slctrlguis\@ControlDesignNodes\@DesignSnapshot\updateSummary.m 
+<(updateSummary)<table border=0 width="100%%" cellpadding=0 cellspacing=0><tr><td valign=baseline bgcolor="#e7ebf7"><b>Design Snapshot Summary - %s</b></td></tr></table>
+>(updateSummary)<table border=0 width="100%%" cellpadding=0 cellspacing=0><tr><td valign=baseline bgcolor="#e7ebf7"><b>設計のスナップショットの概要 - %s</b></td></tr></table>
+<(updateSummary)<B><FONT FACE=sans-serif SIZE=4 COLOR=#800000>Design Snapshot Summary - %s</FONT></B>
+>(updateSummary)<B><FONT FACE=sans-serif SIZE=4 COLOR=#800000>設計のスナップショットの概要 - %s</FONT></B>
+<(updateSummary)%sTuned Block - <a href="block:%s">%s%s</a>:
+>(updateSummary)%s調整ブロック - <a href="block:%s">%s%s</a>:
+% "Tunable Block Parameter Values"
+<(updateSummary)<table cellspacing="0" cellpadding="4" class="body" summary="Tunable Block Parameter Values" border="1"><colgroup><col width="40%"><col width="40%"></colgroup>
+>(updateSummary)<table cellspacing="0" cellpadding="4" class="body" summary="調整可能なブロックパラメータ値" border="1"><colgroup><col width="40%"><col width="40%"></colgroup>
+% "%sParameter" and "%sValue" need translation.
+
+%% control\ctrlguis\@controlnodes\@DesignSnapshot\getDialogSchema.m 
+<(getDialogSchema)Retrieve Design
+>(getDialogSchema)設計の取得
+
+<(buildcomptab_PZeditor)Add Pole/Zero
+>(buildcomptab_PZeditor)極/零点の追加
+<(buildcomptab_PZeditor)Complex Pole
+>(buildcomptab_PZeditor)複素数の極
+<(buildcomptab_PZeditor)Integrator
+>(buildcomptab_PZeditor)積分器
+<(buildcomptab_PZeditor)Complex Zero
+>(buildcomptab_PZeditor)複素数の零点
+<(buildcomptab_PZeditor)Differentiator
+>(buildcomptab_PZeditor)微分器
+<(buildcomptab_PZeditor)Lead
+>(buildcomptab_PZeditor)リード
+<(buildcomptab_PZeditor)Lag
+>(buildcomptab_PZeditor)ラグ
+<[buildcomptab_PZeditor](buildcomptab_PZeditor)Notch
+>[buildcomptab_PZeditor](buildcomptab_PZeditor)ノッチ
+<(buildcomptab_PZeditor)Delete Pole/Zero
+>(buildcomptab_PZeditor)極/零点の削除
+<(refresh_pz_table)<HTML> Max Delta <br>Phase (deg)
+>(refresh_pz_table)<HTML> 最大デルタ <br>位相 (度)
+<(refresh_pz_table)Location
+>(refresh_pz_table)配置
+<(refresh_pz_table)Damping
+>(refresh_pz_table)減衰
+
+<(build)Open Loop %d
+>(build)開ループ %d
+<(c2dtool)Discretize with
+>(c2dtool)離散化
+<()Impulse Invariant
+>()インパルス不変応答法
+<()Matched Pole-Zero
+>()混合極-零点法
+<(figmenu)Continuous/discrete conversions are performed
+>(figmenu)連続/離散の変換は各補償器に対して
+<(figmenu)independently on each of the components.
+>(figmenu)独立に実行されます。
+<(figmenu)The resulting feedback loop may not accurately describe
+>(figmenu)その結果、すべての補償器がダイナミックを持つ場合、
+<(figmenu)your system when all components have dynamics.
+>(figmenu)フィードバックループが正しく記述されない場合があります。
+<(aboutcst)About Control System Toolbox
+>(aboutcst)Control System Toolbox について
+<(getMenuToolBarSchema)About Control System Toolbox
+>(getMenuToolBarSchema)Control System Toolbox について
+
+%%D:\work\A_may12\matlab\toolbox\control\ctrlguis\@lsimgui\@siminputtable/userinput.m
+<(userinput)Cannot parse entered varaiable name
+>(userinput)入力された変数名を解読できません
+<(userinput)Expression must begin with a valid variable name
+>(userinput)式は有効な変数名で始まらなければなりません
+<(userinput)Rows must be continguous
+>(userinput)行は連続でなければなりません
+<(userinput)This type of data must be indexed as a column vector
+>(userinput)このタイプのデータは、列ベクトルとして指標付けされなければなりません
+<(userinput)Variable not found in the workspace
+>(userinput)ワークスペースに変数がみつかりません
+
+%%D:\work\A_may12\matlab\toolbox/control/ctrlguis/@lsimgui/@lsimguistate/updatesummary.m
+<(updatesummary)Originally loaded from:  Ascii file, Delimeter: %s\nFile:  %s,Column number:  %s
+>(updatesummary)読み込み元 : ASCII ファイル、デリミタ : %s\nファイル :  %s、列番号:  %s
+<(updatesummary)Originally loaded from:  CSV file, File:  %s\nColumn number:  %s
+>(updatesummary)読み込み元 : CSV ファイル、ファイル :%s\n列番号 : %s
+<(updatesummary)Originally loaded from:  Excel spreadsheet, Sheetname:  %s\nFile:  %s, Column number:  %s
+>(updatesummary)読み込み元 : Excel スプレッドシート、シート名 : %s\nファイル :  %s、列番号:  %s
+<(updatesummary)Originally loaded from:  Initial data, Original input #%d
+>(updatesummary)読み込み元 : 初期データ、オリジナル入力 #%d
+<(updatesummary)Originally loaded from:  MAT file, Variable name: %s\nFile:  %s, Column number:  %s
+>(updatesummary)読み込み元 : MAT ファイル、変数名 : %s\nファイル :  %s、列番号:  %s
+<(updatesummary)Originally loaded from:  MAT file, Variable name: %s\nFile:  %s, Row number:  %s
+>(updatesummary)読み込み元 : MAT ファイル、変数名 : %s\nファイル :  %s、行番号:  %s
+<(updatesummary)Originally loaded from:  Signal designer, Name: %s\nDetails:  %s
+>(updatesummary)読み込み元 : 信号設計、名前 : %s\n詳細 : %s
+<(updatesummary)Originally loaded from:  Workspace, Variable name: %s\nColumn number:  %s
+>(updatesummary)読み込み元 : ワークスペース、変数名 :%s\n列番号 : %s
+<(updatesummary)Originally loaded from:  Workspace, Variable name: %s\nRow number:  %s
+>(updatesummary)読み込み元 : ワークスペース、変数名 :%s\n行番号 : %s
+
+%%D:\work\A_may12\matlab\/toolbox/control/ctrlguis/@lsimgui/@siminputtable/siggen.m
+<(siggen)Linear Simulation Tool
+>(siggen)線形シミュレーションツール
+<(siggen)Noise: mean: %s, standard deviation: %s, prob density: %s
+>(siggen)ノイズ : 平均値 : %s、標準偏差 : %s、確率密度 : %s
+<(siggen)Sine wave: amplitude: %s, frequency: %0.3gHz,\nbased on a sample interval of %0.3g secs
+>(siggen)正弦波 : 振幅 : %s、周波数 : %0.3gHz、\n%0.3g 秒サンプル間隔ベース
+<(siggen)Square wave: amplitude: %s, frequency: %0.3gHz,\nbased on a sample interval of %0.3g secs
+>(siggen)矩形波 : 振幅 : %s、周波数 : %0.3gHz、\n%0.3g 秒サンプル間隔ベース
+<(siggen)Step: size: %s, initial value: %s, transition time: %s secs,\nbased on a sample interval of %0.3g secs
+>(siggen)ステップ : サイズ : %s、初期値 : %s、遷移時間 : %s 秒、\n%0.3g 秒サンプル間隔ベース
+<(build)Closed-Loop Response
+>(build)閉ループ応答
+
+<(edit)Import initial states from workspace
+>(edit)初期状態をワークスペースからインポート
+
+<()Open Loop - Output of %s
+>()開ループ - %s の出力
+<()PIDF with filter pole N at
+>()つぎの点でフィルタの極 N をもつPIDF
+<()Compensator %s
+>()補償器 %s
+<()Plant %s
+>()プラント %s
+<()Sensor %s
+>()センサ %s
+
+%%%%% 7a %%%%%
+%%toolbox\control\ctrlguis/@controlnodes/loadSISOTool.m
+<(loadSISOTool)%s: Starting SISO Tool for system: %s
+>(loadSISOTool)%s: つぎのシステムに対して SISO Tool を開始: %s
+<(loadSISOTool)Getting Started with the SISO Design Tool
+>(loadSISOTool)SISO 設計ツールの Getting Started
+
+%%toolbox\control\ctrlguis/@lsimgui/@siminputtable/addrows.m
+<(addrows)Linear simulation tool
+>(addrows)線形シミュレーションツール
+
+%%toolbox\control\ctrlguis/@sisodata/@design/loopviews.m
+<(loopviews)Disturbance Model Gd
+>(loopviews)外乱モデル Gd
+<(loopviews)Estimated Plant G2
+>(loopviews)推定されるプラント G2
+<(loopviews)Plant G1
+>(loopviews)プラント G1
+
+%%toolbox\control\ctrlguis/@sisodata/@loopdata/checkdata.m
+<(checkdata)Use PADE to approximate the time delays.
+>(checkdata)PADE を使用して時間遅れを近似してください。
+
+%%toolbox\control\ctrlguis/@sisodata/@PZGroupComplex/createParamSpec.m
+<(createParamSpec)Complex %s
+>(createParamSpec)複素数 %s
+<(createParamSpec)Complex %s (group %d)
+>(createParamSpec)複素数 %s (グループ %d)
+
+%%toolbox\control\ctrlguis/@sisodata/@PZGroupLeadLag/createParamSpec.m
+<(createParamSpec)LeadLag (group %d)
+>(createParamSpec)リードラグ (グループ %d)
+
+%%toolbox\control\ctrlguis/@sisodata/@PZGroupLeadLag/setValue.m
+<(setValue)Values must for zero and pole must be real for LeadLag
+>(setValue)零点と極に対する値は、リードラグに対して実数でなければなりません。
+
+%%toolbox\control\ctrlguis/@sisodata/@PZGroupNotch/createParamSpec.m
+<(createParamSpec)Notch (group %d)
+>(createParamSpec)ノッチ (グループ %d)
+
+%%toolbox\control\ctrlguis/@sisodata/@PZGroupReal/createParamSpec.m
+<(createParamSpec)Real %s
+>(createParamSpec)実数 %s
+<(createParamSpec)Real %s (group %d)
+>(createParamSpec)実数 %s (グループ %d)
+
+%%toolbox\control\ctrlguis/@sisodata/@PZGroupReal/setValue.m
+<(setValue)Value must be a real scalar for a simple pole or zero
+>(setValue)値は、1 つの極、または零点に対して実数のスカラでなければなりません。
+
+%%toolbox\control\ctrlguis/@sisodata/@system/schema.m
+<(schema)Invalid model value.
+>(schema)無効なモデル値です。
+
+%%toolbox\control\ctrlguis/@sisodata/@TunedLoop/setLoopConfig.m
+<(setLoopConfig)SISO Design Task
+>(setLoopConfig)SISO 設計タスク
+<(setLoopConfig)The open loop %s could not be analyzed due to the following error: \n\n %s
+>(setLoopConfig)開ループ %s は以下のエラーにより解析できません: \n\n %s
+
+%%toolbox\control\ctrlguis/@sisogui/@AnalysisPlotConfig/addResponse.m
+<(addResponse)Max plots
+>(addResponse)最大値プロット
+
+%%toolbox\control\ctrlguis/@sisogui/@AutomatedCompensatorTuning/buildSpecPanel.m
+<(buildSpecPanel)This function needs to be overloaded in subclass.
+>(buildSpecPanel)この関数はサブクラス内でオーバーロードする必要があります。
+
+%%toolbox\control\ctrlguis/@sisogui/@AutomatedCompensatorTuning/utModelOrderReduction.m
+<(utModelOrderReduction)Approximating the compensator to the order %d will likely degrade stability and performance.  Selecting a higher order is recommended.
+>(utModelOrderReduction)補償器の次数 %d での近似は、おそらく安定性と性能を劣化させます。より高い次数を選択することをお勧めします。
+<(utModelOrderReduction)Automated tuning method failed to produce a stable feedback loop.
+>(utModelOrderReduction)自動調整メソッドは、安定なフィードバックループを生成できません。
+
+%%toolbox\control\ctrlguis/@sisogui/@bodeditor/trackgain.m
+<(trackgain)Drag the magnitude curve up or down to change the gain of %s.
+>(trackgain)%s のゲインを変更するには、振幅曲線を上下にドラッグしてください。
+
+%%toolbox\control\ctrlguis/@sisogui/@DesignPlotConfig/buildPanel.m
+<(buildPanel)The loop names must be unique and nonempty.
+>(buildPanel)ループ名は固有で空にはできません。
+
+%%toolbox\control\ctrlguis/@sisogui/@DesignPlotConfig/getCurrentConfiguration.m
+<(getCurrentConfiguration)Plot %s
+>(getCurrentConfiguration)プロット %s
+
+%%toolbox\control\ctrlguis/@sisogui/@grapheditor/addPZDialog.m
+<(addPZDialog)Add pole/zero
+>(addPZDialog)極/零点の追加
+
+%%toolbox\control\ctrlguis/@sisogui/@IMCTuning/buildSpecPanel.m
+<(buildSpecPanel)IMC tuning methods can not be applied to a compensator with constraints on its pole(s), zero(s) or gain.
+>(buildSpecPanel)IMC 調整メソッドは、その極、零点、ゲイン上に制約をもつ補償器に適用できません。
+<(buildSpecPanel)IMC tuning methods can not be applied to a compensator with fixed dynamics.
+>(buildSpecPanel)IMC 調整メソッドは、固定ダイナミクスをもつ補償器に適用できません。
+
+%%toolbox\control\ctrlguis/@sisogui/@LoopsynTuning/buildSpecPanel.m
+<(buildSpecPanel)Define frequency range for loop shaping [wmin,wmax]:
+>(buildSpecPanel)ループシェーピングの周波数範囲の定義 [wmin,wmax]:
+<(buildSpecPanel)This tuning method can not be applied to a compensator with constraints on its pole(s), zero(s) or gain.
+>(buildSpecPanel)この調整メソッドは、その極、零点、ゲイン上に制約をもつ補償器に適用できません。
+
+%%toolbox\control\ctrlguis/@sisogui/@LoopsynTuning/computeCompensator.m
+<(computeCompensator)There is no open loop plant defined
+>(computeCompensator)定義された開ループプラントがありません。
+
+%%toolbox\control\ctrlguis/@sisogui/@LQGTuning/buildSpecPanel.m
+<(buildSpecPanel)LQG synthesis methods can not be applied to a compensator with constraints on its pole(s), zero(s) or gain.
+>(buildSpecPanel)LQG 合成メソッドは、その極、零点、ゲイン上に制約をもつ補償器に適用できません。
+<(buildSpecPanel)LQG synthesis methods can not be applied to a compensator with fixed dynamics.
+>(buildSpecPanel)LQG 合成メソッドは、固定ダイナミクスをもつ補償器に適用できません。
+
+%%toolbox\control\ctrlguis/@sisogui/@nicholseditor/newconstr.m
+<(newconstr)Closed-Loop peak gain
+>(newconstr)閉ループのピークゲイン
+<(newconstr)Gain margin
+>(newconstr)ゲイン余裕
+<(newconstr)Gain-Phase requirement
+>(newconstr)ゲイン位相の要求
+<(newconstr)Phase margin
+>(newconstr)位相余裕
+
+%%toolbox\control\ctrlguis/@sisogui/@OpenLoopConfigDialog/OpenLoopConfigDialog.m
+<(OpenLoopConfigDialog)The current control architecture does not contain any feedback loops.
+>(OpenLoopConfigDialog)現在の制御アーキテクチャはいずれのフィードバックループも含んでいません。
+
+%%toolbox\control\ctrlguis/@sisogui/@PIDTuning/buildSpecPanel.m
+<(buildSpecPanel)PIDF with filter parameter N at
+>(buildSpecPanel)つぎの点でフィルタパラメータ N をもつPIDF
+
+%%toolbox\control\ctrlguis/@sisogui/@PIDTuning/computeCompensator.m
+<(computeCompensator)Please wait when searching ...
+>(computeCompensator)検索中です。お待ちください...
+
+%%toolbox\control\ctrlguis/@sisogui/@PIDTuning/PIDTuning.m
+<(PIDTuning)Dominant closed loop time constant:
+>(PIDTuning)主要な閉ループの時定数:
+<(PIDTuning)Select a perofrmance metric:
+>(PIDTuning)性能の判定基準を選択:
+<(PIDTuning)Select a tuning formula:
+>(PIDTuning)調整式の選択:
+
+%%toolbox\control\ctrlguis/@sisogui/@pzeditor/addpz.m
+<(addpz)Add Differentiator
+>(addpz)微分器を追加
+<(addpz)Add Integrator
+>(addpz)積分器を追加
+<(addpz)Add Lag
+>(addpz)ラグを追加
+<(addpz)Add Lead
+>(addpz)リードを追加
+<(addpz)Add Notch
+>(addpz)ノッチを追加
+<(addpz)Add Pole
+>(addpz)極を追加
+<(addpz)Add Zero
+>(addpz)零点を追加
+<(addpz)Added Poles/Zeros.
+>(addpz)極/零点を追加
+<(addpz)SISOTOOL Pole/Zero Editor
+>(addpz)SISOTOOL 極/零点エディタ
+
+%%toolbox\control\ctrlguis/@sisogui/@pzeditor/buildcompdisppanel.m
+<(buildcompdisppanel)Edit Gain
+>(buildcompdisppanel)ゲインを編集
+<(buildcompdisppanel)Edited Gain
+>(buildcompdisppanel)編集されたゲイン
+
+%%toolbox\control\ctrlguis/@sisogui/@pzeditor/deletepz.m
+<(deletepz)Delete Poles/Zeros
+>(deletepz)極/零点を削除
+<(deletepz)Deleted Poles/Zeros.
+>(deletepz)削除された極/零点
+
+%%toolbox\control\ctrlguis/@sisogui/@pzeditor/setTableData.m
+<(setTableData)Modified Compensator Parameter.
+>(setTableData)補償器のパラメータが修正されました。
+
+%%toolbox\control\ctrlguis/@sisogui/@pzeditor/showpzeditcard.m
+<(showpzeditcard)Edit %s
+>(showpzeditcard)%s を編集
+<(showpzeditcard)Edit Complex %s
+>(showpzeditcard)複素数 %s を編集
+<(showpzeditcard)Edit Notch
+>(showpzeditcard)ノッチを編集
+<(showpzeditcard)Edited %s
+>(showpzeditcard)編集された %s
+<(showpzeditcard)Edited %s.
+>(showpzeditcard)%s が編集されました。
+<(showpzeditcard)Edited Notch
+>(showpzeditcard)編集されたノッチ
+<(showpzeditcard)Edited complex %s.
+>(showpzeditcard)複素数 %s が編集されました。
+
+%%toolbox\control\ctrlguis/@sisogui/@rleditor/newconstr.m
+<(newconstr)Damping ratio
+>(newconstr)減衰比
+<(newconstr)Natural frequency
+>(newconstr)固有振動数
+<(newconstr)Percent overshoot
+>(newconstr)オーバーシュートの割合
+<(newconstr)Region constraint
+>(newconstr)領域の制約
+
+%%toolbox\control\ctrlguis/@sisogui/@sisotool/archivedlg.m
+<(archivedlg)    Compensators:      
+>(archivedlg)    補償器:      
+<(archivedlg)    Plant:
+>(archivedlg)    プラント:
+<(archivedlg)Compensator Orders
+>(archivedlg)補償器の次数
+<(archivedlg)Design Archive
+>(archivedlg)設計アーカイブ
+<(archivedlg)Discarded "%s" from design list.
+>(archivedlg)設計リストから "%s" を破棄しました。
+<(archivedlg)Do you want to overwrite it?
+>(archivedlg)上書きしますか?
+<(archivedlg)Models to retrieve: 
+>(archivedlg)取り出すモデル 
+<(archivedlg)Renamed design from "%s" to "%s."
+>(archivedlg)"%s" から "%s."に設計の名前を変更しました。
+<(archivedlg)Store design as:
+>(archivedlg)つぎの名前で設計を保存:
+<(archivedlg)Stored current design as %s.
+>(archivedlg)%s として現在の設計を保存しました。
+<(archivedlg)Stored designs 
+>(archivedlg)保存された設計 
+<(archivedlg)There is already a compensator design with the same name.
+>(archivedlg)既に同じ名前の補償器設計があります。
+
+%%toolbox\control\ctrlguis/@viewgui/@ltiviewer/createView.m
+<(createView)Cannot automatically assign the initial state, due either
+>(createView)つぎのいずれかのため、初期状態を自動的に割り当てられません
+<(createView)Use the right-click menu to specify missing input data
+>(createView)右クリックメニューを使用して欠損した入力データを指定してください。
+<(createView)Use the right-click menu to specify the initial condition.
+>(createView)右クリックメニューを使用して初期条件を指定してください。
+
+%%toolbox\control\ctrlguis/@viewgui/@ltiviewer/exportdlg.m
+<(exportdlg)At least one of the variables you are exporting
+>(exportdlg)少なくともエクスポートしている変数の 1 つ
+<(exportdlg)Export Systems
+>(exportdlg)システムをエクスポート
+
+%%toolbox\control\ctrlguis/@viewgui/@ltiviewer/importdeletegui.m
+<(importdeletegui)Systems Import/Delete
+>(importdeletegui)システムのインポート/削除
+
+%%toolbox\control\ctrlguis/@viewgui/@ltiviewer/importdlg.m
+<(importdlg)Import completed. Systems imported: %d.
+>(importdlg)インポートが完了しました。インポートしたシステム: %d
+<(importdlg)LTI Viewer Import
+>(importdlg)LTI Viewer のインポート
+<(importdlg)Overwrite Systems
+>(importdlg)システムの上書き
+<(importdlg)Some imported systems already exist in the Viewer. Do you want to overwrite them?
+>(importdlg)インポートしたシステムのいくつかは既に Viewer 上に存在します。上書きしますか?
+
+%%toolbox\control\ctrlguis/@viewgui/@ltiviewer/refreshsys.m
+<(refreshsys)LTI Viewer Refresh
+>(refreshsys)LTI Viewer のリフレッシュ
+
+%%toolbox\control\ctrlguis/@viewgui/@SisoToolViewer/createView.m
+<(createView)Edit Requirement Warning
+>(createView)要求の編集の警告
+<(createView)FRD models cannot be shown in pole/zero plots.
+>(createView)FRD モデルは極/零点プロットに表示できません。
+<(createView)There are no requirements to edit.
+>(createView)編集する要求がありません。
+
+%%toolbox\control\ctrlguis/@viewgui/@viewer/addview.m
+<(addview)Unknown or ambiguous plot type %s.
+>(addview)プロットタイプ %s は不明、またはあいまいです。
+
+%%toolbox\control\ctrlguis/@viewgui/@viewer/schema.m
+<(schema)Views must be a vector of @view handles of length %d.
+>(schema)View は長さ %d の @view のハンドルのベクトルでなければなりません。
+
+%%toolbox\control\ctrlguis/@viewgui/@viewer/setCurrentViews.m
+<(setCurrentViews)A maximum of %d views can be displayed.
+>(setCurrentViews)%d の view の最大値が表示可能です。
+
+%%toolbox\control\ctrlguis/gsisotool.m
+<(gsisotool)Open Loop for %s
+>(gsisotool)%s の開ループ
+
+%%toolbox\control\ctrlguis/ltiplotoption.m
+<(ltiplotoption)Impulse Response
+>(ltiplotoption)インパルス応答
+<(ltiplotoption)Linear Simulation Results
+>(ltiplotoption)線形シミュレーションの結果
+<(ltiplotoption)Response to Initial Conditions
+>(ltiplotoption)初期条件の応答
+<(ltiplotoption)Step Response
+>(ltiplotoption)ステップ応答
+
+%%toolbox\control\ctrlguis/mlstool.m
+<(mlstool)Closed Loop: r to y
+>(mlstool)閉ループ: r - y
+<(mlstool)Invalid input argument.
+>(mlstool)入力引数が無効です。
+
+%%toolbox\control\ctrlguis/rfinputs.m
+<(rfinputs)Final time must be a real number.
+>(rfinputs)最終時間は実数でなければなりません。
+<(rfinputs)Initial condition X0 must be a vector of real numbers.
+>(rfinputs)初期条件 X0 は、実数のベクトルでなければなりません。
+<(rfinputs)Input data U must be an array of real numbers.
+>(rfinputs)入力データ U は実数の配列でなければなりません。
+<(rfinputs)Not available for FRD models.
+>(rfinputs)FRD モデルには利用可能ではありません。
+<(rfinputs)Time vector must be a vector of real numbers.
+>(rfinputs)時間ベクトルは、実数のベクトルでなければなりません。
+
+%%toolbox\control\ctrlguis/sisoinit.m
+<(sisoinit)Compensator names required for Configuration #0.
+>(sisoinit)補償器名は設定 #0 で必要です。
+
+%
+%%toolbox\control\ctrlguis\@viewgui
+<(createView)At least one imported system cannot be shown in the plot with title "%s".
+>(createView)少なくともインポートされたシステムの 1 つは、タイトル "%s" のプロット内に表示できません。
+<(createView)Cannot automatically assign the initial state, due either to a mismatch between the states of the existing systems, or the number of states of the imported system is not equal the number of states of the existing system(s).\n\n Use the right-click menu to specify the initial condition. 
+>(createView)既存のシステムの状態間が一致していない、またはインポートされたシステムの状態数が既存のシステムの状態数と等しくないかのいずれかのため、初期状態を自動的に割り当てることができません。\n\n 右クリックメニューを使用して初期条件を指定してください。
+<(createView)Systems that cannot be shown in this plot include FRD models and models with more zeros than poles.
+>(createView)このプロットで表示できないシステムは、FRD モデルと極よりも多い零点をもつモデルを含んでいます。
+<(createView)Systems that cannot be shown in this plot include FRD models, models with more zeros than poles, and models whose number of inputs or states is incompatible with the specified input data U or initial condition X0.\n\nUse the right-click menu to specify missing input data or modify the initial condition.
+>(createView)このプロットで表示できないシステムは FRD モデルと極よりも多い零点をもつモデルを含んでおり、モデルの入力、または状態数は、指定された入力データ U、または初期条件 X0 と互換性がありません。\n\nメニューの右クリックを使用して欠損した入力データを指定するか、または初期条件を修正してください。
+
+%% toolbox\control\ctrlguis/@sisogui/@bodeditor/hoverstatus.m
+<(hoverstatus)%s For the current configuration of this loop, the gain is not editable.
+>(hoverstatus)%s このループの現在の設定に対して、ゲインは編集可能ではありません。
+
+%% 789 M-files have been searched in C:\Work\Acontrol_Nov10\matlab\toolbox\control\ctrlguis on 2006/11/12.
+%% 114 messages with 726 words need translation.
+
+%% contro/ctrlguis/ja/xlate
+%%@sisogui\@LoopsynTuning/getGd.m
+<(getGd)Target bandwidth must be a positive value.
+>(getGd)ターゲットの帯域幅は正の値でなければなりません。
+<(getGd)Target loop shape must be a valid single-input single-output LTI object.
+>(getGd)ターゲットのループ整形は、有効な単入力、単出力の LTI オブジェクトでなければなりません。
+
+%%@sisogui\@LoopsynTuning/computeCompensator.m
+<(computeCompensator)Unable to design a compensator because the open-loop plant is undefined.
+>(computeCompensator)開ループプラントが未定義のため、補償器を設計できません。
+
+%%@sisogui\@LoopsynTuning/buildSpecPanel.m
+<(buildSpecPanel)Frequency range for loop shaping [wmin,wmax]:
+>(buildSpecPanel)ル－プ整形の周波数範囲 [wmin,wmax]:
+<(buildSpecPanel)Controller order:
+>(buildSpecPanel)コントローラ次数:
+<(buildSpecPanel)Robust Control Toolbox is required for this tuning method.
+>(buildSpecPanel)Robust Control Toolbox は、この調整メソッドで必要です。
+<(buildSpecPanel)Tuning preference:
+>(buildSpecPanel)調整設定:
+<(buildSpecPanel)Target bandwidth
+>(buildSpecPanel)ターゲットの帯域幅
+<(buildSpecPanel)Target loop shape
+>(buildSpecPanel)ターゲットのループ整形
+<(buildSpecPanel)Target open-loop bandwidth:
+>(buildSpecPanel)ターゲットの開ループの帯域幅:
+<(buildSpecPanel)Target open-loop shape (LTI):
+>(buildSpecPanel)ターゲットの開ループ整形 (LTI):
+<(buildSpecPanel)Loop shaping method cannot be applied to a compensator with any constraints on its pole(s), zero(s), or gain.
+>(buildSpecPanel)ループ整形メソッドは、その極、零点、ゲイン上に制約をもつ任意の補償器に適用できません。
+
+%%@sisogui\@LoopsynTuning/LoopsynTuning.m
+<(LoopsynTuning)Loop Shaping
+>(LoopsynTuning)ループ整形
+
+%%@sisogui\@PIDTuning/buildSpecPanel.m
+<(buildSpecPanel)Controller type:
+>(buildSpecPanel)コントローラタイプ:
+<(buildSpecPanel)PID with derivative filter 1/(1+s/N). N frequency:
+>(buildSpecPanel)微分フィルタ 1/(1+s/N) をもつ PID。N は周波数:
+<(buildSpecPanel)Tuning algorithm:
+>(buildSpecPanel)調整アルゴリズム:
+<(buildSpecPanel)PID tuning methods cannot be applied to this compensator. Constraints on its pole(s), zero(s), or gain are incompatible with PID structure.
+>(buildSpecPanel)PID 調整メソッドはこの補償器に適用できません。極、零点、ゲインのいずれかの制約は、PID 構造と互換性がありません。
+
+%%@sisogui\@PIDTuning/computeCompensator.m
+<(computeCompensator)Frequency N has to be a positive real number.
+>(computeCompensator)周波数 N は、正の実数でなければなりません。
+<(computeCompensator)Searching ...
+>(computeCompensator)検索中...
+<(computeCompensator)PI/PID/PIDF tuning methods require a plant with no differentiator.
+>(computeCompensator)PI/PID/PIDF 調整メソッドは、微分器をもたないプラントが必要です。
+<(computeCompensator)Dominant closed-loop time constant has to be a positive real number.
+>(computeCompensator)主要な閉ループの時定数は、正の実数でなければなりません。
+<(computeCompensator)This PID tuning method requires a stable plant model.
+>(computeCompensator)この PID 調整メソッドは、安定なプラントモデルを必要とします。
+<(computeCompensator)The closed-loop system might be marginally stable.
+>(computeCompensator)閉ループシステムはわずかに安定する可能性があります。
+<(computeCompensator)This tuning method cannot produce a stable feedback loop. Please adjust tuning settings or try another tuning method.
+>(computeCompensator)この調整メソッドは、安定なフィードバックループを生成できません。設定を調整するか、別の調整メソッドを試してください。
+
+%%@sisogui\@PIDTuning/PIDTuning.m
+<(PIDTuning)PID Tuning
+>(PIDTuning)PID 調整
+<(PIDTuning)Singular frequency based tuning
+>(PIDTuning)特異な周波数に基づく調整
+<(PIDTuning)Performance metric:
+>(PIDTuning)性能の判定基準:
+<(PIDTuning)Setpoint tracking
+>(PIDTuning)設定点のトラッキング
+<(PIDTuning)Load disturbance rejection
+>(PIDTuning)外乱抑圧の読み込み
+<(PIDTuning)Tuning formula:
+>(PIDTuning)調整式:
+<(PIDTuning)Automated Tuning: PID Controller
+>(PIDTuning)自動調整: PID コントローラ
+
+%%@sisogui\@IMCTuning/buildSpecPanel.m
+<(buildSpecPanel)IMC tuning methods cannot be applied to a compensator with fixed dynamics.
+>(buildSpecPanel)IMC 調整メソッドは、固定ダイナミクスをもつ補償器に適用できません。
+<(buildSpecPanel)IMC tuning method cannot be applied to a compensator with any constraints on its pole(s), zero(s), or gain.
+>(buildSpecPanel)IMC 調整メソッドは、その極、零点、ゲイン上に制約をもつ任意の補償器に適用できません。
+
+%%@sisogui\@IMCTuning/computeCompensator.m
+<(computeCompensator)This tuning method cannot produce a stable feedback loop because the feedback controller is unstable.
+>(computeCompensator)フィードバックコントローラが不安定なため、この調整メソッドは安定なフィードバックループを生成できません。
+
+%%@sisogui\@IMCTuning/IMCTuning.m
+<(IMCTuning)Internal Model Control (IMC) Tuning
+>(IMCTuning)内部モデルコントロール (IMC) の調整
+<(IMCTuning)Automated Tuning: Internal Model Controller
+>(IMCTuning)自動調整: 内部モデルコントローラ
+
+%%@sisogui\@LQGTuning/buildSpecPanel.m
+<(buildSpecPanel)LQG synthesis method cannot be applied to a compensator with fixed dynamics.
+>(buildSpecPanel)LQG 合成メソッドは、固定ダイナミクスをもつ補償器に適用できません。
+<(buildSpecPanel)LQG synthesis method cannot be applied to a compensator with any constraints on its pole(s), zero(s), or gain.
+>(buildSpecPanel)LQG 合成メソッドは、その極、零点、ゲイン上に制約をもつ任意の補償器に適用できません。
+
+%%@sisogui\@LQGTuning/LQGTuning.m
+<(LQGTuning)Automated Tuning: LQG Controller
+>(LQGTuning)自動調整: LQG コントローラ
+
+%%@sisogui\@SROTuning/buildPanel.m
+<(buildPanel)Optimization Based Tuning
+>(buildPanel)最適化ベースの調整
+
+%%@sisogui\@AutomatedTuning/buildPanel.m
+<(buildPanel)Design method:
+>(buildPanel)設計手法:
+<(buildPanel)Automated Design: %s
+>(buildPanel)自動設計: %s
+
+%%@sisogui\@AutomatedCompensatorTuning/refreshCompSelectPanel.m
+<(refreshCompSelectPanel)The compensators you specified are not tunable by automated tuning methods.
+>(refreshCompSelectPanel)指定した補償器は、自動調整メソッドで調整可能ではありません。
+<(refreshCompSelectPanel)To tune a pure gain block, use graphical tuning tools.
+>(refreshCompSelectPanel)Gain ブロックを使った調整は、グラフィカルな調整ツールを使用してください。
+
+%%@sisogui\@AutomatedCompensatorTuning/utModelOrderReduction.m
+<(utModelOrderReduction)Approximating the compensator to this controller order might degrade stability and performance. Recommend selecting a higher order.
+>(utModelOrderReduction)補償器のこのコントローラの次数での近似は、安定性と性能を劣化させる可能性があります。より高い次数を選択することをお勧めします。
+<(utModelOrderReduction)Closed-loop stability was lost during controller order reduction. Please increase the controller order.
+>(utModelOrderReduction)閉ループの安定性は、コントローラの低次元化中に失われます。コントローラ次数を大きくしてください。
+<(utModelOrderReduction)Closed-loop stability was lost during controller order reduction. Please select another controller order.
+>(utModelOrderReduction)閉ループの安定性は、コントローラの低次元化中に失われます。別のコントローラ次数を選択してください。
+
+
+%%
+<()Automated tuning method failed to produce a stable feedback loop
+>()自動調整メソッドは、安定なフィードバックループを生成できません
+
+<()Integral Absolute Error (IAE)
+>()積分絶対誤差 (IAE)
+<()Integral Square Error (ISE)
+>()積分二乗誤差 (ISE)
+<()Integral Time Absolute Error (ITAE)
+>()積分時間絶対誤差 (ITAE)
+<()Integral Time Square Error (ITSE)
+>()積分時間二乗誤差 (ITSE)
+
+%% matlab/toolbox/control/ctrlguis/@sisogui/@PIDTuning/buildSpecPanel.m
+<()The selected tuning method cannot be applied to this compensator. The open-loop model with respect to this compensator has more zeros than poles.
+>()選択した調整メソッドはこの補償器に適用できません。この補償器に対する開ループモデルは、極より多い零点をもっています。
+%% matlab\toolbox\control\ctrlguis\@viewgui\@SisoToolViewer\SisoToolViewer.m
+<()LTI Viewer for %s
+>()%s に対する LTI Viewer
+
+<(figmenus)Undo
+>(figmenus)元に戻す(&U) 
+<(figmenus)Redo
+>(figmenus)再び行う(&R) 
+% The first %s is Undo/Redo, the second %s is a action. 
+<[getMenuToolBarSchema](figmenus)&%s %s
+>[getMenuToolBarSchema](figmenus)%s: %s
+<[getMenuToolBarSchema](figmenus)&%s
+>[getMenuToolBarSchema](figmenus)%s
+

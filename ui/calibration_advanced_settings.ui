@@ -43,7 +43,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="exit">
+      <widget class="QLineEdit" name="exit_file">
        <property name="text">
         <string>fittedparam</string>
        </property>

@@ -1,0 +1,66 @@
+% Copyright 2005 The MathWorks, Inc.
+% $Revision: 1.1.8.2 $ $Date: 2005/12/27 20:35:04 $
+%% toolbox/control/ctrlutil/connectline.m
+<(connectline)Invalid ACTION string
+>(connectline)無効な ACTION 文字列
+<(connectline)Invalid Simulink block handle.
+>(connectline)Simulink ブロックのハンドルが無効です。
+
+%% toolbox/control/ctrlutil/pnmatch.m
+<(pnmatch)Ambiguous property name "%s". Supply more characters.
+>(pnmatch)あいまいなプロパティ名 "%s" です。 より多くの文字を与えてください。
+<(pnmatch)Invalid property name "%s".
+>(pnmatch)プロパティ名 "%s" が無効です。
+<(pnmatch)Property names must be single-line strings.
+>(pnmatch)プロパティ名は1行の文字列でなければなりません。
+
+%% toolbox/control/ctrlutil/ltimask.m
+<(ltimask)The LTI block does not support FRD models.
+>(ltimask)LTI ブロックは FRD モデルをサポートしません。
+<(ltimask)The LTI block does not support arrays of LTI models.
+>(ltimask)LTI ブロックは LTI モデルの配列をサポートしません。
+<(ltimask)The LTI block does not support models with complex coefficients.
+>(ltimask)LTI ブロックは複素係数を使ったモデルをサポートしません。
+<(ltimask)The LTI block does not support models with more zeros than poles.
+>(ltimask)LTI ブロックは極よりも大きい零点をもつモデルをサポートしません。
+<(ltimask)The LTI system must have at least one input and one output.
+>(ltimask)LTI システムは、少なくとも1入力と1出力をもたなければなりません。
+<(ltimask)The LTI system variable must be a valid LTI model.
+>(ltimask)LTI システム変数は、有効な LTI モデルでなければなりません。
+
+%% toolbox/control/ctrlutil/tdfthru.m
+<(tdfthru)Invalid setting in block '%s' for parameter 'Delay Time'
+>(tdfthru)パラメータ '遅延時間' に対するブロック '%s' 内の無効な設定
+<(tdfthru)Invalid setting in block '%s' for parameter 'Initial Input'
+>(tdfthru)パラメータ '初期入力' に対するブロック '%s' 内の無効な設定
+<(tdfthru)Invalid setting in block '%s' for parameter 'Initial Input': Size mismatch between Delay Time
+>(tdfthru)パラメータ '初期入力' に対するブロック '%s' 内の無効な設定: サイズは遅延時間間で一致しません
+
+%% toolbox/control/ctrlutil/minreal_inf.m
+<(minreal_inf)Descriptor model is singular.
+>(minreal_inf)記述子モデルが特異値です。
+
+%% toolbox/control/ctrlutil/zpkrealComDen.m
+<(zpkrealComDen)Not implemented yet.
+>(zpkrealComDen)まだ実行されていません。
+
+%% toolbox/control/ctrlutil/ddaeresp.m
+<(ddaeresp)AbsTol must be a scalar or a vector of length %d.
+>(ddaeresp)AbsTol は、長さ %d のスカラかベクトルでなければなりません。
+<(ddaeresp)All components of AbsTol must be positive.
+>(ddaeresp)AbsTol のすべての要素は正でなければなりません。
+<(ddaeresp)Entries of tau must be positive.
+>(ddaeresp)tau の入力は正でなければなりません。
+<(ddaeresp)Failure at t=%.3g.  Unable to meet integration tolerances without\nreducing the step size below the smallest value allowed (%.3g) at time t.
+>(ddaeresp)t=%.3g で失敗。 時間 t で最小の値で許可された (%.3g) より小さい\nステップサイズに減らさずに積分の許容誤差を満たすことができません。
+<(ddaeresp)tau_in must be non-negative.
+>(ddaeresp)tau_in は非負でなければなりません。
+
+%% toolbox/control/ctrlutil/ddaesim.m
+<(ddaesim)Failure at t=%e.  Unable to meet integration 
+>(ddaesim)t=%e で失敗。 積分を満たすことができません。
+
+%% toolbox/control/ctrlutil/private/snull.m
+<(snull)Structurally full-rank block is numerically singular.
+>(snull)構造的なフルランクのブロックは数値的に特異値です。
+

@@ -1,0 +1,1657 @@
+% Copyright 2004-2007 The MathWorks, Inc.
+% $Revision: 1.1.6.21 $ $Date: 2007/05/10 13:55:37 $
+%% copied \control\ctrlguis\@sisogui\@sisoprefs\ja\xlate to here
+<(@sisoprefs\bode_gui)Bode Options
+>(@sisoprefs\bode_gui)ボード線図オプション
+<(@sisoprefs\bode_gui)Show plant/sensor poles and zeros
+>(@sisoprefs\bode_gui)プラント/センサの極と零点を表示
+<(@sisoprefs\cfmt_gui)Time constant:       DC x (1 + Tz s) / (1 + Tp s)
+>(@sisoprefs\cfmt_gui)時定数: DC x (1 + Tz s) / (1 + Tp s)
+<(@sisoprefs\cfmt_gui)Natural frequency:   DC x (1 + s/wz) / (1 + s/wp)
+>(@sisoprefs\cfmt_gui)固有振動数: DC x (1 + s/wz) / (1 + s/wp)
+<(@sisoprefs\cfmt_gui)Zero/pole/gain:       K x (s + z) / (s + p)
+>(@sisoprefs\cfmt_gui)零点/極/ゲイン: K x (s + z) / (s + p)
+<(@sisoprefs\cfmt_gui)Zero/pole/gain:       K x (s - z) / (s - p)
+>(@sisoprefs\cfmt_gui)零点/極/ゲイン: K x (s - z) / (s - p)
+<(@sisoprefs\cfmt_gui)Compensator Format
+>(@sisoprefs\cfmt_gui)補償器の形式
+<(@sisoprefs\clr_gui)Axes foreground:
+>(@sisoprefs\clr_gui)座標軸のフォアグラウンド:
+<(@sisoprefs\clr_gui)Colors
+>(@sisoprefs\clr_gui)色
+<(@sisoprefs\clr_gui)Open color selection dialog
+>(@sisoprefs\clr_gui)色の選択ダイアログを開く
+<(@sisoprefs\clr_gui)Select...
+>(@sisoprefs\clr_gui)選択
+%
+<(@sisoprefs\clr_gui)Select Color: Axes Foreground
+>(@sisoprefs\clr_gui)色の選択: 座標軸のフォアグラウンド
+%
+<(@sisoprefs\clr_gui)Set color for plot box, tick labels, and grid lines
+>(@sisoprefs\clr_gui)プロットのボックス、目盛りラベル、グリッドラインの色を設定
+<(@sisoprefs\edit)Apply
+>(@sisoprefs\edit)適用
+<(@sisoprefs\edit)Cancel
+>(@sisoprefs\edit)キャンセル
+<(@sisoprefs\edit)Loading SISO Tool Preferences...
+>(@sisoprefs\edit)SISO ツール設定の読み込み
+<(@sisoprefs\edit)SISO Tool Preferences
+>(@sisoprefs\edit)SISO ツール設定
+<(@sisoprefs\edit)Units
+>(@sisoprefs\edit)単位
+<(@sisoprefs\edit)Style
+>(@sisoprefs\edit)スタイル
+<(@sisoprefs\edit)Options
+>(@sisoprefs\edit)オプション
+<(@sisoprefs\edit)Line Colors
+>(@sisoprefs\edit)ライン色
+<(@sisoprefs\font_gui)Bold
+>(@sisoprefs\font_gui)太字
+<(@sisoprefs\font_gui)Fonts
+>(@sisoprefs\font_gui)フォント
+<(@sisoprefs\font_gui)Italic
+>(@sisoprefs\font_gui)斜体
+<(@sisoprefs\grid_gui)Grids
+>(@sisoprefs\grid_gui)グリッド
+<(@sisoprefs\grid_gui)Show grids
+>(@sisoprefs\grid_gui)グリッド表示
+<(@sisoprefs\grid_gui)Titles:
+>(@sisoprefs\grid_gui)タイトル:
+<(@sisoprefs\grid_gui)X/Y-Labels:
+>(@sisoprefs\grid_gui)X/Y-ラベル:
+<(@sisoprefs\grid_gui)Tick Labels:
+>(@sisoprefs\grid_gui)目盛りラベル:
+<(@sisoprefs\ls_gui)Closed Loop:
+>(@sisoprefs\ls_gui)閉ループ:
+<(@sisoprefs\ls_gui)Open Loop:
+>(@sisoprefs\ls_gui)開ループ:
+<(@sisoprefs\ls_gui)Compensator:
+>(@sisoprefs\ls_gui)補償器:
+<(@sisoprefs\ls_gui)Margins:
+>(@sisoprefs\ls_gui)余裕:
+<(@sisoprefs\ls_gui)Plant & Sensor:
+>(@sisoprefs\ls_gui)プラント & センサ:
+<(@sisoprefs\ls_gui)Prefilter:
+>(@sisoprefs\ls_gui)プリフィルタ:
+%
+<(@sisoprefs\ls_gui)Select Color: %s
+>(@sisoprefs\ls_gui)色の選択: %s
+%
+<(@sisoprefs\unit_gui)Frequency in
+>(@sisoprefs\unit_gui)周波数
+<(@sisoprefs\unit_gui)Magnitude in
+>(@sisoprefs\unit_gui)振幅
+<(@sisoprefs\unit_gui)Phase in
+>(@sisoprefs\unit_gui)位相
+<(@sisoprefs\unit_gui)using
+>(@sisoprefs\unit_gui)使用
+<(unit_gui)log scale
+>(unit_gui)対数スケール
+<(unit_gui)linear scale
+>(unit_gui)線形スケール
+<(unit_gui)degrees
+>(unit_gui)度
+<(unit_gui)radians
+>(unit_gui)ラジアン
+%% cope of \control\ctrlguis\@sisogui\@sisoprefs\ja\xlate finished
+<()absolute
+>()絶対値
+<()Show grids by default
+>()デフォルトのグリッドを表示
+<()I/O-Names:
+>()I/O-名:
+<()Characteristics
+>()特性
+<()Response Characteristics
+>()応答の特性
+<()Show settling time within
+>()整定時間の表示
+% the following two strings are in one sentence: Show rise time from .. to ..
+<()Show rise time from
+>()立ち上がり時間の表示
+<()Unwrap phase
+>()位相をアンラップ
+<()Control System Toolbox Preferences
+>()Control System Toolbox 設定
+<()Loading Toolbox Preferences...
+>()ツールボックス設定の読み込み中
+<()SISO Tool
+>()SISO ツール
+<()Phase Wrapping
+>()位相ラッピング
+<()Auto-Scale:
+>()オートスケール:
+<()Limits:
+>()範囲:
+<()%s-Lims
+>()%s-範囲
+<()Property Editor
+>()プロパティエディタ
+<()Opening Property Editor...
+>()プロパティエディタを開いています
+<()Full View
+>()フルビュー
+<()Normalize
+>()正規化
+<()No units available for selected response plot.
+>()選択した応答プロットに対して利用可能な単位はありません。
+<()Labels
+>()ラベル
+<()Limits
+>()範囲
+<()X-Label:
+>()X-ラベル:
+<()Y-Label:
+>()Y-ラベル:
+% Y-Limits is translated into Y軸の範囲 in $matlab/ja/xlate
+<()X-Limits
+>()X軸-範囲
+<()Show grid
+>()グリッド表示
+<()Grid
+>()グリッド
+<()Property Editor Warning
+>()プロパティエディタの警告
+<()Property Editor: %s
+>()プロパティエディタ: %s
+<()Title:
+>()タイトル:
+<()LTI Viewer Preferences
+>()LTI Viewer 設定
+<()Generate automatically
+>()自動生成
+<()Define range
+>()範囲の定義
+<()Define vector
+>()ベクトルの定義
+<()Frequency Vector (%s)
+>()周波数ベクトル (%s)
+<()(Magnitude)
+>()(振幅)
+<()(Phase)
+>()(位相)
+<()Zoom on (-1,0)
+>()ズームオン (-1,0)
+<()Show
+>()表示
+<()Negative Frequencies
+>()負の周波数
+<()Magnitude
+>()振幅
+<()Phase
+>()位相
+<()Pole
+>()極
+<()Zero
+>()零点
+<()I/O Grouping
+>()I/O のグループ化
+<()None
+>()なし
+<()Outputs
+>()出力
+<()Inputs
+>()入力
+<()I/O Selector...
+>()I/O セレクタ
+<()Array Selector...
+>()配列セレクタ
+<()Steady State
+>()定常状態
+<()Rise Time (sec)
+>()立ち上がり時間 (秒)
+<()settling Time (sec)
+>()整定時間 (秒)
+<()Peak Response%s
+>()ピーク応答%s
+<()Gain Margin%s
+>()ゲイン余裕%s
+<()Phase Margin%s
+>()位相余裕%s
+<()Show Input
+>()入力の表示
+<()Input data...
+>()入力データ
+<()initial condition...
+>()初期条件
+<()Channel Grouping
+>()チャンネルのグループ化
+<()Channel Selector...
+>()チャンネルセレクタ
+<()Properties...
+>()プロパティ
+<()(No options available for selected response plot)
+>()(選択した応答プロットに対して利用可能なオプションはありません)
+<()No action (stack is empty)
+>()アクションなし (スタックが空です)
+<()Retrieve previous stack entry
+>()前回のスタックの入力を取り出す
+<()Retrieve next stack entry
+>()次のスタックの入力を取り出す
+<()Remove current limits from stack
+>()現在の範囲をスタックから削除
+<()Add current limits to stack
+>()現在の範囲をスタックに追加
+<()Time Vector
+>()時間ベクトル
+<()Define stop time
+>()終了時間の定義
+<()%sLims-Grid
+>()%s範囲-グリッド
+<()%s-Limits
+>()%s-範囲
+<()Move selected objects to desired location and release the mouse.
+>()選択したオブジェクトを目的の位置まで移動しマウスを放してください。
+<()Moved selected objects to specified location.
+>()選択したオブジェクトを指定位置まで移動しました。
+<()Redoing %s.
+>()再び行う %s.
+<()Undoing %s.
+>()元に戻す %s.
+<()Response: %s
+>()応答: %s
+<()Frequency (%s): %0.3g
+>()周波数 (%s): %0.3g
+<()Magnitude (%s): %0.3g
+>()振幅 (%s): %0.3g
+<()Phase (%s): %0.3g
+>()位相 (%s): %0.3g
+<()Computing poles and zeros for model # %d
+>()モデルの極と零点を計算中 # %d
+<()System: %s%s
+>()システム: %s%s
+<()Bode Diagram\n%s ,  %s
+>()ボード線図\n%s , %s
+<()Peak gain (%s): %0.3g
+>()ピークゲイン (%s): %0.3g
+<()Real: %0.3g
+>()実数: %0.3g
+<()Imag: %0.3g
+>()虚数: %0.3g
+<()Input:
+>()入力:
+<()Output:
+>()出力:
+<()all
+>()すべて
+<(paramsel)Selection resulted in %d visible model(s).%s
+>(paramsel)選択は %d 個のモデルを表示可能にしました。 %s
+<()To view the %d selected model(s), check the system's name
+>()%d の選択したモデルを表示するには、システム名をクリックしてください
+<()Enter a MATLAB expression using '$' to refer to the variable of  interest (steady-state, rise time, ...). For example: $>2 & $ <5. See help for more examples.
+>()興味のある変数 (定常状態, 立ち上がり時間, ...) を参照するには、'$' を使用して MATLAB の式を入力してください。 例えば: $>2 & $ <5。 例についてはヘルプを参照してください。
+<()Output: %s
+>()出力: %s
+<()Input: %s
+>()入力: %s
+<()Input: In(%d)
+>()入力: In(%d)
+<()I/O: %s to %s
+>()I/O: %s - %s
+<()Pole: %0.3g + %0.3gi
+>()極: %0.3g + %0.3gi
+<()Pole: %0.3g - %0.3gi
+>()極: %0.3g - %0.3gi
+<()Pole: %0.3g
+>()極: %0.3g
+<()Gain: %0.3g
+>()ゲイン: %0.3g
+<()Damping: %0.3g
+>()減衰: %0.3g
+<()Overshoot (%%): %0.3g
+>()オーバシュート (%%): %0.3g
+<()Settling Time: None
+>()整定時間: なし
+<()Settling Time (%s): %0.3g
+>()整定時間 (%s): %0.3g
+<()Settling Time > %0.3g (%s)
+>()整定時間 > %0.3g (%s)
+<()Singular Value (%s): %0.3g
+>()特異値 (%s): %0.3g
+<()Peak amplitude: %0.3g
+>()ピーク振幅: %0.3g
+<()At time (%s): %0.3g
+>()時間 (%s): %0.3g
+<()Time (%s): %0.3g
+>()時間 (%s): %0.3g
+<()Amplitude: %0.3g
+>()振幅: %0.3g
+<()Start time (sec): 0
+>()開始時間 (秒): 0
+<()None of the systems are in state space form
+>()どのシステムも状態空間型ではありません
+<()Stop time (sec): 
+>()終了時間 (秒):
+<()Number of samples:
+>()サンプル数:
+<()Sample interval (sec): 
+>()サンプル間隔 (秒):
+<()Gain Margin (%s): %s
+>()ゲイン余裕 (%s): %s
+<()At frequency (%s): %s
+>()周波数 (%s): %s
+<()At frequency (%s): %0.3g
+>()周波数 (%s): %0.3g
+<()Phase Margin (%s): %s
+>()位相余裕 (%s): %s
+<()Delay Margin (samples): %s
+>()遅延余裕 (サンプル): %s
+<()Delay Margin (sec): %s
+>()遅延余裕 (秒): %s
+<()Closed Loop Stable? %s
+>()閉ループの安定? %s
+<()Peak amplitude > %0.3g
+>()ピーク振幅 > %0.3g
+<()Peak amplitude < %0.3g
+>()ピーク振幅 < %0.3g
+<()Overshoot (%s): %0.3g
+>()オーバシュート (%s): %0.3g
+<()At time (%s) > %0.3g
+>()時間 (%s) > %0.3g
+<()Rise Time (%s): %0.3g
+>()立ち上がり時間 (%s): %0.3g 
+<()Rise Time > %0.3g (%s)
+>()立ち上がり時間 > %0.3g (%s)
+<()Rise Time: N/A
+>()立ち上がり時間: N/A
+<()Ignore header rows prior to row: 
+>()指定行の前のヘッダ行を無視:
+<()Bad data substitution method:
+>()不正なデータの代入メソッド:
+<()Channel:
+>()チャンネル:
+<()Channel: %s
+>()チャンネル: %s
+<()Invalid style string "%s"
+>()無効なスタイルの文字列 "%s"
+<()An LTI system must be imported before the Linear Simulation Tool can be opened
+>()線形シミュレーションツールを開く前に LTI システムがインポートされなければなりません。
+<()Linear simulation tool
+>()線形シミュレーションツール
+<()The time vector must have at least two samples to design an input signal
+>()時間ベクトルは、入力信号を設計するために少なくとも2つのサンプルをもつ必要があります
+<()Use the limit stack to store & retrieve axes limits
+>()座標軸範囲の保存と取り出しを行うリミットスタックを使用
+<()Final Value: %0.3g
+>()最終値: %0.3g
+
+% the messages below are for the @plotconstr package, which used to be in toolbox\control\ctrlguis (pre R14sp2)
+<(@plotconstr)Lower
+>(@plotconstr)下限
+<(@plotconstr)Upper
+>(@plotconstr)上限
+<(@plotconstr)to
+>(@plotconstr)-
+<(@plotconstr)Flip
+>(@plotconstr)反転
+<(@plotconstr)Split
+>(@plotconstr)分割
+<(@plotconstr)Join left
+>(@plotconstr)左を結合
+<(@plotconstr)Join right
+>(@plotconstr)右を結合
+<(@plotconstr)Select edge to edit
+>(@plotconstr)編集するエッジの選択
+<(@plotconstr)Open loop phase
+>(@plotconstr)開ループ位相
+<(@plotconstr)Open loop gain
+>(@plotconstr)開ループゲイン
+<(@plotconstr)Real
+>(@plotconstr)実部
+<(@plotconstr)Imaginary
+>(@plotconstr)虚部
+<(@plotconstr)Time
+>(@plotconstr)時間
+<(@plotconstr)Weight
+>(@plotconstr)重み
+<(@plotconstr)Move Constraint
+>(@plotconstr)制約の移動
+<(@plotconstr)Resize Constraint
+>(@plotconstr)制約のリサイズ
+<(@plotconstr)Delete Constraint
+>(@plotconstr)制約の削除
+<(@plotconstr)Flip Constraint
+>(@plotconstr)制約の反転
+<(@plotconstr)Edit Constraint
+>(@plotconstr)制約の編集
+<(@plotconstr)Add Constraint
+>(@plotconstr)制約の追加
+<(@plotconstr)Split Edge
+>(@plotconstr)エッジの分割
+<(@plotconstr)Join Edge
+>(@plotconstr)エッジの結合
+<(@plotconstr)Vertex not added: vertex already exists at requested location.
+>(@plotconstr)頂点を追加しません: 頂点は既に要求された位置にあります。
+<(@plotconstr)Invalid set unit value, must be char.
+>(@plotconstr)単位値の設定が無効です。キャラクタでなければなりません。
+<(@plotconstr)Invalid set value, must be nx2 of doubles.
+>(@plotconstr)値の設定が無効です。 double の n×2 でなければなりません。
+<(@plotconstr)Cannot change number of vertices from the command line, use addVertex method.
+>(@plotconstr)コマンドラインから頂点の数を変更できません。 addVertex メソッドを使用してください。
+<(@plotconstr)%s from %0.3g to %0.3g %s
+>(@plotconstr)%s %0.3g - %0.3g %s
+<(@plotconstr)Current location:  from %0.3g to %0.3g %s
+>(@plotconstr)現在の位置: %0.3g - %0.3g %s
+<(@plotconstr)Move constraint to desired location and release the mouse.\n %s
+>(@plotconstr)目的の位置まで制約を移動し、マウスを放してください。\n %s
+<(@plotconstr)Location:  from %0.3g to %0.3g %s
+>(@plotconstr)位置: %0.3g - %0.3g %s
+<(@plotconstr)Slope:  %0.3g dB/decade
+>(@plotconstr)勾配: %0.3g dB/decade
+<(@plotconstr)New gain constraint location is from %0.3g to %0.3g %s.
+>(@plotconstr)新規ゲインの制約の位置は %0.3g から %0.3g %s です。
+<(@plotconstr)The gain constraint edge new location is from %0.3g to %0.3g %s
+>(@plotconstr)ゲインの制約の位置は %0.3g から %0.3g %s です。
+<(@plotconstr)with a slope of %0.3g dB/decade.
+>(@plotconstr)%0.3g dB/decade の勾配
+<(@plotconstr)%s gain limit with frequency range from %0.3g to %0.3g %s
+>(@plotconstr)%s ゲインリミット, 周波数範囲 %0.3g から %0.3g %s
+<(@plotconstr)%s gain limit with slope %0.3g dB/decade.
+>(@plotconstr)%s ゲインリミット, 勾配 %0.3g dB/decade
+<(@plotconstr)Select and drag to adjust extent and slope of gain constraint edge.
+>(@plotconstr)ゲインの制約エッジの範囲と勾配を調整するには選択してドラッグしてください。
+<(@plotconstr)Can not identify '%s' display unit to update
+>(@plotconstr)更新のための '%s' 表示単位を識別できません
+<(@plotconstr)The new units value must be a string argument.
+>(@plotconstr)新規の単位値は、文字列の引数でなければなりません。
+<(@plotconstr) Constraint type:
+>(@plotconstr) 制約タイプ:
+<(@plotconstr)Constraint parameters
+>(@plotconstr)制約パラメータ
+<(@plotconstr)Close
+>(@plotconstr)閉じる
+<(@plotconstr)Help
+>(@plotconstr)ヘルプ
+<(@plotconstr)%s (%0.3g at %0.3g)
+>(@plotconstr)%s (%0.3g / %0.3g)
+<(@plotconstr)Gain margin > 
+>(@plotconstr)ゲイン余裕 >
+<(@plotconstr)Gain margin
+>(@plotconstr)ゲイン余裕
+<(@plotconstr)Located at
+>(@plotconstr)位置
+<(@plotconstr)Gain margin moved from %0.3g to %0.3g %s.
+>(@plotconstr)ゲイン余裕は %0.3g から %0.3g %s に移動しました。
+<(@plotconstr)Gain margin constraint: %0.3g %s at %0.3g %s.
+>(@plotconstr)ゲイン余裕の制約: %0.3g %s / %0.3g %s.
+<(@plotconstr)New gain margin constraint is %0.3g %s at %0.3g %s.
+>(@plotconstr)新規のゲイン余裕の制約は %0.3g %s / %0.3g %s です。
+<(@plotconstr)Design constraint: gain margin < %0.3g %s at %0.3g %s.
+>(@plotconstr)設計の制約: ゲイン余裕 < %0.3g %s / %0.3g %s.
+<(@plotconstr)%s\nLeft-click and drag to move this constraint.
+>(@plotconstr)%s\n左クリックしてドラッグし、この制約を移動してください。
+<(@plotconstr)%s\nLeft-click and drag to resize this constraint.
+>(@plotconstr)%s\n左クリックしてドラッグし、この制約をリサイズしてください。
+<(@plotconstr)New Gain-Phase constraint location is from %0.3g to %0.3g %s
+>(@plotconstr)新規ゲイン-位相の制約の位置は %0.3g から %0.3g %s です。
+<(@plotconstr)New Gain-Phase constraint edge location is from %0.3g to %0.3g %s
+>(@plotconstr)新規ゲイン-位相の制約エッジの位置は %0.3g から %0.3g %s です。
+<(@plotconstr)%s and from %0.3g to %0.3g %s.
+>(@plotconstr)%s と %0.3g から %0.3g %s
+<(@plotconstr)%s Gain-Phase limit with phase range from %0.3g to %0.3g %s
+>(@plotconstr)%s ゲイン-位相リミット, 位相範囲 %0.3g から %0.3g %s
+<(@plotconstr)%s and magnitude range from %0.3g to %0.3g %s.
+>(@plotconstr)%s と振幅範囲 %0.3g から %0.3g %s
+<(@plotconstr)%s Gain-Phase edge limit with phase range from %0.3g to %0.3g %s
+>(@plotconstr)%s ゲイン-位相のエッジリミット, 位相範囲 %0.3g から %0.3g %s
+<(@plotconstr)%s\nLeft-click and drag to move this gain constraint.
+>(@plotconstr)%s\n左クリックしてドラッグし、このゲインの制約を移動してください。
+<(@plotconstr)Select and drag to adjust extent and slope of constraint edge.
+>(@plotconstr)選択してドラッグし、制約エッジの範囲と勾配を調整してください。
+<(@plotconstr)Closed-Loop peak gain%s
+>(@plotconstr)閉ループのピークゲイン%s
+<(@plotconstr)Closed-loop peak gain constraint moved from %0.3g to %0.3g %s.
+>(@plotconstr)閉ループのピークゲインの制約は %0.3g から %0.3g %s に移動しました。
+<(@plotconstr)Move constraint to desired location and release the mouse.\n%s
+>(@plotconstr)目的の位置まで制約を移動し、マウスを放してください。\n%s
+<(@plotconstr)Closed-loop peak gain constraint: %0.3g %s at %0.3g %s.
+>(@plotconstr)閉ループのピークゲインの制約: %0.3g %s / %0.3g %s.
+<(@plotconstr)New peak gain constraint is %0.3g %s at %0.3g %s.
+>(@plotconstr)新規のピークゲインの制約は %0.3g %s / %0.3g %s です。
+<(@plotconstr)Design constraint: closed-loop peak gain < %0.3g %s at %0.3g %s.
+>(@plotconstr)設計の制約: 閉ループのピークゲイン < %0.3g %s / %0.3g %s.
+<(@plotconstr)Phase margin > 
+>(@plotconstr)位相余裕 >
+<(@plotconstr)Phase margin
+>(@plotconstr)位相余裕
+<(@plotconstr)Phase margin moved from %0.3g to %0.3g %s.
+>(@plotconstr)位相余裕は %0.3g から %0.3g %s に移動しました。
+<(@plotconstr)Phase margin constraint: %0.3g %s at %0.3g %s.
+>(@plotconstr)位相余裕の制約: %0.3g %s / %0.3g %s.
+<(@plotconstr)New phase margin constraint is %0.3g %s at %0.3g %s.
+>(@plotconstr)新規の位相余裕の制約は %0.3g %s / %0.3g %s です。
+<(@plotconstr)Design constraint: phase margin < %0.3g %s at %0.3g %s.
+>(@plotconstr)設計の制約: 位相余裕 < %0.3g %s / %0.3g %s.
+<(@plotconstr)Current location:  from %0.3g to %0.3g
+>(@plotconstr)現在の位置: %0.3g - %0.3g
+<(@plotconstr)Location: from %0.3g to %0.3g
+>(@plotconstr)位置: %0.3g - %0.3g
+<(@plotconstr)Slope:  %0.3g rad
+>(@plotconstr)勾配: %0.3g rad
+<(@plotconstr)Incorrect set value for property ''Orientation'': Must be one of {%s,%s,%s}.
+>(@plotconstr)プロパティ ''Orientation'' に対する値の設定が不正です: {%s,%s,%s} のいずれかでなければなりません。
+<(@plotconstr)horizontal
+>(@plotconstr)水平
+<(@plotconstr)vertical
+>(@plotconstr)垂直
+<(@plotconstr)both
+>(@plotconstr)両方
+<(@plotconstr)New constraint location is from %0.3g to %0.3g %s
+>(@plotconstr)新規の制約の位置は、%0.3g から %0.3g %s です。
+<(@plotconstr)New constraint location is from %0.3g to %0.3g
+>(@plotconstr)新規の制約の位置は、%0.3g から %0.3g です
+<(@plotconstr)%s and from %0.3g to %0.3g.
+>(@plotconstr)%s と %0.3g から %0.3g
+<(@plotconstr)New constraint edge location is from %0.3g to %0.3g %s
+>(@plotconstr)新規の制約エッジの位置は、%0.3g から %0.3g %s です。
+<(@plotconstr)New constraint edge location is from %0.3g to %0.3g
+>(@plotconstr)新規の制約エッジの位置は、%0.3g から %0.3g です
+<(@plotconstr)%s limit with real range from %0.3g to %0.3g
+>(@plotconstr)%s リミット, 実部範囲 %0.3g から %0.3g
+<(@plotconstr)%s edge limit with real range from %0.3g to %0.3g
+>(@plotconstr)%s エッジリミット, 実部範囲 %0.3g から %0.3g
+<(@plotconstr)%s and imaginary range from %0.3g to %0.3g.
+>(@plotconstr)%s と虚部範囲 %0.3g から %0.3g
+<(@plotconstr)Damping ratio  >
+>(@plotconstr)減衰比 >
+<(@plotconstr)Damping ratio
+>(@plotconstr)減衰比
+<(@plotconstr)Percent overshoot  <
+>(@plotconstr)オーバーシュートの割合 <
+<(@plotconstr)Percent overshoot
+>(@plotconstr)オーバーシュートの割合
+<(@plotconstr)Min. damping: %0.3g (max. overshoot: %0.3g %s).
+>(@plotconstr)最小の減衰: %0.3g (最大のオーバーシュート: %0.3g %s)
+<(@plotconstr)Max. overshoot: %0.3g %s (min. damping: %0.3g).
+>(@plotconstr)最大のオーバーシュート: %0.3g %s (最小の減衰: %0.3g)
+<(@plotconstr)Move constraint to adjust damping/overshoot bound and release the mouse.\n%s
+>(@plotconstr)減衰/オーバーシュートの範囲を調整するには、制約を移動し、マウスを放してください。\n%s
+<(@plotconstr)Requires damping of at least %0.3g.
+>(@plotconstr)少なくとも %0.3g の減衰が必要です。
+<(@plotconstr)Requires overshoot of at most %0.3g %s.
+>(@plotconstr)多くても %0.3g %s のオーバーシュートが必要です。
+<(@plotconstr)Design constraint: damping > %.3g (overshoot < %.3g %s).
+>(@plotconstr)設計の制約: 減衰 > %.3g (オーバーシュート < %.3g %s)
+<(@plotconstr)Natural frequency:
+>(@plotconstr)固有振動数
+<(@plotconstr)Natural frequency
+>(@plotconstr)固有振動数
+<(@plotconstr)at most
+>(@plotconstr)多くても
+<(@plotconstr)at least
+>(@plotconstr)少なくても
+<(@plotconstr)%s bound on natural frequency: %0.3g %s.
+>(@plotconstr)%s 固有振動数の境界: %0.3g %s
+<(@plotconstr)Move constraint to adjust natural frequency bound and release the mouse.\n%s
+>(@plotconstr)固有振動数の範囲を調整するには、制約を移動し、マウスを放してください。\n%s
+<(@plotconstr)Natural frequency required to be at %s %0.3g %s.
+>(@plotconstr)固有振動数は %s %0.3g %s にある必要があります。
+<(@plotconstr)Design constraint: natural frequency %s %.3g %s.
+>(@plotconstr)設計の制約: 固有振動数 %s %.3g %s
+<(@plotconstr)%s\nLeft-click and drag to change natural frequency value.
+>(@plotconstr)%s\n左クリックしてドラッグし、固有振動数の値を変更してください。
+<(@plotconstr)Settling time  <
+>(@plotconstr)整定時間 <
+<(@plotconstr)Settling time
+>(@plotconstr)整定時間
+<(@plotconstr)Upper bound on settling time: %0.3g sec.
+>(@plotconstr)整定時間の上限: %0.3g 秒
+<(@plotconstr)Move constraint to adjust settling time bound and release the mouse.\n%s
+>(@plotconstr)整定時間の範囲を調整するには、制約を移動し、マウスを放してください。\n%s
+<(@plotconstr)Settling time required to be at most %0.3g seconds.
+>(@plotconstr)整定時間は多くても %0.3g 秒を必要とします。
+<(@plotconstr)Design constraint: settling time < %.3g sec.
+>(@plotconstr)設計の制約: 整定時間 < %.3g 秒
+<(@plotconstr)%s\nLeft-click and drag to change settling time value.
+>(@plotconstr)%s\n左クリックしてドラッグし、整定時間の値を変更してください。
+<(@plotconstr)%s limit with time range from %0.3g to %0.3g %s
+>(@plotconstr)%s リミット, 時間範囲 %0.3g から %0.3g %s
+<(@plotconstr)%s and magnitude range from %0.3g to %0.3g.
+>(@plotconstr)%s と振幅範囲 %0.3g から %0.3g
+<(@plotconstr)%s edge limit with time range from %0.3g to %0.3g %s
+>(@plotconstr)%s エッジリミット, 時間範囲 %0.3g から %0.3g %s
+<(@plotconstr)Select and drag to adjust extent and slope of constraint.
+>(@plotconstr)選択してドラッグし、制約の範囲と勾配を調整してください。
+<(@plotconstr)Region constraint
+>(@plotconstr)領域の制約
+<(@plotconstr)Gain-Phase constraint
+>(@plotconstr)ゲイン位相の制約
+<(@plotconstr)Closed-Loop peak gain
+>(@plotconstr)閉ループのピークゲイン
+<(@plotconstr)Upper limit Bode gain
+>(@plotconstr)ボードゲインの上限
+<(@plotconstr)Lower limit Bode gain
+>(@plotconstr)ボードゲインの下限
+<(@plotconstr)Upper limit Gain-Phase constraint
+>(@plotconstr)ゲイン-位相制約の上限
+<(@plotconstr)Lower limit Gain-Phase constraint
+>(@plotconstr)ゲイン-位相制約の下限
+<(@plotconstr)Upper limit region constraint
+>(@plotconstr)領域の制約の上限
+<(@plotconstr)Lower limit region constraint
+>(@plotconstr)領域の制約の下限
+<(@plotconstr)Upper limit time bound
+>(@plotconstr)時間範囲の上限
+<(@plotconstr)Lower limit time bound
+>(@plotconstr)時間範囲の下限
+<(@plotconstr)New gain constraint edge location is from %0.3g to %0.3g %s.
+>(@plotconstr)新規ゲインの制約エッジの位置は %0.3g から %0.3g %s です。
+<(@plotconstr)Frequency
+>(@plotconstr)周波数
+<(@plotconstr)Slope (dB/decade)
+>(@plotconstr)勾配 (dB/decade)
+<(editChars)Phase Response
+>(editChars)位相応答
+<(editChars)Magnitude Response
+>(editChars)振幅応答
+<(editChars)Adjust phase offsets
+>(editChars)位相オフセットの調整
+<(editChars)At frequency:
+>(editChars)周波数:
+<(editChars)Keep phase close to:
+>(editChars)近くに位相を保持:
+<(editChars)Only show magnitude above:  
+>(editChars)この値より大きいゲイン値を表示:
+<(freq_gui)Frequency Response
+>(freq_gui)周波数応答
+<(char_gui)Time Response
+>(char_gui)時間応答
+<()Parameters
+>()パラメータ
+<(nicplot)Open-Loop Gain
+>(nicplot)開ループゲイン
+<(nicplot)Open-Loop Phase
+>(nicplot)開ループ位相
+
+
+%% toolbox/shared/controllib/linetip.m
+<(linetip)Input handle must be line object
+>(linetip)入力のハンドルは、line オブジェクトでなければなりません。
+
+%% toolbox/shared/controllib/ltitipmenus.m
+<(ltitipmenus)Alignment
+>(ltitipmenus)配置
+<(ltitipmenus)Bottom-Left
+>(ltitipmenus)左下
+<(ltitipmenus)Bottom-Right
+>(ltitipmenus)右下
+<(ltitipmenus)Delete
+>(ltitipmenus)削除
+<(ltitipmenus)FontSize
+>(ltitipmenus)フォントサイズ
+<(ltitipmenus)Interpolation
+>(ltitipmenus)補間
+<(ltitipmenus)Linear
+>(ltitipmenus)線形
+<(ltitipmenus)Max
+>(ltitipmenus)最大
+<(ltitipmenus)Min
+>(ltitipmenus)最小
+<(ltitipmenus)Min/Max
+>(ltitipmenus)最小/最大
+<(ltitipmenus)Movable
+>(ltitipmenus)移動可能
+<(ltitipmenus)Nearest
+>(ltitipmenus)最近傍
+<(ltitipmenus)Top-Left
+>(ltitipmenus)左上
+<(ltitipmenus)Top-Right
+>(ltitipmenus)右上
+<(ltitipmenus)Track Mode
+>(ltitipmenus)追跡モード
+
+%% toolbox/shared/controllib/pointtip.m
+<(pointtip)Linetip can only be a child of a line object.
+>(pointtip)Linetip は、line オブジェクトの子のみ可能です。
+
+%% toolbox/shared/controllib/linsimstate.m
+<(linsimstate)Cannot simulate improper ZPK models.
+>(linsimstate)適切でない ZPK モデルをシミュレーションできません。
+<(linsimstate)Cannot simulate improper transfer functions.
+>(linsimstate)適切でない伝達関数をシミュレーションできません。
+<(linsimstate)Not enough input arguments for 'ss' option.
+>(linsimstate)'ss' オプションの入力引数が足りません。
+<(linsimstate)Not enough input arguments for 'tf' option.
+>(linsimstate)'tf' オプションの入力引数が足りません。
+<(linsimstate)Not enough input arguments for 'zpk' option.
+>(linsimstate)'zpk' オプションの入力引数が足りません。
+
+%% toolbox/shared/controllib/@cstprefs/@viewprefs/edit.m
+<(edit)Loading Viewer Preferences...
+>(edit)ビューワ設定の読み込み中
+
+%% toolbox/shared/controllib/@ctrldlgs/@abstrimport/getmatfilevars.m
+<(getmatfilevars)Could not find the file %s.
+>(getmatfilevars)ファイル %s が見つかりません。
+
+%% toolbox/shared/controllib/@ctrluis/schema.m
+<(schema)Position must be a 4-entry vector
+>(schema)位置は4要素のベクトルでなければなりません
+<(schema)Position must be specified in normalized units.
+>(schema)位置は正規化された単位で指定されなければなりません。
+
+%% toolbox/shared/controllib/@ctrluis/@axes/axes.m
+<(axes)The first argument must be a figure or axes handle.
+>(axes)1番目の引数は figure、または座標軸のハンドルでなければなりません。
+<(axes)The first argument must be a single, valid handle.
+>(axes)1番目の引数は、単一で、有効なハンドルでなければなりません。
+
+%% toolbox/shared/controllib/@ctrluis/@axesgrid/axesgrid.m
+<(axesgrid)The second argument contains invalid handles.
+>(axesgrid)2番目の入力は無効なハンドルを含んでいます。
+<(axesgrid)The second argument must be a figure handle or a vector of axes handles.
+>(axesgrid)2番目の入力は、figure のハンドル、または座標軸のハンドルのベクトルでなければなりません。
+
+%% toolbox/shared/controllib/@ctrluis/@axesgrid/setxlim.m
+<(setxlim)Lower limit must be positive on log scale.
+>(setxlim)下限は対数スケール上で正でなければなりません。
+
+%% toolbox/shared/controllib/@ctrluis/@axesgroup/schema.m
+<(schema)Bad value for XUnit property.
+>(schema)XUnit プロパティの値が良くありません
+<(schema)Bad value for YUnit property.
+>(schema)YUnit プロパティの値が良くありません。
+<(schema)Unexpected length for XLimMode value.
+>(schema)XLimMode 値の予期せぬ長さです。
+<(schema)Unexpected length for XScale value.
+>(schema)XScale 値の予期せぬ長さです。
+<(schema)Unexpected length for XUnit value.
+>(schema)XUnit 値の予期せぬ長さです。
+<(schema)Unexpected length for YLimMode value.
+>(schema)YLimMode 値の予期せぬ長さです。
+<(schema)Unexpected length for YScale value.
+>(schema)YScale 値の予期せぬ長さです。
+<(schema)Unexpected length for YUnit value.
+>(schema)YUnit 値の予期せぬ長さです。
+<(schema)XLimMode must be set to 'auto' or 'manual'.
+>(schema)XLimMode は 'auto' または 'manual' に設定されなければなりません。
+<(schema)XLimMode value is incompatible with XLimSharing settings.
+>(schema)XLimMode 値は、XLimSharing の設定と互換性がありません。
+<(schema)XScale must be set to 'linear' or 'log'.
+>(schema)XScale は 'linear' または 'log' に設定されなければなりません。
+<(schema)YLimMode must be set to 'auto' or 'manual'.
+>(schema)YLimMode は 'auto' または 'manual' に設定されなければなりません。
+<(schema)YLimMode value is incompatible with YLimSharing settings.
+>(schema)YLimMode 値は、YLimSharing の設定と互換性がありません。
+<(schema)YScale must be set to 'linear' or 'log'.
+>(schema)YScale は 'linear' または 'log' に設定されなければなりません。
+
+%%/sandbox/rhu/Acontrol_14p0_Nov14/matlab/toolbox/shared/controllib/@ctrluis/@axes/editFont.m
+
+%% toolbox/shared/controllib/@ctrluis/@axesgroup/addMenu.m
+
+%% toolbox/shared/controllib/@ctrluis/@axespair/axespair.m
+<(axespair)The first argument contains invalid handles.
+>(axespair)1番目の入力は無効なハンドルを含んでいます。
+<(axespair)The first argument must be a figure handle or a pair of axes handles.
+>(axespair)1番目の入力は、figure のハンドル、または座標軸のハンドルの組み合わせでなければなりません。
+
+%% toolbox/shared/controllib/@resppack/@StepPeakRespView/maketip.m
+<(maketip)Peak amplitude <= %0.3g
+>(maketip)ピーク振幅 <= %0.3g
+<(maketip)Peak amplitude >= %0.3g
+>(maketip)ピーク振幅 >= %0.3g
+
+%% toolbox/shared/controllib/@resppack/@bodeplot/plot.m
+<(plot)Magnitude and phase data must be real valued.
+>(plot)振幅と位相データは実数値でなければなりません。
+<(plot)Number of samples in frequency vector and response data must agree.
+>(plot)周波数ベクトルと応答データのサンプル数は一致しなければなりません。
+<(plot)Sizes of magnitude and phase arrays must agree.
+>(plot)振幅と位相配列のサイズは一致しなければなりません。
+<(plot)The frequency points must be real valued.
+>(plot)周波数点は実数値でなければなりません。
+
+%% toolbox/shared/controllib/@resppack/@bodeplot/getoptions.m
+<(getoptions)Invalid syntax.
+>(getoptions)シンタックスが無効です。
+
+%% toolbox/shared/controllib/@resppack/@bodeplot/newconstr.m
+<(newconstr)Can not add multiple gain and phase margin requirements to a Bode plot. \nTo add multiple gain and phase margin requirements to the same response use a Nichols plot.
+>(newconstr)ボード線図に必要な複数のゲインと位相余裕を追加できません。\n同じ応答に必要な複数のゲインと位相余裕を追加するには、ニコルス線図プロットを使用してください。
+
+%% toolbox/shared/controllib/@resppack/@ltisource/schema.m
+<(schema)IDFRD models are not supported.
+>(schema)IDFRD モデルはサポートされません。
+
+%% toolbox/shared/controllib/@resppack/@mpzplot/plot.m
+<(plot)This plot only accepts single sets of poles and zeros.
+>(plot)このプロットは、極と零点の単一の設定のみを受け入れます。
+
+%% toolbox/shared/controllib/@resppack/@nicholsview/maketip.m
+<(maketip)Gain (%s): %0.3g
+>(maketip)ゲイン (%s): %0.3g
+
+%% toolbox/shared/controllib/@resppack/@nyquistplot/plot.m
+<(plot)The frequency response data must be specified as numeric arrays.
+>(plot)周波数応答データは、数値配列で指定されなければなりません。
+
+%% toolbox/shared/controllib/@resppack/@pzplot/plot.m
+<(plot)Zero and pole arrays must have compatible sizes.
+>(plot)零点と極の配列は、互換性のあるサイズでなければなりません。
+
+%% toolbox/shared/controllib/@resppack/@respplot/addresponse.m
+<(addresponse)Axis grid does not have enough rows or columns to contain this response.
+>(addresponse)軸のグリッドは、この応答を含むための十分な行、または列をもっていません。
+
+%% toolbox/shared/controllib/@resppack/@respplot/paramsel.m
+<(paramsel)Settling Time (sec)
+>(paramsel)整定時間 (秒)
+<(paramsel)Arrays:
+>(paramsel)配列:
+<(paramsel)To view the %d selected model(s), check the system's name 
+>(paramsel)%d の選択したモデルを表示するには、システム名をクリックしてください
+<(paramsel)Model Selector for LTI Arrays
+>(paramsel)LTI 配列のモデルセレクタ
+
+%% toolbox/shared/controllib/@resppack/@respplot/rmresponse.m
+<(rmresponse)Second argument must be a valid handle.
+>(rmresponse)2番目の引数は、有効なハンドルでなければなりません
+
+%% toolbox/shared/controllib/@resppack/@rlplot/plot.m
+<(plot)Size of closed-loop pole array does not match number of gain values.
+>(plot)閉ループの極の配列サイズは、ゲイン値の数と一致しません。
+
+%% toolbox/shared/controllib/@resppack/@sigmaplot/plot.m
+<(plot)Number of singular values does not match number of frequency points.
+>(plot)特異値の数は、周波数点の数と一致しません。
+<(plot)Singular values should be nonnegative real numbers.
+>(plot)特異値は、非負の実数でなければなりません。
+
+%% toolbox/shared/controllib/@resppack/@simplot/addSimMenu.m
+<(addSimMenu)Initial condition...
+>(addSimMenu)初期条件
+
+%% toolbox/shared/controllib/@resppack/@simplot/setInputWidth.m
+<(setInputWidth)Cannot show input data on plots with multiple columns of axes.
+>(setInputWidth)座標軸の複数の列をもつプロットの入力データを表示できません。
+<(setInputWidth)The number of inputs and outputs must match when using "paired" option.
+>(setInputWidth)入力と出力数は、"paired" オプションが使用される場合、一致しなければなりません。
+
+%% toolbox/shared/controllib/@resppack/@simplot/setinput.m
+<(setinput)Input data must be a 2D matrix of real numbers.
+>(setinput)入力データは、実数の2次元配列でなければなりません。
+<(setinput)Number of samples in time vector and amplitude data must agree.
+>(setinput)時間ベクトルと振幅データのサンプル数は一致しなければなりません。
+
+%% toolbox/shared/controllib/@resppack/@simplot/lsimgui.m
+<(lsimgui)Non-numeric entry
+>(lsimgui)非数値の入力
+<(lsimgui)Start time (sec): %0.3f
+>(lsimgui)開始時間 (秒): %0.3f
+<(lsimgui)Start time (sec): %1.0f
+>(lsimgui)開始時間 (秒): %1.0f
+
+%% toolbox/shared/controllib/@resppack/@timeplot/plot.m
+<(plot)Time and amplitude data must be real valued.
+>(plot)時間と振幅データは実数値でなければなりません。
+
+%% toolbox/shared/controllib/@resppack/@hsvplot/addwf.m
+<(addwf)Data source should be a subclass of wrfc.datasource.
+>(addwf)データソースは wrfc.datasource のサブクラスである必要があります。
+
+%% toolbox/shared/controllib/@resppack/@hsvplot/plot.m
+<(plot)Invalid Hankel singular value data.
+>(plot)Hankel 特異値データが無効です。
+
+%% toolbox/shared/controllib/@resppack/@hsvplot/addHSVMenu.m
+<(addHSVMenu)Log
+>(addHSVMenu)対数
+<(addHSVMenu)Y Scale
+>(addHSVMenu)Y スケール
+
+%% toolbox/shared/controllib/@resppack/@hsvplot/hsvplot.m
+<(hsvplot)Cannot superpose Hankel singular value plots.
+>(hsvplot)Hankel 特異値プロットを重ねられません。
+
+%% toolbox/shared/controllib/@resppack/@hsvchart/draw.m
+<(draw)Could not compute Hankel singular values for this model.
+>(draw)このモデルに対する Hankel 特異値を計算できません。
+
+%% toolbox/shared/controllib/@sharedlsimgui/@abstractimporttable/getImportSelector.m
+<(getImportSelector)Abstract class: getImportSelector must be overloaded
+>(getImportSelector)抽象クラス: getImportSelector はオーバーロードされなければなりません
+
+%% toolbox/shared/controllib/@sharedlsimgui/@abstractimporttable/pasteData.m
+<(pasteData)Abstract class: pasteData must be overloaded
+>(pasteData)抽象クラス: pasteData はオーバーロードされなければなりません
+
+%% toolbox/shared/controllib/@sharedlsimgui/@abstractimporttable/refresh.m
+<(refresh)Abstract class: refresh must be overloaded
+>(refresh)抽象クラス: refresh はオーバーロードされなければなりません
+
+%% toolbox/shared/controllib/@sharedlsimgui/@abstractimporttable/setImportSelector.m
+<(setImportSelector)Abstract class: setImportSelector must be overloaded
+>(setImportSelector)抽象クラス: setImportSelector はオーバーロードされなければなりません
+
+%% toolbox/shared/controllib/@sharedlsimgui/@ascpanel/ascpanel.m
+<(ascpanel)delimiters must be a single character
+>(ascpanel)デリミタは単一のキャラクタでなければなりません
+
+%% toolbox/shared/controllib/@sharedlsimgui/@table/setCells.m
+<(setCells)Celldata type or size does not match
+>(setCells)Celldata タイプ、またはサイズが一致しません
+
+%% toolbox/shared/controllib/@wavepack/@waveform/draw.m
+<(draw)Some data is missing or cannot be plotted due to size mismatch.
+>(draw)いくつかのデータが紛失しているか、または一致しないサイズによりプロットできません。
+
+%% toolbox/shared/controllib/@wavepack/@waveplot/addwave.m
+<(addwave)Axis grid does not have enough rows to contain this wave.
+>(addwave)軸のグリッドは、この波形を含むための十分な行をもっていません。
+
+%% toolbox/shared/controllib/@wavepack/@wavestyle/setstyle.m
+<(setstyle)Property names and values must come in pair.
+>(setstyle)プロパティ名と値はペアで使わなければなりません
+<(setstyle)RGB color must be a 3 element numeric vector.
+>(setstyle)RGB カラーは3要素の数値ベクトルでなければなりません。
+<(setstyle)RGB values must be between 0 and 1.
+>(setstyle)RGB 値は 0 と 1 の間でなければなりません
+<(setstyle)Unknown or ambiguous property "%s"
+>(setstyle)不明な、または不明瞭なプロパティ "%s"
+
+%% toolbox/shared/controllib/@wrfc/@plot/check_hold.m
+<(check_hold)Cannot superpose plots of different types or sizes.
+>(check_hold)異なるタイプ、またはサイズのプロットを重ねられません。
+<(check_hold)HOLD not supported for multi-axes plots.  Clearing previous plot.
+>(check_hold)HOLD は複数の座標軸のプロットをサポートしません。 以前のプロットをクリアします。
+
+%% toolbox/shared/controllib/@wrfc/@plot/newconstr.m
+<(newconstr)Abstract method, needs to be implemented by subclasses
+>(newconstr)抽象メソッドは、サブクラスで実行する必要があります。
+
+%% toolbox/shared/controllib/private/utRespInfoCheck.m
+<(utRespInfoCheck)Options must be specified as name/value pairs.
+>(utRespInfoCheck)オプションは、名前/値 の組み合わせで指定しなければなりません。
+<(utRespInfoCheck)Response data must be non empty.
+>(utRespInfoCheck)応答データは、空にはできません。
+<(utRespInfoCheck)Rise time limits must be non decreasing.
+>(utRespInfoCheck)立ち上がり時間の範囲は減少にはできません。
+<(utRespInfoCheck)Rise time limits must be numeric values.
+>(utRespInfoCheck)立ち上がり時間の範囲は数値でなければなりません。
+<(utRespInfoCheck)Rise time limits must be specified as a pair of scalars between 0 and 1.
+>(utRespInfoCheck)立ち上がり時間の範囲は、0 と 1 の間のスカラの組み合わせで指定されなければなりません。
+<(utRespInfoCheck)Settling time threshold must be a numeric value.
+>(utRespInfoCheck)整定時間の閾値は数値でなければなりません。
+<(utRespInfoCheck)Settling time threshold must be a scalar between 0 and 1.
+>(utRespInfoCheck)整定時間の閾値は、0 と 1 の間のスカラでなければなりません。
+<(utRespInfoCheck)Steady-state value YFINAL must be a numeric array.
+>(utRespInfoCheck)定常状態値 YFINAL は数値配列でなければなりません。
+<(utRespInfoCheck)Time vector T must be a numeric array.
+>(utRespInfoCheck)時間ベクトル T は数値配列でなければなりません。
+<(utRespInfoCheck)Y and T have incompatible sizes.
+>(utRespInfoCheck)Y と T は互換性のないサイズをもちます。
+<(utRespInfoCheck)Y and YFINAL have incompatible sizes.
+>(utRespInfoCheck)Y と YFINAL は互換性のないサイズをもちます。
+<(utRespInfoCheck)Y has too many dimensions.
+>(utRespInfoCheck)Y は多すぎる次元をもっています。
+
+%% toolbox/shared/controllib/@plotconstr/@bodegain/edit.m
+<(edit)Select segment to edit
+>(edit)編集のためのセグメントの選択
+
+%% toolbox/shared/controllib/@plotconstr/@bodegain/move.m
+<(move)Move requirement to desired location and release the mouse.\n%s
+>(move)目的の位置まで要求を移動し、マウスを放してください。\n%s
+
+%% toolbox/shared/controllib/@plotconstr/@bodegain/status.m
+<(status)%s gain limit with frequency range from %0.3g to %0.3g %s.
+>(status)%s ゲインリミット, 周波数範囲 %0.3g から %0.3g %s
+<(status)%s\nLeft-click and drag to move this gain requirement.
+>(status)%s\n左クリックしてドラッグし、このゲイン要求を移動してください。
+<(status)New gain requirement location is from %0.3g to %0.3g %s.
+>(status)新規ゲインの要求の位置は %0.3g から %0.3g %s です。
+<(status)New gain requirement segment location is from %0.3g to %0.3g %s.
+>(status)新規ゲインの要求セグメントの位置は %0.3g から %0.3g %s です。
+<(status)Select and drag to adjust extent and slope of gain requirement segment.
+>(status)選択してドラッグし、ゲインの要求セグメントの範囲と勾配を調整してください。
+<(status)The gain requirement segment new location is from %0.3g to %0.3g %s
+>(status)ゲインの要求セグメントの位置は %0.3g から %0.3g %s です。
+
+%% toolbox/shared/controllib/@plotconstr/@bodegain/describe.m
+<(describe)Bode gain
+>(describe)ボードゲイン
+
+%% toolbox/shared/controllib/@plotconstr/@designconstr/addmenu.m
+<(addmenu)Extend to inf
+>(addmenu)inf に拡張
+<(addmenu)Join segment
+>(addmenu)セグメントの結合
+<(addmenu)Split segment
+>(addmenu)セグメントの分割
+
+%% toolbox/shared/controllib/@plotconstr/@editdlg/build.m
+<(build) Requirement type:
+>(build) 要求タイプ:
+<(build)Design requirement parameters
+>(build)設計要求パラメータ
+<(build)Edit Design Requirement
+>(build)設計要求の編集
+
+%% toolbox/shared/controllib/@plotconstr/@newdlg/build.m
+<(build) Design requirement type:
+>(build) 設計要求タイプ:
+<(build)Add Requirement
+>(build)要求の追加
+<(build)New Design Requirement
+>(build)新規設計要求
+
+%% toolbox/shared/controllib/@plotconstr/@nicholsgain/resize.m
+<(resize)Gain margin requirement: %0.3g %s at %0.3g %s.
+>(resize)ゲイン余裕の要求: %0.3g %s / %0.3g %s.
+
+%% toolbox/shared/controllib/@plotconstr/@nicholsgain/status.m
+<(status)%s\nLeft-click and drag to move this requirement.
+>(status)%s\n左クリックしてドラッグし、この要求を移動してください。
+<(status)%s\nLeft-click and drag to resize this requirement.
+>(status)%s\n左クリックしてドラッグし、この要求をリサイズしてください。
+<(status)Design requirement: gain margin < %0.3g %s at %0.3g %s.
+>(status)設計要求: ゲイン余裕 < %0.3g %s / %0.3g %s.
+<(status)New gain margin requirement is %0.3g %s at %0.3g %s.
+>(status)新規のゲイン余裕の要求は %0.3g %s / %0.3g %s です。
+
+%% toolbox/shared/controllib/@plotconstr/@nicholspeak/move.m
+<(move)Closed-loop peak gain requirement moved from %0.3g to %0.3g %s.
+>(move)閉ループのピークゲインの要求は %0.3g から %0.3g %s に移動しました。
+
+%% toolbox/shared/controllib/@plotconstr/@nicholspeak/resize.m
+<(resize)Closed-loop peak gain requirement: %0.3g %s at %0.3g %s.
+>(resize)閉ループのピークゲインの要求: %0.3g %s / %0.3g %s.
+
+%% toolbox/shared/controllib/@plotconstr/@nicholspeak/status.m
+<(status)Design requirement: closed-loop peak gain < %0.3g %s at %0.3g %s.
+>(status)設計要求: 閉ループのピークゲイン < %0.3g %s / %0.3g %s.
+<(status)New peak gain requirement is %0.3g %s at %0.3g %s.
+>(status)新規のピークゲインの要求は %0.3g %s / %0.3g %s です。
+
+%% toolbox/shared/controllib/@plotconstr/@nicholsphase/resize.m
+<(resize)Phase margin requirement: %0.3g %s at %0.3g %s.
+>(resize)位相余裕の要求: %0.3g %s / %0.3g %s.
+
+%% toolbox/shared/controllib/@plotconstr/@nicholsphase/status.m
+<(status)Design requirement: phase margin < %0.3g %s at %0.3g %s.
+>(status)設計要求: 位相余裕 < %0.3g %s / %0.3g %s.
+<(status)New phase margin requirement is %0.3g %s at %0.3g %s.
+>(status)新規の位相余裕の要求は %0.3g %s / %0.3g %s です。
+
+%% toolbox/shared/controllib/@plotconstr/@pzdamping/move.m
+<(move)Move requirement to adjust damping/overshoot bound and release the mouse.\n%s
+>(move)減衰/オーバーシュートの範囲を調整するには、要求を移動し、マウスを放してください。\n%s
+
+%% toolbox/shared/controllib/@plotconstr/@pzdamping/status.m
+<(status)Design requirement: damping > %.3g (overshoot < %.3g %s).
+>(status)設計要求: 減衰 > %.3g (オーバーシュート < %.3g %s)
+
+%% toolbox/shared/controllib/@plotconstr/@pzfrequency/move.m
+<(move)Move requirement to adjust natural frequency bound and release the mouse.\n%s
+>(move)固有振動数の範囲を調整するには、要求を移動し、マウスを放してください。\n%s
+
+%% toolbox/shared/controllib/@plotconstr/@pzfrequency/status.m
+<(status)Design requirement: natural frequency %s %.3g %s.
+>(status)設計要求: 固有振動数 %s %.3g %s
+
+%% toolbox/shared/controllib/@plotconstr/@pzsettling/move.m
+<(move)Move requirement to adjust settling time bound and release the mouse.\n%s
+>(move)整定時間の範囲を調整するには、要求を移動し、マウスを放してください。\n%s
+
+%% toolbox/shared/controllib/@plotconstr/@pzsettling/status.m
+<(status)Design requirement: settling time < %.3g sec.
+>(status)設計要求: 整定時間 < %.3g 秒
+
+%% toolbox/shared/controllib/@plotconstr/@constrdata/setData.m
+<(setData)Data must have the same number of rows
+>(setData)データは同じ行数でなければなりません
+<(setData)Invalid 2nd dimension size for %s property, should be %d
+>(setData)%s プロパティに対する無効な2番目の次元サイズ, %d である必要があります。
+<(setData)Invalid number of parameter/value pair arguments
+>(setData)パラメータ/値の組み合わせの引数の数が無効です
+<(setData)Property %s must be numeric and finite
+>(setData)プロパティ %s は数値で有限でなければなりません
+<(setData)Requirement data cannot have more than two dimensions
+>(setData)要求データは、2つ以上の次元をもつことはできません
+<(setData)weight has inconsistent number of rows, expected %d rows
+>(setData)weight は矛盾する行数をもち、%d 行を超えています。
+<(setData)xdata has inconsistent number of rows, expected %d rows
+>(setData)xdata は矛盾する行数をもち、%d 行を超えています。
+<(setData)ydata has inconsistent number of rows, expected %d rows
+>(setData)ydata は矛盾する行数をもち、%d 行を超えています。
+
+%% toolbox/shared/controllib/@plotconstr/@nicholslocation/status.m
+<(status)%s Gain-Phase segment limit with phase range from %0.3g to %0.3g %s
+>(status)%s ゲイン-位相セグメントリミット, 位相範囲 %0.3g から %0.3g %s
+<(status)New Gain-Phase requirement location is from %0.3g to %0.3g %s
+>(status)新規ゲイン-位相の要求の位置は %0.3g から %0.3g %s です。
+<(status)New Gain-Phase requirement segment location is from %0.3g to %0.3g %s
+>(status)新規ゲイン-位相の要求セグメントの位置は %0.3g から %0.3g %s です。
+<(status)Select and drag to adjust extent and slope of requirement segment.
+>(status)選択してドラッグし、要求セグメントの範囲と勾配を調整してください。
+
+%% toolbox/shared/controllib/@plotconstr/@nicholslocation/describe.m
+<(describe)Gain-Phase requirement
+>(describe)ゲイン位相の要求
+<(describe)Lower limit Gain-Phase requirement
+>(describe)ゲイン-位相要求の下限
+<(describe)Upper limit Gain-Phase requirement
+>(describe)ゲイン-位相要求の上限
+
+%% toolbox/shared/controllib/@plotconstr/@polygonconstr/resize.m
+<(resize)Location:  from %0.3g to %0.3g
+>(resize)位置: %0.3g - %0.3g
+
+%% toolbox/shared/controllib/@plotconstr/@polygonconstr/schema.m
+<(schema)Incorrect set value for property 'Orientation': Must be one of {%s,%s,%s}.
+>(schema)プロパティ 'Orientation' に対する値の設定が不正です: {%s,%s,%s} のいずれかでなければなりません。
+
+%% toolbox/shared/controllib/@plotconstr/@polygonconstr/status.m
+<(status)%s and imaginary range from %0.3g to %0.3g %s.
+>(status)%s と虚部範囲 %0.3g から %0.3g %s
+<(status)%s limit with real range from %0.3g to %0.3g %s
+>(status)%s リミット, 実部範囲 %0.3g から %0.3g %s
+<(status)%s segment limit with real range from %0.3g to %0.3g %s
+>(status)%s セグメントリミット, 実部範囲 %0.3g から %0.3g %s
+<(status)New requirement location is from %0.3g to %0.3g %s
+>(status)新規の要求の位置は、%0.3g から %0.3g %s です。
+<(status)New requirement segment location is from %0.3g to %0.3g %s
+>(status)新規の要求のセグメントの位置は、%0.3g から %0.3g %s です。
+<(status)Select and drag to adjust extent and slope of requirement.
+>(status)選択してドラッグし、要求の範囲と勾配を調整してください。
+
+%% toolbox/shared/controllib/@plotconstr/@polygondata/setData.m
+<(setData)linked has inconsistent number of rows, expected %d rows
+>(setData)linked は矛盾する行数をもち、%d 行を超えています。
+
+%% toolbox/shared/controllib/@plotconstr/@pzlocation/status.m
+<(status)%s segment limit with real range from %0.3g to %0.3g
+>(status)%s セグメントリミット, 実部範囲 %0.3g から %0.3g
+<(status)New requirement location is from %0.3g to %0.3g
+>(status)新規の要求の位置は、%0.3g から %0.3g です
+<(status)New requirement segment location is from %0.3g to %0.3g
+>(status)新規の要求セグメントの位置は、%0.3g から %0.3g です
+
+%% toolbox/shared/controllib/@plotconstr/@pzlocation/describe.m
+<(describe)%s from %0.3g to %0.3g
+>(describe)%s %0.3g から %0.3g
+<(describe)Lower limit region requirement
+>(describe)領域の要求の下限
+<(describe)Upper limit region requirement
+>(describe)領域の要求の上限
+
+%% toolbox/shared/controllib/@plotconstr/@timeresponse/status.m
+<(status)%s segment limit with time range from %0.3g to %0.3g %s
+>(status)%s セグメントリミット, 時間範囲 %0.3g から %0.3g %s
+
+%% toolbox/shared/controllib/@plotconstr/@timeresponse/describe.m
+<(describe)%s time bound
+>(describe)%s 時間範囲
+
+%% toolbox/shared/controllib/@plotconstr/@bodegpm/edit.m
+<(edit)Gain margin >
+>(edit)ゲイン余裕 >
+
+%% toolbox/shared/controllib/@plotconstr/@bodegpm/status.m
+<(status)Gain margin > %0.3g %s, Phase margin > %0.3g %s.
+>(status)ゲイン余裕 > %0.3g %s, 位相余裕 > %0.3g %s
+
+%% toolbox/shared/controllib/@plotconstr/@bodegpm/describe.m
+<(describe)Gain & Phase margin
+>(describe)ゲイン & 位相余裕
+<(describe)Requirement: 
+>(describe)要求:
+
+%% toolbox/shared/controllib/@plotopts/@BodePlotOptions/schema.m
+<(schema)%s must be 'auto' or 'manual'.
+>(schema)%s は 'auto' または 'manual' でなければなりません。
+<(schema)%s must be 'dB' or 'abs'.
+>(schema)%s は 'dB' または 'abs' でなければなりません。
+<(schema)%s must be 'linear' or 'log'.
+>(schema)%s は 'linear' または 'log' でなければなりません。
+<(schema)%s must be 'rad' or 'deg'.
+>(schema)%s は 'rad' または 'deg' でなければなりません。
+<(schema)%s must be 'rad/s' or 'Hz'.
+>(schema)%s は 'rad/s' または 'Hz' でなければなりません。
+<(schema)%s must be a real scalar value.
+>(schema)%s は実数のスカラ値でなければなりません。
+
+%% toolbox/shared/controllib/@plotopts/@HSVPlotOptions/schema.m
+<(schema)Invalid setting for Y scale of Hankel Singular Value plot.
+>(schema)Hankel 特異値プロットの Y スケールに対する設定が無効です。
+
+%% toolbox/shared/controllib/@plotopts/@NicholsPlotOptions/schema.m
+<(schema)%s must be a finite real scalar value.
+>(schema)%s は有限で、実数のスカラ値でなければなりません。
+
+%% toolbox/shared/controllib/@plotopts/@PlotOptions/schema.m
+<(schema)%s must be a cell array of 1-by-2 doubles.
+>(schema)%s は 1×2 の double のセル配列でなければなりません。
+<(schema)%s must be a cell array of strings ('auto' or 'manual').
+>(schema)%s は文字列 ('auto' または 'manual') のセル配列でなければなりません。
+<(schema)%s must be a structure.
+>(schema)%s は構造体でなければなりません。
+<(schema)Invalid field name for %s.
+>(schema)%s のフィールド名が無効です。
+<(schema)Limit pairs but be strictly increasing
+>(schema)範囲の組み合わせですが厳密に増加します
+
+%% toolbox/shared/controllib/@plotopts/@PlotOptions/display.m
+<(display)%d-by-
+>(display)%d ×
+
+%% toolbox/shared/controllib/@plotopts/@PlotOptions/applyPlotOpts.m
+<(applyPlotOpts)XLim settings ignored (incorrect size)
+>(applyPlotOpts)XLim の設定は無視されました (サイズが不正)
+<(applyPlotOpts)XLimMode settings ignored (incorrect size)
+>(applyPlotOpts)XLimMode の設定は無視されました (サイズが不正)
+<(applyPlotOpts)YLim settings ignored
+>(applyPlotOpts)YLim の設定は無視されました
+<(applyPlotOpts)YLimMode settings ignored
+>(applyPlotOpts)YLimMode の設定は無視されました
+
+%% toolbox/shared/controllib/@plotopts/@PlotOptions/applyPropertyPairs.m
+<(applyPropertyPairs)Property Values must come in pairs
+>(applyPropertyPairs)プロパティ値はペアで使わなければなりません
+
+%% toolbox/shared/controllib/@plotopts/@RespPlotOptions/schema.m
+<(schema)%s must be a cell array.
+>(schema)%s はセル配列でなければなりません。
+<(schema)No such field for 
+>(schema)つぎのフィールドはありません
+
+%% toolbox/shared/controllib/@plotopts/@RespPlotOptions/applyRespPlotOpts.m
+<(applyRespPlotOpts)Input Visibility settings ignored
+>(applyRespPlotOpts)入力の Visibility 設定は無視されました
+<(applyRespPlotOpts)Output Visibility settings ignored
+>(applyRespPlotOpts)出力の Visibility 設定は無視されました
+
+<(NicholsPlotOptions)Nichols Chart
+>(NicholsPlotOptions)ニコルス線図
+% g359630
+% e.g., From: In(1)
+%<(rclabel)From: 
+%>(rclabel)左端: 
+% e.g., To: Out(1)
+%<(rclabel)  To: 
+%>(rclabel)  右端: 
+%<(rclabel)To: 
+%>(rclabel)右端: 
+
+%% toolbox/shared/controllib/@sharedlsimgui/@abstractimporttable/edit.m
+<(edit)ASCII file
+>(edit)ASCII ファイル
+<(edit)CSV file
+>(edit)CSV ファイル
+<(edit)Data Import
+>(edit)データインポート
+<(edit)Import
+>(edit)インポート
+<(edit)Import State From Workspace
+>(edit)ワークスペースから状態のインポート
+<(edit)Import from:
+>(edit)インポート元:
+<(edit)MAT file
+>(edit)MAT ファイル
+<(edit)State Import
+>(edit)状態のインポート
+<(edit)Workspace
+>(edit)ワークスペース
+<(edit)XLS file
+>(edit)XLS ファイル
+
+%% toolbox/shared/controllib/@sharedlsimgui/@ascpanel/import.m
+<(import)No columns have been selected for import
+>(import)インポートに対して選択された列はありません
+<(import)Data Import Tool
+>(import)データインポートツール
+
+%% toolbox/shared/controllib/@sharedlsimgui/@ascpanel/ascpanel.m
+<(ascpanel)(default)
+>(ascpanel)(デフォルト)
+<(ascpanel)Browse...
+>(ascpanel)選択
+<(ascpanel)File: 
+>(ascpanel)ファイル:
+<(ascpanel)Select delimiter character: 
+>(ascpanel)デリミタのキャラクタの選択:
+<(ascpanel)Select file
+>(ascpanel)ファイル選択
+<(ascpanel)space
+>(ascpanel)空白
+<(ascpanel)tab
+>(ascpanel)タブ
+
+%% toolbox/shared/controllib/@sharedlsimgui/@asctable/open.m
+<(open)Could not open file. Message returned from dlmread: %s
+>(open)ファイルを開けません。 dlmread から返されたメッセージ: %s
+
+%% toolbox/shared/controllib/@sharedlsimgui/@csvpanel/csvpanel.m
+<(csvpanel)Select .csv file
+>(csvpanel)csv ファイル選択
+
+%% toolbox/shared/controllib/@sharedlsimgui/@csvtable/open.m
+<(open)Could not open file. Message returned from csvread: %s
+>(open)ファイルを開けません。 csvread から返されたメッセージ: %s
+
+%% toolbox/shared/controllib/@sharedlsimgui/@excelpanel/excelpanel.m
+<(excelpanel)       Select sheet: 
+>(excelpanel)       シート選択:
+<(excelpanel)Excel File Import
+>(excelpanel)Excel ファイルのインポート
+<(excelpanel)Select .xls file
+>(excelpanel).xls ファイル選択
+<(excelpanel)Skip cells
+>(excelpanel)セルをスキップ
+<(excelpanel)Text and Missing Data
+>(excelpanel)テキストと欠損値
+
+%% toolbox/shared/controllib/@sharedlsimgui/@exceltable/open.m
+<(open)Requested Excel file or sheet name not found
+>(open)必要な Excel ファイル、またはシート名が見つかりません
+<(open)There is no ActiveX client support for Excel on this machine. Loading numeric data only
+>(open)このマシンで Excel の ActiveX クライアントサポートがありません。 数値データのみ読み込んでいます
+
+%% toolbox/shared/controllib/@sharedlsimgui/@exceltable/xlsInterp.m
+<(xlsInterp)Cannot extrpolate over non-numeric data
+>(xlsInterp)非数値データを外挿できません。
+<(xlsInterp)Cannot interpolate less than 2 points
+>(xlsInterp)2よりも少ない点を内挿できません。
+<(xlsInterp)Cannot start with non-numeric data. Use header specification to exclude these cells
+>(xlsInterp)非数値データで開始できません。 これらのセルを除くためにヘッダ指定を使用してください
+<(xlsInterp)Imported columns have differing lengths, truncating to the shortest column length of %d
+>(xlsInterp)インポートした列は、%d の長さに短く切り取られ、異なる長さをもちます。
+<(xlsInterp)One or more columns has no numeric data, aborting copy
+>(xlsInterp)いくつかの列は数値データではないため、コピーを中止しています
+<(xlsInterp)One or more imported columns has less than 2 valid rows, aborting import
+>(xlsInterp)いくつかのインポートした列は2よりも少ない有効な行をもつため、インポートを中止しています
+<(xlsInterp)Using the minimum valid header size of %s row(s)
+>(xlsInterp)%s 行の最小の有効なヘッダサイズを使用します
+<(xlsInterp)linearly interpolate
+>(xlsInterp)線形補間
+<(xlsInterp)skip cells
+>(xlsInterp)セルをスキップ
+<(xlsInterp)skip rows
+>(xlsInterp)行をスキップ
+<(xlsInterp)zero order hold
+>(xlsInterp)ゼロ次ホールド
+
+%% toolbox/shared/controllib/@sharedlsimgui/@importselector/createASCPanel.m
+<(createASCPanel)Data source:
+>(createASCPanel)データソース:
+
+%% toolbox/shared/controllib/@sharedlsimgui/@importselector/createExcelPanel.m
+<(createExcelPanel)%s is an invalid text box entry
+>(createExcelPanel)%s は無効なテキストボックスの入力です。
+<(createExcelPanel)Linearly interpolate
+>(createExcelPanel)線形補間
+<(createExcelPanel)One or more columns has no numeric data, aborting import
+>(createExcelPanel)いくつかの列は数値データではないため、インポートを中止しています
+<(createExcelPanel)Options for text and missing data:
+>(createExcelPanel)テキストと欠損値に対するオプション:
+<(createExcelPanel)Select sheet: 
+>(createExcelPanel)シート選択:
+<(createExcelPanel)Skip rows
+>(createExcelPanel)行をスキップ
+<(createExcelPanel)Zero order hold
+>(createExcelPanel)ゼロ次ホールド
+
+%% toolbox/shared/controllib/@sharedlsimgui/@importselector/createMATfilePanel.m
+<(createMATfilePanel)File:
+>(createMATfilePanel)ファイル:
+<(createMATfilePanel)Select MAT file
+>(createMATfilePanel)MATファイルの選択
+<(createMATfilePanel)Selected columns:
+>(createMATfilePanel)選択列:
+
+%% toolbox/shared/controllib/@sharedlsimgui/@matpanel/import.m
+<(import)Column specification must use valid MATLAB syntax
+>(import)列指定は有効な MATLAB のシンタックスを使用しなければなりません
+<(import)One or more of the specified columns do not match the size of the selected variable
+>(import)指定した列のいくつかは指定した変数のサイズと一致しません
+
+%% toolbox/shared/controllib/@sharedlsimgui/@matpanel/matpanel.m
+% e.g. Assign columns EDITBOX to selected channel(s)
+<(matpanel)Assign columns
+>(matpanel)列の割り当て
+<(matpanel)to selected channel(s)
+>(matpanel)選択したチャンネル
+<(matpanel)Assign rows
+>(matpanel)行の割り当て
+<(matpanel)MAT File Import
+>(matpanel)MAT ファイルのインポート
+
+%% toolbox/shared/controllib/@sharedlsimgui/@workpanel/import.m
+<(import)One or more of the specified rows or columns do not match the size of the selected variable
+>(import)指定した行、または列のいくつかは指定した変数のサイズと一致しません
+<(import)Row or column specification must use valid MATLAB syntax
+>(import)行、または列指定は有効な MATLAB のシンタックスを使用しなければなりません
+
+%% toolbox/shared/controllib/@sharedlsimgui/@ascpanel/import.m
+
+%% toolbox/shared/controllib/@sharedlsimgui/@ascpanel/ascpanel.m
+<(ascpanel)Ascii File Import
+>(ascpanel)Ascii ファイルのインポート
+
+%% toolbox/shared/controllib/@sharedlsimgui/@excelpanel/excelpanel.m
+<(excelpanel)File not found
+>(excelpanel)ファイルが見つかりません
+<(excelpanel)Invalid or empty workbook
+>(excelpanel)無効、または空のワークブック
+
+%% toolbox/shared/controllib/@sharedlsimgui/@exceltable/open.m
+
+%% toolbox/shared/controllib/@sharedlsimgui/@exceltable/xlsInterp.m
+
+%% toolbox/shared/controllib/@sharedlsimgui/@importselector/createExcelPanel.m
+
+%% toolbox/shared/controllib/@sharedlsimgui/@importselector/createMATfilePanel.m
+<(createMATfilePanel)Invalid file or file not found
+>(createMATfilePanel)無効なファイル、またはファイルが見つかりません
+
+%% toolbox/shared/controllib/@sharedlsimgui/@matpanel/import.m
+
+%% toolbox/shared/controllib/@sharedlsimgui/@workpanel/import.m
+
+%% toolbox/shared/controllib/@resppack/@simplot/addSimMenu.m
+<(addSimMenu)There is no input signal defined for this plot.
+>(addSimMenu)このプロットで定義した入力信号がありません。
+
+%% toolbox/shared/controllib/@resppack/@simplot/lsimgui.m
+<(lsimgui) Close 
+>(lsimgui) 閉じる
+<(lsimgui)Automatic
+>(lsimgui)自動
+<(lsimgui)Cannot simulate for less than 2 samples
+>(lsimgui)2より少ないサンプルでシミュレーションできません
+<(lsimgui)Copy signal
+>(lsimgui)信号のコピー
+<(lsimgui)Data
+>(lsimgui)データ
+<(lsimgui)Design signal...
+>(lsimgui)信号の設計
+<(lsimgui)File
+>(lsimgui)ファイル
+<(lsimgui)First order hold
+>(lsimgui)1次ホールド
+<(lsimgui)Import signal...
+>(lsimgui)信号のインポート
+<(lsimgui)Import state vector...
+>(lsimgui)状態ベクトルのインポート
+<(lsimgui)Import time
+>(lsimgui)時間のインポート
+<(lsimgui)Initial conditions must be finite numeric scalars
+>(lsimgui)初期条件は有限で数値のスカラでなければなりません
+<(lsimgui)Initial states
+>(lsimgui)初期状態
+<(lsimgui)Initial value
+>(lsimgui)初期値
+<(lsimgui)Input signals
+>(lsimgui)入力信号
+<(lsimgui)Linear Simulation Tool
+>(lsimgui)線形シミュレーションツール
+<(lsimgui)Load input table
+>(lsimgui)入力テーブルの読み込み
+<(lsimgui)Mismatch between saved data, which was defined by a system with %s inputs, and this system which has %s inputs.
+>(lsimgui)%s の入力をもつシステムと %s の入力をもつこのシステムで定義された、保存したデータ間が一致しません。
+<(lsimgui)None of the systems have a complete set of inputs
+>(lsimgui)システムのいずれも入力の設定が完了していません
+<(lsimgui)Number of samples: %6s
+>(lsimgui)サンプル数: %6s
+<(lsimgui)Save input table
+>(lsimgui)入力テーブルの保存
+<(lsimgui)Select Linear Simulation Tool conditions file
+>(lsimgui)線形シミュレーションツールの条件ファイルの選択
+<(lsimgui)Selected system
+>(lsimgui)選択したシステム
+<(lsimgui)Simulate
+>(lsimgui)シミュレーション
+<(lsimgui)Specify initial states
+>(lsimgui)初期条件の指定
+<(lsimgui)Start time (sec): %s
+>(lsimgui)開始時間 (秒): %s
+<(lsimgui)System inputs
+>(lsimgui)システムの入力
+<(lsimgui)Timing
+>(lsimgui)タイミング
+<(lsimgui)Cut signal
+>(lsimgui)信号の切り取り
+<(lsimgui)Paste signal
+>(lsimgui)信号の貼り付け
+<(lsimgui)Insert signal
+>(lsimgui)信号の挿入
+<(lsimgui)Delete signal
+>(lsimgui)信号の削除
+<(lsimgui)Edit
+>(lsimgui)編集
+<(lsimgui)Channels
+>(lsimgui)チャンネル
+<(lsimgui)Variable Dimensions
+>(lsimgui)変数の次元
+<(lsimgui)Invalid time interval
+>(lsimgui)無効な時間間隔
+% e.g., Start time: 0 to EDITBOX with an intrval of EDITBOX
+<(lsimgui)to 
+>(lsimgui)-
+<(lsimgui)with an interval of 
+>(lsimgui)つぎの区間
+
+%%%% After 11/23
+<()About linear simulation tool
+>()線形シミュレーションツールについて
+<(createView)Upper time response bound
+>(createView)時間応答の上限
+<(createView)Lower time response bound
+>(createView)時間応答の下限
+<(createView)Amplitude
+>(createView)振幅
+
+<(lsimgui)      End time (sec):
+>(lsimgui)      終了時間 (秒):
+<(lsimgui)      Interval (sec):
+>(lsimgui)      間隔 (秒):
+<(matpanel)Assign the following rows to selected channel(s):
+>(matpanel)つぎの行を選択したチャンネルに割り当て:
+<(workpanel)Assign the following columns to selected channel(s):
+>(workpanel)つぎの列を選択したチャンネルに割り当て:
+
+%%matlab\toolbox\shared\controllib/@plotconstr/@bodegain/describe.m
+<(describe)Lower gain limit
+>(describe)ゲインリミットの下限
+<(describe)Upper gain limit
+>(describe)ゲインリミットの上限
+
+%%matlab\toolbox\shared\controllib/@plotconstr/@bodegain/edit.m
+<(edit)Cannot delete the last edge when creating a new requirement.
+>(edit)新規要求の作成時に最後のエッジを削除できません。
+<(edit)Design Requirement Error
+>(edit)設計要求エラー
+<(edit)Segments:
+>(edit)セグメント:
+
+%%matlab\toolbox\shared\controllib/@plotconstr/@bodegpm/describe.m
+<(describe)Gain & Phase margins
+>(describe)ゲインと位相余裕
+
+%%matlab\toolbox\shared\controllib/@plotconstr/@designconstr/extent.m
+<(extent)Method needs to be implemented by subclasses.
+>(extent)メソッドは、サブクラスで実行する必要があります。
+
+%%matlab\toolbox\shared\controllib/@plotconstr/@editdlg/build.m
+<(build) Design requirement:
+>(build) 設計要求:
+<(build)Error finding help page: 
+>(build)ヘルプページの検索中のエラー:
+
+%%matlab\toolbox\shared\controllib/@plotconstr/@nicholslocation/edit.m
+<(edit)Open-Loop gain
+>(edit)開ループゲイン
+<(edit)Open-Loop phase
+>(edit)開ループ位相
+<(edit)Vertices:
+>(edit)頂点:
+
+%%matlab\toolbox\shared\controllib/@plotconstr/@timeresponse/describe.m
+
+%%matlab\toolbox\shared\controllib/@plotconstr/@timeresponse/edit.m
+<(edit)Cannot delete all constraints. Must have at least one upper and one lower constraint.
+>(edit)すべての制約を削除できません。 少なくとも1つの上限と下限の制約がなければなりません。
+
+%%matlab\toolbox\shared\controllib/@plotconstr/@stepresponse/status.m
+<(status)Rise time: %g sec, Settling time: %g sec, Percentage overshoot: %g %%, Percentage settling: %g %%
+>(status)立ち上がり時間: %g 秒, 整定時間: %g 秒, オーバーシュートの割合: %g %%, 整定の割合: %g %%
+
+%%matlab\toolbox\shared\controllib/@plotconstr/@stepresponse/edit.m
+<(edit)%% Overshoot:
+>(edit)%% オーバーシュート:
+<(edit)%% Rise:
+>(edit)%% 立ち上がり:
+<(edit)%% Settling:
+>(edit)%% 整定:
+<(edit)%% Undershoot:
+>(edit)%% アンダーシュート:
+<(edit)Final value:
+>(edit)最終値:
+<(edit)Initial value:
+>(edit)初期値:
+<(edit)Rise time:
+>(edit)立ち上がり時間:
+<(edit)Settling time:
+>(edit)整定時間:
+<(edit)Step time:
+>(edit)ステップ時間:
+
+%%matlab\toolbox\shared\controllib/@plotconstr/@stepresponse/moveStatus.m
+<(moveStatus)Percentage overshoot: %g%%, Settling time: %g sec
+>(moveStatus)オーバーシュートの割合: %g%%, 整定時間: %g 秒
+<(moveStatus)Percentage rise: %g%%, Rise time: %g sec, Settling time: %g sec
+>(moveStatus)立ち上がりの割合: %g%%, 立ち上がり時間: %g 秒, 整定時間: %g 秒
+<(moveStatus)Percentage settling: %g%%, Settling time: %g sec
+>(moveStatus)整定の割合: %g%%, 整定時間: %g 秒
+<(moveStatus)Percentage undershoot: %g%%, Rise time: %g sec
+>(moveStatus)アンダーシュートの割合: %g%%, 立ち上がり時間: %g 秒
+
+%%matlab\toolbox\shared\controllib/@plotconstr/@stepresponse/resizeStatus.m
+<(resizeStatus)Rise time: %g sec
+>(resizeStatus)立ち上がり時間: %g 秒
+<(resizeStatus)Rise time: %g sec, Settling time: %g sec
+>(resizeStatus)立ち上がり時間: %g 秒, 整定時間: %g 秒
+<(resizeStatus)Settling time: %g sec
+>(resizeStatus)整定時間: %g 秒
+
+%%matlab\toolbox\shared\controllib/@plotconstr/@stepresponse/describe.m
+<(describe)Step response bound
+>(describe)ステップ応答の境界
+
+%%matlab\toolbox\shared\controllib/@resppack/@timeplot/newconstr.m
+<(newconstr)Step response bounds
+>(newconstr)ステップ応答の境界
+
+<(edit)Start
+>(edit)開始
+<(edit)End
+>(edit)終了
+<(edit)Slope
+>(edit)勾配
+<(edit)Insert
+>(edit)挿入
+<(enableContextMenu)Break
+>(enableContextMenu)解除
+
+

@@ -1,0 +1,8 @@
+% Copyright 2000-2005 The MathWorks, Inc.
+%   $Revision: 1.2.4.4 $  $Date: 2006/06/15 20:08:20 $
+<(slview)Sampling time: %0.5g
+>(slview)サンプリング時間: %0.5g
+<(ltiview)All models must have the same number of inputs and outputs.
+>(ltiview)全てのモデルは、入力数と出力数が同じでなければなりません
+<(ltiview)Not available for improper systems.
+>(ltiview)プロパでないシステムに対しては利用できません

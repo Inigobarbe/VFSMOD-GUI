@@ -13,6 +13,8 @@ import matplotlib
 from .ui.design_results_graph import design_results_graph
 
 
+datos = 
+
 class MyApp(QWidget):
     def __init__(self):
         super().__init__()

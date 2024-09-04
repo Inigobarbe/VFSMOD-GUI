@@ -1,0 +1,1021 @@
+% Copyright 2000-2006 The MathWorks, Inc.
+%   $Revision: 1.10.4.18.4.1 $  $Date: 2007/08/05 22:38:41 $
+% The following meg with an extra space
+<(fdatool)Initializing Filter Design and Analysis Tool 
+>(fdatool)Filter Design & Analysis Tool の初期化中
+<(fdatool)Initializing Filter Design and Analysis Tool
+>(fdatool)Filter Design & Analysis Tool の初期化中
+<(fdatool)Initializing Filter Design and Analysis Tool .
+>(fdatool)Filter Design & Analysis Tool の初期化中 .
+<(fdatool)Initializing Filter Design and Analysis Tool ..
+>(fdatool)Filter Design & Analysis Tool の初期化中 ..
+<(fdatool)Initializing Filter Design and Analysis Tool ...
+>(fdatool)Filter Design & Analysis Tool の初期化中 ...
+<(fdatool)Initializing Filter Design and Analysis Tool ....
+>(fdatool)Filter Design & Analysis Tool の初期化中 ....
+<(fdatool)Initializing Filter Design and Analysis Tool .....
+>(fdatool)Filter Design & Analysis Tool の初期化中 .....
+<(fdatool)Initializing Filter Design and Analysis Tool ......
+>(fdatool)Filter Design & Analysis Tool の初期化中 ......
+<(fdatool)Initializing Filter Design and Analysis Tool ...... done
+>(fdatool)Filter Design & Analysis Tool の初期化 ...... 終了
+<(fdatool)Ready
+>(fdatool)レディ
+<(render_spthelpmenu)Signal Processing &Toolbox Help
+>(render_spthelpmenu)Signal Processing Toolbox ヘルプ(&T)
+<(render_spthelpmenu)Signal Processing &Demos
+>(render_spthelpmenu)Signal Processing デモ(&D)
+<(render_spthelpmenu)&About Signal Processing Toolbox
+>(render_spthelpmenu)Signal Processing Toolboxについて(&A)
+<(render_sptilemenu)&Preferences...
+>(render_sptilemenu)設定...(&P)
+<(render_sptilemenu)Page Setup...
+>(render_sptilemenu)ページ設定...
+<(render_sptilemenu)Print Setup...
+>(render_sptilemenu)印刷設定...
+<(render_sptilemenu)Print Preview...
+>(render_sptilemenu)印刷プレビュー...
+<()Print preview
+>()印刷プレビュー
+<(render_sptilemenu)Print...
+>(render_sptilemenu)印刷...
+<(render_sptilemenu)Zoom in
+>(render_sptilemenu)ズーム イン
+<(render_sptilemenu)Zoom out
+>(render_sptilemenu)ズーム アウト
+<(render_sptilemenu)Zoom In
+>(render_sptilemenu)ズーム イン
+<(render_zoombtns)Zoom x-axis
+>(render_zoombtns)X-軸ズーム
+<(render_zoombtns)Zoom y-axis
+>(render_zoombtns)Y-軸ズーム
+<(render_zoombtns)Zoom to full view
+>(render_zoombtns)フルビューにズーム
+<(render_zoommenus)Zoom X
+>(render_zoommenus)X ズーム
+<(render_zoommenus)Zoom Y
+>(render_zoommenus)Y ズーム
+<(render_zoommenus)Full View
+>(render_zoommenus)フルビュー
+<(evaluatevars)Edit boxes cannot be empty.
+>(evaluatevars)エディットボックスは空にできません
+<(wintool)Initializing Window Design & Analysis Tool 
+>(wintool)Window Design & Analysis Toolの初期化中 
+<(render_legendonoffbtn)Turn Legend On
+>(render_legendonoffbtn)凡例の表示
+<(render_legendonoffbtn)Turn Legend Off
+>(render_legendonoffbtn)凡例の非表示
+<(render_legendonoffbtn)Turn Legend 
+>(render_legendonoffbtn)凡例をつける 
+<(render_legendonoffbtn)Print
+>(render_legendonoffbtn)印刷
+<(render_legendonoffbtn)Print Preview
+>(render_legendonoffbtn)印刷プレビュー
+<(render_legendonoffbtn)Turn Grid On
+>(render_legendonoffbtn)グリッドの表示
+<(render_legendonoffbtn)Turn Grid Off
+>(render_legendonoffbtn)グリッドの非表示
+<(addfreqcsmenu)Normalized Frequency
+>(addfreqcsmenu)正規化周波数
+<(addfreqcsmenu)Linear Frequency
+>(addfreqcsmenu)線形周波数
+<(addfreqcsmenu)Samples
+>(addfreqcsmenu)サンプル
+<(addfreqcsmenu)Time
+>(addfreqcsmenu)時間
+<(thisdraw)Normalized Frequency  (\times\pi rad/sample)
+>(thisdraw)正規化周波数 (\times\pi ラジアン/サンプル)
+<(thisdraw)Normalized Frequency (\times\pi rad/sample)
+>(thisdraw)正規化周波数 (\times\pi ラジアン/サンプル)
+<(winviewer)Magnitude
+>(winviewer)振幅
+<(winviewer)Magnitude (dB)
+>(winviewer)振幅 (dB)
+<(winviewer)Magnitude squared
+>(winviewer)振幅の2乗
+<(winviewer)Zero-phase
+>(winviewer)ゼロ位相
+<(parameter)Number of points:
+>(parameter)ポイント数:
+<(fullviewlink)Range:
+>(fullviewlink)範囲:
+<(filtview)Response:
+>(filtview)応答:
+<()What's this?
+>()これはなに?
+<()"What's this?"
+>()"これはなに?"
+<(getfrequnitstrs)Frequency (kHz)
+>(getfrequnitstrs)周波数 (kHz)
+<(zerophase)Amplitude
+>(zerophase)振幅
+<(thisdraw)Time (%s)
+>(thisdraw)時間 (%s)
+<(thisdraw)Time (%s%s)
+>(thisdraw)時間 (%s%s)
+<(fdatool)Pole/Zero Editor
+>(fdatool)極零エディタ
+<(fdatool)Convert To Second-Order Sections ...
+>(fdatool)2次セクションに変換 ...
+<(fdatool)Convert To Second-Order Sections
+>(fdatool)2次セクションに変換
+<(fdatool)Reorder Second-Order Sections ...
+>(fdatool)2次セクションを記録
+<(fdatool)Convert To Single Section
+>(fdatool)1つのセクションに変換
+<()SOS View ...
+>()SOS ビュー
+<()Generate C Header
+>()Cヘッダを作成
+<()Generate C header ...
+>()Cヘッダを作成 ...
+<(render_currentfilterinfo)Current Filter Information
+>(render_currentfilterinfo)現在のフィルタ情報
+<(render_specsframes)Frequency Specifications
+>(render_specsframes)周波数仕様
+<(render_specsframes)Magnitude Specifications
+>(render_specsframes)振幅仕様
+<()Filter Order
+>()フィルタ次数
+<(render_designparams)Specify order:
+>(render_designparams)次数:
+<(render_designparams)Minimum order
+>(render_designparams)最小次数
+<(spinit)Options
+>(spinit)オプション
+<(fdatool_fvtool)&Print To Figure
+>(fdatool_fvtool)Figureに印刷(&P)
+<()About Plug-ins
+>()プラグインについて
+<(filtdes)Sampling Frequency
+>(filtdes)サンプリング周波数
+<(render_specsframes)Normalized (0 to 1)
+>(render_specsframes)正規化 (0 - 1)
+<(getconvertstructchoices)Direct-Form I
+>(getconvertstructchoices)直接型 I
+<(getconvertstructchoices)Direct-Form II
+>(getconvertstructchoices)直接型 II
+<(getconvertstructchoices)Direct-Form I Transposed
+>(getconvertstructchoices)直接型 I 転置構成
+<(getconvertstructchoices)Direct-Form II Transposed
+>(getconvertstructchoices)直接型 II 転置構成
+<(getconvertstructchoices)State-Space
+>(getconvertstructchoices)状態空間型
+<(getconvertstructchoices)Direct-Form FIR
+>(getconvertstructchoices)直接型FIR
+<(getconvertstructchoices)Direct-Form FIR Transposed
+>(getconvertstructchoices)直接型FIR転置構成
+<(getconvertstructchoices)Direct-Form Symmetric FIR
+>(getconvertstructchoices)直接型対称FIR
+<(parameter)Linear
+>(parameter)線形
+<(schema)Squared
+>(schema)平方
+<(render_designparams)Differentiator
+>(render_designparams)微分
+<(render_designparams)Hilbert Transformer
+>(render_designparams)ヒルベルト変換
+<(render_designparams)Multiband
+>(render_designparams)マルチバンド
+<(render_designparams)Arbitrary Magnitude
+>(render_designparams)任意振幅
+<(designmcode)Lowpass
+>(designmcode)ローパス
+<(designmcode)Highpass
+>(designmcode)ハイパス
+<(designmcode)Bandpass
+>(designmcode)バンドパス
+<(designmcode)Bandstop
+>(designmcode)バンドストップ
+<(render_menu)Raised-cosine
+>(render_menu)レイズドコサイン
+<(render_specsframes)Frequency Units:
+>(render_specsframes)周波数単位:
+<(update_specs)The attenuation at cutoff
+>(update_specs)カットオフで減少
+<(update_specs)frequencies is fixed at 6 dB
+>(update_specs)周波数は6dBで固定
+<(update_specs)frequencies is fixed at 3 dB
+>(update_specs)周波数は3dBで固定
+<(update_specs)(half the passband gain)
+>(update_specs)(パスバンドゲインの半分)
+<(update_specs)(half the passband power)
+>(update_specs)(パスバンドパワーの半分)
+<(schema)Bandwidth
+>(schema)帯域
+<(schema)Rolloff
+>(schema)ロールオフ
+<(schema)Normal
+>(schema)ノーマル
+<(schema)Square root
+>(schema)平方根
+<(schema)Nonnegative
+>(schema)非負
+<(schema)Minphase
+>(schema)最小位相
+<(getname)%s and %s
+>(getname)%s と %s
+<()Density Factor
+>()密度ファクタ
+<(thisrender)Structure:
+>(thisrender)構造:
+<(thisrender)Order:
+>(thisrender)次数:
+<(thisrender)Sections:
+>(thisrender)セクション:
+<(thisrender)Stable:
+>(thisrender)安定:
+<(thisrender)Source:
+>(thisrender)ソース:
+<(createfilter)Designed
+>(createfilter)設計
+<(createfilter)Imported
+>(createfilter)インポート
+<(createfilter)Quantized
+>(createfilter)量子化
+<(render_controls)Export As
+>(render_controls)出力形式
+<(render_controls)Export To
+>(render_controls)出力場所
+<(render_controls)Variable Names
+>(render_controls)変数名
+<(render_controls)Overwrite Variables
+>(render_controls)変数の上書き
+% wan-2002/12/24
+<(action)Workspace
+>(action)ワークスペース
+<(action)Text-file
+>(action)Text-ファイル
+<(action)MAT-file
+>(action)MAT-ファイル
+<(schema)Coefficients
+>(schema)係数
+<(schema)Objects
+>(schema)オブジェクト
+
+<(action)MAT-File
+>(action)MAT-ファイル
+<(schema)Coefficient File (ASCII)
+>(schema)係数ファイル(ASCII)
+<(render_specsframes)Frequency and Magnitude Specifications
+>(render_specsframes)周波数と振幅の仕様
+<(datatypeselector)Data type to use in export
+>(datatypeselector)出力に使用するデータタイプ
+<(datatypeselector)Export suggested:
+>(datatypeselector)推奨データタイプ:
+<(datatypeselector)Export as:
+>(datatypeselector)出力データタイプ:
+<(render_importparams)Sampling Frequency:
+>(render_importparams)サンプリング周波数:
+<(render_importparams)Filter Structure:
+>(render_importparams)フィルタ構造:
+<(thisrender)Filter Coefficients
+>(thisrender)フィルタ係数
+<(fdatool_sidebar)Import Filter from Workspace
+>(fdatool_sidebar)ワークスペースからフィルタをインポート
+<(fdatool_sidebar)Import filter from workspace
+>(fdatool_sidebar)ワークスペースからフィルタをインポート
+<()Set Parameters
+>()パラメータ設定
+<(fvinit)Step Responses
+>(fvinit)ステップ応答
+<[fvinit](fvinit)Step
+>[fvinit](fvinit)ステップ
+<(prefspanel)Impulse Responses
+>(prefspanel)インパルス応答
+<(render_designparams)Design Method
+>(render_designparams)設計手法
+<(thisrender)Scale Passband
+>(thisrender)通過帯域のスケーリング
+<(fdatool)Frequency Scale:
+>(fdatool)周波数スケール:
+<(frequencyresp_construct)Frequency Range:
+>(frequencyresp_construct)周波数範囲:
+<(frequencyresp_construct)Number of Points:
+>(frequencyresp_construct)FFT点数:
+<(frequencyresp_construct)Frequency Vector:
+>(frequencyresp_construct)周波数ベクトル:
+<(magnitude_construct)Magnitude Display:
+>(magnitude_construct)振幅の表示:
+<(phasez_construct)Phase Display:
+>(phasez_construct)位相の表示:
+<(abstractphase)Phase Units:
+>(abstractphase)位相の単位:
+<(schema)Double-precision
+>(schema)倍精度
+<(schema)Single-precision
+>(schema)単精度
+<(timeresp_construct)Specify Length:
+>(timeresp_construct)長さの指定:
+<(timeresp_construct)Length:
+>(timeresp_construct)長さ:
+<(timeresp_construct)Time Units:
+>(timeresp_construct)時間の単位:
+<()Function Name
+>()関数名:
+<()Parameter
+>()パラメータ:
+%<()Discrete Filter
+%>()離散フィルタ
+<(thisrender)Select windows to display:
+>(thisrender)表示するウィンドウの選択:
+<(thisrender)Delete
+>(thisrender)削除
+<(thisrender)Save to workspace
+>(thisrender)ワークスペースへ保存
+<(thisrender)Copy window
+>(thisrender)ウィンドウのコピー
+<(thisrender)Add a new window
+>(thisrender)新規ウィンドウの追加
+<(thisrender)Window List
+>(thisrender)ウィンドウリスト
+<(save_selection)%s has been exported to the workspace.
+>(save_selection)%s がワークスペースにエクスポートされました。
+<(save_selection)winmanagement internal error : Invalid variable name.
+>(save_selection)winmanagement内部エラー : 変数名が正しくありません。
+<() done. \n
+>() 完了. \n
+<(thisrender)Current Window Information
+>(thisrender)現在のウィンドウ情報
+<(thisrender)Name:
+>(thisrender)名前:
+<(thisrender)Type:
+>(thisrender)タイプ:
+<(thisrender)MATLAB code:
+>(thisrender)MATLABコード:
+<(thisrender)Parameter:
+>(thisrender)パラメータ:
+<(thisrender)Sampling:
+>(thisrender)サンプリング:
+<(thisrender)Apply
+>(thisrender)適用
+<(window_listener)Window
+>(window_listener)ウィンドウ
+<(parameter_listener)Sidelobe atten.
+>(parameter_listener)サイドローブの減衰
+<(thisrender)Symmetric
+>(thisrender)対称
+<(thisrender)Periodic
+>(thisrender)周期性
+<(zplaneplot)Real Part
+>(zplaneplot)実部
+<(zplaneplot)Imaginary Part
+>(zplaneplot)虚部
+<()Real:
+>()実部:
+<()Imaginary:
+>()虚部:
+<(render_menu)&Filter Specifications
+>(render_menu)フィルタ仕様(&F)
+<(thisrender)Enter a weight value for each band below.
+>(thisrender)各帯域に対する重み値を以下に入力
+<(thisrender)Import as second-order sections
+>(thisrender)2次セクションとしてインポート
+<(thisdraw)Normalized Frequency (pi rad/sample)
+>(thisdraw)正規化周波数 (pi ラジアン/サンプル)
+<(thisdraw)Frequency (%sHz)
+>(thisdraw)周波数 (%sHz)
+<(thisdraw)Frequency (Fs = %s%s)
+>(thisdraw)周波数 (Fs = %s%s)
+<(fdatool)Reorder and Scale Second-Order Sections ...
+>(fdatool)2次セクションの順序とスケーリング ...
+<(fdatool)Show Reference Filter(s)
+>(fdatool)リファレンスフィルタの表示(s)
+<(fdatool)Polyphase View
+>(fdatool)ポリフェーズの表示
+<(fdatool)Print current response
+>(fdatool)カレントの応答の印刷
+<(fdatool)Full view analysis
+>(fdatool)フルビュー解析
+<(fdatool)Filter specifications
+>(fdatool)フィルタの仕様
+<(fdatool_pzeditor)Loading the Pole Zero Editor
+>(fdatool_pzeditor)極零エディタの読み込み
+<(fdatool_pzeditor)Loading the Pole Zero Editor ...
+>(fdatool_pzeditor)極零エディタの読み込み開始 ...
+<(fdatool_pzeditor)Loading the Pole Zero Editor ... done
+>(fdatool_pzeditor)極零エディタの読み込み中 ...
+<(fdatool)Filter Gain:
+>(fdatool)フィルタのゲイン:
+<(fdatool)Coordinates:
+>(fdatool)座標:
+<(fdatool)Section:
+>(fdatool)セクション:
+<(fdatool)Conjugate
+>(fdatool)複素共役
+<(fdatool)Auto Update
+>(fdatool)自動設計
+<(fdatool)radians
+>(fdatool)ラジアン
+<(fdatool)Move Pole/Zero
+>(fdatool)極零の移動
+<(fdatool)Add Pole
+>(fdatool)極の追加
+<(fdatool)Add Zero
+>(fdatool)零点の追加
+<(fdatool)Delete Pole/Zero
+>(fdatool)極零の削除
+<(fdatool)Ready.
+>(fdatool)レディ.
+<(fdatool)Fractional length: 
+>(fdatool)小数点以下の桁数: 
+<(fdatool)floating point
+>(fdatool)浮動小数点
+<(fdatool)SPTool Options
+>(fdatool)SPToolオプション
+<(fdatool)Upper
+>(fdatool)上限値
+<(fdatool)Lower
+>(fdatool)下限値
+<(fdatool)Complex Equiripple
+>(fdatool)複素数等リップル
+<(fdatool)Constr. Least-square
+>(fdatool)制約付最小2乗
+<(fdatool)Maximally flat
+>(fdatool)汎用バタワース
+<(fdatool)Symmetry
+>(fdatool)対称性
+<(fdatool)Second-stage optimization
+>(fdatool)第2段最適化
+<(fdatool)Freq. vector
+>(fdatool)周波数ベクトル
+<(fdatool)Mag. vector
+>(fdatool)振幅ベクトル
+<(fdatool)Upper vector
+>(fdatool)上限値ベクトル
+<(fdatool)Lower Vector
+>(fdatool)下限値ベクトル
+<(fdatool)There are no optional parameters for this design method.
+>(fdatool)この設計手法に対する追加パラメータはありません。
+<(fdatool)There are no optional parameters for this destination.
+>(fdatool)この移動先に対する追加パラメータはありません。
+<(fdatool)Group Delay Units:
+>(fdatool)群遅延の単位:
+<(fdatool)Phase Delay
+>(fdatool)位相遅延
+<(fdatool)Phase Delay (%s)
+>(fdatool)位相遅延 (%s)
+<(fdatool)seconds
+>(fdatool)秒
+<(fdatool)You must have a single second-order sections filter to use the "SOS view" dialog.
+>(fdatool)"SOSビュー"ダイアログを使用するには2次セクションフィルタでなければなりません。
+<(render_sptinsertmenu)Dou&bleArrow
+>(render_sptinsertmenu)二重矢印(&B)
+<(render_sptinsertmenu)Textb&ox
+>(render_sptinsertmenu)テキストボックス(&O)
+<(fdatool)Match exactly
+>(fdatool)厳密に一致
+<(fdatool)The variable %s is not defined in the MATLAB workspace.
+>(fdatool)変数 %s はMATLABワークスペース内で定義されていません。
+<(fdatool)The variable %s already exists in the MATLAB workspace.
+>(fdatool)変数 %s はMATLABワークスペース内に既に存在します。
+<(fdatool)The variable names are not unique.
+>(fdatool)変数名がユニークではありません。
+<()Variables have been exported to the workspace.
+>()変数をワークスペースにエクスポートしました。
+<(fdatool)Recall saved ...
+>(fdatool)保存の取り消し ...
+<(fdatool)Save ...
+>(fdatool)保存 ...
+<(fdatool)Save as ...
+>(fdatool)別名で保存..
+<()Saved Filters
+>()登録されているフィルタ
+<()Current filter
+>()カレントのフィルタ
+<()Cascade
+>()カスケード
+<(fdatool)Store Filter ...
+>(fdatool)フィルタの登録 ...
+<(fdatool)Store Filter...
+>(fdatool)フィルタの登録...
+<(fdatool)Store Filter
+>(fdatool)フィルタの登録
+<(fdatool)Filter Manager ...
+>(fdatool)フィルタマネージャ ...
+<(fdatool)Filter Manager
+>(fdatool)フィルタマネージャ
+<(fdatool)Import Filter From Workspace
+>(fdatool)ワークスペースからフィルタをインポート
+<(fdatool)Enter filter name to be stored in the Filter Manager
+>(fdatool)フィルタマネージャに登録するフィルタ名を入力
+<(fdatool)Edit current filter
+>(fdatool)カレントのフィルタの編集
+<(fdatool)Rename
+>(fdatool)名前の変更
+<(fdatool)Help
+>(fdatool)ヘルプ
+<(fdatool)Select All
+>(fdatool)すべて選択
+<(fdatool)Select All Poles
+>(fdatool)すべての極を選択
+<(fdatool)Select All Zeros
+>(fdatool)すべての零点を選択
+<(fdatool)Select Inside Unit Circle
+>(fdatool)単位円の内側を選択
+<(fdatool)Select Outside Unit Circle
+>(fdatool)単位円の外側を選択
+<(fdatool)Select Below Real Axis
+>(fdatool)実軸の下側を選択
+<(fdatool)Select Above Real Axis
+>(fdatool)実軸の上側を選択
+<(fdatool)Select Left Half
+>(fdatool)左半面を選択
+<(fdatool)Select Right Half
+>(fdatool)右半面を選択
+<(fdatool)Deselect Current Poles and Zeros
+>(fdatool)カレントの極と零点の選択を解除
+<(fdatool)Invert about the Real Axis
+>(fdatool)実軸に対して反転
+<(fdatool)Invert about the Imaginary Axis
+>(fdatool)虚軸に対して反転
+<(fdatool)Invert about the Unit Circle
+>(fdatool)単位円に対して反転
+<(fdatool)Mirror about the Real Axis
+>(fdatool)実軸に対して写像
+<(fdatool)Mirror about the Imaginary Axis
+>(fdatool)虚軸に対して写像
+<(fdatool)Mirror about the Unit Circle
+>(fdatool)単位円に対して写像
+<(fdatool)Delete Current Pole/Zero
+>(fdatool)カレントの極零を削除
+<(fdatool)Delete current %s
+>(fdatool)カレントの %s を削除
+<(fdatool)Scale by a Factor
+>(fdatool)要素によるスケーリング
+<(fdatool)Rotate Counter-Clockwise
+>(fdatool)反時計回りに回転
+<(fdatool)Scale %s
+>(fdatool)スケール %s
+<(fdatool)Scale %s by factor:
+>(fdatool)係数による %s のスケーリング:
+<(fdatool)Invalid scale factor.
+>(fdatool)スケール係数が正しくありません。
+
+% ALl tips are from toolbox/signal/sigtools/getfdatooltip.m
+% tip 0-5
+<(getfdatooltip)You can generate M-code functions of your design by going to the 'File' menu and selecting 'Generate M-file'.
+>(getfdatooltip)'ファイル' メニューで 'M-ファイルの生成' を選択することで設計したM-コード関数を生成することができます。
+<(getfdatooltip)You can quantize filters you have designed or imported to either fixed-point arithmetic or single-precision floating-point arithmetic.  Click the 'Set Quantization Parameters' sidebar button.  (Note: fixed-point arithmetic also requires the Fixed-Point Toolbox.
+>(getfdatooltip)設計またはインポートしたフィルタを固定小数点演算、あるいは単精度浮動小数点演算のいずれかに量子化できます。側面の 'Set Quantization Parameters' ボタンをクリックしてください (注意: 固定小数点演算には、Fixed-Point Toolbox も必要です)。
+<(getfdatooltip)If you have quantized a filter, its reference response is shown.  To disable this, go to the 'View' menu and uncheck 'Show Reference Filters'.
+>(getfdatooltip)フィルタを量子化した場合、リファレンスフィルタの応答が表示されます。これを無効にするには、'表示' メニューの 'リファレンスフィルタの表示' のチェックをはずしてください。
+<(getfdatooltip)You can export filters to HDL files.  Go to the 'Targets' menu and select 'Generate HDL'.
+>(getfdatooltip)フィルタをHDLファイルにエクスポートすることができます。'ターゲット' メニューの 'HDLの生成' を選択してください。
+<(getfdatooltip)You can see different views of second-order-section (SOS) filters.  You can view the sections individually or cumulatively. Go to the 'View' menu and select 'SOS View Options'.
+>(getfdatooltip)2次型(SOS)フィルタの別の表示を見ることができます。セクションを個別に、あるいは累積で見ることができます。'表示' メニューの 'SOS View Options' を選択してください。
+<(getfdatooltip)You can scale the coefficients of second-order-section (SOS) filters.  After designing an SOS filter, go to the 'Edit' menu and select 'Reorder and Scale Second-Order-Sections'.
+>(getfdatooltip)2次型(SOS)フィルタの係数をスケーリングすることができます。SOSフィルタを設計した後、'編集' メニューの '2次型の順序とスケーリング' を選択してください。
+% tip 6-10
+<(getfdatooltip)You can generate C-header files containing your filter coefficients by going to the 'Targets' menu and selecting 'Generate C header'.
+>(getfdatooltip)'ターゲット' メニューの 'Cヘッダを作成' を選択することで、フィルタ係数を含むC-ヘッダファイルを生成することができます。
+<(getfdatooltip)You can export C-code directly to the Code Composer Studio.  Go to the 'Targets' menu and select 'Code Composer Studio (tm) IDE'.
+>(getfdatooltip)C-コードを直接Code Composer Studioにエクスポートすることができます。'ターゲット' メニューの 'Code Composer Studio (tm) IDE' を選択してください。
+<(getfdatooltip)You can design multirate filters.  Click the 'Create a multirate filter' sidebar button.
+>(getfdatooltip)マルチレートフィルタを設計することができます。側面の 'Create a multirate filter' ボタンをクリックしてください。
+<(getfdatooltip)You can view each polyphase response of multirate filters.  To enable this view go to the 'View' menu and check 'Polyphase View'.
+>(getfdatooltip)マルチレートフィルタの各ポリフェーズ応答を表示することができます。この表示を行うためには、'表示' メニューの 'ポリフェーズの表示' をクリックしてください。
+<(getfdatooltip)You can design inverse-sinc filters via the design panel.  In the lowpass option of the Response Type select 'Inverse Sinc Lowpass' to design a lowpass inverse-sinc filter.  Highpass inverse-sinc filters can be designed under the highpass option.
+>(getfdatooltip)設計パネルで逆sincフィルタを設計することができます。ローパスの逆sincフィルタを設計するためには、応答タイプのローパスオプションで 'Inverse Sinc Lowpass' を選択します。ハイパスの逆sincフィルタは、ハイパスオプションのメニューから設計することができます。
+% tip 11-15
+<(getfdatooltip)You can design raised-cosine filters via the design panel.  In the lowpass option of the Response Type select 'Raised-cosine' to design a raised-cosine filter.
+>(getfdatooltip)設計パネルでレイズドコサインフィルタを設計することができます。レイズドコサインフィルタを設計するためには、応答タイプのローパスオプションで 'レイズドコサイン' を選択します。
+<(getfdatooltip)You can modify filter analyses using the Analysis Parameters.  Select an analysis from the 'Analysis' menu, and then go to the 'Analysis' menu and choose 'Analysis Parameters'.
+>(getfdatooltip)解析パラメータを使ってフィルタ解析を修正することができます。'解析' メニューから何らかの解析を選択し、その後、'解析' メニューの '解析パラメータ' を選択してください。
+<(getfdatooltip)You can import and export Xilinx coefficient (.COE) files.  To import a filter, go to the 'File' menu and select 'Import Filter from Xilinx Coefficient (.COE) File'.  To export a filter, go to the 'Targets' menu and select 'Xilinx Coefficient (.COE) File'.
+>(getfdatooltip)Xilinxの係数(.COE)ファイルのインポートとエクスポートができます。 フィルタをインポートするためには、'ファイル' メニューの 'Import Filter from Xilinx Coefficient (.COE) File' を選択します。フィルタをエクスポートするためには、'ターゲット' メニューの 'Xilinx Coefficient (.COE) File' を選択します。
+<(getfdatooltip)You can save your filters for later use with the Filter Manager.  Click 'Store Filter ...' to save a filter or 'Filter Manager ...' to launch the manager dialog.
+>(getfdatooltip)フィルタマネージャを使って設計した最新のフィルタを保存することができます。フィルタを保存するために 'フィルタの登録 ...' か、管理ダイアログを起動するために 'フィルタマネージャ ...' をクリックしてください。
+<(getfdatooltip)You can export filters into Simulink(R) models.  Go to the 'File' menu and select 'Export to Simulink Model' to launch the Filter Realization pane of FDATool.
+>(getfdatooltip)フィルタをSimulinkモデルにエクスポートすることができます。FDAToolのフィルタの実現パネルを起動するために、'ファイル' メニューの 'Simulinkモデルにエクスポート' を選択してください。
+% tip 16-20
+<(getfdatooltip)You can change the structure of your filtering by going to the 'Edit' menu and selecting 'Convert Structure'.
+>(getfdatooltip)'編集' メニューの '構造の変換' を選択することでフィルタの構造を変更することができます。
+<(getfdatooltip)You can graphically edit the poles and zeros of your filter using the Pole/Zero Editor.  Click the 'Pole/Zero Editor' sidebar button.  Special Pole/Zero Editor options are also available from 'Pole/Zero Editor' on the 'Edit' menu.
+>(getfdatooltip)極/零点エディタを使ってフィルタの極と零点をグラフィカルに編集することができます。側面の '極/零点エディタ' ボタンをクリックしてください。さらに極/零点エディタオプションを '編集' メニューの '極/零点エディタ' から利用することもできます。
+<(getfdatooltip)Right clicking on the X- and Y-labels of the analyses allows you to change the X- or Y-units used by the plot.
+>(getfdatooltip)プロットで使われるX-またはY-単位を変更するために、解析のX-とY-ラベル上を右クリックしてください。
+<(getfdatooltip)You can add data markers to your analyses by single-clicking on the analysis plot.
+>(getfdatooltip)解析のプロット上で1回だけクリックすることで、データマーカを解析に追加することができます。
+<(getfdatooltip)You can import filters from the workspace into any supported filter structure.  Go to the 'File' menu and select 'Import Filter from Workspace'.
+>(getfdatooltip)ワークスペースからサポートされる任意のフィルタ構造にフィルタをインポートすることができます。'ファイル' メニューの 'ワークスペースからフィルタをインポート' を選択してください。
+<(render_component.m)User-defined Spectral Mask ...
+>(render_component.m)ユーザ定義スペクトルマスク
+<(render_component.m)User-defined Spectral Mask
+>(render_component.m)ユーザ定義スペクトルマスク
+<(fdatool)Export to Simulink Model
+>(fdatool)Simulinkモデルにエクスポート
+<(filtermanager_thisrender)There are no stored filters.
+>(filtermanager_thisrender)登録されたフィルタはありません。
+<[thisrender](filtermanager_thisrender)Remove
+>[thisrender](filtermanager_thisrender)削除
+<(setup_figure)SOS View Settings
+>(setup_figure)SOSの表示設定
+<(setup_figure)SOS View Settings ...
+>(setup_figure)SOSの表示設定 ...
+<[sosviewdlg](sosviewdlg)Overall filter
+>[sosviewdlg](sosviewdlg)全体のフィルタ
+<[sosviewdlg](sosviewdlg)Individual sections
+>[sosviewdlg](sosviewdlg)個別のセクション
+<[sosviewdlg](sosviewdlg)Cumulative sections
+>[sosviewdlg](sosviewdlg)セクションの累積
+<[sosviewdlg](sosviewdlg)User defined
+>[sosviewdlg](sosviewdlg)ユーザ定義
+<[sosviewdlg](sosviewdlg)View
+>[sosviewdlg](sosviewdlg)表示
+<(render_controls)Use secondary-scaling points
+>(render_controls)2次のスケーリングポイントを使用
+<(vhdlplugin)Generate HDL ...
+>(vhdlplugin)HDLの生成 ...
+<(render_control)Convert to:
+>(render_control)変換:
+<(copy)Enable Mask
+>(copy)マスクを有効にする
+<()Frequency Vector: 
+>()周波数ベクトル: 
+<()Magnitude Units: 
+>()振幅の単位: 
+<()Magnitude Vector: 
+>()振幅ベクトル: 
+<(thisrender)Fractional Length: 
+>(thisrender)小数点以下の桁数: 
+<(thisrender)Double-precision\nfloating-point
+>(thisrender)倍精度\n浮動小数点
+<(thisrender)Single-precision\nfloating-point
+>(thisrender)単精度\n浮動小数点
+<(export-simulink)Build model using basic elements
+>(export-simulink)Simulink要素を使ったモデルのビルド
+<(export-simulink)Destination
+>(export-simulink)作成先
+<(export-simulink)Block name
+>(export-simulink)ブロック名
+<(export-simulink)Overwrite generated '%s' block
+>(export-simulink)生成した '%s' ブロックに上書き
+<(export-simulink)Optimize for zero gains
+>(export-simulink)ゼロゲインに対して最適化する
+<(export-simulink)Optimize for unity gains
+>(export-simulink)ユニティゲインに対して最適化する
+<(export-simulink)Optimize for negative gains
+>(export-simulink)負のゲインに対して最適化する
+<(export-simulink)Optimize delay chains
+>(export-simulink)delay chainの最適化
+<(export-simulink)You must set a valid filter object in the Filter property.
+>(export-simulink)フィルタのプロパティに正しいfilterオブジェクトを設定しなければなりません。
+<(export-simulink)Realize Model
+>(export-simulink)モデルの実現
+<(export-simulink)Realizing Model ...
+>(export-simulink)モデルの実現中 ...
+<(export-simulink) Model 
+>(export-simulink) モデル 
+<(export-simulink) Optimization 
+>(export-simulink) 最適化 
+<(addfilter)Store Filter:
+>(addfilter)フィルタの登録:
+<(addfilter)A filter called '%s' already exists.  Do you want to replace it?
+>(addfilter)コールされた '%s' は既に存在します。 置き換えますか?
+<()Coefficient Display:
+>()係数の表示:
+<(editparameters)Cannot edit analysis parameters if no analysis is selected.
+>(editparameters)解析が選択されていない場合、解析パラメータを編集することはできません。
+%
+<(fdatool)Design filter
+>(fdatool)フィルタ設計
+<(fdplugin)Halfband Lowpass
+>(fdplugin)ハーフバンドローパス
+<(fdplugin)Nyquist
+>(fdplugin)ナイキスト
+<(fdplugin)Inverse Sinc Lowpass
+>(fdplugin)逆sincローパス
+<(fdplugin)Halfband Highpass
+>(fdplugin)ハーフバンドハイパス
+<(fdplugin)Inverse Sinc Highpass
+>(fdplugin)逆sincハイパス
+<(fdplugin)Arbitrary Group Delay
+>(fdplugin)任意群遅延
+<(fdplugin)Peaking
+>(fdplugin)ピーク
+<(fdplugin)Notching
+>(fdplugin)ノッチ
+<(fdplugin)Least Pth-norm
+>(fdplugin)最小P次ノルム
+<(fdplugin)Single Notch
+>(fdplugin)シングルノッチ
+<(fdplugin)Single Peak
+>(fdplugin)シングルピーク
+<(fdplugin)Constr. Least Pth-norm
+>(fdplugin)制約付最小P次ノルム
+<(fdplugin)Constrained Equiripple
+>(fdplugin)制約付等リップル
+<(fdplugin)Generalized Equiripple
+>(fdplugin)一般化等リップル
+<(fdplugin)Constr. Band Equiripple
+>(fdplugin)制約付バンド等リップル
+<(fdplugin)Interpolated FIR
+>(fdplugin)インターポレーション
+<()Numerator order: 
+>()分子次数: 
+<()Denominator order: 
+>()分母次数: 
+<(lpnorm_getrenderprops)Pth Norm
+>(lpnorm_getrenderprops)P次ノルム
+<(renderabstractframe)More options ...
+>(renderabstractframe)追加のオプション ...
+<(getrenderprops)Max Pole Radius
+>(getrenderprops)最大極半径
+<(fdatool)Freq. Edges
+>(fdatool)周波数エッジ
+<(fdatool)Weight vector
+>(fdatool)重みベクトル
+<()Direct-Form I Transposed, Second-Order Sections
+>()直接型I転置構成, 2次セクション
+<()Direct-Form I, Second-Order Sections
+>()直接型I, 2次セクション
+<()Direct-Form II, Second-Order Sections
+>()直接型II, 2次セクション
+<()Direct-Form II Transposed, Second-Order Sections
+>()直接型II転置構成, 2次セクション
+<()Lattice Autoregressive Moving-Average (ARMA)
+>()ARMAラティス
+<()Coupled-Allpass Lattice
+>()対になるオールパスラティス
+<()Coupled-Allpass Lattice, Power Complementary Output
+>()対になるオールパスラティス, パワー相補出力
+<()The value for %s is not valid.
+>()%s の値が正しくありません。
+<(coeffspecifier)Overlap-Add FIR
+>(coeffspecifier)オーバラップ加算FIR
+<(coeffspecifier)Lattice Allpass
+>(coeffspecifier)ラティスオールパス
+<(coeffspecifier)Lattice Moving-Average (MA) For Minimum Phase
+>(coeffspecifier)最大位相MAラティス
+<(coeffspecifier)Lattice Moving-Average (MA) For Maximum Phase
+>(coeffspecifier)最大位相MAラティス
+<(coeffspecifier)Filter object
+>(coeffspecifier)フィルタオブジェクト
+<(fdpzedit)Polar
+>(fdpzedit)極座標
+<[fdpzedit](fdpzedit)Rectangular
+>[fdpzedit](fdpzedit)直交座標
+<(fdplugin)Set quantization parameters
+>(fdplugin)量子化パラメータ設定
+<()Filter arithmetic: 
+>()フィルタ演算: 
+<()The %s structure does not currently support fixed-point arithmetic.
+>()%s の構造は、現在固定小数点演算をサポートしていません。
+<()There are no additional settings for Double-precision floating-point arithmetic.
+>()倍精度浮動小数点演算に対して他の設定はありません。
+<()There are no additional settings for Single-precision floating-point arithmetic.
+>()単精度浮動小数点に対して他の設定はありません。
+<()There are no additional settings for Fixed-point arithmetic.
+>()固定小数点演算に対して他の設定はありません。
+<()Double-precision floating-point
+>()倍精度浮動小数点
+<()Single-precision floating-point
+>()単精度浮動小数点
+<()Fixed-point
+>()固定小数点
+<()Quantizing Filter ...
+>()フィルタの量子化中 ...
+<()Quantizing Filter ... done
+>()フィルタの量子化 ... 完了
+<()Use unsigned representation
+>()符号なし表現を使用
+<()Input/Output
+>()入力/出力
+<()Coefficient word length:
+>()係数の語長
+<()Numerator word length:
+>()分子係数の語長:
+<()Best-precision fraction lengths
+>()最良精度の小数部の長さ
+<()Numerator frac. length:
+>()分子係数の小数部の長さ:
+<()Numerator range (+/-):
+>()分子係数の範囲 (+/-):
+<()Denominator frac. length:
+>()分母係数の小数部の長さ:
+<()Denominator range (+/-):
+>()分母係数の範囲 (+/-):
+<()Scale Values frac. length:
+>()スケール値の小数部の長さ:
+<()Scale Values range (+/-):
+>()スケール値の範囲 (+/-):
+<()Scale the numerator coefficients to fully
+>()ダイナミックレンジ全体を効果的に使用するよう
+<()utilize the entire dynamic range
+>()分子係数をスケーリングする
+<()Designed (quantized)
+>()設計 (量子化)
+<()Input word length:
+>()入力の語長:
+<()Input fraction length:
+>()入力の小数部の長さ:
+<()Input range (+/-):
+>()入力の範囲 (+/-):
+<()Output word length:
+>()出力の語長:
+<()Avoid overflow
+>()オーバーフローを回避
+<()Output fraction length:
+>()出力の小数部の長さ:
+<()Output range (+/-):
+>()出力の範囲 (+/-):
+<()Stage input word length:
+>()セクションへの入力の語長:
+<()Stage input fraction length:
+>()セクションへの入力の小数部の長さ:
+<()Stage output word length:
+>()セクションからの出力の語長:
+<()Stage output fraction length:
+>()セクションからの出力の小数部の長さ:
+<()Filter Internals
+>()フィルタ内部構造
+<()Round towards: 
+>()丸めの方向: 
+<()Overflow Mode: 
+>()オーバーフローモード: 
+<()Cast signals before accum.
+>()アキュムレータの前に信号をキャスト
+<()Accum. mode: 
+>()アキュムレータモード: 
+<()Accum. word length:
+>()アキュムレータの語長:
+<()Accum. fraction length:
+>()アキュムレータの小数部の長さ:
+<()Num. fraction length:
+>()分子係数の小数部の長さ:
+<()Den. fraction length:
+>()分母係数の小数部の長さ:
+<()Product mode: 
+>()乗算器モード: 
+<()Product word length:
+>()乗算器の語長:
+<()Product fraction length:
+>()乗算器の小数部の長さ:
+<()State word length:
+>()状態の語長:
+<()State fraction length:
+>()状態の小数部の長さ:
+<()Filter precision: 
+>()フィルタの精度: 
+<()Normalize
+>()正規化
+<()Value must be a scalar.
+>()値はスカラでなければなりません。
+<()CoeffWordLength must be a positive integer.
+>()係数の語長は正の整数でなければなりません。
+<()InputWordLength must be a positive integer.
+>()入力の語長は正の整数でなければなりません。
+<()The input quantization settings are inherited from the input signal.
+>()入力の量子化設定は、入力信号から継承されています。
+<()The '%s' round mode is not supported by the Signal Processing Blockset.  Converting to 'Nearest'.
+>()'%s' の丸めモードは、Signal Processing Blocksetでサポートされていません。'Nearest' に変換します。
+<()Cannot map multiple Accumulator fraction lengths, using minimum fraction length.
+>()最小の小数部の長さを使って複数のアキュムレータの小数部の長さにマッピングできません。
+<()Cannot map multiple Product fraction lengths, using minimum fraction length.
+>()最小の小数部の長さを使って複数の乗算演算の小数部の長さにマッピングできません。
+<()Transform filter
+>()フィルタの変換
+<()Transform Filter
+>()フィルタの変換
+<()Frequency Transformations
+>()周波数変換
+<()Original filter type:
+>()オリジナルフィルタタイプ:
+<()Frequency point to transform:
+>()変換する周波数ポイント:
+<()Normalized
+>()正規化
+<()Transformed filter type:
+>()変換後のフィルタタイプ:
+<()Specify desired low frequency location:
+>()変換後の所望低周波数ポイント:
+<()Specify desired high frequency location:
+>()変換後の所望高周波数ポイント:
+<()Specify desired frequency location
+>()変換後の所望周波数ポイント
+<()Specify desired frequency location:
+>()変換後の所望周波数ポイント:
+<()Bandpass (complex)
+>()バンドパス (複素数)
+<()Bandstop (complex)
+>()バンドストップ (複素数)
+<()Multiband (complex)
+>()マルチバンド (複素数)
+<()Lowpass (FIR)
+>()ローパス (FIR)
+<()Highpass (FIR) narrowband
+>()ハイパス (FIR) 狭帯域
+<()Highpass (FIR) wideband
+>()ハイパス (FIR) 広帯域
+
+<()Type: 
+>()タイプ: 
+<()Differential Delay: 
+>()遅延差: 
+<()Number Of Sections
+>()セクション数
+<()Number Of Sections: 
+>()セクション数: 
+<()Create a multirate filter
+>()マルチレートフィルタの作成
+<()Create Multirate Filter
+>()マルチレートフィルタの作成
+<()Interpolation Factor:
+>()補間数:
+<()Decimation Factor:
+>()間引き数:
+<()Use current FIR filter
+>()カレントのFIRフィルタを使用
+<()Use a default Nyquist FIR filter
+>()デフォルトのナイキストFIRフィルタを使用
+<()Cascaded Integrator-Comb (CIC)
+>()CICフィルタの設計
+<()Hold interpolator (Zero-order)
+>()ゼロ次ホールド
+<()Linear Interpolator (First-order)
+>()線形補間 (1次ホールド)
+<()Direct-Form FIR Polyphase Interpolator
+>()直接型FIRポリフェーズ補間
+<()Direct-Form FIR Polyphase Decimator
+>()直接型FIRポリフェーズ間引き
+<()Direct-Form Transposed FIR Polyphase Decimator
+>()直接型転置構成FIRポリフェーズ間引き
+<()Multirate Design
+>()マルチレート設計
+<()Multirate Design (converted)
+>()マルチレート設計 (変換後)
+<()Rate Change:
+>()レート変更:
+<()Creating filter ...
+>()フィルタの作成中 ...
+<()Creating filter ... done.
+>()フィルタの作成 ... 完了
+<()The PolyphaseAccum must be a vector or matrix with %d rows and one column per channel.
+>()ポリフェーズのアキュムレータはベクトルか、%d行と各チャネルに対して1つの列をもつ行列でなければなりません。
+
+<()Magnitude Response Estimate
+>()振幅応答の推定
+<()Magnitude response estimate
+>()振幅応答の推定
+<()%s can only operate on single-rate filters.
+>()%s はシングルレートフィルタの処理のみ行います。
+<()Round-off Noise Power Spectrum
+>()ノイズパワースペクトルの丸め
+<()Round-off noise power spectrum
+>()ノイズパワースペクトルの丸め
+<()Power (dB)
+>()パワー (dB)
+<(thisrender)Variable names in C header file
+>(thisrender)Cヘッダファイルの変数名
+%
+<(getActionLabel)Generate
+>(getActionLabel)作成
+<(thisrender)Fractional length: %d
+>(thisrender)小数点以下の桁数: %d
+<(thisrender)Tip of the Day
+>(thisrender)今日のワンポイント
+<(render_component)Restore default view
+>(render_component)デフォルト表示に戻す
+<(render_component)Restore Default View
+>(render_component)デフォルト表示に戻す
+<(render_component)Specification &Mask
+>(render_component)仕様マスク(&M)
+<()Format: 
+>()フォーマット:
+<(winviewer)Normalize Magnitude
+>(winviewer)正規化振幅
+<()Discrete Filter
+>()離散フィルタ
+<(getfdatooltip)You can design decimators, interpolators and sample-rate converters.  Click the 'Create a multirate filter' sidebar button.
+>(getfdatooltip)間引き、補間、サンプルレート変換を設計することができます。 'マルチレートフィルタの作成' サイドバーボタンをクリックしてください。
+<(getfdatooltip)You can generate synthesizable VHDL and Verilog code along with test benches from fixed-point filters.  Go to the 'Targets' menu and select 'Generate HDL'.
+>(getfdatooltip)固定小数点フィルタからテストベンチで同期可能な VHDL と Verilog コードを生成することができます。 'ターゲット' メニューに移動し、'HDL の生成' を選択してください。
+%
+<(thisrender)New session
+>(thisrender)新しいセッション
+<(thisrender)Open session
+>(thisrender)セッションを開く
+<(thisrender)Save session
+>(thisrender)セッションの保存
+
+<(magnitude_construct)Normalize Magnitude to 1 (0 dB)
+>(magnitude_construct)振幅を 1 に正規化 (0 dB)
+<()Minimum Phase
+>()最小位相
+<()Stopband Slope (dB)
+>()遮断帯域の勾配 (dB)
+<()Specify:
+>()指定:
+<()Loading the Filter Quantization panel
+>()フィルタの量子化パネルの読み込み中
+<()Loading the Filter Quantization panel ...
+>()フィルタの量子化パネルの読み込み中 ...
+<()Loading the Filter Quantization panel ... done
+>()フィルタの量子化パネルの読み込み中 ... 終了
+<()Full
+>()フル精度
+<()Specify all
+>()精度指定
+<()Lowpass Equiripple
+>()ローパス等リップル
