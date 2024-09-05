@@ -26,6 +26,7 @@ from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction,QFileDialog
 from qgis.utils import iface
 from qgis.core import Qgis
+from PyQt5 import QtWidgets
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -50,6 +51,7 @@ from .ui.calibration_hydrograph import calibration_hydrograph
 from .ui.calibration_sedimentograph import calibration_sedimentograph
 from .ui.design_results_graph import design_results_graph
 from .ui.calibration_advanced_settings import calibration_advanced_settings
+from .ui.sensitivity_analysis import sensitivity_analysis
 
 import os.path
 import pandas as pd
@@ -61,7 +63,7 @@ from itertools import product
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.ticker as tkr
-from PyQt5.QtWidgets import QVBoxLayout,QTableWidgetItem,QProgressDialog
+from PyQt5.QtWidgets import QVBoxLayout,QTableWidgetItem,QProgressDialog,QLabel, QLineEdit
 
 class qvfsmod:
     """QGIS Plugin Implementation."""
@@ -220,6 +222,7 @@ class qvfsmod:
         self.dlg_calibration_hydrograph = calibration_hydrograph()
         self.dlg_design_results_graph = design_results_graph()
         self.dlg_calibration_advanced_settings = calibration_advanced_settings()
+        self.dlg_sensitivity_analysis = sensitivity_analysis()
         
         #Select directory of the project for UH and for VFSMOD
         self.dlg_base.select_directory.clicked.connect(self.select_directory_uh)
@@ -420,6 +423,11 @@ class qvfsmod:
         self.dlg_base.design_length.stateChanged.connect(lambda _, b = "length":self.uncheck_length_spacing(b))
         self.dlg_base.design_spacing.stateChanged.connect(lambda _, b = "spacing":self.uncheck_length_spacing(b))
         
+        #Button to add information to the sensitivity table 
+        self.dlg_sensitivity_analysis.add.clicked.connect(self.add_sensitivity_table)
+        #Button to delete information of the sensitivity table
+        self.dlg_sensitivity_analysis.remove.clicked.connect(self.delete_sensitivity_table)
+        
         #Show design graph 
         self.dlg_design_results.graph.clicked.connect(self.show_design_graph)
         
@@ -441,7 +449,7 @@ class qvfsmod:
             i[0][2].toggled.connect(self.draw_calibration_hydrology)
         
         #The same for sedimentograph
-        self.sedimentograph_checks = [[[self.dlg_calibration_sedimentograph.no_spacing,self.dlg_calibration_sedimentograph.change_spacing,self.dlg_calibration_sedimentograph.calibrate_spacing],[self.dlg_calibration_sedimentograph.new__spacing,self.dlg_calibration_sedimentograph.min_spacing,self.dlg_calibration_sedimentograph.max_spacing]],
+        self.sedimentograph_checks = [[[self.dlg_calibration_sedimentograph.no_spacing,self.dlg_calibration_sedimentograph.change_spacing,self.dlg_calibration_sedimentograph.calibrate_spacing],[self.dlg_calibration_sedimentograph.new_spacing,self.dlg_calibration_sedimentograph.min_spacing,self.dlg_calibration_sedimentograph.max_spacing]],
             [[self.dlg_calibration_sedimentograph.no_roughness,self.dlg_calibration_sedimentograph.change_roughness,self.dlg_calibration_sedimentograph.calibrate_roughness],[self.dlg_calibration_sedimentograph.new_roughness,self.dlg_calibration_sedimentograph.min_roughness,self.dlg_calibration_sedimentograph.max_roughness]],
             [[self.dlg_calibration_sedimentograph.no_height,self.dlg_calibration_sedimentograph.change_height,self.dlg_calibration_sedimentograph.calibrate_height],[self.dlg_calibration_sedimentograph.new_height,self.dlg_calibration_sedimentograph.min_height,self.dlg_calibration_sedimentograph.max_height]],
             [[self.dlg_calibration_sedimentograph.no_bare,self.dlg_calibration_sedimentograph.change_bare,self.dlg_calibration_sedimentograph.calibrate_bare],[self.dlg_calibration_sedimentograph.new_bare,self.dlg_calibration_sedimentograph.min_bare,self.dlg_calibration_sedimentograph.max_bare]],
@@ -469,8 +477,340 @@ class qvfsmod:
         #Run calibration
         self.dlg_calibration_hydrograph.run.clicked.connect(self.run_calibration_hydrograph)
         
+        #Show sensitivity analysis
+        self.dlg_base.sensitivity.clicked.connect(self.dlg_sensitivity_analysis.show)
+        
+        #Add distributions to combobox
+        self.dlg_sensitivity_analysis.distributions.addItems(["Uniform","Logaritmic uniform","Triangular","Normal","Lognormal","Normal truncated"])
+        
+        #Change bounds in sensitivity dialog if distribution changed
+        self.dlg_sensitivity_analysis.distributions.currentIndexChanged.connect(self.change_bounds_sensitivity)
+        #Add new parameters to distribution in sensitivity dialog
+        self.dlg_sensitivity_analysis.distributions.currentIndexChanged.connect(self.distribution_parameters)
+        
+        #Change number of samples in dialog depending on sensitivity analysis metod
+        self.dlg_sensitivity_analysis.sobol.toggled.connect(self.change_sensitivity_method)
+        self.dlg_sensitivity_analysis.morris.toggled.connect(self.change_sensitivity_method)
+        self.dlg_sensitivity_analysis.trajectories.textChanged.connect(self.change_sensitivity_method)
+        
+        #Sensitivity analysis dialog buttons
+        buttons = [self.dlg_sensitivity_analysis.all_parameters,self.dlg_sensitivity_analysis.rainfall_event,
+            self.dlg_sensitivity_analysis.source_area,self.dlg_sensitivity_analysis.erosion_parameters,
+            self.dlg_sensitivity_analysis.buffer_dimensions,self.dlg_sensitivity_analysis.kinematic_wave,
+            self.dlg_sensitivity_analysis.infiltration,self.dlg_sensitivity_analysis.buffer_vegetation,self.dlg_sensitivity_analysis.incoming_sediment]
+        self.sensitivity_parameters = ["Rainfall (mm)","Storm duration (h)","Curve number",
+                "Source Area Length along the slope (m)", "Source Area Slope as a fraction","Source Area (ha)",
+                "Soil erodibility (K)","Percent organic matter","Crop factor","Particle Class Diameter","Practice Factor",
+                "Buffer length (m)","Width of the Strip (m)","Filter Manning n (RNA, s/m^1/3)","Average Filter Slope",
+                "Number of Nodes","Time Weight Factor","Number of Elemental Nodal Points","Courant Number","Maximum Iterations",
+                "Vertical Saturated K","Average Suction at the Wetting Front","Bottom Depth (cm)","Initial Water Content","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked",
+                "Spacing for grass stems (cm)","Roughness-Grass Mannings n VN","Height of grass (cm)","Roughness-Bare surface Mannings n (Vn2)",
+                "Incoming flow sediment concentration (g/cm^3)","Sediment particle size, diameter d50 (cm)","Porosity of deposited sediment as a fraction","Portion of Particles from incoming sediment with diameter >0.0037 cm","Sediment particle density (g/cm^3)"]
+        for i in buttons:
+            i.clicked.connect(lambda _, b = i:self.show_buttons_sensitivity_dialog(b))
+        
+        #Search sensitivity parameter
+        self.dlg_sensitivity_analysis.search.textChanged.connect(self.search_sensitivity_parameter)
+        
         #Default values
         self.default_values()
+    
+    def distribution_parameters(self):
+        """Method to add/delete new labels depending on choosed distribution"""
+        distribution = [self.dlg_sensitivity_analysis.distributions.itemText(i) for i in range(self.dlg_sensitivity_analysis.distributions.count())][self.dlg_sensitivity_analysis.distributions.currentIndex()]
+        
+        # Obtén el número de filas actual en el GridLayout
+        numRows = self.dlg_sensitivity_analysis.gridLayout_6.rowCount()
+        
+        def delete_elements():
+            try:
+                widget = self.dlg_sensitivity_analysis.third
+                self.dlg_sensitivity_analysis.gridLayout_6.removeWidget(widget)
+                widget.deleteLater()
+                widget = self.dlg_sensitivity_analysis.third_label
+                self.dlg_sensitivity_analysis.gridLayout_6.removeWidget(widget)
+                widget.deleteLater()
+            except:
+                pass
+            try:
+                widget = self.dlg_sensitivity_analysis.fourth
+                self.dlg_sensitivity_analysis.gridLayout_6.removeWidget(widget)
+                widget.deleteLater()
+                widget = self.dlg_sensitivity_analysis.fourth_label
+                self.dlg_sensitivity_analysis.gridLayout_6.removeWidget(widget)
+                widget.deleteLater()
+            except:
+                pass
+        
+        if distribution=="Uniform":
+            #Primero se borra
+            delete_elements()
+        
+        elif distribution=="Logaritmic uniform":
+            #Primero se borra
+            delete_elements()
+ 
+        elif distribution=="Triangular":
+            #Primero se borra
+            delete_elements()
+
+            #Luego se añade
+            # Crea un nuevo QLabel y QLineEdit
+            self.dlg_sensitivity_analysis.third_label = QLabel("Peak")
+            self.dlg_sensitivity_analysis.third = QLineEdit()
+            # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
+            self.dlg_sensitivity_analysis.gridLayout_6.addWidget(self.dlg_sensitivity_analysis.third_label, 4, 0)
+            self.dlg_sensitivity_analysis.gridLayout_6.addWidget(self.dlg_sensitivity_analysis.third, 4, 1)
+
+        elif distribution=="Normal":
+            #Primero se borra
+            delete_elements()
+        
+        if distribution=="Lognormal":
+            #Primero se borra
+            delete_elements()
+        
+        if distribution=="Normal truncated":
+            #Primero se borra
+            delete_elements()
+            
+            #Luego se añade
+            # Crea un nuevo QLabel y QLineEdit
+            self.dlg_sensitivity_analysis.third_label = QLabel("Mean")
+            self.dlg_sensitivity_analysis.third = QLineEdit()
+            # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
+            self.dlg_sensitivity_analysis.gridLayout_6.addWidget(self.dlg_sensitivity_analysis.third_label, 4, 0)
+            self.dlg_sensitivity_analysis.gridLayout_6.addWidget(self.dlg_sensitivity_analysis.third, 4, 1)
+            
+            # Crea un nuevo QLabel y QLineEdit
+            self.dlg_sensitivity_analysis.fourth_label = QLabel("Standard deviation")
+            self.dlg_sensitivity_analysis.fourth = QLineEdit()
+            # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
+            self.dlg_sensitivity_analysis.gridLayout_6.addWidget(self.dlg_sensitivity_analysis.fourth_label, 5, 0)
+            self.dlg_sensitivity_analysis.gridLayout_6.addWidget(self.dlg_sensitivity_analysis.fourth, 5, 1)
+            
+    def change_bounds_sensitivity(self):
+        """Metod to change bounds labels if distribution changed"""
+        def change_lines(bound1,bound2,bound3=None,bound4=None):
+            self.dlg_sensitivity_analysis.label_3.setText(bound1)
+            self.dlg_sensitivity_analysis.label_4.setText(bound2)
+        distribution = [self.dlg_sensitivity_analysis.distributions.itemText(i) for i in range(self.dlg_sensitivity_analysis.distributions.count())][self.dlg_sensitivity_analysis.distributions.currentIndex()]
+        
+        if distribution=="Uniform":
+            change_lines("Minimum","Maximum")
+        if distribution=="Logaritmic uniform":
+            change_lines("Minimum","Maximum")
+        if distribution=="Triangular":
+            change_lines("Minimum","Maximum","Peak")
+        if distribution=="Normal":
+            change_lines("Mean","Standard deviation")
+        if distribution=="Lognormal":
+            change_lines("Mean","Standard deviation")
+        if distribution=="Normal truncated":
+            change_lines("Minimum","Maximum","Mean","Standard deviation")
+    
+    def delete_sensitivity_table(self):
+        """Method to delete sensitivity analysis parameters to table"""
+        numero_filas = self.dlg_sensitivity_analysis.table.rowCount()
+        if numero_filas > 0:
+            self.dlg_sensitivity_analysis.table.removeRow(numero_filas - 1)
+        if numero_filas == 1:
+            self.dlg_sensitivity_analysis.table.setColumnCount(0)
+        
+        #Update number of samples
+        self.change_sensitivity_method()
+    
+    def add_sensitivity_table(self):
+        """Method to add information to the sensitivity analysis table"""
+        #Metod to add sensitivity analysis parameters to table
+        if self.dlg_sensitivity_analysis.table.columnCount() == 0:
+            #Añadir columnas
+            nombres_columnas = ["Parameter","Distribution","Distribution parameters"]
+            self.dlg_sensitivity_analysis.table.setColumnCount(len(nombres_columnas))
+            self.dlg_sensitivity_analysis.table.setHorizontalHeaderLabels(nombres_columnas)
+            #Cambiar el ancho de las columnas
+            self.dlg_sensitivity_analysis.table.setColumnWidth(nombres_columnas.index("Parameter"), 180)
+            self.dlg_sensitivity_analysis.table.setColumnWidth(nombres_columnas.index("Distribution parameters"), 200)
+            
+        #Añadir filas
+        def add_element(columna,texto):
+            item = QTableWidgetItem(texto)
+            self.dlg_sensitivity_analysis.table.setItem(numero_filas, columna, item)
+            item.setTextAlignment(Qt.AlignCenter)
+        
+        #Primero la información de los lineEdits
+        numero_filas = self.dlg_sensitivity_analysis.table.rowCount()
+        self.dlg_sensitivity_analysis.table.setRowCount(numero_filas + 1)
+        #Add parameter
+        add_element(0,self.dlg_sensitivity_analysis.parameter_name.text())
+        #Add distribution
+        distribution = [self.dlg_sensitivity_analysis.distributions.itemText(i) for i in range(self.dlg_sensitivity_analysis.distributions.count())][self.dlg_sensitivity_analysis.distributions.currentIndex()]
+        add_element(1,distribution)
+        #Add distribution parameters
+        if distribution=="Uniform" or distribution=="Logaritmic uniform":
+            add_element(2,f"min:{self.dlg_sensitivity_analysis.first.text()},max:{self.dlg_sensitivity_analysis.second.text()}")
+        elif distribution == "Triangular":
+            add_element(2,f"min:{self.dlg_sensitivity_analysis.first.text()},max:{self.dlg_sensitivity_analysis.second.text()},peak:{self.dlg_sensitivity_analysis.third.text()}")
+        elif distribution == "Normal" or distribution == "Lognormal":
+            add_element(2,f"mean:{self.dlg_sensitivity_analysis.first.text()},stdv:{self.dlg_sensitivity_analysis.second.text()}")
+        elif distribution == "Normal truncated":
+            add_element(2,f"min:{self.dlg_sensitivity_analysis.first.text()},max:{self.dlg_sensitivity_analysis.second.text()},mean:{self.dlg_sensitivity_analysis.third.text()},stdv:{self.dlg_sensitivity_analysis.fourth.text()}")
+        
+        #Update number of samples
+        self.change_sensitivity_method()
+    
+    def change_sensitivity_method(self):
+        """Method to change sensitivity inputs depending on selected senstitivity metod"""
+        if self.dlg_sensitivity_analysis.sobol.isChecked():
+            self.dlg_sensitivity_analysis.label_6.setText("M")
+            try:
+                if self.dlg_sensitivity_analysis.trajectories.text()=="" or self.dlg_sensitivity_analysis.table.rowCount()==0:
+                    self.dlg_sensitivity_analysis.samples.setText("")
+                else:
+                    self.dlg_sensitivity_analysis.samples.setText(str(int(self.dlg_sensitivity_analysis.trajectories.text())*(2*self.dlg_sensitivity_analysis.table.rowCount()+2)))
+            except:
+                pass
+        elif self.dlg_sensitivity_analysis.morris.isChecked():
+            self.dlg_sensitivity_analysis.label_6.setText("Trajectories")
+            try:
+                if self.dlg_sensitivity_analysis.trajectories.text()=="" or self.dlg_sensitivity_analysis.table.rowCount()==0:
+                    self.dlg_sensitivity_analysis.samples.setText("")
+                else:
+                    self.dlg_sensitivity_analysis.samples.setText(str(int(self.dlg_sensitivity_analysis.trajectories.text())*(self.dlg_sensitivity_analysis.table.rowCount()+1)))
+            except:
+                pass
+        
+    def search_sensitivity_parameter(self):
+        """Method to search sensitivity parameter in the dialog"""
+        #Metod to search a sensitiviy input
+        texto = str(self.dlg_sensitivity_analysis.search.text())
+        #If text == "" then delete every button
+        if texto =="":
+            while self.dlg_sensitivity_analysis.verticalLayout_2.count():
+                child = self.dlg_sensitivity_analysis.verticalLayout_2.takeAt(0)
+                if child.widget():
+                    child.widget().deleteLater()
+        else:
+            elementos = []
+            for i in self.sensitivity_parameters:
+                if texto.lower() in i.lower():
+                    elementos.append(i)
+            try: #if it doesnt find a name
+                #Delete all elements of vertical layout of scroll area
+                while self.dlg_sensitivity_analysis.verticalLayout_2.count():
+                    child = self.dlg_sensitivity_analysis.verticalLayout_2.takeAt(0)
+                    if child.widget():
+                        child.widget().deleteLater()
+                #Add new button to the scroll area
+                for nombre in elementos:
+                    boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                    boton.setObjectName(nombre)
+                    self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                    política_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                    boton.setSizePolicy(política_tamaño)
+                    boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
+            except:
+                pass
+    
+    def show_buttons_sensitivity_dialog(self,button):
+        """Method to add buttons to sensitivity dialog"""
+        #Delete all elements of vertical layout of scroll area
+        while self.dlg_sensitivity_analysis.verticalLayout_2.count():
+            child = self.dlg_sensitivity_analysis.verticalLayout_2.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+        #Add element
+        if button == self.dlg_sensitivity_analysis.all_parameters:
+            for nombre in self.sensitivity_parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                boton.setObjectName(nombre)
+                self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
+        if button == self.dlg_sensitivity_analysis.rainfall_event:
+            parameters = ["Rainfall (mm)","Storm duration (h)","Curve number"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                boton.setObjectName(nombre)
+                self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
+                
+        if button == self.dlg_sensitivity_analysis.source_area:
+            parameters = ["Source Area Length along the slope (m)", "Source Area Slope as a fraction","Source Area (ha)"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                boton.setObjectName(nombre)
+                self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
+                
+        if button == self.dlg_sensitivity_analysis.erosion_parameters:
+            parameters = ["Soil erodibility (K)","Percent organic matter","Crop factor","Particle Class Diameter","Practice Factor"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                boton.setObjectName(nombre)
+                self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
+                
+        if button == self.dlg_sensitivity_analysis.buffer_dimensions:
+            parameters = ["Buffer length (m)","Width of the Strip (m)","Filter Manning n (RNA, s/m^1/3)","Average Filter Slope"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                boton.setObjectName(nombre)
+                self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
+                
+        if button == self.dlg_sensitivity_analysis.kinematic_wave:
+            parameters = ["Number of Nodes","Time Weight Factor","Number of Elemental Nodal Points","Courant Number","Maximum Iterations"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                boton.setObjectName(nombre)
+                self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
+                
+        if button == self.dlg_sensitivity_analysis.infiltration:
+            parameters = ["Vertical Saturated K","Average Suction at the Wetting Front","Bottom Depth (cm)","Initial Water Content","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                boton.setObjectName(nombre)
+                self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
+                
+        if button == self.dlg_sensitivity_analysis.buffer_vegetation:
+            parameters = ["Spacing for grass stems (cm)","Roughness-Grass Mannings n VN","Height of grass (cm)","Roughness-Bare surface Mannings n (Vn2)"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                boton.setObjectName(nombre)
+                self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
+                
+        if button == self.dlg_sensitivity_analysis.incoming_sediment:
+            parameters = ["Incoming flow sediment concentration (g/cm^3)","Sediment particle size, diameter d50 (cm)","Porosity of deposited sediment as a fraction","Portion of Particles from incoming sediment with diameter >0.0037 cm","Sediment particle density (g/cm^3)"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                boton.setObjectName(nombre)
+                self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
+        
+    def add_parameter_name_sensitivity(self,name):
+        """Method to add the parameter name to the lineEdit in sensitivity analysis dialog"""
+        self.dlg_sensitivity_analysis.parameter_name.setText(name)
     
     def browse_files_calibration(self,information):
         """Method to select the file between the local files"""
@@ -490,26 +830,198 @@ class qvfsmod:
             else: #absolute path
                 information[2].setText(fname[0])
     
+    def run_calibration_sedimentograph(self):
+        """Method to run the calibration for sedimentograph"""
+        #If "inverse" folder does not exist, then create it
+        self.create_folder_calibration()
+        
+        #Move prj to the inverse folder and in inverse/inputs put the inputs
+        self.move_files_calibration_sedimentograph()
+        
+        #Create file for sedimentograph calibration and change inputs if "Change" is selected
+        self.create_inverse_file_sedimentograph()
+        
+        #Update bat for calibration and execute
+        self.update_bat_calibration()
+        subprocess.run(self.plugin_directory+"\\executables\\execution.bat")
+    
+    def create_inverse_file_sedimentograph(self):
+        """Method to create the inverse file for hydrograph calibration"""
+        #Inputs
+        #Function to return the value needed for the inverse calibration file
+        def calibration(radio_button_one,radio_button_two):
+            if radio_button_one.isChecked():
+                return 2
+            elif radio_button_two.isChecked():
+                return "nan"
+            else:
+                return -1
+            
+        if self.dlg_calibration_advanced_settings.plot_yes.isChecked():plot = "y"
+        else: plot = "n"
+        if self.dlg_calibration_advanced_settings.constrain_yes.isChecked():constrain = "y"
+        else: constrain = "n"
+        spacing = calibration(self.dlg_calibration_sedimentograph.change_spacing,self.dlg_calibration_sedimentograph.calibrate_spacing)
+        roughness_grass = calibration(self.dlg_calibration_sedimentograph.change_roughness,self.dlg_calibration_sedimentograph.calibrate_roughness)
+        height = calibration(self.dlg_calibration_sedimentograph.change_height,self.dlg_calibration_sedimentograph.calibrate_height)
+        roughness_bare = calibration(self.dlg_calibration_sedimentograph.change_bare,self.dlg_calibration_sedimentograph.calibrate_bare)
+        coarse = calibration(self.dlg_calibration_sedimentograph.change_coarse,self.dlg_calibration_sedimentograph.calibrate_coarse)
+        incoming = calibration(self.dlg_calibration_sedimentograph.change_incoming,self.dlg_calibration_sedimentograph.calibrate_incoming)
+        porosity = calibration(self.dlg_calibration_sedimentograph.change_porosity,self.dlg_calibration_sedimentograph.calibrate_porosity)
+        sediment_class = calibration(self.dlg_calibration_sedimentograph.change_class,self.dlg_calibration_sedimentograph.calibrate_class)
+        sediment_density = calibration(self.dlg_calibration_sedimentograph.change_density,self.dlg_calibration_sedimentograph.calibrate_density)
+
+        #Change inputs if "Change" has selected
+        self.change_inputs_calibration_sedimentograph([spacing,roughness_grass,height,roughness_bare,coarse,incoming,porosity,sediment_class,sediment_density])
+        
+        #Create file for the calibration
+        path = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.cfg"
+        with open(path, 'w') as archivo:
+            archivo.write("Indicate project name\n")
+            archivo.write(f"{self.dlg_calibration_sedimentograph.vfs_file.text()}\n\n")
+            archivo.write(f"Give file for fitted parameters\n{self.dlg_calibration_advanced_settings.exit_file.text()}.out\n\n")
+            archivo.write(f"Give file for measured hydrograph\nno_name.out\n\n")
+            archivo.write(f"Give file for measured sedimentograph\n{self.dlg_calibration_sedimentograph.sedimentograph_file.text()}\n\n")
+            archivo.write(f"Fix number of iterations for GMCS or use 0 for setting automatically iter=100*np^2\n {self.dlg_calibration_advanced_settings.iterations.text()}\n\n")
+            archivo.write(f"Plot Inverse simulation (y/n)\n{plot}\n\n")
+            archivo.write(f"Constrain NMS to parameter space (y/n)\n{constrain}\n\n")
+            archivo.write(f"VFSmod parameters\nIndicate values for fixed parameters and use nan for parameters to be\noptimized\n[nan    lower limit    upper limit\n\n")
+            archivo.write(f"Flow module parameters\n")
+            archivo.write(f"-1 %Vertical saturated K (m/s)\n-1 %Average suction at the wetting front (m)\n-1 %Saturated water content (m3/m3)\n-1 %Initial water content (m3/m3)\n-1 % Maximum surface storage (m)\n-1 % Filter fraction where ponding is checked\n-1 % Filter width\n-1 % Filter length\n-1 % nk\n-1 % Sok\n\n")
+            archivo.write("Sediment module parameters\n")
+            if spacing == "nan":
+                archivo.write(f"{spacing}  {self.dlg_calibration_sedimentograph.min_spacing.text()}  {self.dlg_calibration_sedimentograph.max_spacing.text()} % Spacing for grass stems (cm)\n")
+            else:
+                archivo.write(f"{spacing} % Spacing for grass stems (cm)\n")
+            
+            if roughness_grass == "nan":
+                archivo.write(f"{roughness_grass}  {self.dlg_calibration_sedimentograph.min_roughness.text()}  {self.dlg_calibration_sedimentograph.max_roughness.text()} % Roughness- grass Manning's (s/cm^1/3)\n")
+            else:
+                archivo.write(f"{roughness_grass} % Roughness- grass Manning's (s/cm^1/3)\n")
+            
+            if height == "nan":
+                archivo.write(f"{height}  {self.dlg_calibration_sedimentograph.min_height.text()}  {self.dlg_calibration_sedimentograph.max_height.text()} % Height of grass (cm)\n")
+            else:
+                archivo.write(f"{height} % Height of grass (cm)\n")
+            
+            if roughness_bare == "nan":
+                archivo.write(f"{roughness_bare}  {self.dlg_calibration_sedimentograph.min_bare.text()}  {self.dlg_calibration_sedimentograph.max_bare.text()} % Roughness- bare surface Manning's n (s/m^1/3)\n")
+            else:
+                archivo.write(f"{roughness_bare} % Roughness- bare surface Manning's n (s/m^1/3)\n")
+            
+            if coarse == "nan":
+                archivo.write(f"{coarse}  {self.dlg_calibration_sedimentograph.min_coarse.text()}  {self.dlg_calibration_sedimentograph.max_coarse.text()} % Coarse sediment fraction d>0.0037cm (g/g)\n")
+            else:
+                archivo.write(f"{coarse} % Coarse sediment fraction d>0.0037cm (g/g)\n")
+            
+            if incoming == "nan":
+                archivo.write(f"{incoming}  {self.dlg_calibration_sedimentograph.min_incoming.text()}  {self.dlg_calibration_sedimentograph.max_incoming.text()} % Incoming Flow sediment concentration, (g/cm3)\n")
+            else:
+                archivo.write(f"{incoming} % Incoming Flow sediment concentration, (g/cm3)\n")
+            
+            if porosity == "nan":
+                archivo.write(f"{porosity}  {self.dlg_calibration_sedimentograph.min_porosity.text()}  {self.dlg_calibration_sedimentograph.max_porosity.text()} % Porosity of deposited sediment (m3/m3)\n")
+            else:
+                archivo.write(f"{porosity} % Porosity of deposited sediment (m3/m3)\n")
+            
+            if sediment_class == "nan":
+                archivo.write(f"{sediment_class}  {self.dlg_calibration_sedimentograph.min_class.text()}  {self.dlg_calibration_sedimentograph.max_class.text()} % Sediment particle class, diameter d50 (cm)\n")
+            else:
+                archivo.write(f"{sediment_class} % Sediment particle class, diameter d50 (cm)\n")
+            
+            if sediment_density == "nan":
+                archivo.write(f"{sediment_density}  {self.dlg_calibration_sedimentograph.min_density.text()}  {self.dlg_calibration_sedimentograph.max_density.text()} % Sediment particle density\n")
+            else:
+                archivo.write(f"{sediment_density} % Sediment particle density\n")
+            
+            archivo.write("\nNon-optimizable parameters\n-1 % Feedback the change in slope and roughness (Yes=1, No=0)\n-1 % Incoming sediment particle class")
+
+    def change_inputs_calibration_sedimentograph(self,inputs):
+        """Method to change the inputs in the calibration of sedimentograph if change is selected"""
+        #Function to modify inputs
+        def modify_inputs(extension, row, column, new_value):
+            prj = self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.vfs_project.text())
+            with open(prj, "r") as archivo:
+                lineas_prj = archivo.readlines()
+            for i in lineas_prj:
+                if i.split(".")[-1] == extension:
+                    filepath = i.split("=")[-1]
+                    break
+            if not os.path.isabs(filepath): #relative path
+                filepath = os.path.join(os.path.dirname(prj), filepath)
+            filepath = filepath.replace("\n", "")
+
+            with open(filepath, 'r') as file:
+                lineas = file.readlines()
+            
+            numbers_str = lineas[row]
+            # Use regex to find all numbers in the string
+            matches = re.findall(r'\S+', numbers_str)
+            # Replace the specific number at the given index
+            matches[column] = str(new_value)
+            # Rebuild the string by replacing only the specific number
+            lineas[row] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+            with open(filepath, 'w') as archivo:
+                for i in lineas:
+                    archivo.write(i)
+        
+        #spacing
+        if inputs[0]==2:
+            modify_inputs("igr",0,0,self.dlg_calibration_hydrograph.new_spacing.text())
+        #roughness grass
+        if inputs[1]==2:
+            modify_inputs("igr",0,1,self.dlg_calibration_hydrograph.new_roughness.text())
+        #height
+        if inputs[2]==2:
+            modify_inputs("igr",0,2,self.dlg_calibration_hydrograph.new_height.text())
+        #roughness bare
+        if inputs[3]==2:
+            modify_inputs("igr",0,3,self.dlg_calibration_hydrograph.new_bare.text())
+        #coarse
+        if inputs[4]==2:
+            modify_inputs("isd",0,1,self.dlg_calibration_hydrograph.new_coarse.text())
+        #incoming
+        if inputs[5]==2:
+            modify_inputs("isd",0,2,self.dlg_calibration_hydrograph.new_incoming.text())
+        #porosity
+        if inputs[6]==2:
+            modify_inputs("isd",0,3,self.dlg_calibration_hydrograph.new_porosity.text())
+        #sediment_class
+        if inputs[7]==2:
+            modify_inputs("isd",1,0,self.dlg_calibration_hydrograph.new_class.text())
+        #sediment_density
+        if inputs[8]==2:
+            modify_inputs("isd",1,1,self.dlg_calibration_hydrograph.new_density.text())
+        
+    
+    def move_files_calibration_sedimentograph(self):
+        """Method to move files to the corresponding folders for calibration"""
+        #Move prj to inverse
+        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_calibration_sedimentograph.vfs_file.text()), self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{self.dlg_calibration_sedimentograph.vfs_file.text()}")
+        #Move sedimentograph
+        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_calibration_sedimentograph.sedimentograph_file.text()),self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{self.dlg_calibration_sedimentograph.sedimentograph_file.text()}")
+        #Move executables of UH and VFS to main directory
+        shutil.copyfile(self.plugin_directory+"\\executables\\uh.exe",self.dlg_base.working_directory_vfsmod.text()+"\\uh.exe")
+        shutil.copyfile(self.plugin_directory+"\\executables\\vfsm.exe",self.dlg_base.working_directory_vfsmod.text()+"\\vfsm.exe")
+    
     
     def run_calibration_hydrograph(self):
         """Method to run the calibration for hydrograph"""
         #If "inverse" folder does not exist, then create it
         self.create_folder_calibration()
         
-        
-        
         #Move prj to the inverse folder and in inverse/inputs put the inputs
-        self.move_files_calibration()
+        self.move_files_calibration_hydrograph()
         
         #Create file for hydrograph calibration and change inputs if "Change" is selected
         self.create_inverse_file_hydrograph()
             
         #Update bat for calibration and execute
-        self.update_bat_calibration_hydrograph()
+        self.update_bat_calibration()
         subprocess.run(self.plugin_directory+"\\executables\\execution.bat")
     
     
-    def update_bat_calibration_hydrograph(self):
+    def update_bat_calibration(self):
         """Method to update the bat of the hydrograph"""
         f = open(self.plugin_directory+"\\executables\\execution.bat","w+")
         linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\inverse\\"')
@@ -520,72 +1032,16 @@ class qvfsmod:
         f.write("{} \n".format(linea_tres))
         f.close()
     
-    def move_files_calibration(self):
+    def move_files_calibration_hydrograph(self):
         """Method to move files to the corresponding folders for calibration"""
         #Move prj to inverse
         shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.vfs_project.text()), self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{self.dlg_calibration_hydrograph.vfs_project.text()}")
-        #Move the rest
-        def copy_paste(type_input):
-            ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.{type_input}" 
-            ruta = self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.vfs_project.text())
-            #First we open .prj and obtain the direction of the copying file
-            with open(ruta, "r") as archivo:
-                lineas = archivo.readlines()
-            for i in lineas:
-                if i[:3]==type_input:
-                    ikw = i.split("=")[-1]
-            if not os.path.isabs(ikw): #relative path
-                ikw = os.path.join(os.path.dirname(ruta), ikw)
-            ikw = ikw.replace("\n", "") #take out the line jumps
-            print(ikw,ruta_pegar)
-            shutil.copyfile(ikw, ruta_pegar)
+        #Move hydrograph
+        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.hydrograph_file.text()),self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{self.dlg_calibration_hydrograph.hydrograph_file.text()}")
+        #Move executables of UH and VFS to main directory
+        shutil.copyfile(self.plugin_directory+"\\executables\\uh.exe",self.dlg_base.working_directory_vfsmod.text()+"\\uh.exe")
+        shutil.copyfile(self.plugin_directory+"\\executables\\vfsm.exe",self.dlg_base.working_directory_vfsmod.text()+"\\vfsm.exe")
         
-        #IKW
-        copy_paste("ikw")
-        #ISO
-        copy_paste("iso")
-        #IGR
-        copy_paste("igr")
-        #ISD
-        copy_paste("isd")
-        #IRN
-        copy_paste("irn")
-        #IRO
-        copy_paste("iro")
-        #IWQ
-        ruta = self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.vfs_project.text())
-        with open(ruta, "r") as archivo:
-            lineas = archivo.readlines()
-        self.water_quality = False
-        for i in lineas:
-            if i[:3]=="iwq":
-                self.water_quality = True
-        if self.water_quality:
-            copy_paste("iwq")
-        
-        #Modify prj
-        self.modify_prj_calibration_hydrograph()
-    
-    def modify_prj_calibration_hydrograph(self):
-        """Method to modify the prj when doing the calibration of hydrograph"""
-        prj_file = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{self.dlg_calibration_hydrograph.vfs_project.text()}"
-        #Create file
-        with open(prj_file, 'w') as archivo:
-            archivo.write(f"ikw=inputs\\inverse.ikw  \n")
-            archivo.write(f"iso=inputs\\inverse.iso  \n")
-            archivo.write(f"igr=inputs\\inverse.igr  \n")
-            archivo.write(f"isd=inputs\\inverse.isd  \n")
-            archivo.write(f"irn=inputs\\inverse.irn  \n")
-            archivo.write(f"iro=inputs\\inverse.iro  \n")
-            if self.water_quality:
-                archivo.write(f"iwq=inputs\\inverse.iwq  \n")
-            archivo.write(f"og1=output\\inverse.og1  \n")
-            archivo.write(f"og2=output\\inverse.og2  \n")
-            archivo.write(f"ohy=output\\inverse.ohy  \n")
-            archivo.write(f"osm=output\\inverse.osm  \n")
-            archivo.write(f"osp=output\\inverse.osp  \n")
-            if self.water_quality:
-                archivo.write(f"owq=output\\inverse.owq  \n")
         
     def create_inverse_file_hydrograph(self):
         """Method to create the inverse file for hydrograph calibration"""
@@ -686,8 +1142,18 @@ class qvfsmod:
     def change_inputs_calibration_hydrograph(self,inputs):
         """Method to change the inputs in the calibration of hydrograph if change is selected"""
         #Function to modify inputs
-        def modify_inputs(filepath, row, column, new_value):
-            filepath = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\{filepath}"
+        def modify_inputs(extension, row, column, new_value):
+            prj = self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.vfs_project.text())
+            with open(prj, "r") as archivo:
+                lineas_prj = archivo.readlines()
+            for i in lineas_prj:
+                if i.split(".")[-1] == extension:
+                    filepath = i.split("=")[-1]
+                    break
+            if not os.path.isabs(filepath): #relative path
+                filepath = os.path.join(os.path.dirname(prj), filepath)
+            filepath = filepath.replace("\n", "")
+
             with open(filepath, 'r') as file:
                 lineas = file.readlines()
             
@@ -704,25 +1170,25 @@ class qvfsmod:
         
         #vertical
         if inputs[0]==2:
-            modify_inputs("inverse.iso",0,0,self.dlg_calibration_hydrograph.new_vertical.text())
+            modify_inputs("iso",0,0,self.dlg_calibration_hydrograph.new_vertical.text())
         #average
         if inputs[1]==2:
-            modify_inputs("inverse.iso",0,1,self.dlg_calibration_hydrograph.new_average.text())
+            modify_inputs("iso",0,1,self.dlg_calibration_hydrograph.new_average.text())
         #saturated
         if inputs[2]==2:
-            modify_inputs("inverse.iso",0,2,self.dlg_calibration_hydrograph.new_saturatedl.text())
+            modify_inputs("iso",0,2,self.dlg_calibration_hydrograph.new_saturatedl.text())
         #initial
         if inputs[3]==2:
-            modify_inputs("inverse.iso",0,3,self.dlg_calibration_hydrograph.new_initial.text())
+            modify_inputs("iso",0,3,self.dlg_calibration_hydrograph.new_initial.text())
         #maximum
         if inputs[4]==2:
-            modify_inputs("inverse.iso",0,4,self.dlg_calibration_hydrograph.new_maximum.text())
+            modify_inputs("iso",0,4,self.dlg_calibration_hydrograph.new_maximum.text())
         #fraction
         if inputs[5]==2:
-            modify_inputs("inverse.iso",0,5,self.dlg_calibration_hydrograph.new_fraction.text())
+            modify_inputs("iso",0,5,self.dlg_calibration_hydrograph.new_fraction.text())
         #width
         if inputs[6]==2:
-            modify_inputs("inverse.ikw",1,0,self.dlg_calibration_hydrograph.new_width.text())
+            modify_inputs("ikw",1,0,self.dlg_calibration_hydrograph.new_width.text())
         #length
         if inputs[7]==2:
             self.modify_ikw_file_calibration(self.dlg_calibration_hydrograph.new_length.text())
@@ -737,7 +1203,14 @@ class qvfsmod:
     def modify_mannign_slope_hydrograph_calibration(self,column,new_value):
         """Method to modify the manning and slope for hydrograph calibration"""
         #We obtain information of ikw file
-        ikw = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.ikw"
+        prj = self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.vfs_project.text())
+        with open(prj, "r") as archivo:
+            lineas_prj = archivo.readlines()
+        ikw = lineas_prj[0].split("=")[-1]
+        if not os.path.isabs(ikw): #relative path
+            ikw = os.path.join(os.path.dirname(prj), ikw)
+        ikw = ikw.replace("\n", "")
+        
         with open(ikw, "r") as archivo:
             lineas = archivo.readlines()
         
@@ -759,7 +1232,13 @@ class qvfsmod:
     def modify_ikw_file_calibration(self,value_change):
         """Metod to modify the ikw file for the hydrograph calibration"""
         #We obtain information of ikw file
-        ikw = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.ikw"
+        prj = self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.vfs_project.text())
+        with open(prj, "r") as archivo:
+            lineas_prj = archivo.readlines()
+        ikw = lineas_prj[0].split("=")[-1]
+        if not os.path.isabs(ikw): #relative path
+            ikw = os.path.join(os.path.dirname(prj), ikw)
+        ikw = ikw.replace("\n", "")
         #We substitute value of length
         with open(ikw, "r") as archivo:
             lineas = archivo.readlines()

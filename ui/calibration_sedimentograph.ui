@@ -760,7 +760,7 @@ Data File</string>
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="new__spacing"/>
+         <widget class="QLineEdit" name="new_spacing"/>
         </item>
         <item>
          <widget class="QLineEdit" name="min_spacing"/>
