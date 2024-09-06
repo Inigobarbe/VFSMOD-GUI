@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>799</width>
-    <height>549</height>
+    <height>602</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,6 +24,48 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_9">
       <item row="0" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QLabel" name="label_10">
+          <property name="text">
+           <string>UH</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="uh_file"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="browse_uh">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="1" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string>VFS file</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="vfs_file"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="browse_vfs">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="2" column="0">
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QLabel" name="label">
@@ -37,115 +79,7 @@
         </item>
        </layout>
       </item>
-      <item row="1" column="0">
-       <widget class="QScrollArea" name="scrollArea">
-        <property name="widgetResizable">
-         <bool>true</bool>
-        </property>
-        <widget class="QWidget" name="scrollAreaWidgetContents">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>252</width>
-           <height>275</height>
-          </rect>
-         </property>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="1" column="0">
-           <layout class="QVBoxLayout" name="verticalLayout">
-            <item>
-             <widget class="QPushButton" name="all_parameters">
-              <property name="text">
-               <string>All Parameters</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="rainfall_event">
-              <property name="text">
-               <string>Rainfall Event and Runoff</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="source_area">
-              <property name="text">
-               <string>Source Area</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="erosion_parameters">
-              <property name="text">
-               <string>Erosion Parameters</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="buffer_dimensions">
-              <property name="text">
-               <string>Buffer Dimensions</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="kinematic_wave">
-              <property name="text">
-               <string>Kinematic Wave Numerical Solution Parameters</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="infiltration">
-              <property name="text">
-               <string>Infiltration</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="buffer_vegetation">
-              <property name="text">
-               <string>Buffer Vegetation</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="incoming_sediment">
-              <property name="text">
-               <string>Incoming Sediment</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QScrollArea" name="scrollArea_2">
-        <property name="widgetResizable">
-         <bool>true</bool>
-        </property>
-        <widget class="QWidget" name="scrollAreaWidgetContents_2">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>0</y>
-           <width>246</width>
-           <height>243</height>
-          </rect>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="0">
-           <layout class="QVBoxLayout" name="verticalLayout_2"/>
-          </item>
-         </layout>
-        </widget>
-       </widget>
-      </item>
-      <item row="1" column="2">
+      <item row="2" column="2" rowspan="2">
        <widget class="QFrame" name="frame">
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
@@ -269,6 +203,114 @@
         </layout>
        </widget>
       </item>
+      <item row="3" column="0">
+       <widget class="QScrollArea" name="scrollArea">
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <widget class="QWidget" name="scrollAreaWidgetContents">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>252</width>
+           <height>275</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="1" column="0">
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <widget class="QPushButton" name="all_parameters">
+              <property name="text">
+               <string>All Parameters</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="rainfall_event">
+              <property name="text">
+               <string>Rainfall Event and Runoff</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="source_area">
+              <property name="text">
+               <string>Source Area</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="erosion_parameters">
+              <property name="text">
+               <string>Erosion Parameters</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="buffer_dimensions">
+              <property name="text">
+               <string>Buffer Dimensions</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="kinematic_wave">
+              <property name="text">
+               <string>Kinematic Wave Numerical Solution Parameters</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="infiltration">
+              <property name="text">
+               <string>Infiltration</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="buffer_vegetation">
+              <property name="text">
+               <string>Buffer Vegetation</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="incoming_sediment">
+              <property name="text">
+               <string>Incoming Sediment</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QScrollArea" name="scrollArea_2">
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <widget class="QWidget" name="scrollAreaWidgetContents_2">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>241</width>
+           <height>262</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <layout class="QVBoxLayout" name="verticalLayout_2"/>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -293,42 +335,6 @@
          <enum>QFrame::Raised</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout_7">
-         <item row="1" column="0">
-          <widget class="QFrame" name="frame_5">
-           <property name="frameShape">
-            <enum>QFrame::StyledPanel</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Raised</enum>
-           </property>
-           <widget class="QRadioButton" name="morris">
-            <property name="geometry">
-             <rect>
-              <x>20</x>
-              <y>10</y>
-              <width>82</width>
-              <height>17</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>Morris</string>
-            </property>
-           </widget>
-           <widget class="QRadioButton" name="sobol">
-            <property name="geometry">
-             <rect>
-              <x>20</x>
-              <y>30</y>
-              <width>82</width>
-              <height>17</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>Sobol</string>
-            </property>
-           </widget>
-          </widget>
-         </item>
          <item row="2" column="0">
           <layout class="QHBoxLayout" name="horizontalLayout_7">
            <item>
@@ -342,6 +348,13 @@
             <widget class="QLineEdit" name="trajectories"/>
            </item>
           </layout>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>Sensitivity analysis method</string>
+           </property>
+          </widget>
          </item>
          <item row="3" column="0">
           <layout class="QHBoxLayout" name="horizontalLayout_8">
@@ -357,10 +370,39 @@
            </item>
           </layout>
          </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_8">
+         <item row="1" column="0">
+          <widget class="QFrame" name="frame_5">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="morris">
+              <property name="text">
+               <string>Morris</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="sobol">
+              <property name="text">
+               <string>Sobol</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QPushButton" name="accept">
            <property name="text">
-            <string>Sensitivity analysis method</string>
+            <string>Accept</string>
            </property>
           </widget>
          </item>

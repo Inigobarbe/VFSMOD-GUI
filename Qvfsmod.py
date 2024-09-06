@@ -53,6 +53,12 @@ from .ui.design_results_graph import design_results_graph
 from .ui.calibration_advanced_settings import calibration_advanced_settings
 from .ui.sensitivity_analysis import sensitivity_analysis
 
+#Local libraries
+from .libraries.SALib.sample import saltelli
+from .libraries.SALib.analyze import sobol
+from .libraries.SALib.sample.morris import sample as sample_morris 
+from .libraries.SALib.analyze.morris import analyze as analyze_morris
+
 import os.path
 import pandas as pd
 import subprocess
@@ -498,22 +504,435 @@ class qvfsmod:
             self.dlg_sensitivity_analysis.source_area,self.dlg_sensitivity_analysis.erosion_parameters,
             self.dlg_sensitivity_analysis.buffer_dimensions,self.dlg_sensitivity_analysis.kinematic_wave,
             self.dlg_sensitivity_analysis.infiltration,self.dlg_sensitivity_analysis.buffer_vegetation,self.dlg_sensitivity_analysis.incoming_sediment]
-        self.sensitivity_parameters = ["Rainfall (mm)","Storm duration (h)","Curve number",
-                "Source Area Length along the slope (m)", "Source Area Slope as a fraction","Source Area (ha)",
-                "Soil erodibility (K)","Percent organic matter","Crop factor","Particle Class Diameter","Practice Factor",
-                "Buffer length (m)","Width of the Strip (m)","Filter Manning n (RNA, s/m^1/3)","Average Filter Slope",
-                "Number of Nodes","Time Weight Factor","Number of Elemental Nodal Points","Courant Number","Maximum Iterations",
-                "Vertical Saturated K","Average Suction at the Wetting Front","Bottom Depth (cm)","Initial Water Content","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked",
-                "Spacing for grass stems (cm)","Roughness-Grass Mannings n VN","Height of grass (cm)","Roughness-Bare surface Mannings n (Vn2)",
-                "Incoming flow sediment concentration (g/cm^3)","Sediment particle size, diameter d50 (cm)","Porosity of deposited sediment as a fraction","Portion of Particles from incoming sediment with diameter >0.0037 cm","Sediment particle density (g/cm^3)"]
+        #Dictionary for the sensitivity parameters and information of the place where is saved {Name: [extension, row, column, uh/vfs]}
+        self.sensitivity_parameters = {"Rainfall (mm)":["inp",0,0,"uh"],"Storm duration (h)":["inp",0,4,"uh"],"Curve number":["inp",0,1,"uh"],
+                "Source Area Length along the slope (m)":["inp,"0,5,"uh"], "Source Area Slope as a fraction":["inp",0,6,"uh"],"Source Area (ha)":["inp",0,2,"uh"],
+                "Soil erodibility (K)":["inp",3,0,"uh"],"Percent organic matter":["inp",5,0,"uh"],"Crop factor":["inp",3,1,"uh"],"Particle Class Diameter":["inp",3,3,"uh"],"Practice Factor":["inp",3,2,"uh"],
+                "Buffer length (m)":["ikw",2,0,"vfs"],"Width of the Strip (m)":["ikw",1,0,"vfs"],"Filter Manning n (RNA, s/m^1/3)":["ikw","nan","nan","vfs"],"Average Filter Slope":["ikw","nan","nan","vfs"],
+                "Number of Nodes":["ikw",2,1,"vfs"],"Time Weight Factor":["ikw",2,2,"vfs"],"Number of Elemental Nodal Points":["ikw",2,5,"vfs"],"Courant Number":["ikw",2,3,"vfs"],"Maximum Iterations":["ikw",2,4,"vfs"],
+                "Vertical Saturated K":["iso",0,0,"vfs"],"Average Suction at the Wetting Front":["iso",0,1,"vfs"],"Initial Water Content":["iso",0,3,"vfs"],"Saturated Water Content":["iso",0,2,"vfs"],"Maximum Surface Storage":["iso",0,4,"vfs"],"Fraction of the filter where ponding is checked":["iso",0,5,"vfs"],
+                "Spacing for grass stems (cm)":["igr",0,0,"vfs"],"Roughness-Grass Mannings n VN":["igr",0,1,"vfs"],"Height of grass (cm)":["igr",0,2,"vfs"],"Roughness-Bare surface Mannings n (Vn2)":["igr",0,3,"vfs"],
+                "Incoming flow sediment concentration (g/cm^3)":["isd",0,2,"vfs"],"Sediment particle size, diameter d50 (cm)":["isd",1,0,"vfs"],"Porosity of deposited sediment as a fraction":["isd",0,3,"vfs"],"Portion of Particles from incoming sediment with diameter >0.0037 cm":["isd",0,1,"vfs"],"Sediment particle density (g/cm^3)":["isd",1,1,"vfs"]}
         for i in buttons:
             i.clicked.connect(lambda _, b = i:self.show_buttons_sensitivity_dialog(b))
         
         #Search sensitivity parameter
         self.dlg_sensitivity_analysis.search.textChanged.connect(self.search_sensitivity_parameter)
         
+        #Run sensitivity analysis
+        self.dlg_sensitivity_analysis.accept.clicked.connect(self.run_sensitivity_analysis)
+        
+        #Browse files in sensitivity analysis
+        self.dlg_sensitivity_analysis.browse_uh.clicked.connect(lambda _, b = "lis":self.browse_files_sensitivity(b))
+        self.dlg_sensitivity_analysis.browse_vfs.clicked.connect(lambda _, b = "prj":self.browse_files_sensitivity(b))
+        
+        
         #Default values
         self.default_values()
+    
+    def browse_files_sensitivity(self,information):
+        """Method to select the file for sensitivity analysis between the local files"""
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        if information=="prj": 
+            select = "Select VFS Project File"
+            types = "PRJ files (*.prj)"
+        else: 
+            select = "Select UH Project File"
+            types = "LIS files (*.lis)"
+        fname = QFileDialog.getOpenFileName(self.dlg_sensitivity_analysis, select,working_directory , types)
+        if fname[0]!="":
+            #Put the relative path if the file is inside the folder
+            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
+                text = os.path.relpath(fname[0], working_directory)
+            else: #absolute path
+                text = fname[0]
+        if information == "prj":
+            self.dlg_sensitivity_analysis.vfs_file.setText(text)
+        else:
+            self.dlg_sensitivity_analysis.uh_file.setText(text)
+    
+    def run_sensitivity_analysis(self):
+        """Method to run whole sensitivity analysis"""
+        #Create the dictionary for the sensitivity analysis
+        self.dic_data = self.create_dictionary_sensitivity_analysis()
+        
+        #Create the samples
+        problem = {'num_vars': len(self.dic_data),'names': list(self.dic_data.keys()),'bounds': [x[1] for x in self.dic_data.values()],"dists":[x[0] for x in self.dic_data.values()]}
+        if self.dlg_sensitivity_analysis.sobol.isChecked():
+            self.param_values = saltelli.sample(problem, int(self.dlg_sensitivity_analysis.trajectories.text()))
+        elif self.dlg_sensitivity_analysis.morris.isChecked():
+            self.param_values = sample_morris(problem, int(self.dlg_sensitivity_analysis.trajectories.text()))
+        
+        #We start obtaining the results
+        #Create folders of sensitivity analysis
+        self.create_folder_sensitivity_analysis()
+        #Move files to sensitivity analysis folder
+        self.move_files_sensitivity_analysis()
+        
+        self.results_sensitivity = []
+        self.number_execution_sensitivity = 0
+        #Results are obtained
+        #Start with the progress bar
+        self.progress_metod(start = True)
+        for k in self.param_values:
+            self.number_execution_sensitivity+=1
+            self.execution_sensitivity_analysis(k)
+            #Se guardan los resultados
+            self.resultados.append(self.save_result())
+            #Condición de error
+            if self.end_execution:
+                iface.messageBar().pushMessage("Error in sensitivity analysis", "Please check the error in the opened file",level=Qgis.Warning)
+                return
+            #ESTO BORRAR
+            df_conc = pd.DataFrame(data = {"Parameters":[i],"Result":[self.resultados[-1]]})
+            df_save_sens = pd.concat([df_save_sens,df_conc], ignore_index=True)
+            df_save_sens.to_csv(self.direccion+"\\"+'Sensibilidad_cont.csv', index=False, float_format='%.5f')
+    
+    def move_files_sensitivity_analysis(self):
+        """Method to move files to the corresponding folders for sensitiviy analysis"""
+        #Prj
+        prj_file = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\sensitivity.prj"
+        #Check if water quality is simulated
+        with open(self.obtain_direction_vfsmod(self.dlg_sensitivity_analysis.vfs_file.text()), "r") as archivo:
+            lineas = archivo.readlines()
+        self.water_quality = False
+        for i in lineas:
+            if i[:3]=="iwq":
+                self.water_quality = True
+            
+        #Create file
+        with open(prj_file, 'w') as archivo:
+            archivo.write(f"ikw=inputs\\sensitivity.ikw  \n")
+            archivo.write(f"iso=inputs\\sensitivity.iso  \n")
+            archivo.write(f"igr=inputs\\sensitivity.igr  \n")
+            archivo.write(f"isd=inputs\\sensitivity.isd  \n")
+            archivo.write(f"irn=inputs\\sensitivity.irn  \n")
+            archivo.write(f"iro=inputs\\sensitivity.iro  \n")
+            if self.water_quality:
+                archivo.write(f"iwq=inputs\\sensitivity.iwq  \n")
+            archivo.write(f"og1=output\\sensitivity.og1  \n")
+            archivo.write(f"og2=output\\sensitivity.og2  \n")
+            archivo.write(f"ohy=output\\sensitivity.ohy  \n")
+            archivo.write(f"osm=output\\sensitivity.osm  \n")
+            archivo.write(f"osp=output\\sensitivity.osp  \n")
+            if self.water_quality:
+                archivo.write(f"owq=output\\sensitivity.owq  \n")
+        
+        #UH
+        lis_file = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\sensitivity.lis"
+        #Create file
+        with open(lis_file, 'w') as archivo:
+            archivo.write(f"inp=inputs\\sensitivity.inp  \n")
+            archivo.write(f"iro=inputs\\sensitivity.iro  \n")
+            archivo.write(f"irn=inputs\\sensitivity.irn  \n")
+            archivo.write(f"isd=inputs\\sensitivity.isd  \n")
+            archivo.write(f"out=inputs\\sensitivity.out  \n")
+            archivo.write(f"hyt=inputs\\sensitivity.hyt  \n")
+        
+        #REST OF THE FILES
+        #Function to copy and paste the inputs to create the files to use in the sensitivity analysis
+        def copy_paste(process,type_input):
+            ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\sensitivity\\inputs\\sensitivity.{type_input}" 
+            if process == "UH":
+                ruta = self.obtain_direction_vfsmod(self.dlg_sensitivity_analysis.uh_file.text())
+            elif process == "VFS":
+                ruta = self.obtain_direction_vfsmod(self.dlg_sensitivity_analysis.vfs_file.text())
+            if os.path.exists(ruta) and os.path.isfile(ruta):
+                #First we open .prj and obtain the direction of the copying file
+                with open(ruta, "r") as archivo:
+                    lineas = archivo.readlines()
+                for i in lineas:
+                    if i[:3]==type_input:
+                        ikw = i.split("=")[-1]
+                if not os.path.isabs(ikw): #relative path
+                    ikw = os.path.join(os.path.dirname(ruta), ikw)
+                ikw = ikw.replace("\n", "") #take out the line jumps
+                shutil.copyfile(ikw, ruta_pegar)
+        #INP
+        copy_paste("UH","inp")
+        #OUT
+        copy_paste("UH","out")
+        #HYT
+        copy_paste("UH","hyt")
+        
+        #IKW
+        copy_paste("VFS","ikw")
+        #ISO
+        copy_paste("VFS","iso")
+        #IGR
+        copy_paste("VFS","igr")
+        #ISD
+        copy_paste("VFS","isd")
+        #IRN
+        copy_paste("VFS","irn")
+        #IRO
+        copy_paste("VFS","iro")
+        #IWQ
+        if self.water_quality:
+            copy_paste("VFS","iwq")
+            
+    
+    def create_folder_sensitivity_analysis(self):
+        """Method to create the folder needed to sensitivity analysis"""
+        def create_folder(name_folder): #function to create a folder
+            parent_dir = self.dlg_base.working_directory_vfsmod.text()
+            path_file = os.path.join(parent_dir, name_folder)
+            mode = 0o666
+            try:
+                os.mkdir(path_file, mode)
+            except:
+                pass
+            
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\sensitivity"):
+            create_folder("sensitivity")
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\sensitivity\inputs"):
+            create_folder("sensitivity\inputs")
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\sensitivity\output"):
+            create_folder("sensitivity\output")
+    
+    def modify_inputs_sensitivity(self,extension, row, column, new_value, process):
+        """Method to modfiy inputs in sensitivity analysis"""
+        if process == "uh":
+            ruta = self.obtain_direction_vfsmod(self.dlg_sensitivity_analysis.uh_file.text())
+        else:
+            ruta = self.obtain_direction_vfsmod(self.dlg_sensitivity_analysis.vfs_file.text())
+        with open(ruta, "r") as archivo:
+            lineas_prj = archivo.readlines()
+        for i in lineas_prj:
+            if i.split(".")[-1] == extension:
+                filepath = i.split("=")[-1]
+                break
+        if not os.path.isabs(filepath): #relative path
+            filepath = os.path.join(os.path.dirname(ruta), filepath)
+        filepath = filepath.replace("\n", "")
+
+        with open(filepath, 'r') as file:
+            lineas = file.readlines()
+        
+        numbers_str = lineas[row]
+        # Use regex to find all numbers in the string
+        matches = re.findall(r'\S+', numbers_str)
+        # Replace the specific number at the given index
+        matches[column] = str(new_value)
+        # Rebuild the string by replacing only the specific number
+        lineas[row] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+        with open(filepath, 'w') as archivo:
+            for i in lineas:
+                archivo.write(i)
+            
+    def change_buffer_length_sensitivity(self,value_change):
+        """Method to modifi length of buffer in sensitivity analysis"""
+        #First we save the .ikw file path
+        ruta = self.obtain_direction_vfsmod(self.dlg_sensitivity_analysis.vfs_file.text())
+        ikw = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\inputs\\sensitivity.ikw"
+        #We substitute value of length
+        with open(ikw, "r") as archivo:
+            lineas = archivo.readlines()
+        
+        #Then we update the segments
+        number_segments = int(lineas[3])
+        length = list(map(float, lineas[2].split()))[0]
+        new_interval = length/number_segments
+
+        #Data frame, but we take it from the original, not from the last execution
+        #We import dataframe of segments from the original file
+        with open(ruta, "r") as archivo:
+            lineas_prj = archivo.readlines()
+        ikw = lineas_prj[0].split("=")[-1]
+        if not os.path.isabs(ikw): #relative path
+            ikw = os.path.join(os.path.dirname(ruta), ikw)
+        ikw = ikw.replace("\n", "")
+        with open(ikw, "r") as archivo:
+            lineas_ikw_original = archivo.readlines()
+            
+        df = pd.DataFrame(data = {"Distance":[list(map(float, lineas_ikw_original[x].split()))[0] for x in range(4,4+number_segments)],
+                             "Manning":[list(map(float, lineas_ikw_original[x].split()))[1] for x in range(4,4+number_segments)],
+                             "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
+        
+        #We update the dataframe
+        new_distances = np.linspace(new_interval, new_interval * number_segments, number_segments)
+        def weighted_average(df, new_distances, new_interval, column):
+            averages = []
+            for dist in new_distances:
+                start, end = dist - new_interval, dist
+                
+                # Calcular el solapamiento entre los intervalos originales y el nuevo intervalo
+                overlap = np.minimum(df["Distance"], end) - np.maximum(df["Distance"].shift(fill_value=0), start)
+                
+                # Asegurarse de que el solapamiento sea positivo o al menos cero
+                overlap = np.clip(overlap, 0, new_interval)
+                
+                # Calcular los pesos basados en el solapamiento
+                weights = overlap / new_interval
+                
+                # Verificar si la suma de los pesos es mayor que cero para evitar NaN
+                total_weight = np.sum(weights)
+                if total_weight > 0:
+                    avg = np.sum(weights * df[column]) / total_weight
+                    averages.append(round(avg, 6))
+                else:
+                    # Si no hay pesos válidos, usar el valor del intervalo anterior o un valor predeterminado
+                    averages.append(df[column].iloc[0])  # o cualquier otro valor predeterminado
+            return averages
+
+        new_df = pd.DataFrame({
+            "Distance": new_distances,
+            "Manning": weighted_average(df, new_distances, new_interval, "Manning"),
+            "Slope": weighted_average(df, new_distances, new_interval, "Slope")
+        })
+        #Add to the file information
+        contenido = ""
+        for i in lineas[:4]:    
+            contenido+=f"{i}"
+        for i in range(len(new_df)):
+            contenido +=f" {new_df.iloc[i,0]}   {new_df.iloc[i,1]}   {new_df.iloc[i,2]}\n"
+        for i in lineas[-8:]:    
+            contenido+=f"{i}"
+        with open(self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\inputs\\sensitivity.ikw", 'w') as archivo:
+            archivo.write(contenido)
+    
+    def change_filter_manning_sensitivity(self,value_change,column):
+        """Method to change the manning and slope value of the buffer in sensitivity analysis"""
+        #We obtain information of ikw file
+        ikw = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\inputs\\sensitivity.ikw"
+        
+        with open(ikw, "r") as archivo:
+            lineas = archivo.readlines()
+        
+        for row in range(4,len(lineas)):
+            numbers_str = lineas[row]
+            # Use regex to find all numbers in the string
+            matches = re.findall(r'\S+', numbers_str)
+            # Replace the specific number at the given index
+            if len(matches)==1:
+                break
+            matches[column] = str(value_change)
+            # Rebuild the string by replacing only the specific number
+            lineas[row] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+            
+            with open(ikw, 'w') as archivo:
+                for i in lineas:
+                    archivo.write(i)
+        
+    def execution_sensitivity_analysis(self,number_execution):
+        """Method for the each execution of the sensitivity analysis"""
+        #Progress bar update
+        self.progress_metod(start = False,execution = number_execution,number_combinations = len(self.param_values))
+        #We change the values of the inputs
+        execute_uh = False
+        for k,i in enumerate(self.dic_data.keys()):
+            #Change inputs
+            value_change = self.param_values[number_execution][k]
+            #If buffer length, rougheness or slope is selected then change in another way
+            if i == "Buffer length (m)":
+                information_parameter = self.sensitivity_parameters[i]
+                self.modify_inputs_sensitivity(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3])
+                self.change_buffer_length_sensitivity(value_change)
+            elif i == "Filter Manning n (RNA, s/m^1/3)":
+                self.change_filter_manning_sensitivity(value_change,1)
+            elif i == "Average Filter Slope":
+                self.change_filter_manning_sensitivity(value_change,2)
+            else:
+                information_parameter = self.sensitivity_parameters[i]
+                self.modify_inputs_sensitivity(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3])
+            #Check if there is the need to execute UH
+            if information_parameter[3]=="uh":
+                execute_uh = True
+            
+        #Correct hietograph file
+        self.correct_irn_file(self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\inputs\\sensitivity.irn")    
+        
+        #We execute
+        #Only execute UH if there are parameters that need to be executed in UH
+        if execute_uh:
+            self.update_bat_uh_sensitivity()
+            resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
+                capture_output=True, 
+                text=True, 
+                shell=True)
+            #Put warning
+            if resultado.stderr!="":
+                self.warning_message(str(resultado.stderr))
+                1/0
+                return
+        #VFS
+        self.update_bat_vfs_sensitivity()
+        resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
+                capture_output=True, 
+                text=True, 
+                shell=True)
+        
+
+        #Put warning
+        if resultado.stderr!="":
+            self.warning_message(str(resultado.stderr))
+            1/0
+            return
+        
+        #Obtain results
+    
+    def update_bat_uh_sensitivity(self):
+        """Method to update the bat for execution of UH for sensitivity analysis"""
+        f = open(self.plugin_directory+"\\executables\\execution.bat","w+")
+        linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}+\\sensitivity\\"')
+        linea_dos = f'"{self.plugin_directory}\\executables\\uh" sensitivity.lis'
+        linea_tres = "Pause"
+        f.write("{} \n".format(linea_uno))
+        f.write("{} \n".format(linea_dos))
+        f.write("{} \n".format(linea_tres))
+        f.close()
+    
+    def update_bat_vfs_sensitivity(self):
+        """Method to update the bat for execution of VFS for sensitivity analysis"""
+        f = open(self.plugin_directory+"\\executables\\execution.bat","w+")
+        linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}+\\sensitivity\\"')
+        linea_dos = f'"{self.plugin_directory}\\executables\\vfsm" sensitivity.prj'
+        linea_tres = "Pause"
+        f.write("{} \n".format(linea_uno))
+        f.write("{} \n".format(linea_dos))
+        f.write("{} \n".format(linea_tres))
+        f.close()
+    
+    def create_dictionary_sensitivity_analysis(self):
+        """Method to create the dictionary that will contain the parameters of the sensitivity analysis"""
+        #Functions to convert user specified inputs into inputs that SALib can read
+        def distribution_parameters_fun(row):
+            if str(self.dlg_sensitivity_analysis.table.item(row, 1).text()) == "Uniform":
+                distribution = "unif"
+                texto = str(self.dlg_sensitivity_analysis.table.item(row, 2).text())
+                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+            elif str(self.dlg_sensitivity_analysis.table.item(row, 1).text()) == "Logaritmic uniform":
+                distribution = "logunif"
+                texto = str(self.dlg_sensitivity_analysis.table.item(row, 2).text())
+                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+            elif str(self.dlg_sensitivity_analysis.table.item(row, 1).text()) == "Triangular":
+                distribution = "triang"
+                texto = str(self.dlg_sensitivity_analysis.table.item(row, 2).text())
+                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+            elif str(self.dlg_sensitivity_analysis.table.item(row, 1).text()) == "Normal":
+                distribution = "norm"
+                texto = str(self.dlg_sensitivity_analysis.table.item(row, 2).text())
+                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+            elif str(self.dlg_sensitivity_analysis.table.item(row, 1).text()) == "Normal truncated":
+                distribution = "truncnorm"
+                texto = str(self.dlg_sensitivity_analysis.table.item(row, 2).text())
+                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+            elif str(self.dlg_sensitivity_analysis.table.item(row, 1).text()) == "Lognormal":
+                distribution = "lognorm"
+                texto = str(self.dlg_sensitivity_analysis.table.item(row, 2).text())
+                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+            return distribution, parameters
+        
+        #Diccionario nombre en el diálogo - [parametros del análisis de sensibilidad]
+        dic_data = {}
+        for i in range(self.dlg_sensitivity_analysis.table.rowCount()):
+            #Diccionario [Parametro] = (Distribucion, Parametros)
+            name = self.dlg_sensitivity_analysis.table.item(i, 0).text()
+            #Obtain name of distribution and parameters
+            dis,param = distribution_parameters_fun(i)
+            dic_data[name] = [dis,param]
+        
+        return dic_data
     
     def distribution_parameters(self):
         """Method to add/delete new labels depending on choosed distribution"""
@@ -692,7 +1111,7 @@ class qvfsmod:
                     child.widget().deleteLater()
         else:
             elementos = []
-            for i in self.sensitivity_parameters:
+            for i in self.sensitivity_parameters.keys():
                 if texto.lower() in i.lower():
                     elementos.append(i)
             try: #if it doesnt find a name
@@ -721,7 +1140,7 @@ class qvfsmod:
                 child.widget().deleteLater()
         #Add element
         if button == self.dlg_sensitivity_analysis.all_parameters:
-            for nombre in self.sensitivity_parameters:
+            for nombre in self.sensitivity_parameters.keys():
                 boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
                 boton.setObjectName(nombre)
                 self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
@@ -779,7 +1198,7 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
                 
         if button == self.dlg_sensitivity_analysis.infiltration:
-            parameters = ["Vertical Saturated K","Average Suction at the Wetting Front","Bottom Depth (cm)","Initial Water Content","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked"]
+            parameters = ["Vertical Saturated K","Average Suction at the Wetting Front","Initial Water Content","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked"]
             for nombre in parameters:
                 boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
                 boton.setObjectName(nombre)
@@ -997,9 +1416,9 @@ class qvfsmod:
     def move_files_calibration_sedimentograph(self):
         """Method to move files to the corresponding folders for calibration"""
         #Move prj to inverse
-        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_calibration_sedimentograph.vfs_file.text()), self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{self.dlg_calibration_sedimentograph.vfs_file.text()}")
+        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_calibration_sedimentograph.vfs_file.text()), self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_calibration_sedimentograph.vfs_file.text())}")
         #Move sedimentograph
-        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_calibration_sedimentograph.sedimentograph_file.text()),self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{self.dlg_calibration_sedimentograph.sedimentograph_file.text()}")
+        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_calibration_sedimentograph.sedimentograph_file.text()),self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_calibration_sedimentograph.sedimentograph_file.text())}")
         #Move executables of UH and VFS to main directory
         shutil.copyfile(self.plugin_directory+"\\executables\\uh.exe",self.dlg_base.working_directory_vfsmod.text()+"\\uh.exe")
         shutil.copyfile(self.plugin_directory+"\\executables\\vfsm.exe",self.dlg_base.working_directory_vfsmod.text()+"\\vfsm.exe")
@@ -1035,9 +1454,9 @@ class qvfsmod:
     def move_files_calibration_hydrograph(self):
         """Method to move files to the corresponding folders for calibration"""
         #Move prj to inverse
-        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.vfs_project.text()), self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{self.dlg_calibration_hydrograph.vfs_project.text()}")
+        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.vfs_project.text()), self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_calibration_hydrograph.vfs_project.text())}")
         #Move hydrograph
-        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.hydrograph_file.text()),self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{self.dlg_calibration_hydrograph.hydrograph_file.text()}")
+        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.hydrograph_file.text()),self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_calibration_hydrograph.hydrograph_file.text())}")
         #Move executables of UH and VFS to main directory
         shutil.copyfile(self.plugin_directory+"\\executables\\uh.exe",self.dlg_base.working_directory_vfsmod.text()+"\\uh.exe")
         shutil.copyfile(self.plugin_directory+"\\executables\\vfsm.exe",self.dlg_base.working_directory_vfsmod.text()+"\\vfsm.exe")
@@ -1587,7 +2006,7 @@ class qvfsmod:
         self.progress_metod(start = True)
         for k,comb in enumerate(self.combinations_design):
             #Progress bar update
-            self.progress_metod(start = False,execution = k)
+            self.progress_metod(start = False,execution = k,number_combinations = len(self.combinations_design))
             #We change the values
             self.modify_inp_file_design(rainfall = comb[0])
             if self.dlg_base.design_length.isChecked():
@@ -1881,7 +2300,7 @@ class qvfsmod:
         return combinations
     
     
-    def progress_metod(self,start=False,execution=None,close = False):
+    def progress_metod(self,start=False,execution=None,number_combinations, = None, close = False):
         #Metod to add and update de progress bar
         if start == True:
             #Start of the progress bar
@@ -1893,10 +2312,10 @@ class qvfsmod:
         elif not close:
             #Updates of progress bar
             #Creation of text
-            text = f"Execution {execution}/{len(self.combinations_design)}\n"
+            text = f"Execution {execution}/{number_combinations}\n"
             #Add updates
             self.progress_dialog.setLabelText(text)
-            self.progress_dialog.setValue(int(100*(execution/len(self.combinations_design))))
+            self.progress_dialog.setValue(int(100*(execution/number_combinations)))
             QCoreApplication.processEvents()# Permitir que la interfaz gráfica responda
         #Close progress bar
         if close:
