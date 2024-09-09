@@ -52,6 +52,7 @@ from .ui.calibration_sedimentograph import calibration_sedimentograph
 from .ui.design_results_graph import design_results_graph
 from .ui.calibration_advanced_settings import calibration_advanced_settings
 from .ui.sensitivity_analysis import sensitivity_analysis
+from .ui.sensitivity_results import sensitivity_results
 
 #Local libraries
 from .libraries.SALib.sample import saltelli
@@ -69,6 +70,7 @@ from itertools import product
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.ticker as tkr
+from matplotlib.ticker import FuncFormatter
 from PyQt5.QtWidgets import QVBoxLayout,QTableWidgetItem,QProgressDialog,QLabel, QLineEdit
 
 class qvfsmod:
@@ -229,6 +231,7 @@ class qvfsmod:
         self.dlg_design_results_graph = design_results_graph()
         self.dlg_calibration_advanced_settings = calibration_advanced_settings()
         self.dlg_sensitivity_analysis = sensitivity_analysis()
+        self.dlg_sensitivity_results = sensitivity_results()
         
         #Select directory of the project for UH and for VFSMOD
         self.dlg_base.select_directory.clicked.connect(self.select_directory_uh)
@@ -506,7 +509,7 @@ class qvfsmod:
             self.dlg_sensitivity_analysis.infiltration,self.dlg_sensitivity_analysis.buffer_vegetation,self.dlg_sensitivity_analysis.incoming_sediment]
         #Dictionary for the sensitivity parameters and information of the place where is saved {Name: [extension, row, column, uh/vfs]}
         self.sensitivity_parameters = {"Rainfall (mm)":["inp",0,0,"uh"],"Storm duration (h)":["inp",0,4,"uh"],"Curve number":["inp",0,1,"uh"],
-                "Source Area Length along the slope (m)":["inp,"0,5,"uh"], "Source Area Slope as a fraction":["inp",0,6,"uh"],"Source Area (ha)":["inp",0,2,"uh"],
+                "Source Area Length along the slope (m)":["inp",0,5,"uh"], "Source Area Slope as a fraction":["inp",0,6,"uh"],"Source Area (ha)":["inp",0,2,"uh"],
                 "Soil erodibility (K)":["inp",3,0,"uh"],"Percent organic matter":["inp",5,0,"uh"],"Crop factor":["inp",3,1,"uh"],"Particle Class Diameter":["inp",3,3,"uh"],"Practice Factor":["inp",3,2,"uh"],
                 "Buffer length (m)":["ikw",2,0,"vfs"],"Width of the Strip (m)":["ikw",1,0,"vfs"],"Filter Manning n (RNA, s/m^1/3)":["ikw","nan","nan","vfs"],"Average Filter Slope":["ikw","nan","nan","vfs"],
                 "Number of Nodes":["ikw",2,1,"vfs"],"Time Weight Factor":["ikw",2,2,"vfs"],"Number of Elemental Nodal Points":["ikw",2,5,"vfs"],"Courant Number":["ikw",2,3,"vfs"],"Maximum Iterations":["ikw",2,4,"vfs"],
@@ -522,6 +525,15 @@ class qvfsmod:
         #Run sensitivity analysis
         self.dlg_sensitivity_analysis.accept.clicked.connect(self.run_sensitivity_analysis)
         
+        #Show sensitivity results
+        self.dlg_base.sensitivity_results.clicked.connect(self.show_graph_sensitivity)
+        
+        #Browse file sensitivity graph
+        self.dlg_sensitivity_results.browse.clicked.connect(self.browse_files_sensitivity_results)
+        
+        #Update sensitivity graph
+        self.dlg_sensitivity_results.csv_results.textChanged.connect(self.update_sensitivity_graph)
+        
         #Browse files in sensitivity analysis
         self.dlg_sensitivity_analysis.browse_uh.clicked.connect(lambda _, b = "lis":self.browse_files_sensitivity(b))
         self.dlg_sensitivity_analysis.browse_vfs.clicked.connect(lambda _, b = "prj":self.browse_files_sensitivity(b))
@@ -529,6 +541,123 @@ class qvfsmod:
         
         #Default values
         self.default_values()
+    
+    def browse_files_sensitivity_results(self):
+        """Method to select the file for sensitivity analysis graph between the local files"""
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        fname = QFileDialog.getOpenFileName(self.dlg_sensitivity_results, "Select Sensitivity Analysis Results File",working_directory+"\\sensitivity\\output" , "CSV files (*.csv)")
+        if fname[0]!="":
+            #Put the relative path if the file is inside the folder
+            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
+                text = os.path.relpath(fname[0], working_directory)
+            else: #absolute path
+                text = fname[0]
+            self.dlg_sensitivity_results.csv_results.setText(text)
+        
+    def show_graph_sensitivity(self):
+        """Method to add the graph of sensitivity analysis"""
+        #First show dialog
+        self.dlg_sensitivity_results.show()
+        if not hasattr(self, 'canvas_sensitivity_graph'):
+            # Si no existe, crear el canvas y añadirlo al layout
+            self.canvas_sensitivity_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
+            
+            # Asignar un layout al QFrame si no tiene uno
+            layout = QVBoxLayout(self.dlg_sensitivity_results.frame_2)
+            self.dlg_sensitivity_results.frame_2.setLayout(layout)
+            
+            # Añadir el canvas al layout
+            layout.addWidget(self.canvas_sensitivity_graph)
+        else:
+            # Si ya existe, simplemente limpiar el canvas
+            self.canvas_sensitivity_graph.figure.clear()
+        
+        #Then we create the graph
+        self.ax = self.canvas_sensitivity_graph.figure.subplots()
+        if self.dlg_sensitivity_results.csv_results.text()!="":
+            self.update_sensitivity_graph()
+    
+    def update_sensitivity_graph(self):
+        """Method to update the graph of the sensitivity"""
+        #Clear graph before drawing
+        print("hola")
+        self.ax.clear()
+        #Obtain data
+        df = pd.read_csv(self.obtain_direction_vfsmod(self.dlg_sensitivity_results.csv_results.text()),encoding = "ISO-8859-1",delimiter=",")
+        output_column = "Sediment Delivery Ratio"
+        outputs = df[output_column]
+        #Analyze the results
+        self.Si = analyze_morris(self.problem,np.array(self.param_values),np.array(outputs))
+        
+        # Graficar los puntos con color granate y agregar etiquetas
+        for i, (x, y) in enumerate(zip(self.Si["mu_star"], self.Si["sigma"])):
+            if np.isnan(x):x = 0
+            if np.isnan(y):y = 0
+            self.ax.scatter(x, y, marker="o", color="maroon")
+            self.ax.annotate(f'{self.Si["names"][i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', fontweight='bold')
+        #Linea 1:1
+        line_plot = list(range(-1,int(max(list(self.Si["mu_star"])+list(self.Si["sigma"]))*1.05)+2))
+        self.ax.plot(line_plot, line_plot, color="red",linestyle="--")
+
+        self.ax.set_xlim(-1,max(list(self.Si["mu_star"])+list(self.Si["sigma"]))*1.05)
+        self.ax.set_ylim(-1,max(list(self.Si["mu_star"])+list(self.Si["sigma"]))*1.05)
+        #Separador de miles
+        def formato_con_separador(valor, pos):
+            return "{:,.0f}".format(valor)
+        self.ax.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+        self.ax.yaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+        #Labels
+        self.ax.set_xlabel("Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 15,family="arial",weight = "bold",color = "black")
+        self.ax.set_ylabel("Standard Deviation of Elementary Effects ($\sigma_{i}$)",size = 15,family="arial",weight = "bold",color = "black")
+        
+        
+        
+        r'''
+        
+        
+        
+        
+        column_y = [self.dlg_design_results_graph.column.itemText(i) for i in range(self.dlg_design_results_graph.column.count())][self.dlg_design_results_graph.column.currentIndex()]
+        column_x = self.df_results_design.columns[1]
+        x = self.df_results_design[column_x]
+        y = self.df_results_design[column_y]
+        values_per_storm = len(self.df_results_design)/len(np.unique(self.df_results_design["Rainfall (mm)"]))
+        list_range = list(range(0,len(self.df_results_design)+int(values_per_storm),int(values_per_storm)))
+        for i in range(len(list_range)-1):
+            self.ax.plot(x[list_range[i]:list_range[i+1]],y[list_range[i]:list_range[i+1]], linewidth=2, marker='o', markersize=4,label = f"{self.df_results_design['Rainfall (mm)'][list_range[i]]} mm")
+
+        #Limits
+        #self.ax.set_ylim([0, 1])
+        #Labels
+        self.ax.set_xlabel(column_x,size = 10,family="arial",weight = "bold",color = "black")
+        self.ax.set_ylabel(column_y,size = 10,family="arial",weight = "bold",color = "black")
+        #X ticks
+        self.ax.tick_params(axis = "both",colors = "black",labelsize = 9)
+        # Add legend
+        self.ax.legend()
+        
+        #Remove previous line
+        try:
+            self.line.remove()
+        except:
+            pass
+            
+        #Add threshold
+        value = self.dlg_design_results_graph.threshold.text()
+        try:
+            value = float(value)
+            self.line = self.ax.axhline(y=value, color='r', linestyle='--', linewidth=2, zorder=1)
+        except ValueError:
+            value = 0
+        '''    
+            
+        
+        # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+        self.canvas_sensitivity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
+        #Draw canvas
+        self.canvas_sensitivity_graph.draw()
+    
+
     
     def browse_files_sensitivity(self,information):
         """Method to select the file for sensitivity analysis between the local files"""
@@ -557,11 +686,11 @@ class qvfsmod:
         self.dic_data = self.create_dictionary_sensitivity_analysis()
         
         #Create the samples
-        problem = {'num_vars': len(self.dic_data),'names': list(self.dic_data.keys()),'bounds': [x[1] for x in self.dic_data.values()],"dists":[x[0] for x in self.dic_data.values()]}
+        self.problem = {'num_vars': len(self.dic_data),'names': list(self.dic_data.keys()),'bounds': [x[1] for x in self.dic_data.values()],"dists":[x[0] for x in self.dic_data.values()]}
         if self.dlg_sensitivity_analysis.sobol.isChecked():
-            self.param_values = saltelli.sample(problem, int(self.dlg_sensitivity_analysis.trajectories.text()))
+            self.param_values = saltelli.sample(self.problem, int(self.dlg_sensitivity_analysis.trajectories.text()))
         elif self.dlg_sensitivity_analysis.morris.isChecked():
-            self.param_values = sample_morris(problem, int(self.dlg_sensitivity_analysis.trajectories.text()))
+            self.param_values = sample_morris(self.problem, int(self.dlg_sensitivity_analysis.trajectories.text()))
         
         #We start obtaining the results
         #Create folders of sensitivity analysis
@@ -569,24 +698,83 @@ class qvfsmod:
         #Move files to sensitivity analysis folder
         self.move_files_sensitivity_analysis()
         
-        self.results_sensitivity = []
+        #Create dataframe to save the results
+        self.results_sensitivity = pd.DataFrame(columns={"Total Runoff from source (mm)","Total Runoff from Source (m3)",
+            "Total Runoff out from Filter (mm)","Total Runoff out from Filter (m3)","Total Infiltration in Filter (m3)",
+            "Mass Sediment Input to Filter (kg)","Concentration Sediment in Runoff from source Area (g/L)",
+            "Mass Sediment Output from Filter (kg)","Concentration Sediment in Runoff exiting the Filter (g/L)",
+            "Sediment Delivery Ratio","Runoff Delivery Ratio"})
+        #Add the parameters names 
+        for i in self.dic_data.keys():
+            self.results_sensitivity.insert(0,i,None)
+        
         self.number_execution_sensitivity = 0
+        self.sensitivity_error = False
         #Results are obtained
         #Start with the progress bar
         self.progress_metod(start = True)
         for k in self.param_values:
-            self.number_execution_sensitivity+=1
-            self.execution_sensitivity_analysis(k)
-            #Se guardan los resultados
-            self.resultados.append(self.save_result())
-            #Condición de error
-            if self.end_execution:
-                iface.messageBar().pushMessage("Error in sensitivity analysis", "Please check the error in the opened file",level=Qgis.Warning)
+            self.execution_sensitivity_analysis()
+            if self.sensitivity_error:
+                self.progress_metod(close = True)
                 return
-            #ESTO BORRAR
-            df_conc = pd.DataFrame(data = {"Parameters":[i],"Result":[self.resultados[-1]]})
-            df_save_sens = pd.concat([df_save_sens,df_conc], ignore_index=True)
-            df_save_sens.to_csv(self.direccion+"\\"+'Sensibilidad_cont.csv', index=False, float_format='%.5f')
+            #Save results
+            self.save_results_sensitivity_analysis()
+            self.number_execution_sensitivity+=1
+            
+        #Save results in CSV
+        self.results_sensitivity.to_csv(self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\output\\sensitivity.csv", index=False, float_format='%.5f')
+        
+        #Close progress bar and warning message of ending
+        self.progress_metod(close = True)
+        self.warning_message("Sensitivity analysis completed succesfully!")
+        
+    def save_results_sensitivity_analysis(self):
+        """Method to save sensitivity results"""
+        #Obtain the values
+        ruta = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\output\\sensitivity.osp"
+        with open(ruta, "r") as archivo:
+            lineas = archivo.readlines()
+        #Function to obtain specific results form .osp file
+        def obtain_result(string):
+            for i in lineas:
+                if i.split("=")[-1]==string:
+                    for k in i.split("=")[0].split(" "):
+                        try:
+                            output = float(k)
+                            break
+                        except:
+                            pass
+            return output
+        
+        #Obtain results
+        runoff_from_source_mm = obtain_result(" Total Runoff from Source (mm depth over Source Area)\n")
+        runoff_from_source_m3 = obtain_result(" Total Runoff from Source\n")
+        runoff_out_filter_mm = obtain_result(" Total Runoff out from Filter (mm depth over Source+Filter)\n")
+        runoff_out_filter_m3 = obtain_result(" Total Runoff out from Filter\n")
+        infiltration_filter = obtain_result(" Total Infiltration in Filter\n")
+        mass_sediment_input_filter = obtain_result(" Mass Sediment Input to Filter\n")
+        concentration_sediment_source = obtain_result(" Concentration Sediment in Runoff from source Area\n")
+        sediment_out_filter = obtain_result(" Mass Sediment Output from Filter\n")
+        concentration_sediment_filter = obtain_result(" Concentration Sediment in Runoff exiting the Filter\n")
+        sdr = obtain_result(" Sediment Delivery Ratio\n")
+        rdr = obtain_result(" Runoff Delivery Ratio\n")
+        
+        #Dataframe to concatenate results
+        df_conc = pd.DataFrame(data = {"Total Runoff from source (mm)":[runoff_from_source_mm],
+            "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm)":[runoff_out_filter_mm],
+            "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter (m3)":[infiltration_filter],
+            "Mass Sediment Input to Filter (kg)":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area (g/L)":[concentration_sediment_source],
+            "Mass Sediment Output from Filter (kg)":[sediment_out_filter],"Concentration Sediment in Runoff exiting the Filter (g/L)":[concentration_sediment_filter],
+            "Sediment Delivery Ratio":[sdr],"Runoff Delivery Ratio":[rdr]})
+        
+        #Add the parameters names
+        for k,i in enumerate(self.dic_data.keys()):
+            df_conc.insert(0,i,[self.param_values[self.number_execution_sensitivity][k]])
+            
+        self.results_sensitivity = pd.concat([self.results_sensitivity,df_conc], ignore_index=True)
+        
+        
     
     def move_files_sensitivity_analysis(self):
         """Method to move files to the corresponding folders for sensitiviy analysis"""
@@ -693,13 +881,13 @@ class qvfsmod:
     def modify_inputs_sensitivity(self,extension, row, column, new_value, process):
         """Method to modfiy inputs in sensitivity analysis"""
         if process == "uh":
-            ruta = self.obtain_direction_vfsmod(self.dlg_sensitivity_analysis.uh_file.text())
+            ruta = os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\sensitivity\sensitivity.lis"
         else:
-            ruta = self.obtain_direction_vfsmod(self.dlg_sensitivity_analysis.vfs_file.text())
+            ruta = os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\sensitivity\sensitivity.prj"
         with open(ruta, "r") as archivo:
             lineas_prj = archivo.readlines()
         for i in lineas_prj:
-            if i.split(".")[-1] == extension:
+            if i.split(".")[-1].replace("\n", "").replace(" ","") == extension:
                 filepath = i.split("=")[-1]
                 break
         if not os.path.isabs(filepath): #relative path
@@ -708,7 +896,6 @@ class qvfsmod:
 
         with open(filepath, 'r') as file:
             lineas = file.readlines()
-        
         numbers_str = lineas[row]
         # Use regex to find all numbers in the string
         matches = re.findall(r'\S+', numbers_str)
@@ -814,15 +1001,15 @@ class qvfsmod:
                 for i in lineas:
                     archivo.write(i)
         
-    def execution_sensitivity_analysis(self,number_execution):
+    def execution_sensitivity_analysis(self):
         """Method for the each execution of the sensitivity analysis"""
         #Progress bar update
-        self.progress_metod(start = False,execution = number_execution,number_combinations = len(self.param_values))
+        self.progress_metod(start = False,execution = self.number_execution_sensitivity+1,number_combinations = len(self.param_values))
         #We change the values of the inputs
         execute_uh = False
         for k,i in enumerate(self.dic_data.keys()):
             #Change inputs
-            value_change = self.param_values[number_execution][k]
+            value_change = self.param_values[self.number_execution_sensitivity][k]
             #If buffer length, rougheness or slope is selected then change in another way
             if i == "Buffer length (m)":
                 information_parameter = self.sensitivity_parameters[i]
@@ -838,9 +1025,7 @@ class qvfsmod:
             #Check if there is the need to execute UH
             if information_parameter[3]=="uh":
                 execute_uh = True
-            
-        #Correct hietograph file
-        self.correct_irn_file(self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\inputs\\sensitivity.irn")    
+               
         
         #We execute
         #Only execute UH if there are parameters that need to be executed in UH
@@ -851,10 +1036,14 @@ class qvfsmod:
                 text=True, 
                 shell=True)
             #Put warning
-            if resultado.stderr!="":
-                self.warning_message(str(resultado.stderr))
-                1/0
+            if not "...FINISHED..." in resultado.stdout:
+                self.warning_message(str(resultado.stdout))
+                self.sensitivity_error = True
                 return
+                
+        #Correct hietograph file
+        self.correct_irn_file(self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\inputs\\sensitivity.irn") 
+        
         #VFS
         self.update_bat_vfs_sensitivity()
         resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
@@ -862,19 +1051,16 @@ class qvfsmod:
                 text=True, 
                 shell=True)
         
-
         #Put warning
-        if resultado.stderr!="":
-            self.warning_message(str(resultado.stderr))
-            1/0
+        if not "...FINISHED..." in resultado.stdout:
+            self.warning_message(str(resultado.stdout))
+            self.sensitivity_error = True
             return
-        
-        #Obtain results
     
     def update_bat_uh_sensitivity(self):
         """Method to update the bat for execution of UH for sensitivity analysis"""
         f = open(self.plugin_directory+"\\executables\\execution.bat","w+")
-        linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}+\\sensitivity\\"')
+        linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\sensitivity\\"')
         linea_dos = f'"{self.plugin_directory}\\executables\\uh" sensitivity.lis'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
@@ -885,7 +1071,7 @@ class qvfsmod:
     def update_bat_vfs_sensitivity(self):
         """Method to update the bat for execution of VFS for sensitivity analysis"""
         f = open(self.plugin_directory+"\\executables\\execution.bat","w+")
-        linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}+\\sensitivity\\"')
+        linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\sensitivity\\"')
         linea_dos = f'"{self.plugin_directory}\\executables\\vfsm" sensitivity.prj'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
@@ -1363,7 +1549,7 @@ class qvfsmod:
             with open(prj, "r") as archivo:
                 lineas_prj = archivo.readlines()
             for i in lineas_prj:
-                if i.split(".")[-1] == extension:
+                if i.split(".")[-1].replace("\n", "").replace(" ","") == extension:
                     filepath = i.split("=")[-1]
                     break
             if not os.path.isabs(filepath): #relative path
@@ -1566,7 +1752,7 @@ class qvfsmod:
             with open(prj, "r") as archivo:
                 lineas_prj = archivo.readlines()
             for i in lineas_prj:
-                if i.split(".")[-1] == extension:
+                if i.split(".")[-1].replace("\n", "").replace(" ","") == extension:
                     filepath = i.split("=")[-1]
                     break
             if not os.path.isabs(filepath): #relative path
@@ -1832,10 +2018,10 @@ class qvfsmod:
             shell=True)
         
         #Put warning
-        #if resultado.stderr!="":
-        self.warning_message(str(resultado.stdout))
-        r'''else:
-            self.warning_message("VFS executed succesfully!")'''
+        if not "...FINISHED..." in resultado.stdout:
+            self.warning_message(str(resultado.stdout))
+        else:
+            self.warning_message("VFS executed succesfully!")
         
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
@@ -2022,8 +2208,8 @@ class qvfsmod:
                 text=True, 
                 shell=True)
             #Put warning
-            if resultado.stderr!="":
-                self.warning_message(str(resultado.stderr))
+            if not "...FINISHED..." in resultado.stdout:
+                self.warning_message(str(resultado.stdout))
                 return
             
             #Correct the hietograph file
@@ -2037,8 +2223,8 @@ class qvfsmod:
                 text=True, 
                 shell=True)
             #Put warning
-            if resultado.stderr!="":
-                self.warning_message(str(resultado.stderr))
+            if not "...FINISHED..." in resultado.stdout:
+                self.warning_message(str(resultado.stdout))
                 return
             
             #Save outputs
@@ -2300,7 +2486,7 @@ class qvfsmod:
         return combinations
     
     
-    def progress_metod(self,start=False,execution=None,number_combinations, = None, close = False):
+    def progress_metod(self,number_combinations = None,start=False,execution=None, close = False):
         #Metod to add and update de progress bar
         if start == True:
             #Start of the progress bar
@@ -3254,15 +3440,11 @@ class qvfsmod:
             shell=True)
         
         #Put warning
-        r'''if resultado.stderr!="":
-            self.warning_message(str(resultado.stderr))
+        if not "...FINISHED..." in resultado.stdout:
+            self.warning_message(str(resultado.stdout))
         else:
-            self.warning_message("UH executed succesfully!")'''
+            self.warning_message("UH executed succesfully!")
             
-        #if resultado.stderr!="":
-        self.warning_message(str(resultado.stdout))
-        r'''else:
-            self.warning_message("VFS executed succesfully!")'''
         
         #Check if UH outputs exist
         self.check_uh_output_exist()

@@ -2222,7 +2222,7 @@ Input file for VFSmod</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="2" column="0">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -2234,6 +2234,13 @@ Input file for VFSmod</string>
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="sensitivity_results">
+         <property name="text">
+          <string>Sensitivity analysis results</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
