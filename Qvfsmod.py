@@ -53,6 +53,7 @@ from .ui.design_results_graph import design_results_graph
 from .ui.calibration_advanced_settings import calibration_advanced_settings
 from .ui.sensitivity_analysis import sensitivity_analysis
 from .ui.sensitivity_results import sensitivity_results
+from .ui.sensitivity_results_sobol import sensitivity_results_sobol
 
 #Local libraries
 from .libraries.SALib.sample import saltelli
@@ -232,6 +233,7 @@ class qvfsmod:
         self.dlg_calibration_advanced_settings = calibration_advanced_settings()
         self.dlg_sensitivity_analysis = sensitivity_analysis()
         self.dlg_sensitivity_results = sensitivity_results()
+        self.dlg_sensitivity_results_sobol = sensitivity_results_sobol()
         
         #Select directory of the project for UH and for VFSMOD
         self.dlg_base.select_directory.clicked.connect(self.select_directory_uh)
@@ -527,25 +529,60 @@ class qvfsmod:
         
         #Show sensitivity results
         self.dlg_base.sensitivity_results.clicked.connect(self.show_graph_sensitivity)
+        self.dlg_base.sensitivity_results_sobol.clicked.connect(self.show_graph_sensitivity_sobol)
         
         #Browse file sensitivity graph
         self.dlg_sensitivity_results.browse.clicked.connect(self.browse_files_sensitivity_results)
+        self.dlg_sensitivity_results_sobol.browse.clicked.connect(self.browse_files_sensitivity_results_sobol)
         
-        #Update sensitivity graph
+        #Update sensitivity graph for Morris
         self.dlg_sensitivity_results.csv_results.textChanged.connect(self.update_sensitivity_graph)
+        check_boxes = [self.dlg_sensitivity_results.runoff_source_mm,self.dlg_sensitivity_results.runoff_source_m3,
+            self.dlg_sensitivity_results.runoff_filter_mm,self.dlg_sensitivity_results.runoff_filter_m3,
+            self.dlg_sensitivity_results.infiltration_filter_m3,self.dlg_sensitivity_results.sediment_input,
+            self.dlg_sensitivity_results.concentration_sediment,self.dlg_sensitivity_results.sediment_output,
+            self.dlg_sensitivity_results.sediment_runoff_exit,self.dlg_sensitivity_results.sediment_delivery,
+            self.dlg_sensitivity_results.runoff_delivery]
+        for i in check_boxes:
+            i.toggled.connect(self.update_sensitivity_graph)
+        
+        #Update sensitivity graph for Sobol
+        self.dlg_sensitivity_results_sobol.csv_results.textChanged.connect(self.update_sensitivity_graph_sobol)
+        check_boxes = [self.dlg_sensitivity_results_sobol.runoff_source_mm,self.dlg_sensitivity_results_sobol.runoff_source_m3,
+            self.dlg_sensitivity_results_sobol.runoff_filter_mm,self.dlg_sensitivity_results_sobol.runoff_filter_m3,
+            self.dlg_sensitivity_results_sobol.infiltration_filter_m3,self.dlg_sensitivity_results_sobol.sediment_input,
+            self.dlg_sensitivity_results_sobol.concentration_sediment,self.dlg_sensitivity_results_sobol.sediment_output,
+            self.dlg_sensitivity_results_sobol.sediment_runoff_exit,self.dlg_sensitivity_results_sobol.sediment_delivery,
+            self.dlg_sensitivity_results_sobol.runoff_delivery]
+        for i in check_boxes:
+            i.toggled.connect(self.update_sensitivity_graph_sobol)
         
         #Browse files in sensitivity analysis
         self.dlg_sensitivity_analysis.browse_uh.clicked.connect(lambda _, b = "lis":self.browse_files_sensitivity(b))
         self.dlg_sensitivity_analysis.browse_vfs.clicked.connect(lambda _, b = "prj":self.browse_files_sensitivity(b))
+        self.dlg_sensitivity_analysis.browse_file.clicked.connect(lambda _, b = "csv":self.browse_files_sensitivity(b))
         
         
         #Default values
         self.default_values()
     
-    def browse_files_sensitivity_results(self):
-        """Method to select the file for sensitivity analysis graph between the local files"""
+    
+    def browse_files_sensitivity_results_sobol(self):
+        """Method to select the file for sensitivity analysis graph between the local files for Sobol"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
-        fname = QFileDialog.getOpenFileName(self.dlg_sensitivity_results, "Select Sensitivity Analysis Results File",working_directory+"\\sensitivity\\output" , "CSV files (*.csv)")
+        fname = QFileDialog.getOpenFileName(self.dlg_sensitivity_results_sobol, "Select Sobol Sensitivity Analysis Results File",working_directory+"\\sensitivity\\output" , "CSV files (*.csv)")
+        if fname[0]!="":
+            #Put the relative path if the file is inside the folder
+            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
+                text = os.path.relpath(fname[0], working_directory)
+            else: #absolute path
+                text = fname[0]
+            self.dlg_sensitivity_results_sobol.csv_results.setText(text)
+    
+    def browse_files_sensitivity_results(self):
+        """Method to select the file for sensitivity analysis graph between the local files for Morris"""
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        fname = QFileDialog.getOpenFileName(self.dlg_sensitivity_results, "Select Morris Sensitivity Analysis Results File",working_directory+"\\sensitivity\\output" , "CSV files (*.csv)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
@@ -553,9 +590,97 @@ class qvfsmod:
             else: #absolute path
                 text = fname[0]
             self.dlg_sensitivity_results.csv_results.setText(text)
+    
+    def show_graph_sensitivity_sobol(self):
+        """Method to add the graph of sensitivity analysis for Sobol"""
+        #First show dialog
+        self.dlg_sensitivity_results_sobol.show()
+        if not hasattr(self, 'canvas_sensitivity_graph_sobol'):
+            # Si no existe, crear el canvas y añadirlo al layout
+            self.canvas_sensitivity_graph_sobol = FigureCanvas(plt.Figure(figsize=(15, 6)))
+            
+            # Asignar un layout al QFrame si no tiene uno
+            layout = QVBoxLayout(self.dlg_sensitivity_results_sobol.frame_2)
+            self.dlg_sensitivity_results_sobol.frame_2.setLayout(layout)
+            
+            # Añadir el canvas al layout
+            layout.addWidget(self.canvas_sensitivity_graph_sobol)
+        else:
+            # Si ya existe, simplemente limpiar el canvas
+            self.canvas_sensitivity_graph_sobol.figure.clear()
+        
+        #Then we create the graph
+        self.ax_sobol = self.canvas_sensitivity_graph_sobol.figure.subplots(1, 2)
+        if self.dlg_sensitivity_results_sobol.csv_results.text()!="":
+            self.update_sensitivity_graph_sobol()
+        
+    def update_sensitivity_graph_sobol(self):
+        """Method to update the graph of the sensitivity for Sobol"""
+        #Warning messages
+        ruta = self.obtain_direction_vfsmod(self.dlg_sensitivity_results_sobol.csv_results.text())
+        if os.path.exists(ruta):
+            with open(ruta, "r") as archivo:
+                lineas = archivo.readlines()
+            #If the csv is not of a Morris sensitivity analysis then give error
+            if lineas[0]!="Sobol sensitivity indexes" + '\n':
+                self.warning_message("Please select a csv file that cointains Morris sensitivity analysis results")
+                return
+                
+            #Clear graph before drawing
+            self.ax_sobol[0].clear()
+            self.ax_sobol[1].clear()
+            
+            #Obtain data
+            #Obtain ouputs parameter
+            if self.dlg_sensitivity_results_sobol.runoff_source_mm.isChecked():output_column = "Total Runoff from source (mm)"
+            if self.dlg_sensitivity_results_sobol.runoff_source_m3.isChecked():output_column = "Total Runoff from Source (m3)"
+            if self.dlg_sensitivity_results_sobol.runoff_filter_mm.isChecked():output_column = "Total Runoff out from Filter (mm)"
+            if self.dlg_sensitivity_results_sobol.runoff_filter_m3.isChecked():output_column = "Total Runoff out from Filter (m3)"
+            if self.dlg_sensitivity_results_sobol.infiltration_filter_m3.isChecked():output_column = "Total Infiltration in Filter (m3)"
+            if self.dlg_sensitivity_results_sobol.sediment_input.isChecked():output_column = "Mass Sediment Input to Filter (kg)"
+            if self.dlg_sensitivity_results_sobol.concentration_sediment.isChecked():output_column = "Concentration Sediment in Runoff from source Area (g/L)"
+            if self.dlg_sensitivity_results_sobol.sediment_output.isChecked():output_column = "Mass Sediment Output from Filter (kg)"
+            if self.dlg_sensitivity_results_sobol.sediment_runoff_exit.isChecked():output_column = "Concentration Sediment in Runoff exiting the Filter (g/L)"
+            if self.dlg_sensitivity_results_sobol.sediment_delivery.isChecked():output_column = "Sediment Delivery Ratio"
+            if self.dlg_sensitivity_results_sobol.runoff_delivery.isChecked():output_column = "Runoff Delivery Ratio"
+            
+            names_inputs = []
+            s1 = []
+            s1_conf = []
+            st = []
+            st_conf = []
+            for i in range(len(lineas)):
+                if lineas[i] == output_column+ '\n':
+                    for k in lineas[i+1:]:
+                        if k == "----------------------------------------------------------------------" + '\n':
+                                break
+                        names_inputs.append(k.split(":")[0])
+                        s1.append(float(k.split(":")[1].split("_")[0]))
+                        s1_conf.append(float(k.split(":")[1].split("_")[1]))
+                        st.append(float(k.split(":")[1].split("_")[2]))
+                        st_conf.append(float(k.split(":")[1].split("_")[3]))
+            
+            #Total order 
+            self.ax_sobol[0].bar(names_inputs, s1, yerr=s1_conf, capsize=5, color='b')
+            self.ax_sobol[0].set_title('Total order index (ST)', fontsize=10)
+            self.ax_sobol[0].set_ylabel('Sobol index')
+            self.ax_sobol[0].tick_params(axis='x', rotation=20,labelsize = 8)
+            
+            #First order 
+            self.ax_sobol[1].bar(names_inputs, s1, yerr=s1_conf, capsize=5, color='b')
+            self.ax_sobol[1].set_title('First order index (S1)', fontsize=10)
+            self.ax_sobol[1].tick_params(axis='x', rotation=20,labelsize = 8)
+            
+            
+            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+            self.canvas_sensitivity_graph_sobol.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
+            self.canvas_sensitivity_graph_sobol.figure.subplots_adjust(left=0.2, bottom=0.2)
+            #Draw canvas
+            self.canvas_sensitivity_graph_sobol.draw()
+        
         
     def show_graph_sensitivity(self):
-        """Method to add the graph of sensitivity analysis"""
+        """Method to add the graph of sensitivity analysis for Morris"""
         #First show dialog
         self.dlg_sensitivity_results.show()
         if not hasattr(self, 'canvas_sensitivity_graph'):
@@ -579,83 +704,77 @@ class qvfsmod:
     
     def update_sensitivity_graph(self):
         """Method to update the graph of the sensitivity"""
-        #Clear graph before drawing
-        print("hola")
-        self.ax.clear()
-        #Obtain data
-        df = pd.read_csv(self.obtain_direction_vfsmod(self.dlg_sensitivity_results.csv_results.text()),encoding = "ISO-8859-1",delimiter=",")
-        output_column = "Sediment Delivery Ratio"
-        outputs = df[output_column]
-        #Analyze the results
-        self.Si = analyze_morris(self.problem,np.array(self.param_values),np.array(outputs))
-        
-        # Graficar los puntos con color granate y agregar etiquetas
-        for i, (x, y) in enumerate(zip(self.Si["mu_star"], self.Si["sigma"])):
-            if np.isnan(x):x = 0
-            if np.isnan(y):y = 0
-            self.ax.scatter(x, y, marker="o", color="maroon")
-            self.ax.annotate(f'{self.Si["names"][i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', fontweight='bold')
-        #Linea 1:1
-        line_plot = list(range(-1,int(max(list(self.Si["mu_star"])+list(self.Si["sigma"]))*1.05)+2))
-        self.ax.plot(line_plot, line_plot, color="red",linestyle="--")
-
-        self.ax.set_xlim(-1,max(list(self.Si["mu_star"])+list(self.Si["sigma"]))*1.05)
-        self.ax.set_ylim(-1,max(list(self.Si["mu_star"])+list(self.Si["sigma"]))*1.05)
-        #Separador de miles
-        def formato_con_separador(valor, pos):
-            return "{:,.0f}".format(valor)
-        self.ax.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
-        self.ax.yaxis.set_major_formatter(FuncFormatter(formato_con_separador))
-        #Labels
-        self.ax.set_xlabel("Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 15,family="arial",weight = "bold",color = "black")
-        self.ax.set_ylabel("Standard Deviation of Elementary Effects ($\sigma_{i}$)",size = 15,family="arial",weight = "bold",color = "black")
-        
-        
-        
-        r'''
-        
-        
-        
-        
-        column_y = [self.dlg_design_results_graph.column.itemText(i) for i in range(self.dlg_design_results_graph.column.count())][self.dlg_design_results_graph.column.currentIndex()]
-        column_x = self.df_results_design.columns[1]
-        x = self.df_results_design[column_x]
-        y = self.df_results_design[column_y]
-        values_per_storm = len(self.df_results_design)/len(np.unique(self.df_results_design["Rainfall (mm)"]))
-        list_range = list(range(0,len(self.df_results_design)+int(values_per_storm),int(values_per_storm)))
-        for i in range(len(list_range)-1):
-            self.ax.plot(x[list_range[i]:list_range[i+1]],y[list_range[i]:list_range[i+1]], linewidth=2, marker='o', markersize=4,label = f"{self.df_results_design['Rainfall (mm)'][list_range[i]]} mm")
-
-        #Limits
-        #self.ax.set_ylim([0, 1])
-        #Labels
-        self.ax.set_xlabel(column_x,size = 10,family="arial",weight = "bold",color = "black")
-        self.ax.set_ylabel(column_y,size = 10,family="arial",weight = "bold",color = "black")
-        #X ticks
-        self.ax.tick_params(axis = "both",colors = "black",labelsize = 9)
-        # Add legend
-        self.ax.legend()
-        
-        #Remove previous line
-        try:
-            self.line.remove()
-        except:
-            pass
+        #Warning messages
+        ruta = self.obtain_direction_vfsmod(self.dlg_sensitivity_results.csv_results.text())
+        if os.path.exists(ruta):
+            with open(ruta, "r") as archivo:
+                lineas = archivo.readlines()
+            #If the csv is not of a Morris sensitivity analysis then give error
+            if lineas[0]!="Morris sensitivity indexes" + '\n':
+                self.warning_message("Please select a csv file that cointains Morris sensitivity analysis results")
+                return
+                
+            #Clear graph before drawing
+            self.ax.clear()
             
-        #Add threshold
-        value = self.dlg_design_results_graph.threshold.text()
-        try:
-            value = float(value)
-            self.line = self.ax.axhline(y=value, color='r', linestyle='--', linewidth=2, zorder=1)
-        except ValueError:
-            value = 0
-        '''    
+            #Obtain data
+            #Obtain ouputs parameter
+            if self.dlg_sensitivity_results.runoff_source_mm.isChecked():output_column = "Total Runoff from source (mm)"
+            if self.dlg_sensitivity_results.runoff_source_m3.isChecked():output_column = "Total Runoff from Source (m3)"
+            if self.dlg_sensitivity_results.runoff_filter_mm.isChecked():output_column = "Total Runoff out from Filter (mm)"
+            if self.dlg_sensitivity_results.runoff_filter_m3.isChecked():output_column = "Total Runoff out from Filter (m3)"
+            if self.dlg_sensitivity_results.infiltration_filter_m3.isChecked():output_column = "Total Infiltration in Filter (m3)"
+            if self.dlg_sensitivity_results.sediment_input.isChecked():output_column = "Mass Sediment Input to Filter (kg)"
+            if self.dlg_sensitivity_results.concentration_sediment.isChecked():output_column = "Concentration Sediment in Runoff from source Area (g/L)"
+            if self.dlg_sensitivity_results.sediment_output.isChecked():output_column = "Mass Sediment Output from Filter (kg)"
+            if self.dlg_sensitivity_results.sediment_runoff_exit.isChecked():output_column = "Concentration Sediment in Runoff exiting the Filter (g/L)"
+            if self.dlg_sensitivity_results.sediment_delivery.isChecked():output_column = "Sediment Delivery Ratio"
+            if self.dlg_sensitivity_results.runoff_delivery.isChecked():output_column = "Runoff Delivery Ratio"
+
             
-        
-        # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-        self.canvas_sensitivity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
-        #Draw canvas
-        self.canvas_sensitivity_graph.draw()
+            
+            names_inputs = []
+            mu_star = []
+            sigma = []
+            for i in range(len(lineas)):
+                if lineas[i] == output_column+ '\n':
+                    for k in lineas[i+1:]:
+                        if k == "----------------------------------------------------------------------" + '\n':
+                                break
+                        names_inputs.append(k.split(":")[0])
+                        mu_star.append(float(k.split(":")[1].split("_")[0]))
+                        sigma.append(float(k.split(":")[1].split("_")[1]))
+                        
+            
+            # Graficar los puntos con color granate y agregar etiquetas
+            for i, (x, y) in enumerate(zip(mu_star, sigma)):
+                if np.isnan(x):x = 0
+                if np.isnan(y):y = 0
+                self.ax.scatter(x, y, marker="o", color="maroon")
+                self.ax.annotate(f'{names_inputs[i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
+                    fontweight='bold',fontsize = 8)
+            #Linea 1:1
+            line_plot = list(range(-1,int(max(list(mu_star)+list(sigma))*1.05)+2))
+            self.ax.plot(line_plot, line_plot, color="red",linestyle="--")
+
+            self.ax.set_xlim(0,max(list(mu_star)+list(sigma))*1.05)
+            self.ax.set_ylim(0,max(list(mu_star)+list(sigma))*1.05)
+            #Separador de miles
+            def formato_con_separador(valor, pos):
+                if max(list(mu_star))>10:
+                    return "{:,.0f}".format(valor)
+                else:
+                    return "{:,.2f}".format(valor)
+            self.ax.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+            self.ax.yaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+            #Labels
+            self.ax.set_xlabel("Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 8,family="arial",weight = "bold",color = "black")
+            self.ax.set_ylabel("Standard Deviation of Elementary Effects ($\sigma_{i}$)",size = 8,family="arial",weight = "bold",color = "black")
+                    
+            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+            self.canvas_sensitivity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
+            #Draw canvas
+            self.canvas_sensitivity_graph.draw()
     
 
     
@@ -665,9 +784,12 @@ class qvfsmod:
         if information=="prj": 
             select = "Select VFS Project File"
             types = "PRJ files (*.prj)"
-        else: 
+        elif information == "lis": 
             select = "Select UH Project File"
             types = "LIS files (*.lis)"
+        else:
+            select = "Select CSV File"
+            types = "CSV files (*.csv)"
         fname = QFileDialog.getOpenFileName(self.dlg_sensitivity_analysis, select,working_directory , types)
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -677,8 +799,10 @@ class qvfsmod:
                 text = fname[0]
         if information == "prj":
             self.dlg_sensitivity_analysis.vfs_file.setText(text)
-        else:
+        elif information == "lis":
             self.dlg_sensitivity_analysis.uh_file.setText(text)
+        else:
+            self.dlg_sensitivity_analysis.file_save.setText(text)
     
     def run_sensitivity_analysis(self):
         """Method to run whole sensitivity analysis"""
@@ -704,6 +828,7 @@ class qvfsmod:
             "Mass Sediment Input to Filter (kg)","Concentration Sediment in Runoff from source Area (g/L)",
             "Mass Sediment Output from Filter (kg)","Concentration Sediment in Runoff exiting the Filter (g/L)",
             "Sediment Delivery Ratio","Runoff Delivery Ratio"})
+        number_outputs = len(self.results_sensitivity.columns)
         #Add the parameters names 
         for i in self.dic_data.keys():
             self.results_sensitivity.insert(0,i,None)
@@ -723,7 +848,34 @@ class qvfsmod:
             self.number_execution_sensitivity+=1
             
         #Save results in CSV
-        self.results_sensitivity.to_csv(self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\output\\sensitivity.csv", index=False, float_format='%.5f')
+        path = self.obtain_direction_vfsmod(self.dlg_sensitivity_analysis.file_save.text())
+        if self.dlg_sensitivity_analysis.sobol.isChecked():
+            with open(path, 'w') as f:
+                #Add first row
+                f.write("Sobol sensitivity indexes" + '\n')
+                #Add sensitivity indexes for each output
+                for i in self.results_sensitivity.columns[-number_outputs:]:
+                    f.write("----------------------------------------------------------------------" + '\n')
+                    f.write(f"{i}" + '\n')
+                    si = sobol.analyze(self.problem, np.array(self.results_sensitivity[i]))
+                    for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()): 
+                        f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}_{si['S2'][input_parameter_k]}_{si['S2_conf'][input_parameter_k]}" + '\n')
+                f.write("----------------------------------------------------------------------" + '\n')
+                
+        elif self.dlg_sensitivity_analysis.morris.isChecked():
+            with open(path, 'w') as f:
+                #Add first row
+                f.write("Morris sensitivity indexes" + '\n')
+                #Add sensitivity indexes for each output
+                for i in self.results_sensitivity.columns[-number_outputs:]:
+                    f.write("----------------------------------------------------------------------" + '\n')
+                    f.write(f"{i}" + '\n')
+                    si = analyze_morris(self.problem,np.array(self.param_values),np.array(self.results_sensitivity[i]))
+                    for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
+                        f.write(f"{input_parameter}:{si['mu_star'][input_parameter_k]}_{si['sigma'][input_parameter_k]}" + '\n')
+                f.write("----------------------------------------------------------------------" + '\n')
+                
+        self.results_sensitivity.to_csv(self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\output\\sensitivity.csv", mode='a',index=False, float_format='%.5f')
         
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)
