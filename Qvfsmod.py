@@ -54,6 +54,9 @@ from .ui.calibration_advanced_settings import calibration_advanced_settings
 from .ui.sensitivity_analysis import sensitivity_analysis
 from .ui.sensitivity_results import sensitivity_results
 from .ui.sensitivity_results_sobol import sensitivity_results_sobol
+from .ui.sedimentograph_output import sedimentograph_output
+from .ui.user_output_1 import user_output_1
+from .ui.user_output_2 import user_output_2
 
 #Local libraries
 from .libraries.SALib.sample import saltelli
@@ -234,6 +237,10 @@ class qvfsmod:
         self.dlg_sensitivity_analysis = sensitivity_analysis()
         self.dlg_sensitivity_results = sensitivity_results()
         self.dlg_sensitivity_results_sobol = sensitivity_results_sobol()
+        self.dlg_sedimentograph_output = sedimentograph_output()
+        self.dlg_user_output_1 = user_output_1()
+        self.dlg_user_output_2 = user_output_2()
+        
         
         #Select directory of the project for UH and for VFSMOD
         self.dlg_base.select_directory.clicked.connect(self.select_directory_uh)
@@ -329,6 +336,14 @@ class qvfsmod:
         #Show outputs
         self.dlg_base.output_hydrograph.clicked.connect(self.show_hydrograph)
         self.dlg_base.output_hyetograph.clicked.connect(self.show_hyetograph)
+        self.dlg_base.output_sedimentograph.clicked.connect(self.show_sedimentograph_results)
+        self.dlg_base.output_output1.clicked.connect(self.show_output_1_results)
+        self.dlg_base.output_output2.clicked.connect(self.show_output_2_results)
+        
+        
+        self.dlg_sedimentograph_output = sedimentograph_output()
+        self.dlg_user_output_1 = user_output_1()
+        self.dlg_user_output_2 = user_output_2()
         
         #Disable combobox of water quality and add condition to set enable it. Same with the rest of the widgets
         self.dlg_base.combo_water.setVisible(False)
@@ -367,7 +382,7 @@ class qvfsmod:
         
         #Appear the VFSMOD editing dialogs
         self.dlg_base.edit_overland.clicked.connect(self.dlg_overland_flow.show)
-        self.dlg_overland_flow.edit_segment.clicked.connect(self.dlg_buffer_segment.show)
+        self.dlg_overland_flow.edit_segment.clicked.connect(self.dlg_buffer_segment_show)
         self.dlg_base.edit_infiltration.clicked.connect(self.dlg_infiltration_soil.show)
         self.dlg_infiltration_soil.show_parameters.clicked.connect(self.show_soil_curves)
         self.dlg_base.edit_buffer.clicked.connect(self.dlg_buffer_properties.show)
@@ -391,6 +406,9 @@ class qvfsmod:
         #Add and remove rows for the vfsmod hyetograph
         self.dlg_vfsmod_hyetograph.add.clicked.connect(self.vfsmod_hyetograph_add_row)
         self.dlg_vfsmod_hyetograph.remove.clicked.connect(self.vfsmod_hyetograph_remove_row)
+        #Same for hydrograph
+        self.dlg_vfsmod_hydrograph.add.clicked.connect(self.vfsmod_hydrograph_add_row)
+        self.dlg_vfsmod_hydrograph.remove.clicked.connect(self.vfsmod_hydrograph_remove_row)
         
         #Select .lis and .prj from the local files to the design
         self.dlg_base.browse_design_uh.clicked.connect(self.select_lis_design)
@@ -420,9 +438,18 @@ class qvfsmod:
         
         #Update values of .irn file
         self.dlg_vfsmod_hyetograph.save_continue.clicked.connect(self.create_irn_file)
+        self.dlg_vfsmod_hyetograph.save_close.clicked.connect(lambda _, b = True:self.create_irn_file(b))
+        self.dlg_vfsmod_hyetograph.close_dialog.clicked.connect(self.dlg_vfsmod_hyetograph.close)
         
-        #Update values of .rin file
+        #Update values of segment of buffer
+        self.dlg_buffer_segment.save_continue.clicked.connect(self.update_buffer_segment)
+        self.dlg_buffer_segment.save_close.clicked.connect(lambda _, b = True:self.update_buffer_segment(b))
+        self.dlg_buffer_segment.close_dialog.clicked.connect(self.dlg_buffer_segment.close)
+        
+        #Update values of .iro file
         self.dlg_vfsmod_hydrograph.save_continue.clicked.connect(self.create_iro_file)
+        self.dlg_vfsmod_hydrograph.save_close.clicked.connect(lambda _, b = True:self.create_iro_file(b))
+        self.dlg_vfsmod_hydrograph.close_dialog.clicked.connect(self.dlg_vfsmod_hydrograph.close)
         
         #Update values of .isd file
         self.dlg_water_quality.save_continue.clicked.connect(self.create_iwq_file)
@@ -562,11 +589,353 @@ class qvfsmod:
         self.dlg_sensitivity_analysis.browse_vfs.clicked.connect(lambda _, b = "prj":self.browse_files_sensitivity(b))
         self.dlg_sensitivity_analysis.browse_file.clicked.connect(lambda _, b = "csv":self.browse_files_sensitivity(b))
         
+        #Disable the ability to modify the timestep of the user defined storm and center items
+        self.set_timestep_non_editable()
+        
         
         #Default values
         self.default_values()
+        
+        #Update buffer segment graph when table is changed
+        self.dlg_buffer_segment.tableWidget.itemChanged.connect(self.update_buffer_segment_graph)
+        #Same for vfsmod hyetograph and hydrograph
+        self.dlg_vfsmod_hydrograph.tableWidget.itemChanged.connect(self.update_vfsmod_hydrograph_graph)
+        self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.connect(self.update_vfsmod_hyetograph_graph)
     
     
+    def update_buffer_segment(self,close = False):
+        """"Method to update the buffer segment"""
+        #Table data
+        table = self.dlg_buffer_segment.tableWidget
+        rows = table.rowCount()
+        data = pd.DataFrame(data = {"Distance":[table.item(row, 0).text() for row in range(rows)],
+            "Roughness":[table.item(row, 1).text() for row in range(rows)],
+            "Slope":[table.item(row, 2).text() for row in range(rows)]})
+        #Change values
+        filepath = self.obtain_direction_vfsmod(self.dlg_base.line_overland.text())
+        with open(filepath, 'r') as file:
+            lineas = file.readlines()
+        lineas[3] = f" {rows}\n"
+            
+        contenido = ""
+        for i in lineas[:4]:    
+            contenido+=f"{i}"
+        for i in range(len(data)):
+            contenido +=f" {data.iloc[i,0]}   {data.iloc[i,1]}   {data.iloc[i,2]}\n"
+        for i in lineas[-8:]:    
+            contenido+=f"{i}"
+        with open(filepath, 'w') as archivo:
+            archivo.write(contenido)
+        if close:
+            self.dlg_buffer_segment.close()
+    
+    def show_hydrograph_vfsmod_graph(self):
+        """Method to show hydrograph graph in vfsmod"""
+        #If canvas exist then clear. If not then create it. 
+        if not hasattr(self, 'canvas_vfsmod_hydrograph'):
+            # Si no existe, crear el canvas y añadirlo al layout
+            self.canvas_vfsmod_hydrograph = FigureCanvas(plt.Figure(figsize=(15, 6)))
+            
+            # Asignar un layout al QFrame si no tiene uno
+            layout = QVBoxLayout(self.dlg_vfsmod_hydrograph.frame_2)
+            self.dlg_vfsmod_hydrograph.frame_2.setLayout(layout)
+            
+            # Añadir el canvas al layout
+            layout.addWidget(self.canvas_vfsmod_hydrograph)
+            
+        else:
+            # Si ya existe, simplemente limpiar el canvas
+            self.canvas_vfsmod_hydrograph.figure.clear()
+        
+        self.ax_vfsmod_hydrograph = self.canvas_vfsmod_hydrograph.figure.subplots()
+        self.update_vfsmod_hydrograph_graph()
+    
+    
+    def update_vfsmod_hydrograph_graph(self):
+        """Method to update the hydrograph graph"""
+        # Clear canvas
+        self.ax_vfsmod_hydrograph.clear()
+        # We obtain the data and create the graph
+        row_count = self.dlg_vfsmod_hydrograph.tableWidget.rowCount()
+        time = []
+        discharge = []
+        for row in range(row_count):
+            time_item = self.dlg_vfsmod_hydrograph.tableWidget.item(row, 0)
+            discharge_item = self.dlg_vfsmod_hydrograph.tableWidget.item(row, 1)
+            
+            if time_item and discharge_item:
+                try: # if data is not added correctly
+                    time.append(float(time_item.text()))
+                    discharge.append(float(discharge_item.text()))
+                except:
+                    return
+        
+        #Creation of graph        
+        self.ax_vfsmod_hydrograph.plot(time,discharge,color='blue', linewidth=2, marker='o', markersize=4)
+
+        #Axis
+        self.ax_vfsmod_hydrograph.set_xlabel("Time (s)",size = 10,family="arial",weight = "bold",color = "black")
+        self.ax_vfsmod_hydrograph.set_ylabel("Discharge (m$^{3}$/s)",size = 10,family="arial",weight = "bold",color = "black")
+
+        #X ticks
+        self.ax_vfsmod_hydrograph.tick_params(axis = "both",colors = "black",labelsize = 9)
+
+        #Thousand separator
+        #Separador de miles
+        def xfunc(x,pos):
+            s = '{:0,d}'.format(int(x))
+            return s
+        x_format = tkr.FuncFormatter(xfunc)
+        self.ax_vfsmod_hydrograph.xaxis.set_major_formatter(x_format)
+        
+        
+        # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
+        self.canvas_vfsmod_hydrograph.figure.subplots_adjust(left=0.2, bottom=0.2)
+
+        # Redraw the canvas
+        self.canvas_vfsmod_hydrograph.draw()
+    
+    
+    def show_hietograph_vfsmod_graph(self):
+        """Method to show hyetograph graph in vfsmod"""
+        #If canvas exist then clear. If not then create it. 
+        if not hasattr(self, 'canvas_vfsmod_hyetograph'):
+            # Si no existe, crear el canvas y añadirlo al layout
+            self.canvas_vfsmod_hyetograph = FigureCanvas(plt.Figure(figsize=(15, 6)))
+            
+            # Asignar un layout al QFrame si no tiene uno
+            layout = QVBoxLayout(self.dlg_vfsmod_hyetograph.frame_3)
+            self.dlg_vfsmod_hyetograph.frame_3.setLayout(layout)
+            
+            # Añadir el canvas al layout
+            layout.addWidget(self.canvas_vfsmod_hyetograph)
+            
+        else:
+            # Si ya existe, simplemente limpiar el canvas
+            self.canvas_vfsmod_hyetograph.figure.clear()
+        
+        self.ax_vfsmod_hyetograph = self.canvas_vfsmod_hyetograph.figure.subplots()
+        self.update_vfsmod_hyetograph_graph()
+    
+    def update_vfsmod_hyetograph_graph(self):
+        """Method to update the hyetograph graph"""
+        # Clear canvas
+        self.ax_vfsmod_hyetograph.clear()
+        # We obtain the data and create the graph
+        row_count = self.dlg_vfsmod_hyetograph.tableWidget.rowCount()
+        time = []
+        precipitation = []
+        for row in range(row_count):
+            time_item = self.dlg_vfsmod_hyetograph.tableWidget.item(row, 0)
+            precipitation_item = self.dlg_vfsmod_hyetograph.tableWidget.item(row, 1)
+            
+            if time_item and precipitation_item:
+                try: # if data is not added correctly
+                    time.append(float(time_item.text()))
+                    precipitation.append(float(precipitation_item.text()))
+                except:
+                    return
+        
+        #Creation of graph        
+        widths = [time[i+1] - time[i] for i in range(len(time)-1)]
+        self.ax_vfsmod_hyetograph.bar(time[:-1],precipitation[:-1],width=widths,color='blue', align='edge', edgecolor='black', linewidth=0.5)
+        #Axis
+        self.ax_vfsmod_hyetograph.set_xlabel("Time (s)",size = 10,family="arial",weight = "bold",color = "black")
+        self.ax_vfsmod_hyetograph.set_ylabel("Precipitation (m/s)",size = 10,family="arial",weight = "bold",color = "black")
+
+        #X ticks
+        self.ax_vfsmod_hyetograph.tick_params(axis = "both",colors = "black",labelsize = 9)
+
+        #Thousand separator
+        #Separador de miles
+        def xfunc(x,pos):
+            s = '{:0,d}'.format(int(x))
+            return s
+        x_format = tkr.FuncFormatter(xfunc)
+        self.ax_vfsmod_hyetograph.xaxis.set_major_formatter(x_format)
+        
+        
+        # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
+        self.canvas_vfsmod_hyetograph.figure.subplots_adjust(left=0.2, bottom=0.2)
+
+        # Redraw the canvas
+        self.canvas_vfsmod_hyetograph.draw()
+        
+        
+    def dlg_buffer_segment_show(self):
+        """Method to show buffer segment dialog and update graph"""
+        #If canvas exist then clear. If not then create it. 
+        if not hasattr(self, 'canvas_buffer_segment'):
+            # Si no existe, crear el canvas y añadirlo al layout
+            self.canvas_buffer_segment = FigureCanvas(plt.Figure(figsize=(15, 6)))
+            
+            # Asignar un layout al QFrame si no tiene uno
+            layout = QVBoxLayout(self.dlg_buffer_segment.frame_2)
+            self.dlg_buffer_segment.frame_2.setLayout(layout)
+            
+            # Añadir el canvas al layout
+            layout.addWidget(self.canvas_buffer_segment)
+            
+        else:
+            # Si ya existe, simplemente limpiar el canvas
+            self.canvas_buffer_segment.figure.clear()
+        
+        self.ax_buffer_segment = self.canvas_buffer_segment.figure.subplots()
+        
+        self.dlg_buffer_segment.show()
+        self.update_buffer_segment_graph()
+    
+    def update_buffer_segment_graph(self):
+        """Method to update the buffer segment graph"""
+        # Clear canvas
+        self.ax_buffer_segment.clear()
+
+        # We obtain the data and create the graph
+        row_count = self.dlg_buffer_segment.tableWidget.rowCount()
+        distances = []
+        roughnesses = []
+        slopes = []
+
+        for row in range(row_count):
+            distance_item = self.dlg_buffer_segment.tableWidget.item(row, 0)
+            roughness_item = self.dlg_buffer_segment.tableWidget.item(row, 1)
+            slope_item = self.dlg_buffer_segment.tableWidget.item(row, 2)
+            
+            if distance_item and roughness_item and slope_item:
+                try: # if data is not added correctly
+                    distances.append(float(distance_item.text()))
+                    roughnesses.append(float(roughness_item.text()))
+                    slopes.append(float(slope_item.text()))
+                except:
+                    return
+
+        # Convert to numpy arrays for easier manipulation
+        distances = np.array(distances)
+        roughnesses = np.array(roughnesses)
+        slopes = np.array(slopes)
+        slopes = -slopes  # Convert slopes to negative
+
+        # Ensure distances start from 0
+        distances = np.insert(distances, 0, 0)
+        heights = np.zeros_like(distances)
+
+        # Calculate heights based on slopes (assuming starting height is 0)
+        for i in range(1, len(distances)):
+            height_change = slopes[i-1] * (distances[i] - distances[i-1])
+            heights[i] = heights[i-1] + height_change
+
+        # Normalize roughnesses for coloring
+        norm = plt.Normalize(roughnesses.min(), roughnesses.max())
+        colors = plt.cm.viridis(norm(roughnesses))
+
+        # Plot
+        self.ax_buffer_segment.scatter(distances, heights, c='black', s=10)
+
+        # Plot lines connecting the points
+        # Colors of the lines based on roughness
+        for i in range(len(distances) - 1):
+            x_values = [distances[i], distances[i + 1]]
+            y_values = [heights[i], heights[i + 1]]
+            
+            # Line color based on roughness of the segment
+            segment_color = plt.cm.viridis(norm(roughnesses[i]))
+            
+            self.ax_buffer_segment.plot(x_values, y_values, color=segment_color, linestyle='-', alpha=0.7)
+
+        # Legend
+        if hasattr(self, 'cbar'):
+            self.cbar.remove()
+
+        # Get unique values and sort them
+        unique_roughnesses = sorted(set(roughnesses))
+        dummy_lines = [plt.Line2D([0], [0], color=plt.cm.viridis(norm(val)), linestyle='-', alpha=0.7) for val in unique_roughnesses]
+
+        # Add the legend to the right of the plot
+        self.ax_buffer_segment.legend(
+            dummy_lines,
+            [f'{val:.2e}' for val in unique_roughnesses],
+            loc='center left',
+            bbox_to_anchor=(0.55, 0.8),
+            title='Roughness'
+        )
+
+        self.ax_buffer_segment.set_xlabel("Distance (m)", size=10, family="arial", weight="bold", color="black")
+        self.ax_buffer_segment.set_ylabel("Elevation (m)", size=10, family="arial", weight="bold", color="black")
+
+        # Adjust margins for more space
+        self.canvas_buffer_segment.figure.subplots_adjust(wspace=0.4) # Spacing between two graphs
+        self.canvas_buffer_segment.figure.subplots_adjust(left=0.2, bottom=0.2)
+
+        # Redraw the canvas
+        self.canvas_buffer_segment.draw()
+
+            
+    def show_sedimentograph_results(self):
+        """Method to show sedimentograph results after UH execution"""
+        #Add text
+        path = self.obtain_direction(self.dlg_base.line_sedimentograph.text())
+        with open(path, 'r') as file:
+            lineas = file.readlines()
+        contenido = ""
+        for i in lineas:
+            contenido+=i
+        self.dlg_sedimentograph_output.textEdit.setPlainText(contenido)
+        #Show dialog
+        self.dlg_sedimentograph_output.show()
+    
+    def show_output_1_results(self):
+        """Method to show sedimentograph results after UH execution"""
+        #Add text
+        path = self.obtain_direction(self.dlg_base.line_output_1.text())
+        with open(path, 'r') as file:
+            lineas = file.readlines()
+        contenido = ""
+        for i in lineas:
+            contenido+=i
+        self.dlg_user_output_1.textEdit.setPlainText(contenido)
+        #Show dialog
+        self.dlg_user_output_1.show()
+    
+    def show_output_2_results(self):
+        """Method to show sedimentograph results after UH execution"""
+        #Add text
+        path = self.obtain_direction(self.dlg_base.line_output_2.text())
+        with open(path, 'r') as file:
+            lineas = file.readlines()
+        contenido = ""
+        for i in lineas:
+            contenido+=i
+        self.dlg_user_output_2.textEdit.setPlainText(contenido)
+        #Show dialog
+        self.dlg_user_output_2.show()
+        
+        
+    def set_timestep_non_editable(self):
+        """Method to disable the ability to modify the timestep of the user defined storm and center items"""
+        row_count = self.dlg_user_storm.tableWidget.rowCount()
+        
+        # Iterar sobre todas las filas y hacer la columna 0 (timestep) no editable
+        for row in range(row_count):
+            # Columna 0: Timestep (no editable)
+            item = self.dlg_user_storm.tableWidget.item(row, 0)
+            if item is None:
+                item = QTableWidgetItem()
+                self.dlg_user_storm.tableWidget.setItem(row, 0, item)
+            item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+            item.setTextAlignment(Qt.AlignCenter)
+
+            # Columna 1: Precipitación (editable pero centrado)
+            item_precip = self.dlg_user_storm.tableWidget.item(row, 1)
+            if item_precip is None:
+                item_precip = QTableWidgetItem()
+                self.dlg_user_storm.tableWidget.setItem(row, 1, item_precip)
+            item_precip.setTextAlignment(Qt.AlignCenter)
+        
+        # Deshabilitar el encabezado vertical (números de fila)
+        self.dlg_user_storm.tableWidget.verticalHeader().setVisible(False)
+
+
+        
     def browse_files_sensitivity_results_sobol(self):
         """Method to select the file for sensitivity analysis graph between the local files for Sobol"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
@@ -2977,8 +3346,13 @@ class qvfsmod:
     
     def add_hyetograph_to_dialog(self):
         """Method to add the hyetograph information to the dialog"""
+        #Disconnect update of graph to avoid all the updates
+        self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.disconnect(self.update_vfsmod_hyetograph_graph)
         #Obtain information
         direccion = self.obtain_direction_vfsmod(self.dlg_base.line_storm.text())
+        if not os.path.exists(direccion):
+            self.warning_message(f"{direccion} does not exist")
+            return
         with open(direccion, "r") as archivo:
             lineas = archivo.readlines()
             columna_1 = []
@@ -3003,11 +3377,20 @@ class qvfsmod:
         
         #We show the dialog
         self.dlg_vfsmod_hyetograph.show()
+        self.show_hietograph_vfsmod_graph()
+        #Connect again update of graph to avoid all the updates
+        self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.connect(self.update_vfsmod_hyetograph_graph)
+        self.update_vfsmod_hyetograph_graph()
     
     def add_hydrograph_to_dialog(self):
         """Method to add the hyetograph information to the dialog"""
+        #Avoid the updating of graph that many times
+        self.dlg_vfsmod_hydrograph.tableWidget.itemChanged.disconnect(self.update_vfsmod_hydrograph_graph)
         #Obtain information
         direccion = self.obtain_direction_vfsmod(self.dlg_base.line_source.text())
+        if not os.path.exists(direccion):
+            self.warning_message(f"{direccion} does not exist")
+            return
         with open(direccion, "r") as archivo:
             lineas = archivo.readlines()
             columna_1 = []
@@ -3033,6 +3416,10 @@ class qvfsmod:
                 item.setTextAlignment(Qt.AlignCenter)
         #We show the dialog
         self.dlg_vfsmod_hydrograph.show()
+        self.show_hydrograph_vfsmod_graph()
+        #Connect again update of graph to avoid all the updates
+        self.dlg_vfsmod_hydrograph.tableWidget.itemChanged.connect(self.update_vfsmod_hydrograph_graph)
+        self.update_vfsmod_hydrograph_graph()
         
     def enable_disable_water_quality_dialog(self):
         """Method to enable/disable widgets in the water quality dialog"""
@@ -3190,6 +3577,11 @@ class qvfsmod:
         table = self.dlg_buffer_segment.tableWidget
         row_position = table.rowCount()
         table.insertRow(row_position)
+        # Center cell contents in the new row
+        for column in range(table.columnCount()):
+            item = QTableWidgetItem()
+            item.setTextAlignment(Qt.AlignCenter)
+            table.setItem(row_position, column, item)
     
     def remove_row(self,numero_table_input):
         """Method to add rows in the buffer segment table"""
@@ -3197,12 +3589,19 @@ class qvfsmod:
         selected_row = table.rowCount()
         if selected_row >= 0:
             table.removeRow(selected_row-1)
+        #Update graph
+        self.update_buffer_segment_graph()
     
     def vfsmod_hyetograph_add_row(self):
         """Method to add row in the vfsmod hyetograph"""
         table = self.dlg_vfsmod_hyetograph.tableWidget
         row_position = table.rowCount()
         table.insertRow(row_position)
+        # Center cell contents in the new row
+        for column in range(table.columnCount()):
+            item = QTableWidgetItem()
+            item.setTextAlignment(Qt.AlignCenter)
+            table.setItem(row_position, column, item)
         
     def vfsmod_hyetograph_remove_row(self):
         """Method to remove row in the vfsmod hyetograph"""
@@ -3210,6 +3609,28 @@ class qvfsmod:
         selected_row = table.rowCount()
         if selected_row >= 0:
             table.removeRow(selected_row-1)
+        #Update graph
+        self.update_vfsmod_hyetograph_graph()
+    
+    def vfsmod_hydrograph_add_row(self):
+        """Method to add row in the vfsmod hydrograph"""
+        table = self.dlg_vfsmod_hydrograph.tableWidget
+        row_position = table.rowCount()
+        table.insertRow(row_position)
+        # Center cell contents in the new row
+        for column in range(table.columnCount()):
+            item = QTableWidgetItem()
+            item.setTextAlignment(Qt.AlignCenter)
+            table.setItem(row_position, column, item)
+        
+    def vfsmod_hydrograph_remove_row(self):
+        """Method to remove row in the vfsmod hydrograph"""
+        table = self.dlg_vfsmod_hydrograph.tableWidget
+        selected_row = table.rowCount()
+        if selected_row >= 0:
+            table.removeRow(selected_row-1)
+        #Update graph
+        self.update_vfsmod_hydrograph_graph()
     
     def update_vfsmod_directory(self):
         """Change vfsmod directory when UH changed"""
@@ -3861,7 +4282,7 @@ class qvfsmod:
             archivo.write(f"{linea_uno}\n")
             archivo.write(f"{linea_dos}\n")
     
-    def create_irn_file(self):
+    def create_irn_file(self,close=False):
         """Method to create the .irn file"""
         #Inputs
         maximum = self.dlg_vfsmod_hyetograph.maximum_rainfall.text()
@@ -3885,8 +4306,11 @@ class qvfsmod:
             archivo.write(f"{linea_dos}\n")
             archivo.write(f"{linea_tres}")
             archivo.write(f"{linea_cuatro}\n")
+        
+        if close:
+            self.dlg_vfsmod_hyetograph.close()
     
-    def create_iro_file(self):
+    def create_iro_file(self,close = False):
         """Method to create the .iro file"""
         #Inputs
         width = self.dlg_vfsmod_hydrograph.width.text()
@@ -3909,6 +4333,8 @@ class qvfsmod:
             archivo.write(f"{linea_dos}\n")
             archivo.write(f"{linea_tres}")
             archivo.write(f"{linea_cuatro}\n")
+        if close:
+            self.dlg_vfsmod_hydrograph.close()
             
     def create_folders_in_directory(self):
         """Metod to create the required folders in the working directory"""
@@ -4153,6 +4579,8 @@ class qvfsmod:
         add_image_button("images/remove.svg",self.dlg_buffer_segment.remove_row)
         add_image_button("images/add.svg",self.dlg_vfsmod_hyetograph.add)
         add_image_button("images/remove.svg",self.dlg_vfsmod_hyetograph.remove)
+        add_image_button("images/add.svg",self.dlg_vfsmod_hydrograph.add)
+        add_image_button("images/remove.svg",self.dlg_vfsmod_hydrograph.remove)
         
         
     def add_functions_outputs_hydrograph(self,dialog):
@@ -4400,7 +4828,9 @@ class qvfsmod:
         fig = plt.figure()
         plt.rcParams["figure.figsize"] = [12, 10]
         ax0 = plt.subplot()
-        ax0.bar(time,precipitation,color='blue')
+        
+        widths = [time[i+1] - time[i] for i in range(len(time)-1)]
+        ax0.bar(time[:-1],precipitation[:-1],width=widths,color='blue', align='edge', edgecolor='black', linewidth=0.5)
 
         #Axis
         ax0.set_xlabel("Time (min)",size = 10,family="arial",weight = "bold",color = "black")
