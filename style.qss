@@ -1,0 +1,42 @@
+/*= Style for menu with icon only START
+  ==================================================== */
+  	/* style for widget */
+	#widget {
+		background-color: #313a46; /* Fondo claro para el widget */
+		width: 50px;
+	}
+
+    /* style para QPushButton */
+	#widget QPushButton {
+		height: 50px;
+		border: none;
+		color: #f9fafd; /* Texto gris oscuro cuando el botón no está clickado */
+		background-color: #313a46; /* Fondo con el color solicitado */
+		border-radius: 5px; /* Bordes redondeados para un aspecto más moderno */
+	}
+
+	#widget QPushButton:hover {
+		background-color: #d5ded3; /* Fondo más claro cuando el mouse pasa sobre el botón */
+	}
+
+	#widget QPushButton:pressed {
+		color: #fff; /* Texto blanco cuando el botón es presionado */
+		background-color: #a0a0a0; /* Fondo más oscuro cuando se hace clic */
+		font-weight: bold; /* Negrita cuando el botón es presionado */
+	}
+
+	#widget QPushButton:focus {
+		color: #fff; /* Texto blanco cuando el botón tiene el foco */
+		font-weight: bold; /* Negrita cuando el botón tiene el foco */
+	}
+	
+	#widget QLabel {
+		font-weight: normal; /* Asegúrate de que las etiquetas no estén en negrita */
+	}
+	
+	/* Opcional: Añadir estilo para el texto de etiquetas cuando tienen el foco */
+	#widget QLabel:focus {
+		font-weight: normal; /* Etiquetas no en negrita cuando tienen el foco */
+	}
+/*= END
+  ==================================================== */
