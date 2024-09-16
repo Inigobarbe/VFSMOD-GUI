@@ -249,14 +249,14 @@ Element [KPG=1 (recommended) or 0]</string>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="save_close">
        <property name="text">
         <string>Save and Close</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_4">
+      <widget class="QPushButton" name="close_dialog">
        <property name="text">
         <string>Close</string>
        </property>

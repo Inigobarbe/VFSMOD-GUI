@@ -57,6 +57,14 @@ from .ui.sensitivity_results_sobol import sensitivity_results_sobol
 from .ui.sedimentograph_output import sedimentograph_output
 from .ui.user_output_1 import user_output_1
 from .ui.user_output_2 import user_output_2
+from .ui.osp_results import osp_results
+from .ui.runoff_graph import runoff_graph
+from .ui.sediment_graph import sediment_graph
+from .ui.owq_results import owq_results
+from .ui.osm_results import osm_results
+from .ui.ohy_results import ohy_results
+from .ui.og2_results import og2_results
+from .ui.og1_results import og1_results
 
 #Local libraries
 from .libraries.SALib.sample import saltelli
@@ -240,7 +248,18 @@ class qvfsmod:
         self.dlg_sedimentograph_output = sedimentograph_output()
         self.dlg_user_output_1 = user_output_1()
         self.dlg_user_output_2 = user_output_2()
+        self.dlg_osp_results = osp_results()
+        self.dlg_runoff_graph = runoff_graph()
+        self.dlg_sediment_graph = sediment_graph()
+        self.dlg_owq_results = owq_results()
+        self.dlg_osm_results = osm_results()
+        self.dlg_ohy_results = ohy_results()
+        self.dlg_og2_results = og2_results()
+        self.dlg_og1_results = og1_results()
         
+        
+        #Close osp results dialog
+        self.dlg_osp_results.close_dialog.clicked.connect(self.dlg_osp_results.close)
         
         #Select directory of the project for UH and for VFSMOD
         self.dlg_base.select_directory.clicked.connect(self.select_directory_uh)
@@ -334,16 +353,22 @@ class qvfsmod:
         self.dlg_warning_message.ok.clicked.connect(self.dlg_warning_message.close)
         
         #Show outputs
+        #UH
         self.dlg_base.output_hydrograph.clicked.connect(self.show_hydrograph)
         self.dlg_base.output_hyetograph.clicked.connect(self.show_hyetograph)
         self.dlg_base.output_sedimentograph.clicked.connect(self.show_sedimentograph_results)
         self.dlg_base.output_output1.clicked.connect(self.show_output_1_results)
         self.dlg_base.output_output2.clicked.connect(self.show_output_2_results)
+        #VFSMOD
+        self.dlg_base.output_overall.clicked.connect(self.show_osp_results)
+        self.dlg_osp_results.runoff_graph.clicked.connect(self.show_runoff_results)
+        self.dlg_osp_results.sediment_graph.clicked.connect(self.show_sediment_results)
+        self.dlg_base.output_quality.clicked.connect(self.show_owq_results)
+        self.dlg_base.output_waterland.clicked.connect(self.show_osm_results)
+        self.dlg_base.output_hydrograph_2.clicked.connect(self.show_ohy_results)
+        self.dlg_base.output_flow.clicked.connect(self.show_og2_results)
+        self.dlg_base.output_sediment.clicked.connect(self.show_og1_results)
         
-        
-        self.dlg_sedimentograph_output = sedimentograph_output()
-        self.dlg_user_output_1 = user_output_1()
-        self.dlg_user_output_2 = user_output_2()
         
         #Disable combobox of water quality and add condition to set enable it. Same with the rest of the widgets
         self.dlg_base.combo_water.setVisible(False)
@@ -381,13 +406,13 @@ class qvfsmod:
         self.dlg_base.working_directory.textChanged.connect(self.update_vfsmod_directory)
         
         #Appear the VFSMOD editing dialogs
-        self.dlg_base.edit_overland.clicked.connect(self.dlg_overland_flow.show)
+        self.dlg_base.edit_overland.clicked.connect(self.dlg_overland_flow_show)
         self.dlg_overland_flow.edit_segment.clicked.connect(self.dlg_buffer_segment_show)
-        self.dlg_base.edit_infiltration.clicked.connect(self.dlg_infiltration_soil.show)
+        self.dlg_base.edit_infiltration.clicked.connect(self.dlg_infiltration_soil_show)
         self.dlg_infiltration_soil.show_parameters.clicked.connect(self.show_soil_curves)
-        self.dlg_base.edit_buffer.clicked.connect(self.dlg_buffer_properties.show)
+        self.dlg_base.edit_buffer.clicked.connect(self.dlg_buffer_properties_show)
         self.dlg_base.edit_water.clicked.connect(self.dlg_water_quality.show)
-        self.dlg_base.edit_incoming.clicked.connect(self.dlg_incoming_sediment.show)
+        self.dlg_base.edit_incoming.clicked.connect(self.dlg_incoming_sediment_show)
         self.dlg_base.edit_storm.clicked.connect(self.add_hyetograph_to_dialog)
         self.dlg_base.edit_source.clicked.connect(self.add_hydrograph_to_dialog)
         
@@ -426,15 +451,23 @@ class qvfsmod:
         
         #Update values of .ikw file
         self.dlg_overland_flow.save_continue.clicked.connect(self.create_ikw_file)
+        self.dlg_overland_flow.save_close.clicked.connect(lambda _, b = True:self.create_ikw_file(b))
+        self.dlg_overland_flow.close_dialog.clicked.connect(self.dlg_overland_flow.close)
         
         #Update values of .iso file
         self.dlg_infiltration_soil.save_continue.clicked.connect(self.create_iso_file)
+        self.dlg_infiltration_soil.save_close.clicked.connect(lambda _, b = True:self.create_iso_file(b))
+        self.dlg_infiltration_soil.close_dialog.clicked.connect(self.dlg_infiltration_soil.close)
         
         #Update values of .igr file
         self.dlg_buffer_properties.save_continue.clicked.connect(self.create_igr_file)
+        self.dlg_buffer_properties.save_close.clicked.connect(lambda _, b = True:self.create_igr_file(b))
+        self.dlg_buffer_properties.close_dialog.clicked.connect(self.dlg_buffer_properties.close)
         
         #Update values of .iwq file
         self.dlg_incoming_sediment.save_continue.clicked.connect(self.create_isd_file)
+        self.dlg_incoming_sediment.save_close.clicked.connect(lambda _, b = True:self.create_isd_file(b))
+        self.dlg_incoming_sediment.close_dialog.clicked.connect(self.dlg_incoming_sediment.close)
         
         #Update values of .irn file
         self.dlg_vfsmod_hyetograph.save_continue.clicked.connect(self.create_irn_file)
@@ -453,6 +486,8 @@ class qvfsmod:
         
         #Update values of .isd file
         self.dlg_water_quality.save_continue.clicked.connect(self.create_iwq_file)
+        self.dlg_water_quality.save_close.clicked.connect(lambda _, b = True:self.create_iwq_file(b))
+        self.dlg_water_quality.close_dialog.clicked.connect(self.dlg_water_quality.close)
         
         #Run VFSMOD
         self.dlg_base.run_vfsmod.clicked.connect(self.run_vfsmod)
@@ -592,6 +627,8 @@ class qvfsmod:
         #Disable the ability to modify the timestep of the user defined storm and center items
         self.set_timestep_non_editable()
         
+        #Add values of the inp file to the dialog
+        self.dlg_base.uh_input.textChanged.connect(self.add_values_inp_dialog)
         
         #Default values
         self.default_values()
@@ -602,6 +639,492 @@ class qvfsmod:
         self.dlg_vfsmod_hydrograph.tableWidget.itemChanged.connect(self.update_vfsmod_hydrograph_graph)
         self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.connect(self.update_vfsmod_hyetograph_graph)
     
+    
+    def add_values_inp_dialog(self):
+        """Method to add values of the inp to the dialog"""
+        path = self.obtain_direction(self.dlg_base.uh_input.text())
+        
+        if os.path.exists(path):  
+            try:
+                with open(path, 'r') as file:
+                    lineas = file.readlines()  
+                #Rainfall
+                self.add_values_dialog(lineas,0,0,self.dlg_base.rainfall)
+                #Curve number
+                self.add_values_dialog(lineas,0,1,self.dlg_base.curve_number)
+                #Storm duration
+                self.add_values_dialog(lineas,0,4,self.dlg_base.storm_duration)
+                #Storm type
+                storm_type = int(self.add_values_dialog(lineas,0,3,self.dlg_base.storm_type,True))
+                self.dlg_base.storm_type.setCurrentIndex(storm_type-1)
+                #Source Length
+                self.add_values_dialog(lineas,0,5,self.dlg_base.length_source)
+                #Slope
+                self.add_values_dialog(lineas,0,6,self.dlg_base.slope_source)
+                #Area
+                self.add_values_dialog(lineas,0,2,self.dlg_base.area_source)
+                #K
+                self.add_values_dialog(lineas,3,0,self.dlg_base.k_factor)
+                #Organic
+                self.add_values_dialog(lineas,5,0,self.dlg_base.organic_matter)
+                #C
+                self.add_values_dialog(lineas,3,1,self.dlg_base.crop_factor)
+                #Soil Type
+                soil_type = lineas[2][:-30].strip()
+                soil_index = ["Clay","Silty clay","Sandy clay","Silty clay loam","Clay loam","Sandy clay loam","Silt","Silt loam","Loam",
+                    "Very fine sandy loam","Fine sandy loam","Sandy loam","Coarse sandy loam","Loamy very fine sand","Loamy fine sandy",
+                    "Loamy sand","Loamy coarse sand","Very fine sandy","Fine sand","Sand","Coarse sand"].index(soil_type)
+                self.dlg_base.soil_type.setCurrentIndex(soil_index)
+                #dp
+                self.add_values_dialog(lineas,3,3,self.dlg_base.particle_diameter)
+                #P
+                self.add_values_dialog(lineas,3,2,self.dlg_base.practice_factor)
+                #R
+                r = int(self.add_values_dialog(lineas,4,0,self.dlg_base.williams,True))
+                if r==1: self.dlg_base.williams.setChecked(True)
+                elif r==2: self.dlg_base.creams_gleams.setChecked(True)
+            
+            except:
+                pass
+    
+    def dlg_overland_flow_show(self):
+        """Method to add values of the ikw to the dialog"""
+        path = self.obtain_direction_vfsmod(self.dlg_base.line_overland.text())
+        if os.path.exists(path):
+            try:
+                self.dlg_buffer_segment.tableWidget.itemChanged.disconnect(self.update_buffer_segment_graph)
+                with open(path, 'r') as file:
+                    lineas = file.readlines()
+                #Simulation title
+                self.add_values_dialog(lineas,0,0,self.dlg_overland_flow.simulation_title)
+                #Length
+                self.add_values_dialog(lineas,2,0,self.dlg_overland_flow.length)
+                #Width
+                self.add_values_dialog(lineas,1,0,self.dlg_overland_flow.width)
+                #Nodes
+                self.add_values_dialog(lineas,2,1,self.dlg_overland_flow.nodes)
+                #Time weight
+                self.add_values_dialog(lineas,2,2,self.dlg_overland_flow.time)
+                #Number element nodal
+                self.add_values_dialog(lineas,2,5,self.dlg_overland_flow.nodal)
+                #Petrov
+                self.add_values_dialog(lineas,2,7,self.dlg_overland_flow.petrov)
+                #Courant
+                self.add_values_dialog(lineas,2,3,self.dlg_overland_flow.courant)
+                #Maximum iterations
+                self.add_values_dialog(lineas,2,4,self.dlg_overland_flow.maximum)
+                #Output element
+                self.add_values_dialog(lineas,2,6,self.dlg_overland_flow.output)
+                
+                #Update table of segments
+                number_segments = int(lineas[3])
+                df = pd.DataFrame(data = {"Distance":[list(map(float, lineas[x].split()))[0] for x in range(4,4+number_segments)],
+                                     "Roughness":[list(map(float, lineas[x].split()))[1] for x in range(4,4+number_segments)],
+                                     "Slope":[list(map(float, lineas[x].split()))[2] for x in range(4,4+number_segments)]})
+
+                self.dlg_buffer_segment.tableWidget.setRowCount(len(df))
+                for fila in range(len(df)):
+                    for columna in range(len(df.columns)):
+                        item = QTableWidgetItem(str(df.iloc[fila,columna]))
+                        self.dlg_buffer_segment.tableWidget.setItem(fila, columna, item)
+                        item.setTextAlignment(Qt.AlignCenter)
+                
+                self.dlg_buffer_segment.tableWidget.itemChanged.connect(self.update_buffer_segment_graph)
+                
+            except:
+                pass
+        #Show graph
+        self.dlg_overland_flow.show()
+                
+    
+    def dlg_infiltration_soil_show(self):
+        """Method to add values of the iso to the dialog"""
+        path = self.obtain_direction_vfsmod(self.dlg_base.line_infiltration.text())
+        if os.path.exists(path):
+            with open(path, 'r') as file:
+                lineas = file.readlines()
+            
+            #K
+            self.add_values_dialog(lineas,0,0,self.dlg_infiltration_soil.line_vertical_ms)
+            #Average suction
+            self.add_values_dialog(lineas,0,1,self.dlg_infiltration_soil.line_average)
+            #Initial water content
+            self.add_values_dialog(lineas,0,3,self.dlg_infiltration_soil.line_initial)
+            #Saturated water content
+            self.add_values_dialog(lineas,0,2,self.dlg_infiltration_soil.line_saturated)
+            #Maximum surface storage
+            self.add_values_dialog(lineas,0,4,self.dlg_infiltration_soil.line_maximum)
+            #Fraction of the filter
+            self.add_values_dialog(lineas,0,5,self.dlg_infiltration_soil.line_fraction)
+            
+            #Shallow water table
+            if len(lineas)>8:
+                self.dlg_infiltration_soil.check_water_table.setChecked(True)
+                #Water table depth 
+                self.add_values_dialog(lineas,1,0,self.dlg_infiltration_soil.line_water_depth)
+                #Soil Characteristic
+                soil = int(self.add_values_dialog(lineas,2,0,self.dlg_infiltration_soil.line_vertical_ms,True))
+                if soil ==1: self.dlg_infiltration_soil.radioButton_3.setChecked(True)
+                elif soil ==2: self.dlg_infiltration_soil.radioButton_4.setChecked(True)
+                #Hydraulic conductivity
+                hydraulic=int(self.add_values_dialog(lineas,3,0,self.dlg_infiltration_soil.line_vertical_ms,True))
+                if hydraulic ==1: self.dlg_infiltration_soil.radioButton_5.setChecked(True)
+                elif hydraulic ==2: self.dlg_infiltration_soil.radioButton_6.setChecked(True)
+                elif hydraulic ==3: self.dlg_infiltration_soil.radioButton_7.setChecked(True)
+                
+                #Soil curve parameters
+                self.add_values_dialog(lineas,2,1,self.dlg_soil_curves.lineEdit)
+                self.add_values_dialog(lineas,2,2,self.dlg_soil_curves.lineEdit_2)
+                self.add_values_dialog(lineas,2,3,self.dlg_soil_curves.lineEdit_3)
+                self.add_values_dialog(lineas,2,4,self.dlg_soil_curves.lineEdit_4)
+                self.add_values_dialog(lineas,3,1,self.dlg_soil_curves.lineEdit_5)
+                self.add_values_dialog(lineas,3,1,self.dlg_soil_curves.lineEdit_5)
+                self.add_values_dialog(lineas,3,2,self.dlg_soil_curves.lineEdit_6)
+                #Ansiotropy
+                self.add_values_dialog(lineas,4,0,self.dlg_infiltration_soil.line_input)
+                
+            else:
+                self.dlg_infiltration_soil.check_water_table.setChecked(False)
+            
+            
+        #Show dialog
+        self.dlg_infiltration_soil.show()
+    
+    def dlg_buffer_properties_show(self):
+        """Method to add values of the igr to the dialog"""
+        path = self.obtain_direction_vfsmod(self.dlg_base.line_buffer.text())
+        if os.path.exists(path):
+            with open(path, 'r') as file:
+                lineas = file.readlines()
+            
+            #Spacing
+            self.add_values_dialog(lineas,0,0,self.dlg_buffer_properties.spacing_grass)
+            #Height
+            self.add_values_dialog(lineas,0,2,self.dlg_buffer_properties.height_grass)
+            #Feedback
+            self.add_values_dialog(lineas,0,4,self.dlg_buffer_properties.feedback)
+            #Roughness-Grass
+            self.add_values_dialog(lineas,0,1,self.dlg_buffer_properties.roughness_grass)
+            #Roughness-Bare
+            self.add_values_dialog(lineas,0,3,self.dlg_buffer_properties.roughness_bare)
+            
+        
+        #Show dialog
+        self.dlg_buffer_properties.show()
+    
+    def dlg_incoming_sediment_show(self):
+        """Method to add values of the isd to the dialog"""
+        path = self.obtain_direction_vfsmod(self.dlg_base.line_incoming.text())
+        if os.path.exists(path):
+            with open(path, 'r') as file:
+                lineas = file.readlines()
+            #Concentration
+            self.add_values_dialog(lineas,0,2,self.dlg_incoming_sediment.line_concentration)
+            #Class
+            self.add_values_dialog(lineas,0,0,self.dlg_incoming_sediment.line_class)
+            #Diameter
+            self.add_values_dialog(lineas,1,0,self.dlg_incoming_sediment.line_size)
+            #Porosity
+            self.add_values_dialog(lineas,0,3,self.dlg_incoming_sediment.line_porosity)
+            #Portion
+            self.add_values_dialog(lineas,0,1,self.dlg_incoming_sediment.line_portion)
+            #Density
+            self.add_values_dialog(lineas,1,1,self.dlg_incoming_sediment.line_sediment)
+        
+        #Show dialog
+        self.dlg_incoming_sediment.show()
+    
+    
+        
+    def add_values_dialog(self,lineas,row, column, lineEdit,retrieve =False):
+        """Method to add values from the files to the dialog"""
+        try:
+            value = lineas[row].strip().split()[column]
+            if not retrieve:
+                lineEdit.setText(value)
+            else:
+                return value
+        except:
+            pass
+    
+    def show_og1_results(self):
+        """Method to show og1 results"""
+        #Add text
+        path = self.obtain_direction(self.dlg_base.line_sediment.text())
+        with open(path, 'r') as file:
+            lineas = file.readlines()
+        contenido = ""
+        for i in lineas:
+            contenido+=i
+        self.dlg_og1_results.textEdit.setPlainText(contenido)
+        
+        #Show dialog
+        self.dlg_og1_results.show()
+    
+    def show_og2_results(self):
+        """Method to show og2 results"""
+        #Add text
+        path = self.obtain_direction(self.dlg_base.line_flow.text())
+        with open(path, 'r') as file:
+            lineas = file.readlines()
+        contenido = ""
+        for i in lineas:
+            contenido+=i
+        self.dlg_og2_results.textEdit.setPlainText(contenido)
+        
+        #Show dialog
+        self.dlg_og2_results.show()
+    
+    def show_ohy_results(self):
+        """Method to show ohy results"""
+        #Add text
+        path = self.obtain_direction(self.dlg_base.line_hydrograph_2.text())
+        with open(path, 'r') as file:
+            lineas = file.readlines()
+        contenido = ""
+        for i in lineas:
+            contenido+=i
+        self.dlg_ohy_results.textEdit.setPlainText(contenido)
+        
+        #Show dialog
+        self.dlg_ohy_results.show()
+    
+    def show_osm_results(self):
+        """Method to show osm results"""
+        #Add text
+        path = self.obtain_direction(self.dlg_base.line_waterland.text())
+        with open(path, 'r') as file:
+            lineas = file.readlines()
+        contenido = ""
+        for i in lineas:
+            contenido+=i
+        self.dlg_osm_results.textEdit.setPlainText(contenido)
+        
+        #Show dialog
+        self.dlg_osm_results.show()
+    
+    def show_owq_results(self):
+        """Method to show owq results"""
+        #Add text
+        path = self.obtain_direction(self.dlg_base.line_quality.text())
+        with open(path, 'r') as file:
+            lineas = file.readlines()
+        contenido = ""
+        for i in lineas:
+            contenido+=i
+        self.dlg_owq_results.textEdit.setPlainText(contenido)
+        
+        #Show dialog
+        self.dlg_owq_results.show()
+    
+    def show_runoff_results(self):
+        """Method to show the dialog with runoff graph"""
+        #Obtain results
+        ruta = self.obtain_direction_vfsmod(self.dlg_base.line_overall.text())
+        with open(ruta, "r") as archivo:
+            lineas = archivo.readlines()
+        #Function to obtain specific results form .osp file
+        def obtain_result(string):
+            for i in lineas:
+                if i.split("=")[-1]==string:
+                    for k in i.split("=")[0].split(" "):
+                        try:
+                            output = float(k)
+                            break
+                        except:
+                            pass
+            return output
+        
+        #Obtain results
+        runoff_in = obtain_result(" Total Runoff from Source\n")
+        rainfall = obtain_result(" Total Rainfall on Filter\n")
+        infiltration = obtain_result(" Total Infiltration in Filter\n")
+        runoff_out = obtain_result(" Total Runoff out from Filter\n")
+        
+        #Put graph
+        #If canvas exist then clear. If not then create it. 
+        if not hasattr(self, 'canvas_runoff_result'):
+            # Si no existe, crear el canvas y añadirlo al layout
+            self.canvas_runoff_result = FigureCanvas(plt.Figure(figsize=(15, 6)))
+            
+            # Asignar un layout al QFrame si no tiene uno
+            layout = QVBoxLayout(self.dlg_runoff_graph.frame)
+            self.dlg_runoff_graph.frame.setLayout(layout)
+            
+            # Añadir el canvas al layout
+            layout.addWidget(self.canvas_runoff_result)
+            
+        else:
+            # Si ya existe, simplemente limpiar el canvas
+            self.canvas_runoff_result.figure.clear()
+        
+        self.ax_runoff_result= self.canvas_runoff_result.figure.subplots()
+    
+    
+        # Clear canvas
+        self.ax_runoff_result.clear()
+        
+        #Create plot
+        # Datos para el gráfico
+        names = ['Runoff In', 'Rainfall', 'Infiltration', 'Runoff Out']
+        valores = [runoff_in, rainfall, infiltration, runoff_out]
+
+        # Crear el gráfico de barras
+        bars = self.ax_runoff_result.bar(names, valores)
+        
+        #Add values to the top of the bars
+        for bar in bars:
+            yval = bar.get_height()
+            self.ax_runoff_result.text(bar.get_x() + bar.get_width()/2, yval, round(yval, 2),
+                                       ha='center', va='bottom', fontsize=9, color='black',weight ="bold")
+
+        
+        #Axis
+        self.ax_runoff_result.set_xlabel("Component",size = 10,family="arial",weight = "bold",color = "black")
+        self.ax_runoff_result.set_ylabel("Amount (m$^{3}$)",size = 10,family="arial",weight = "bold",color = "black")
+
+        #X ticks
+        self.ax_runoff_result.tick_params(axis = "both",colors = "black",labelsize = 9)
+        
+        #Change y limit
+        self.ax_runoff_result.set_ylim(0, max(valores)*1.1)
+
+        #Thousand separator
+        def xfunc(x,pos):
+            s = '{:0,d}'.format(int(x))
+            return s
+        x_format = tkr.FuncFormatter(xfunc)
+        self.ax_runoff_result.yaxis.set_major_formatter(x_format)
+        
+        
+        # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
+        self.canvas_runoff_result.figure.subplots_adjust(left=0.2, bottom=0.2)
+
+        # Redraw the canvas
+        self.canvas_runoff_result.draw()
+        
+        #Show dialog
+        self.dlg_runoff_graph.show()
+    
+    def show_sediment_results(self):
+        """Method to show the dialog with runoff graph"""
+        #Obtain results
+        ruta = self.obtain_direction_vfsmod(self.dlg_base.line_overall.text())
+        with open(ruta, "r") as archivo:
+            lineas = archivo.readlines()
+        #Function to obtain specific results form .osp file
+        def obtain_result(string):
+            for i in lineas:
+                if i.split("=")[-1]==string:
+                    for k in i.split("=")[0].split(" "):
+                        try:
+                            output = float(k)
+                            break
+                        except:
+                            pass
+            return output
+        
+        #Obtain results
+        sediment_in = obtain_result(" Mass Sediment Input to Filter\n")
+        retained = obtain_result(" Mass Sediment retained in Filter\n")
+        infiltration = obtain_result(" Mass Sediment Output from Filter\n")
+        
+        #Put graph
+        #If canvas exist then clear. If not then create it. 
+        if not hasattr(self, 'canvas_sediment_result'):
+            # Si no existe, crear el canvas y añadirlo al layout
+            self.canvas_sediment_result = FigureCanvas(plt.Figure(figsize=(15, 6)))
+            
+            # Asignar un layout al QFrame si no tiene uno
+            layout = QVBoxLayout(self.dlg_sediment_graph.frame)
+            self.dlg_sediment_graph.frame.setLayout(layout)
+            
+            # Añadir el canvas al layout
+            layout.addWidget(self.canvas_sediment_result)
+            
+        else:
+            # Si ya existe, simplemente limpiar el canvas
+            self.canvas_sediment_result.figure.clear()
+        
+        self.ax_sediment_result= self.canvas_sediment_result.figure.subplots()
+    
+    
+        # Clear canvas
+        self.ax_sediment_result.clear()
+        
+        #Create plot
+        # Datos para el gráfico
+        names = ['Sediment In', 'Sediment Retained', 'Sediment Out']
+        valores = [sediment_in, retained, infiltration]
+
+        # Crear el gráfico de barras
+        bars = self.ax_sediment_result.bar(names, valores,color ="red")
+        
+        #Add values to the top of the bars
+        for bar in bars:
+            yval = bar.get_height()
+            self.ax_sediment_result.text(bar.get_x() + bar.get_width()/2, yval, round(yval, 2),
+                                       ha='center', va='bottom', fontsize=9, color='black',weight ="bold")
+
+        
+        #Axis
+        self.ax_sediment_result.set_xlabel("Component",size = 10,family="arial",weight = "bold",color = "black")
+        self.ax_sediment_result.set_ylabel("Amount (kg)",size = 10,family="arial",weight = "bold",color = "black")
+
+        #X ticks
+        self.ax_sediment_result.tick_params(axis = "both",colors = "black",labelsize = 9)
+        
+        #Change y limit
+        self.ax_sediment_result.set_ylim(0, max(valores)*1.1)
+
+        #Thousand separator
+        def xfunc(x,pos):
+            s = '{:0,d}'.format(int(x))
+            return s
+        x_format = tkr.FuncFormatter(xfunc)
+        self.ax_sediment_result.yaxis.set_major_formatter(x_format)
+        
+        
+        # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
+        self.canvas_sediment_result.figure.subplots_adjust(left=0.2, bottom=0.2)
+
+        # Redraw the canvas
+        self.canvas_sediment_result.draw()
+        
+        #Show dialog
+        self.dlg_sediment_graph.show()
+    
+    def show_osp_results(self):
+        """Method to show the osp results after the VFS execution"""
+        #Obtain data
+        filepath = self.obtain_direction_vfsmod(self.dlg_base.line_overall.text())
+        with open(filepath, 'r') as file:
+            lineas = file.readlines()
+        
+        condition=0
+        parameters = []
+        values = []
+        for linea in lineas:
+            parameter = '\n'.join(line.lstrip() for line in linea.split("=")[-1].splitlines())
+            value =  '\n'.join(line.lstrip() for line in linea.split("=")[0].splitlines())
+            if linea == "       Summary of Buffer Performance Indicators:\n":
+                condition = 1
+            if len(linea.split("="))==2 and condition ==1:
+                parameters.append(parameter)
+                values.append(value)
+        
+        #Add it to the table
+        df = pd.DataFrame(data = {"parameters":parameters,"values":values})
+        self.dlg_osp_results.tableWidget.setRowCount(len(parameters))
+        for fila in range(len(parameters)):
+            for columna in range(2):
+                item = QTableWidgetItem(str(df.iloc[fila,columna]))
+                self.dlg_osp_results.tableWidget.setItem(fila, columna, item)
+                item.setTextAlignment(Qt.AlignCenter)
+        #Modify the width of column
+        self.dlg_osp_results.tableWidget.setColumnWidth(0, 300)
+        #Show dialog
+        self.dlg_osp_results.show()
     
     def update_buffer_segment(self,close = False):
         """"Method to update the buffer segment"""
@@ -784,6 +1307,7 @@ class qvfsmod:
         
         self.dlg_buffer_segment.show()
         self.update_buffer_segment_graph()
+    
     
     def update_buffer_segment_graph(self):
         """Method to update the buffer segment graph"""
@@ -4112,7 +4636,7 @@ class qvfsmod:
             archivo.write("\n")
         
         
-    def create_ikw_file(self):
+    def create_ikw_file(self,close =False):
         """Method to create .ikw file"""
         #Inputs
         simulation_title = self.dlg_overland_flow.simulation_title.text()
@@ -4157,7 +4681,11 @@ class qvfsmod:
         #Update value in design
         self.add_vfs_length_spacing()
         
-    def create_iso_file(self):
+        #Close dialog
+        if close:
+            self.dlg_overland_flow.close()
+        
+    def create_iso_file(self,close =False):
         """Method to create .iso file"""
         #Inputs
         #Layer one
@@ -4222,8 +4750,12 @@ class qvfsmod:
                 if self.dlg_infiltration_soil.check_input.isChecked():
                     archivo.write(f"{linea_cinco}\n")
                 archivo.write(f"{linea_seis}")
-    
-    def create_igr_file(self):
+        
+        #Close dialog
+        if close:
+            self.dlg_infiltration_soil.close()
+        
+    def create_igr_file(self,close = False):
         """Method to create the .igr file"""
         #Inputs
         spacing = float(self.dlg_buffer_properties.spacing_grass.text())
@@ -4241,8 +4773,12 @@ class qvfsmod:
             
         #Update value in design
         self.add_vfs_length_spacing()
-    
-    def create_iwq_file(self):
+        
+        #Close dialog
+        if close:
+            self.dlg_buffer_properties.close()
+        
+    def create_iwq_file(self, close =False):
         """Mehtod to crete the .iwq file"""
         #Inputs
         if self.dlg_water_quality.check_direct.isChecked(): direct_input = 0
@@ -4255,17 +4791,21 @@ class qvfsmod:
         #Create file
         iwq_file =self.obtain_direction_vfsmod(self.dlg_base.line_water.text())
         with open(iwq_file, 'w') as archivo:
-            linea_uno = "1			; Type of wq problem(>0); 1=pesticide (Bayer)"
+            linea_uno = "1			; Type of problem; 1=pesticide (Bayer)"
             if direct_input == 1:
                 linea_dos = f"{direct_input}	{vkoc}	{oc}	; Kd proc.:0= Kd(L/Kg); 1=Koc (Koc L/Kg),%OC)"
             else:
                 linea_dos = f"{direct_input}	{vkd}; Kd proc.:0= Kd(L/Kg); 1=Koc (Koc L/Kg),%OC)"
-            linea_tres = f"{clay}			; %Clay content in incoming sediment"
+            linea_tres = f"{clay}			; %Clay content (in sediment?)"
             archivo.write(f"{linea_uno}\n")
             archivo.write(f"{linea_dos}\n")
             archivo.write(f"{linea_tres}\n")
+        
+        #Close dialog
+        if close:
+            self.dlg_water_quality.close()
     
-    def create_isd_file(self):
+    def create_isd_file(self,close =False):
         """Method to create the .isd file"""
         #Inputs
         concentration = float(self.dlg_incoming_sediment.line_concentration.text())
@@ -4281,6 +4821,9 @@ class qvfsmod:
             linea_dos = f"   {size}   {density}           Dp(cm), SG(g/cm3)"
             archivo.write(f"{linea_uno}\n")
             archivo.write(f"{linea_dos}\n")
+        
+        #Close dialog
+        self.dlg_incoming_sediment.close()
     
     def create_irn_file(self,close=False):
         """Method to create the .irn file"""
