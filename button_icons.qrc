@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons">
+    <file>images/search.svg</file>
     <file>images/design_yes.svg</file>
     <file>images/design_no.svg</file>
     <file>images/hide.svg</file>

@@ -6,16 +6,24 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>738</width>
-    <height>403</height>
+    <width>819</width>
+    <height>429</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Execution</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">#qvfsmodDialogBase {
+    background-color:#354052;  /* Cambiar el color de fondo */
+}</string>
+  </property>
   <layout class="QGridLayout" name="gridLayout_16">
    <item row="0" column="0">
     <widget class="QWidget" name="widget_3" native="true">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <layout class="QGridLayout" name="gridLayout_14">
       <property name="leftMargin">
        <number>0</number>
@@ -65,6 +73,9 @@
             <string> FOLDER SELECTION</string>
            </property>
            <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
             <bool>true</bool>
            </property>
            <property name="autoExclusive">
@@ -344,6 +355,9 @@
            <property name="checkable">
             <bool>true</bool>
            </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
            <property name="autoExclusive">
             <bool>true</bool>
            </property>
@@ -445,8 +459,8 @@
            </property>
            <property name="iconSize">
             <size>
-             <width>35</width>
-             <height>35</height>
+             <width>41</width>
+             <height>41</height>
             </size>
            </property>
            <property name="checkable">
@@ -585,6 +599,9 @@
    </item>
    <item row="0" column="1">
     <widget class="QFrame" name="frame_17">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -592,22 +609,134 @@
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout_21">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
       <item row="0" column="0">
        <widget class="QStackedWidget" name="stackedWidget">
+        <property name="styleSheet">
+         <string notr="true">background-color: #f0f3f8</string>
+        </property>
         <property name="currentIndex">
-         <number>5</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="page_folder">
          <layout class="QGridLayout" name="gridLayout_7">
           <item row="0" column="0">
-           <widget class="QLabel" name="label_63">
-            <property name="text">
-             <string>Folder</string>
-            </property>
-           </widget>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QLabel" name="label_3">
+              <property name="minimumSize">
+               <size>
+                <width>150</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Working directory:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="working_directory_vfsmod">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>315</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="select_directory_vfsmod">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="../button_icons.qrc">
+                <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="lineEdit"/>
+          <item row="1" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QLabel" name="label_2">
+              <property name="minimumSize">
+               <size>
+                <width>150</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Change name of files:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="name_files">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>315</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item row="2" column="0">
+           <spacer name="verticalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
@@ -625,9 +754,9 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>0</y>
-               <width>470</width>
-               <height>928</height>
+               <y>-462</y>
+               <width>554</width>
+               <height>890</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_25">
@@ -812,88 +941,7 @@ typical0.01-0.07</string>
                  <enum>QFrame::Raised</enum>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_2">
-                 <item row="0" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout">
-                   <item>
-                    <widget class="QLabel" name="label">
-                     <property name="minimumSize">
-                      <size>
-                       <width>144</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>Working directory:</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="working_directory">
-                     <property name="maximumSize">
-                      <size>
-                       <width>315</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="select_directory">
-                     <property name="toolTip">
-                      <string/>
-                     </property>
-                     <property name="styleSheet">
-                      <string notr="true">QPushButton {
-					background-color: rgb(203, 203, 203);
-                    border: none;
-                    color: white;
-                    padding: 7px 7px;
-                    text-align: center;
-                    text-decoration: none;
-                    font-size: 10px;
-                    margin: 0px 0px;
-                    cursor: pointer;
-                    border-radius: 12px;
-                }
-                QPushButton:hover {
-                    background-color: #45a049; /* Verde oscuro al pasar el ratón */
-                }</string>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
                  <item row="1" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_2">
-                   <item>
-                    <widget class="QLabel" name="label_2">
-                     <property name="minimumSize">
-                      <size>
-                       <width>144</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>Name of files:</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="name_files">
-                     <property name="maximumSize">
-                      <size>
-                       <width>315</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item row="2" column="0">
                   <layout class="QHBoxLayout" name="horizontalLayout_13">
                    <item>
                     <widget class="QLabel" name="label_14">
@@ -920,11 +968,15 @@ typical0.01-0.07</string>
                      <property name="text">
                       <string/>
                      </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
                     </widget>
                    </item>
                   </layout>
                  </item>
-                 <item row="3" column="0">
+                 <item row="2" column="0">
                   <layout class="QHBoxLayout" name="horizontalLayout_14">
                    <item>
                     <widget class="QLabel" name="label_15">
@@ -947,9 +999,27 @@ typical0.01-0.07</string>
                      <property name="text">
                       <string/>
                      </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
                     </widget>
                    </item>
                   </layout>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label">
+                   <property name="font">
+                    <font>
+                     <pointsize>10</pointsize>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Files</string>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -1087,7 +1157,7 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_16">
                      <property name="minimumSize">
                       <size>
-                       <width>157</width>
+                       <width>228</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -1103,6 +1173,10 @@ typical0.01-0.07</string>
                     <widget class="QPushButton" name="browse_hydrograph">
                      <property name="text">
                       <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                      </property>
                     </widget>
                    </item>
@@ -1138,7 +1212,7 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_35">
                      <property name="minimumSize">
                       <size>
-                       <width>157</width>
+                       <width>228</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -1154,6 +1228,10 @@ typical0.01-0.07</string>
                     <widget class="QPushButton" name="browse_hyetograph">
                      <property name="text">
                       <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                      </property>
                     </widget>
                    </item>
@@ -1194,8 +1272,7 @@ typical0.01-0.07</string>
                       </size>
                      </property>
                      <property name="text">
-                      <string>Incoming Sedimentograph 
-Input file for VFSmod</string>
+                      <string>Incoming Sedimentograph Input file for VFSmod</string>
                      </property>
                     </widget>
                    </item>
@@ -1206,6 +1283,10 @@ Input file for VFSmod</string>
                     <widget class="QPushButton" name="browse_sedimentograph">
                      <property name="text">
                       <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                      </property>
                     </widget>
                    </item>
@@ -1239,6 +1320,12 @@ Input file for VFSmod</string>
                   <layout class="QHBoxLayout" name="horizontalLayout_31">
                    <item>
                     <widget class="QLabel" name="label_37">
+                     <property name="minimumSize">
+                      <size>
+                       <width>228</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>User Output Information - Part 1</string>
                      </property>
@@ -1251,6 +1338,10 @@ Input file for VFSmod</string>
                     <widget class="QPushButton" name="browse_output1">
                      <property name="text">
                       <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                      </property>
                     </widget>
                    </item>
@@ -1284,6 +1375,12 @@ Input file for VFSmod</string>
                   <layout class="QHBoxLayout" name="horizontalLayout_32">
                    <item>
                     <widget class="QLabel" name="label_38">
+                     <property name="minimumSize">
+                      <size>
+                       <width>228</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>User Output Information - Part 2</string>
                      </property>
@@ -1296,6 +1393,10 @@ Input file for VFSmod</string>
                     <widget class="QPushButton" name="browse_output2">
                      <property name="text">
                       <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                      </property>
                     </widget>
                    </item>
@@ -1557,9 +1658,9 @@ Input file for VFSmod</string>
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>0</y>
-               <width>470</width>
-               <height>674</height>
+               <y>-296</y>
+               <width>521</width>
+               <height>649</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_24">
@@ -1573,40 +1674,6 @@ Input file for VFSmod</string>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_11">
                  <item row="0" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_3">
-                   <item>
-                    <widget class="QLabel" name="label_3">
-                     <property name="minimumSize">
-                      <size>
-                       <width>109</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>Working directory:</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="working_directory_vfsmod">
-                     <property name="maximumSize">
-                      <size>
-                       <width>315</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="select_directory_vfsmod">
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item row="1" column="0">
                   <layout class="QHBoxLayout" name="horizontalLayout_4">
                    <item>
                     <widget class="QLabel" name="label_4">
@@ -1635,6 +1702,10 @@ Input file for VFSmod</string>
                     <widget class="QPushButton" name="browse_vfsmod_project">
                      <property name="text">
                       <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                      </property>
                     </widget>
                    </item>
@@ -1696,6 +1767,10 @@ Input file for VFSmod</string>
                      <property name="text">
                       <string/>
                      </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -1729,6 +1804,10 @@ Input file for VFSmod</string>
                     <widget class="QPushButton" name="browse_infiltration">
                      <property name="text">
                       <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                      </property>
                     </widget>
                    </item>
@@ -1764,6 +1843,10 @@ Input file for VFSmod</string>
                      <property name="text">
                       <string/>
                      </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -1791,6 +1874,10 @@ Input file for VFSmod</string>
                     <widget class="QPushButton" name="browse_incoming">
                      <property name="text">
                       <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                      </property>
                     </widget>
                    </item>
@@ -1826,6 +1913,10 @@ Input file for VFSmod</string>
                      <property name="text">
                       <string/>
                      </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -1860,6 +1951,10 @@ Input file for VFSmod</string>
                      <property name="text">
                       <string/>
                      </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -1893,6 +1988,10 @@ Input file for VFSmod</string>
                     <widget class="QPushButton" name="browse_water">
                      <property name="text">
                       <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                      </property>
                     </widget>
                    </item>
@@ -1976,6 +2075,10 @@ Input file for VFSmod</string>
                      <property name="text">
                       <string/>
                      </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
                     </widget>
                    </item>
                    <item>
@@ -2026,6 +2129,10 @@ Input file for VFSmod</string>
                     <widget class="QPushButton" name="browse_flow">
                      <property name="text">
                       <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                      </property>
                     </widget>
                    </item>
@@ -2078,6 +2185,10 @@ Input file for VFSmod</string>
                      <property name="text">
                       <string/>
                      </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
                     </widget>
                    </item>
                    <item>
@@ -2128,6 +2239,10 @@ Input file for VFSmod</string>
                     <widget class="QPushButton" name="browse_waterland">
                      <property name="text">
                       <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                      </property>
                     </widget>
                    </item>
@@ -2180,6 +2295,10 @@ Input file for VFSmod</string>
                      <property name="text">
                       <string/>
                      </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
                     </widget>
                    </item>
                    <item>
@@ -2231,6 +2350,10 @@ Input file for VFSmod</string>
                      <property name="text">
                       <string/>
                      </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
                     </widget>
                    </item>
                    <item>
@@ -2281,10 +2404,10 @@ Input file for VFSmod</string>
             <widget class="QWidget" name="scrollAreaWidgetContents_6">
              <property name="geometry">
               <rect>
-               <x>0</x>
+               <x>-275</x>
                <y>0</y>
                <width>745</width>
-               <height>375</height>
+               <height>377</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_29">
@@ -2710,6 +2833,10 @@ Input file for VFSmod</string>
                      <property name="text">
                       <string/>
                      </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -2730,6 +2857,10 @@ Input file for VFSmod</string>
                     <widget class="QPushButton" name="browse_design_vfs">
                      <property name="text">
                       <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                      </property>
                     </widget>
                    </item>
@@ -2778,7 +2909,7 @@ Input file for VFSmod</string>
                <x>0</x>
                <y>0</y>
                <width>487</width>
-               <height>347</height>
+               <height>353</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_31">
@@ -2829,8 +2960,8 @@ Input file for VFSmod</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>487</width>
-               <height>347</height>
+               <width>513</width>
+               <height>353</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_15">
@@ -2869,7 +3000,6 @@ Input file for VFSmod</string>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>working_directory</tabstop>
   <tabstop>name_files</tabstop>
   <tabstop>uh_file</tabstop>
   <tabstop>uh_input</tabstop>
@@ -2943,7 +3073,6 @@ Input file for VFSmod</string>
   <tabstop>output_sedimentograph</tabstop>
   <tabstop>browse_hydrograph_2</tabstop>
   <tabstop>output_hydrograph_2</tabstop>
-  <tabstop>select_directory</tabstop>
   <tabstop>browse_waterland</tabstop>
   <tabstop>output_waterland</tabstop>
   <tabstop>browse_output1</tabstop>

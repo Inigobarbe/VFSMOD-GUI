@@ -174,7 +174,6 @@ class qvfsmod:
         self.dlg_osp_results.close_dialog.clicked.connect(self.dlg_osp_results.close)
         
         #Select directory of the project for UH and for VFSMOD
-        self.dlg_base.select_directory.clicked.connect(self.select_directory_uh)
         self.dlg_base.select_directory_vfsmod.clicked.connect(self.select_directory_vfsmod)
         
         #Select UH project file
@@ -314,8 +313,6 @@ class qvfsmod:
         self.dlg_infiltration_soil.line_vertical_ms_2.textChanged.connect(self.update_k_units_cmh_2)
         self.dlg_infiltration_soil.line_vertical_cmh_2.textChanged.connect(self.update_k_units_ms_2)
         
-        #Add working directory to VFSMOD when added to UH
-        self.dlg_base.working_directory.textChanged.connect(self.update_vfsmod_directory)
         
         #Appear the VFSMOD editing dialogs
         self.dlg_base.edit_overland.clicked.connect(self.dlg_overland_flow_show)
@@ -553,7 +550,7 @@ class qvfsmod:
     
     def add_values_inp_dialog(self):
         """Method to add values of the inp to the dialog"""
-        path = self.obtain_direction(self.dlg_base.uh_input.text())
+        path = self.obtain_direction_vfsmod(self.dlg_base.uh_input.text())
         
         if os.path.exists(path):  
             try:
@@ -761,7 +758,7 @@ class qvfsmod:
     def show_og1_results(self):
         """Method to show og1 results"""
         #Add text
-        path = self.obtain_direction(self.dlg_base.line_sediment.text())
+        path = self.obtain_direction_vfsmod(self.dlg_base.line_sediment.text())
         with open(path, 'r') as file:
             lineas = file.readlines()
         contenido = ""
@@ -775,7 +772,7 @@ class qvfsmod:
     def show_og2_results(self):
         """Method to show og2 results"""
         #Add text
-        path = self.obtain_direction(self.dlg_base.line_flow.text())
+        path = self.obtain_direction_vfsmod(self.dlg_base.line_flow.text())
         with open(path, 'r') as file:
             lineas = file.readlines()
         contenido = ""
@@ -789,7 +786,7 @@ class qvfsmod:
     def show_ohy_results(self):
         """Method to show ohy results"""
         #Add text
-        path = self.obtain_direction(self.dlg_base.line_hydrograph_2.text())
+        path = self.obtain_direction_vfsmod(self.dlg_base.line_hydrograph_2.text())
         with open(path, 'r') as file:
             lineas = file.readlines()
         contenido = ""
@@ -803,7 +800,7 @@ class qvfsmod:
     def show_osm_results(self):
         """Method to show osm results"""
         #Add text
-        path = self.obtain_direction(self.dlg_base.line_waterland.text())
+        path = self.obtain_direction_vfsmod(self.dlg_base.line_waterland.text())
         with open(path, 'r') as file:
             lineas = file.readlines()
         contenido = ""
@@ -817,7 +814,7 @@ class qvfsmod:
     def show_owq_results(self):
         """Method to show owq results"""
         #Add text
-        path = self.obtain_direction(self.dlg_base.line_quality.text())
+        path = self.obtain_direction_vfsmod(self.dlg_base.line_quality.text())
         with open(path, 'r') as file:
             lineas = file.readlines()
         contenido = ""
@@ -1308,7 +1305,7 @@ class qvfsmod:
     def show_sedimentograph_results(self):
         """Method to show sedimentograph results after UH execution"""
         #Add text
-        path = self.obtain_direction(self.dlg_base.line_sedimentograph.text())
+        path = self.obtain_direction_vfsmod(self.dlg_base.line_sedimentograph.text())
         with open(path, 'r') as file:
             lineas = file.readlines()
         contenido = ""
@@ -1321,7 +1318,7 @@ class qvfsmod:
     def show_output_1_results(self):
         """Method to show sedimentograph results after UH execution"""
         #Add text
-        path = self.obtain_direction(self.dlg_base.line_output_1.text())
+        path = self.obtain_direction_vfsmod(self.dlg_base.line_output_1.text())
         with open(path, 'r') as file:
             lineas = file.readlines()
         contenido = ""
@@ -1334,7 +1331,7 @@ class qvfsmod:
     def show_output_2_results(self):
         """Method to show sedimentograph results after UH execution"""
         #Add text
-        path = self.obtain_direction(self.dlg_base.line_output_2.text())
+        path = self.obtain_direction_vfsmod(self.dlg_base.line_output_2.text())
         with open(path, 'r') as file:
             lineas = file.readlines()
         contenido = ""
@@ -3675,7 +3672,7 @@ class qvfsmod:
     def update_design_project_files(self):
         """Method to update the design project files when text changed"""
         #Obtain the absolute paths
-        direction_uh = self.obtain_direction(self.dlg_base.uh_file.text())
+        direction_uh = self.obtain_direction_vfsmod(self.dlg_base.uh_file.text())
         direction_vfsmod = self.obtain_direction_vfsmod(self.dlg_base.line_project_vfsmod.text())
         
         #Add the relative paths to dialog
@@ -4067,11 +4064,6 @@ class qvfsmod:
         #Update graph
         self.update_vfsmod_hydrograph_graph()
     
-    def update_vfsmod_directory(self):
-        """Change vfsmod directory when UH changed"""
-        if self.dlg_base.working_directory_vfsmod.text()=="":
-            self.dlg_base.working_directory_vfsmod.setText(self.dlg_base.working_directory.text())
-        
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
@@ -4089,11 +4081,6 @@ class qvfsmod:
         self.dlg_base.raise_()
         self.dlg_base.activateWindow()
     
-    def select_directory_uh(self):
-        """Method to select the directory among the local files for UH"""
-        fname = QFileDialog.getExistingDirectory(self.dlg_base, "Select directory", "C/")
-        if fname!="":
-            self.dlg_base.working_directory.setText(fname)
     
     def select_directory_vfsmod(self):
         """Method to select the directory among the local files for VFSMOD"""
@@ -4154,7 +4141,7 @@ class qvfsmod:
     
     def select_lis(self):
         """Method to select the .lis file among the local files"""
-        working_directory = self.dlg_base.working_directory.text()
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select UH Project File",working_directory , "LIS files (*.lis)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -4165,7 +4152,7 @@ class qvfsmod:
         
     def select_inp(self):
         """Method to select the .inp file among the local files"""
-        working_directory = self.dlg_base.working_directory.text()
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select UH Input File", working_directory, "INP files (*.inp)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -4177,7 +4164,7 @@ class qvfsmod:
 
     def select_iro(self):
         """Method to select the .iro file among the local files"""
-        working_directory = self.dlg_base.working_directory.text()
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Hydrograph File", working_directory, "IRO files (*.iro)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -4190,7 +4177,7 @@ class qvfsmod:
     
     def select_irn(self):
         """Method to select the .irn file among the local files"""
-        working_directory = self.dlg_base.working_directory.text()
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Hyetograph File", working_directory, "IRN files (*.irn)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -4203,7 +4190,7 @@ class qvfsmod:
                 
     def select_isd(self):
         """Method to select the .isd file among the local files"""
-        working_directory = self.dlg_base.working_directory.text()
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Incoming Sedimentograph File", working_directory, "ISD files (*.isd)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -4216,7 +4203,7 @@ class qvfsmod:
                 
     def select_out(self):
         """Method to select the .out file among the local files"""
-        working_directory = self.dlg_base.working_directory.text()
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Output Information Part 1 File", working_directory, "OUT files (*.out)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -4229,7 +4216,7 @@ class qvfsmod:
                 
     def select_hyt(self):
         """Method to select the .hyt file among the local files"""
-        working_directory = self.dlg_base.working_directory.text()
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Output Information Part 2 File", working_directory, "HYT files (*.hyt)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -4426,7 +4413,7 @@ class qvfsmod:
         """Method for executing the UH module"""
         
         #Save inputs from the dialog
-        self.project_file = self.dlg_base.working_directory.text()
+        self.project_file = self.dlg_base.working_directory_vfsmod.text()
         self.name_project = self.dlg_base.name_files.text()
         
         #Create required folders in working directory
@@ -4470,7 +4457,7 @@ class qvfsmod:
     def update_bat_uh(self):
         """Metod to update bat for the execution of UH"""
         f = open(self.plugin_directory+"\\executables\\execution.bat","w+")
-        linea_uno = "cd {}".format(f'"{os.path.dirname(self.obtain_direction(self.dlg_base.uh_file.text()))}\\"')
+        linea_uno = "cd {}".format(f'"{os.path.dirname(self.obtain_direction_vfsmod(self.dlg_base.uh_file.text()))}\\"')
         linea_dos = f'"{self.plugin_directory}\\executables\\uh" {os.path.basename(self.dlg_base.uh_file.text())}'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
@@ -4478,13 +4465,6 @@ class qvfsmod:
         f.write("{} \n".format(linea_tres))
         f.close()
     
-    def obtain_direction(self,direction):
-        """Method to obtain the absolute path direction"""
-        carpeta = self.dlg_base.working_directory.text()
-        if not os.path.isabs(direction): #relative path
-            return os.path.join(carpeta, direction)
-        else: #absolute path
-            return direction
     
     def obtain_direction_vfsmod(self,direction):
         """Method to obtain the absolute path direction. The difference with the other is that
@@ -4497,14 +4477,14 @@ class qvfsmod:
             
     def create_lis_file(self):
         """Metod to create the .lis file for the UH execution"""
-        lis_file = self.obtain_direction(self.dlg_base.uh_file.text())
+        lis_file = self.obtain_direction_vfsmod(self.dlg_base.uh_file.text())
         with open(lis_file, 'w') as archivo:
-            archivo.write(f"inp={self.obtain_direction(self.dlg_base.uh_input.text())}  \n")
-            archivo.write(f"iro={self.obtain_direction(self.dlg_base.line_hydrograph.text())}  \n")
-            archivo.write(f"irn={self.obtain_direction(self.dlg_base.line_hyetograph.text())}  \n")
-            archivo.write(f"isd={self.obtain_direction(self.dlg_base.line_sedimentograph.text())}  \n")
-            archivo.write(f"out={self.obtain_direction(self.dlg_base.line_output_1.text())}  \n")
-            archivo.write(f"hyt={self.obtain_direction(self.dlg_base.line_output_2.text())}  \n")
+            archivo.write(f"inp={self.obtain_direction_vfsmod(self.dlg_base.uh_input.text())}  \n")
+            archivo.write(f"iro={self.obtain_direction_vfsmod(self.dlg_base.line_hydrograph.text())}  \n")
+            archivo.write(f"irn={self.obtain_direction_vfsmod(self.dlg_base.line_hyetograph.text())}  \n")
+            archivo.write(f"isd={self.obtain_direction_vfsmod(self.dlg_base.line_sedimentograph.text())}  \n")
+            archivo.write(f"out={self.obtain_direction_vfsmod(self.dlg_base.line_output_1.text())}  \n")
+            archivo.write(f"hyt={self.obtain_direction_vfsmod(self.dlg_base.line_output_2.text())}  \n")
         #Update the design dialog
         self.add_storm_duration_to_design()
     
@@ -4530,7 +4510,7 @@ class qvfsmod:
         storm_type = int(self.dlg_base.storm_type.currentIndex())+1
         
         
-        inp_file = self.obtain_direction(self.dlg_base.uh_input.text())
+        inp_file = self.obtain_direction_vfsmod(self.dlg_base.uh_input.text())
         with open(inp_file, 'w') as archivo:
             linea_uno = f" {rainfall_amount}  {curve_number}  {area}  {storm_type}  {storm_duration}  {length}  {slope}       'P,CN,A,storm type,D,L,Y"
             linea_dos = "                                           'Note: Storm type I,IA,II,III (j=1,4)"
@@ -4830,7 +4810,7 @@ class qvfsmod:
     
     def default_values(self):
         """Method to set default values for input values"""
-        self.dlg_base.working_directory.setText(r"C:\Users\ASUS\OneDrive\Documentos\Vfsmod\Prueba")
+        self.dlg_base.working_directory_vfsmod.setText(r"C:\Users\ASUS\OneDrive\Documentos\Vfsmod\Prueba")
         #self.dlg_base.name_files.setText("prueba")
         self.dlg_base.uh_file.setText(".lis")
         self.dlg_base.uh_input.setText("inputs\.inp")
@@ -4930,7 +4910,7 @@ class qvfsmod:
         buttons_dic = {self.dlg_base.line_hydrograph:self.dlg_base.output_hydrograph,self.dlg_base.line_hyetograph:self.dlg_base.output_hyetograph,self.dlg_base.line_sedimentograph:self.dlg_base.output_sedimentograph,
             self.dlg_base.line_output_1:self.dlg_base.output_output1,self.dlg_base.line_output_2:self.dlg_base.output_output2}
         for i in buttons_dic.keys():
-            if os.path.exists(self.obtain_direction(i.text())) and i.text()!="":
+            if os.path.exists(self.obtain_direction_vfsmod(i.text())) and i.text()!="":
                 buttons_dic[i].setStyleSheet("""
                 QPushButton {
                     background-color: #4CAF50;  /* Verde */
@@ -5020,14 +5000,6 @@ class qvfsmod:
             button.setIcon(QIcon(icon_path_document))
         #Browse
         search_path = "images/search.svg"
-        add_image_button(search_path,self.dlg_base.select_directory)
-        add_image_button(search_path,self.dlg_base.select_lis)
-        add_image_button(search_path,self.dlg_base.select_inp)
-        add_image_button(search_path,self.dlg_base.browse_hydrograph)
-        add_image_button(search_path,self.dlg_base.browse_hyetograph)
-        add_image_button(search_path,self.dlg_base.browse_sedimentograph)
-        add_image_button(search_path,self.dlg_base.browse_output1)
-        add_image_button(search_path,self.dlg_base.browse_output2)
         #Add remove rows
         add_image_button("images/add.svg",self.dlg_buffer_segment.add_row)
         add_image_button("images/remove.svg",self.dlg_buffer_segment.remove_row)
@@ -5047,7 +5019,7 @@ class qvfsmod:
     def save_hydrograph(self):
         """Method to save the hydrograph in the local files"""
         opciones = QFileDialog.Options()
-        archivo, _ = QFileDialog.getSaveFileName(None, "Save hydrograph", self.dlg_base.working_directory.text(), "PNG Files (*.png);;All Files (*)", options=opciones)
+        archivo, _ = QFileDialog.getSaveFileName(None, "Save hydrograph", self.dlg_base.working_directory_vfsmod.text(), "PNG Files (*.png);;All Files (*)", options=opciones)
         if archivo:
             self.figure_hydrograph.savefig(archivo)
     
@@ -5121,7 +5093,7 @@ class qvfsmod:
         self.dlg_output_hydrograph = output_hydrograph()
         self.add_functions_outputs_hydrograph(self.dlg_output_hydrograph)
         #We obtain the information of the .iro file
-        with open(self.obtain_direction(self.dlg_base.line_hydrograph.text()), "r") as archivo:
+        with open(self.obtain_direction_vfsmod(self.dlg_base.line_hydrograph.text()), "r") as archivo:
             lineas = archivo.readlines()
         columna_1 = []
         columna_2 = []
@@ -5256,7 +5228,7 @@ class qvfsmod:
         self.dlg_output_hyetograph = hyetograph()
         self.add_functions_outputs_hyetograph()
         #We obtain the information of the .iro file
-        with open(self.obtain_direction(self.dlg_base.line_hyetograph.text()), "r") as archivo:
+        with open(self.obtain_direction_vfsmod(self.dlg_base.line_hyetograph.text()), "r") as archivo:
             lineas = archivo.readlines()
         columna_1 = []
         columna_2 = []
