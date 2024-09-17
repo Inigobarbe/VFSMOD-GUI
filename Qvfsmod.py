@@ -156,6 +156,13 @@ class qvfsmod:
         
         
         #Stacked widget
+        self.dlg_base.pushButton_6.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_folder))
+        self.dlg_base.pushButton_7.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_uh))
+        self.dlg_base.pushButton_8.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_vfs))
+        self.dlg_base.pushButton_9.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design))
+        self.dlg_base.pushButton_10.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration))
+        self.dlg_base.pushButton_11.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sensitivity_analysis))
+        
         self.dlg_base.folder_selection.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_folder))
         self.dlg_base.uh.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_uh))
         self.dlg_base.vfs.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_vfs))
@@ -543,7 +550,6 @@ class qvfsmod:
         #Same for vfsmod hyetograph and hydrograph
         self.dlg_vfsmod_hydrograph.tableWidget.itemChanged.connect(self.update_vfsmod_hydrograph_graph)
         self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.connect(self.update_vfsmod_hyetograph_graph)
-    
     
     def add_values_inp_dialog(self):
         """Method to add values of the inp to the dialog"""

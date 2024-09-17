@@ -1,15 +1,25 @@
 <RCC>
   <qresource prefix="icons">
-    <file>images/uncertainity.svg</file>
+    <file>images/design_yes.svg</file>
+    <file>images/design_no.svg</file>
+    <file>images/hide.svg</file>
+    <file>images/folder_no.svg</file>
+    <file>images/sensitivity_yes.svg</file>
+    <file>images/sensitivity_no.svg</file>
+    <file>images/folder_yes.svg</file>
     <file>images/sensitivity.svg</file>
-    <file>images/uh_gray.svg</file>
-    <file>images/uh_white.svg</file>
+    <file>images/uncertainity_yes.svg</file>
+    <file>images/uncertainity_no.svg</file>
+    <file>images/vegetation_yes.svg</file>
+    <file>images/vegetation_no.svg</file>
     <file>images/calibration.svg</file>
-    <file>images/design.svg</file>
+    <file>images/uh_yes.svg</file>
+    <file>images/uh_no.svg</file>
     <file>images/vegetation.svg</file>
+    <file>images/calibration_yes.svg</file>
+    <file>images/calibration_no.svg</file>
     <file>images/add.svg</file>
     <file>images/folder_gray.svg</file>
-    <file>images/folder_white.svg</file>
     <file>images/remove.svg</file>
     <file>images/search.svg</file>
   </qresource>

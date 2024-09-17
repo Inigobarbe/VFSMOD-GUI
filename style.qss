@@ -2,8 +2,14 @@
   ==================================================== */
   	/* style for widget */
 	#widget {
-		background-color: #313a46; /* Fondo claro para el widget */
+		background-color: #354052; /* Fondo claro para el widget */
 		width: 50px;
+		font-family: 'Georgia'; /* Aplicando la fuente Georgia */
+	}
+	#widget_2 {
+		background-color: #354052; /* Fondo claro para el widget */
+		width: 50px;
+		font-family: 'Georgia'; /* Aplicando la fuente Georgia */
 	}
 
     /* style para QPushButton */
@@ -11,32 +17,64 @@
 		height: 50px;
 		border: none;
 		color: #f9fafd; /* Texto gris oscuro cuando el botón no está clickado */
-		background-color: #313a46; /* Fondo con el color solicitado */
-		border-radius: 5px; /* Bordes redondeados para un aspecto más moderno */
+		background-color: #354052; /* Fondo con el color solicitado */
+		border-radius: 3px; /* Bordes redondeados para un aspecto más moderno */
+		font-family: 'Georgia'; /* Fuente aplicada */
+		font-weight: 600; /* Semi-bold */
+	}
+	
+	#widget_2 QPushButton {
+		height: 50px;
+		border: none;
+		color: #f9fafd; /* Texto gris oscuro cuando el botón no está clickado */
+		background-color: #414e61; /* Fondo con el color solicitado */
+		border-radius: 3px; /* Bordes redondeados para un aspecto más moderno */
+		font-family: 'Georgia'; /* Fuente aplicada */
+		font-weight: 600; /* Semi-bold */
+	}
+	
+	#widget_3 {
+    background-color: #354052; /* Fondo con el color solicitado */
+    width: 50px;
+    font-family: 'Georgia'; /* Aplicando la fuente Georgia */
 	}
 
 	#widget QPushButton:hover {
-		background-color: #d5ded3; /* Fondo más claro cuando el mouse pasa sobre el botón */
+		background-color: #b2b5a3; /* Fondo más claro cuando el mouse pasa sobre el botón */
 	}
 
-	#widget QPushButton:pressed {
-		color: #fff; /* Texto blanco cuando el botón es presionado */
-		background-color: #a0a0a0; /* Fondo más oscuro cuando se hace clic */
+	#widget QPushButton:checked {
+		color: #3f9cd5; /* Texto claro cuando el botón es presionado */
+		background-color: #f0f3f8; /* Cambia el fondo al color solicitado cuando se hace clic */
+		font-weight: bold; /* Negrita cuando el botón es presionado */
+	}
+	#widget_2 QPushButton:checked {
+		color: #f9fafd; /* Texto claro cuando el botón es presionado */
+		background-color: #3f9cd5; /* Cambia el fondo al color solicitado cuando se hace clic */
 		font-weight: bold; /* Negrita cuando el botón es presionado */
 	}
 
 	#widget QPushButton:focus {
-		color: #fff; /* Texto blanco cuando el botón tiene el foco */
+		color: #409fd7; /* Texto blanco cuando el botón tiene el foco */
 		font-weight: bold; /* Negrita cuando el botón tiene el foco */
 	}
 	
 	#widget QLabel {
-		font-weight: normal; /* Asegúrate de que las etiquetas no estén en negrita */
+		font-family: 'Georgia'; /* Aplicando la fuente Georgia */
+		font-weight: 600; /* Semi-bold */
 	}
 	
 	/* Opcional: Añadir estilo para el texto de etiquetas cuando tienen el foco */
 	#widget QLabel:focus {
+		font-family: 'Georgia'; /* Fuente aplicada */
 		font-weight: normal; /* Etiquetas no en negrita cuando tienen el foco */
 	}
+	/* Cambiar la fuente y el tamaño de los QLabel en el QStackedWidget */
+	QStackedWidget QLabel {
+		font-family: 'Georgia'; /* Cambiar la fuente a Arial */
+		font-size: 16px; /* Cambiar el tamaño de la fuente */
+		color: #000000; /* Color de texto (negro) */
+	}
+
 /*= END
   ==================================================== */
