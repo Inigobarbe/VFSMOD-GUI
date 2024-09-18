@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" id="Layer_1" width="800px" height="800px" viewBox="-3 -3 70 70" enable-background="new 0 0 64 64" xml:space="preserve"><g id="deeditor_bgCarrier" stroke-width="0">
+    <rect id="dee_c_e" x="-3" y="-3" width="70" height="70" rx="0" fill="#414e61" strokewidth="0"/>
+  </g>
+<rect x="1" y="1" fill="none" stroke="#ffffff" stroke-width="2" stroke-miterlimit="10" width="62" height="14"/>
+<rect x="1" y="15" fill="none" stroke="#ffffff" stroke-width="2" stroke-miterlimit="10" width="62" height="48"/>
+<line fill="none" stroke="#ffffff" stroke-width="2" stroke-miterlimit="10" x1="22" y1="15" x2="22" y2="63"/>
+<line fill="none" stroke="#ffffff" stroke-width="2" stroke-miterlimit="10" x1="22" y1="38" x2="63" y2="38"/>
+</svg>

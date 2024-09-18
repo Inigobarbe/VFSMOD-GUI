@@ -11,6 +11,7 @@
 		width: 50px;
 		font-family: 'Georgia'; /* Aplicando la fuente Georgia */
 	}
+	
 
     /* style para QPushButton */
 	#widget QPushButton {
@@ -20,6 +21,7 @@
 		background-color: #354052; /* Fondo con el color solicitado */
 		border-radius: 3px; /* Bordes redondeados para un aspecto más moderno */
 		font-family: 'Georgia'; /* Fuente aplicada */
+		font-size: 14px;
 		font-weight: 600; /* Semi-bold */
 	}
 	
@@ -70,46 +72,7 @@
 		font-weight: normal; /* Etiquetas no en negrita cuando tienen el foco */
 	}
 	/* Cambiar la fuente y el tamaño de los QLabel en el QStackedWidget */
-	QStackedWidget QLabel {
-		font-family: 'Georgia'; /* Cambiar la fuente a Arial */
-		font-size: 16px; /* Cambiar el tamaño de la fuente */
-		color: #000000; /* Color de texto (negro) */
-	}
-	QStackedWidget QLineEdit {
-		font-family: 'Georgia';  /* Cambiar la fuente */
-		font-size: 16px;  /* Cambiar el tamaño de la fuente */
-		color: #000000;  /* Color del texto */
-		background-color: #f0f0f0;  /* Opcional: cambiar el color de fondo del QLineEdit */
-		border: 1px solid #000000;  /* Opcional: añadir un borde negro */
-	}
 	
-	QStackedWidget QPushButton {
-		border-radius: 3px; /* Bordes redondeados para un aspecto más moderno */
-		background-color: #e35e54;
-	}
-
-	/* Cambiar la fuente y estilo de los QPushButton dentro del QStackedWidget */
-	QStackedWidget QPushButton {
-		font-family: 'Georgia';  /* Cambiar la fuente */
-		font-size: 16px;  /* Cambiar el tamaño de la fuente */
-		color: #000000;  /* Color del texto (blanco) */
-		background-color: #b2b5a3;  /* Fondo oscuro */
-		border: 2px solid #000000;  /* Borde negro */
-		border-radius: 5px;  /* Bordes redondeados */
-		padding: 5px;  /* Espaciado interno */
-	}
-
-	/* Estilo cuando el mouse pasa sobre el botón */
-	QStackedWidget QPushButton:hover {
-		color: #ffffff;
-		background-color: #b2b5a3;
-	}
-
-	/* Estilo cuando el botón es presionado */
-	QStackedWidget QPushButton:pressed {
-		background-color: #2b3a4a;  /* Fondo más oscuro al presionar */
-		color: #ffffff;  /* Cambiar el color del texto a rojo cuando se presiona */
-	}
 
 /*= END
   ==================================================== */

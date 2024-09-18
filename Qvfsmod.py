@@ -17,7 +17,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, Qt
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QAction, QFileDialog
+from PyQt5.QtWidgets import QAction, QFileDialog,QButtonGroup
 # Initialize Qt resources from file resources.py
 from resources import *
 # Import the code for the dialog
@@ -159,17 +159,59 @@ class qvfsmod:
         self.dlg_base.pushButton_6.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_folder))
         self.dlg_base.pushButton_7.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_uh))
         self.dlg_base.pushButton_8.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_vfs))
-        self.dlg_base.pushButton_9.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design))
-        self.dlg_base.pushButton_10.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration))
-        self.dlg_base.pushButton_11.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sensitivity_analysis))
+        self.dlg_base.pushButton_5.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design_simple))
+        self.dlg_base.pushButton_14.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design_advanced))
+        self.dlg_base.pushButton_15.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration_hydrograph))
+        self.dlg_base.pushButton_16.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration_sedimentograph))
+        self.dlg_base.pushButton_21.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sensitivity_analysis))
+        self.dlg_base.pushButton_22.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_morris_results))
+        self.dlg_base.pushButton_24.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sobol_results))
         
         self.dlg_base.folder_selection.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_folder))
         self.dlg_base.uh.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_uh))
         self.dlg_base.vfs.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_vfs))
-        self.dlg_base.design.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design))
-        self.dlg_base.calibration.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration))
-        self.dlg_base.sensitivity_analysis.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sensitivity_analysis))
+        self.dlg_base.simple_design.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design_simple))
+        self.dlg_base.advanced_design.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design_advanced))
+        self.dlg_base.calibration_hydrograph.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration_hydrograph))
+        self.dlg_base.calibration_sedimentograph.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration_sedimentograph))
+        self.dlg_base.sensitivity_parameters.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sensitivity_analysis))
+        self.dlg_base.morris_results.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_morris_results))
+        self.dlg_base.sobol_results.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sobol_results))
         
+        #Conditions to show differente stacked widgets pages
+        self.dlg_base.calibration.clicked.connect(self.show_calibration_buttons)
+        self.dlg_base.pushButton_10.clicked.connect(self.show_calibration_buttons)
+        
+        self.dlg_base.design.clicked.connect(self.show_design_buttons)
+        self.dlg_base.pushButton_9.clicked.connect(self.show_design_buttons)
+        
+        self.dlg_base.sensitivity_analysis.clicked.connect(self.show_sensitivity_buttons)
+        self.dlg_base.pushButton_11.clicked.connect(self.show_sensitivity_buttons)
+        
+        
+        #In the dialog base, if a button is clicked then uncheck the rest
+        base_buttons = [[self.dlg_base.pushButton_6,self.dlg_base.folder_selection],
+            [self.dlg_base.pushButton_7,self.dlg_base.uh],
+            [self.dlg_base.pushButton_8,self.dlg_base.vfs],
+            [self.dlg_base.pushButton_9,self.dlg_base.design],
+            [self.dlg_base.pushButton_5,self.dlg_base.simple_design],
+            [self.dlg_base.pushButton_14,self.dlg_base.advanced_design],
+            [self.dlg_base.pushButton_10,self.dlg_base.calibration],
+            [self.dlg_base.pushButton_15,self.dlg_base.calibration_hydrograph],
+            [self.dlg_base.pushButton_16,self.dlg_base.calibration_sedimentograph],
+            [self.dlg_base.pushButton_11,self.dlg_base.sensitivity_analysis],
+            [self.dlg_base.pushButton_21,self.dlg_base.sensitivity_parameters],
+            [self.dlg_base.pushButton_22,self.dlg_base.morris_results],
+            [self.dlg_base.pushButton_24,self.dlg_base.sobol_results],
+            [self.dlg_base.pushButton_12,self.dlg_base.uncertainity]]
+        self.group_uno = QButtonGroup(None)
+        self.group_dos = QButtonGroup(None)
+        for i in base_buttons:
+            self.group_uno.addButton(i[0])
+            self.group_dos.addButton(i[1])
+        self.group_uno.setExclusive(True)
+        self.group_dos.setExclusive(True)
+
         #Close osp results dialog
         self.dlg_osp_results.close_dialog.clicked.connect(self.dlg_osp_results.close)
         
@@ -325,9 +367,6 @@ class qvfsmod:
         self.dlg_base.edit_storm.clicked.connect(self.add_hyetograph_to_dialog)
         self.dlg_base.edit_source.clicked.connect(self.add_hydrograph_to_dialog)
         
-        #Show calibration dialogs
-        self.dlg_base.calibration_hydrograph.clicked.connect(self.dlg_calibration_hydrograph_show)
-        self.dlg_base.calibration_sedimentograph.clicked.connect(self.dlg_calibration_sedimentograph_show)
 
         #Enable/disable edition in water quality dialog
         self.enable_disable_water_quality_dialog()
@@ -459,9 +498,6 @@ class qvfsmod:
         #Run calibration
         self.dlg_calibration_hydrograph.run.clicked.connect(self.run_calibration_hydrograph)
         
-        #Show sensitivity analysis
-        self.dlg_base.sensitivity.clicked.connect(self.dlg_sensitivity_analysis.show)
-        
         #Add distributions to combobox
         self.dlg_sensitivity_analysis.distributions.addItems(["Uniform","Logaritmic uniform","Triangular","Normal","Lognormal","Normal truncated"])
         
@@ -547,6 +583,56 @@ class qvfsmod:
         #Same for vfsmod hyetograph and hydrograph
         self.dlg_vfsmod_hydrograph.tableWidget.itemChanged.connect(self.update_vfsmod_hydrograph_graph)
         self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.connect(self.update_vfsmod_hyetograph_graph)
+        
+    
+    def show_calibration_buttons(self):
+        """Method to add buttons to show calibration buttons and to show the dialog"""
+        #For the two frames
+        if self.dlg_base.frame_16.isVisible():
+            self.dlg_base.frame_16.setVisible(False)
+            self.dlg_base.frame_18.setVisible(False)
+        else:
+            self.dlg_base.frame_16.setVisible(True)
+            self.dlg_base.frame_18.setVisible(True)
+            #Show dialog
+            if self.dlg_base.calibration_hydrograph.isChecked():
+                self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration_hydrograph)
+            else:
+                self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration_sedimentograph)
+                
+
+    def show_design_buttons(self):
+        """Method to add buttons to show design buttons and to show the dialog"""
+        #For the two frames
+        if self.dlg_base.frame_52.isVisible():
+            self.dlg_base.frame_52.setVisible(False)
+            self.dlg_base.frame_53.setVisible(False)
+        else:
+            self.dlg_base.frame_52.setVisible(True)
+            self.dlg_base.frame_53.setVisible(True)
+            #Show dialog
+            if self.dlg_base.simple_design.isChecked():
+                self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design_simple)
+            else:
+                self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design_advanced)
+                
+    def show_sensitivity_buttons(self):
+        """Method to add buttons to show sensitivity buttons and to show the dialog"""
+        #For the two frames
+        if self.dlg_base.frame_54.isVisible():
+            self.dlg_base.frame_54.setVisible(False)
+            self.dlg_base.frame_55.setVisible(False)
+        else:
+            self.dlg_base.frame_54.setVisible(True)
+            self.dlg_base.frame_55.setVisible(True)
+            #Show dialog
+            if self.dlg_base.sensitivity_parameters.isChecked():
+                self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sensitivity_analysis)
+            elif self.dlg_base.morris_results.isChecked():
+                self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_morris_results)
+            else:
+                self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sobol_results)
+
     
     def add_values_inp_dialog(self):
         """Method to add values of the inp to the dialog"""
@@ -3023,88 +3109,6 @@ class qvfsmod:
         #Show the dialog
         self.dlg_warning_message_calibration.show()
     
-    def dlg_calibration_hydrograph_show(self):
-        """Method to show the dialog for the hydrograph calibration warning message"""
-        #First add a warning to select
-        self.warning_message_calibration("Please select a VFS Project File")
-        self.warning_hydro = 1
-        self.dlg_warning_message_calibration.ok.clicked.connect(self.dlg_calibration_hydrograph_show_second_part)
-        
-    def dlg_calibration_hydrograph_show_second_part(self):
-        """Method to show the hydrograph calibration"""
-        #Close warning
-        self.dlg_warning_message_calibration.close()
-        self.dlg_warning_message_calibration.ok.clicked.disconnect(self.dlg_calibration_hydrograph_show_second_part)
-        if self.warning_hydro ==1:
-            #Then select directory
-            working_directory = self.dlg_base.working_directory_vfsmod.text()
-            fname = QFileDialog.getOpenFileName(self.dlg_base, "Select VFS Project File",working_directory , "PRJ files (*.prj)")
-            if fname[0]!="":
-                #Put the relative path if the file is inside the folder
-                if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                    self.dlg_calibration_hydrograph.vfs_project.setText(os.path.relpath(fname[0], working_directory))
-                else: #absolute path
-                    self.dlg_calibration_hydrograph.vfs_project.setText(fname[0])
-                #Warning
-                self.warning_message_calibration("Please select a Hydrograph File")
-                self.warning_hydro = 2
-                self.dlg_warning_message_calibration.ok.clicked.connect(self.dlg_calibration_hydrograph_show_second_part)
-            
-        elif self.warning_hydro == 2:
-            #Select hydrograph
-            working_directory = self.dlg_base.working_directory_vfsmod.text()
-            fname = QFileDialog.getOpenFileName(self.dlg_base, "Select hydrograph file",working_directory , "TXT files (*.txt)")
-            if fname[0]!="":
-                #Put the relative path if the file is inside the folder
-                if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                    self.dlg_calibration_hydrograph.hydrograph_file.setText(os.path.relpath(fname[0], working_directory))
-                else: #absolute path
-                    self.dlg_calibration_hydrograph.hydrograph_file.setText(fname[0])
-        
-                #Show dialog 
-                self.dlg_calibration_hydrograph.show()
-    
-    def dlg_calibration_sedimentograph_show(self):
-        """Method to show the dialog for the sedimentograph calibration"""
-        #First add a warning to select
-        self.warning_message_calibration("Please select a VFS Project File")
-        self.warning_sedi = 1
-        self.dlg_warning_message_calibration.ok.clicked.connect(self.dlg_calibration_sedimentograph_show_second_part)
-    
-    
-    def dlg_calibration_sedimentograph_show_second_part(self):
-        """Method to show the hydrograph calibration"""
-        #Close warning
-        self.dlg_warning_message_calibration.close()
-        self.dlg_warning_message_calibration.ok.clicked.disconnect(self.dlg_calibration_sedimentograph_show_second_part)
-        if self.warning_sedi ==1:
-            #Then select directory
-            working_directory = self.dlg_base.working_directory_vfsmod.text()
-            fname = QFileDialog.getOpenFileName(self.dlg_base, "Select VFS Project File",working_directory , "PRJ files (*.prj)")
-            if fname[0]!="":
-                #Put the relative path if the file is inside the folder
-                if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                    self.dlg_calibration_sedimentograph.vfs_file.setText(os.path.relpath(fname[0], working_directory))
-                else: #absolute path
-                    self.dlg_calibration_sedimentograph.vfs_file.setText(fname[0])
-                #Warning
-                self.warning_message_calibration("Please select a Sedimentograph File")
-                self.warning_sedi = 2
-                self.dlg_warning_message_calibration.ok.clicked.connect(self.dlg_calibration_sedimentograph_show_second_part)
-            
-        elif self.warning_sedi == 2:
-            #Select hydrograph
-            working_directory = self.dlg_base.working_directory_vfsmod.text()
-            fname = QFileDialog.getOpenFileName(self.dlg_base, "Select sedimentograph file",working_directory , "TXT files (*.txt)")
-            if fname[0]!="":
-                #Put the relative path if the file is inside the folder
-                if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                    self.dlg_calibration_sedimentograph.sedimentograph_file.setText(os.path.relpath(fname[0], working_directory))
-                else: #absolute path
-                    self.dlg_calibration_sedimentograph.sedimentograph_file.setText(fname[0])
-        
-                #Show dialog 
-                self.dlg_calibration_sedimentograph.show()
                 
     
     def run_design(self):

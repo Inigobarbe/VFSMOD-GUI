@@ -1,5 +1,20 @@
 <RCC>
   <qresource prefix="icons">
+    <file>images/parameters_no.svg</file>
+    <file>images/parameters_yes.svg</file>
+    <file>images/gui-subscript-svgrepo-com.svg</file>
+    <file>images/sobol_yes.svg</file>
+    <file>images/sobol_no.svg</file>
+    <file>images/morris_no.svg</file>
+    <file>images/morris_yes.svg</file>
+    <file>images/complex_design_yes.svg</file>
+    <file>images/complex_design_no.svg</file>
+    <file>images/simple_design_no.svg</file>
+    <file>images/simple_design_yes.svg</file>
+    <file>images/sedimentograph_no.svg</file>
+    <file>images/sedimentograph_yes.svg</file>
+    <file>images/hydrograph_no.svg</file>
+    <file>images/hydrograph_yes.svg</file>
     <file>images/search.svg</file>
     <file>images/design_yes.svg</file>
     <file>images/design_no.svg</file>
