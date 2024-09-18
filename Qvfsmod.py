@@ -5364,11 +5364,6 @@ class qvfsmod:
 if __name__ == "__main__":
     
     app = QtWidgets.QApplication(sys.argv)
-    # loading style file
-    with open("style.qss", "r") as style_file:
-        style_str = style_file.read()
-        
-    app.setStyleSheet(style_str)
     
     dialog = qvfsmod()
     dialog.run()

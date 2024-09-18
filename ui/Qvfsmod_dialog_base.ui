@@ -11,12 +11,96 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Execution</string>
+   <string>VFSMOD</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">#qvfsmodDialogBase {
-    background-color:#354052;  /* Cambiar el color de fondo */
-}</string>
+   <string notr="true">/*= Style for menu with icon only START
+  ==================================================== */
+  	/* style for widget */
+	
+#qvfsmodDialogBase{
+	background-color: #354052
+}
+#stackedWidget{
+	background-color: #354052
+}
+
+#widget {
+		background-color: #354052; /* Fondo claro para el widget */
+		width: 50px;
+		font-family: 'Georgia'; /* Aplicando la fuente Georgia */
+	}
+	#widget_2 {
+		background-color: #354052; /* Fondo claro para el widget */
+		width: 50px;
+		font-family: 'Georgia'; /* Aplicando la fuente Georgia */
+	}
+	
+
+    /* style para QPushButton */
+	#widget QPushButton {
+		height: 50px;
+		border: none;
+		color: #f9fafd; /* Texto gris oscuro cuando el botón no está clickado */
+		background-color: #354052; /* Fondo con el color solicitado */
+		border-radius: 3px; /* Bordes redondeados para un aspecto más moderno */
+		font-family: 'Georgia'; /* Fuente aplicada */
+		font-size: 14px;
+		font-weight: 600; /* Semi-bold */
+	}
+	
+	#widget_2 QPushButton {
+		height: 50px;
+		border: none;
+		color: #f9fafd; /* Texto gris oscuro cuando el botón no está clickado */
+		background-color: #414e61; /* Fondo con el color solicitado */
+		border-radius: 3px; /* Bordes redondeados para un aspecto más moderno */
+		font-family: 'Georgia'; /* Fuente aplicada */
+		font-weight: 600; /* Semi-bold */
+	}
+	
+	#widget_3 {
+		background-color: #354052; /* Fondo con el color solicitado */
+		width: 50px;
+		font-family: 'Georgia'; /* Aplicando la fuente Georgia */
+	}
+
+	#widget QPushButton:hover {
+		background-color: #b2b5a3; /* Fondo más claro cuando el mouse pasa sobre el botón */
+	}
+
+	#widget QPushButton:checked {
+		color: #3f9cd5; /* Texto claro cuando el botón es presionado */
+		background-color: #f0f3f8; /* Cambia el fondo al color solicitado cuando se hace clic */
+		font-weight: bold; /* Negrita cuando el botón es presionado */
+	}
+	#widget_2 QPushButton:checked {
+		color: #f9fafd; /* Texto claro cuando el botón es presionado */
+		background-color: #3f9cd5; /* Cambia el fondo al color solicitado cuando se hace clic */
+		font-weight: bold; /* Negrita cuando el botón es presionado */
+	}
+
+	#widget QPushButton:focus {
+		color: #409fd7; /* Texto blanco cuando el botón tiene el foco */
+		font-weight: bold; /* Negrita cuando el botón tiene el foco */
+	}
+	
+	#widget QLabel {
+		font-family: 'Georgia'; /* Aplicando la fuente Georgia */
+		font-weight: 600; /* Semi-bold */
+	}
+	
+	/* Opcional: Añadir estilo para el texto de etiquetas cuando tienen el foco */
+	#widget QLabel:focus {
+		font-family: 'Georgia'; /* Fuente aplicada */
+		font-weight: normal; /* Etiquetas no en negrita cuando tienen el foco */
+	}
+	/* Cambiar la fuente y el tamaño de los QLabel en el QStackedWidget */
+	
+
+/*= END
+  ==================================================== */
+</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_88">
    <item row="0" column="0">
@@ -1378,56 +1462,87 @@ QPushButton:checked {
      <layout class="QGridLayout" name="gridLayout_90">
       <item row="0" column="0">
        <widget class="QStackedWidget" name="stackedWidget">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="styleSheet">
          <string notr="true">QLabel {
-font-family: 'Georgia'; /* Cambiar la fuente a Arial */
-font-size: 16px; /* Cambiar el tamaño de la fuente */
-color: #000000; /* Color de texto (negro) */
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 16px; /* Cambiar el tamaño de la fuente */
+    color: #ffffff; /* Color del texto (blanco) */
 }
+
 QLineEdit {
-font-family: 'Georgia'; /* Cambiar la fuente */
-font-size: 14px; /* Cambiar el tamaño de la fuente */
-color: #000000; /* Color del texto */
-background-color: #f0f0f0; /* Opcional: cambiar el color de fondo del QLineEdit */
-border: 1px solid #000000; /* Opcional: añadir un borde negro */
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #ffffff; /* Color del texto (blanco) */
+    background-color: #f0f0f0; /* Color de fondo del QLineEdit */
+    border: 1px solid #ffffff; /* Borde blanco */
 }
 
-/* Cambiar la fuente y estilo de los QPushButton dentro del QStackedWidget */
+QComboBox {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #ffffff; /* Color del texto (blanco) */
+    background-color: #7b8087; /* Fondo oscuro del ComboBox */
+    border: 1px solid #000000; /* Borde negro */
+}
+
+QRadioButton {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #ffffff; /* Color del texto (blanco) */
+}
+
+QCheckBox {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #ffffff; /* Color del texto (blanco) */
+}
+
+/* Cambiar la fuente y estilo de los QPushButton */
 QPushButton {
-font-family: 'Georgia'; /* Cambiar la fuente */
-font-size: 10px; /* Cambiar el tamaño de la fuente */
-color: #000000; /* Color del texto (blanco) */
-background-color: #7b8087  ; /* Fondo oscuro */
-border: 1px solid #000000; /* Borde negro */
-border-radius: 5px; /* Bordes redondeados */
-padding: 5px; /* Espaciado interno */
+    font-family: 'Georgia'; /* Cambiar la fuente */
+    font-size: 10px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto */
+    background-color: #7b8087; /* Fondo oscuro */
+    border: 1px solid #000000; /* Borde negro */
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 5px; /* Espaciado interno */
 }
 
-/* Estilo cuando el mouse pasa sobre el botón */
 QPushButton:hover {
-color: #ffffff;
-background-color: #9ea4ad  ;
+    color: #ffffff; /* Cambiar el color del texto al pasar el mouse */
+    background-color: #9ea4ad; /* Fondo más claro al pasar el mouse */
 }
 
-/* Estilo cuando el botón es presionado */
-QStackedWidget QPushButton:pressed {
-background-color: #2b3a4a; /* Fondo más oscuro al presionar */
-color: #ffffff; /* Cambiar el color del texto a rojo cuando se presiona */
+QPushButton:pressed {
+    background-color: #2b3a4a; /* Fondo más oscuro al presionar */
+    color: #ffffff; /* Cambiar el color del texto a blanco cuando se presiona */
 }
-
 </string>
         </property>
         <property name="currentIndex">
-         <number>9</number>
+         <number>5</number>
         </property>
         <widget class="QWidget" name="page_folder">
          <layout class="QGridLayout" name="gridLayout_16">
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>150</height>
+             </size>
+            </property>
             <property name="styleSheet">
-             <string notr="true">QStackedWidget {
-    background-color: #123456;
-}</string>
+             <string notr="true">background-color: #354052</string>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
             </property>
             <property name="widgetResizable">
              <bool>true</bool>
@@ -1437,57 +1552,11 @@ color: #ffffff; /* Cambiar el color del texto a rojo cuando se presiona */
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>613</width>
-               <height>580</height>
+               <width>899</width>
+               <height>150</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_7">
-              <item row="1" column="0">
-               <layout class="QHBoxLayout" name="horizontalLayout_2">
-                <item>
-                 <widget class="QLabel" name="label_2">
-                  <property name="minimumSize">
-                   <size>
-                    <width>150</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Change name of files:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="name_files">
-                  <property name="minimumSize">
-                   <size>
-                    <width>375</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>315</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_2">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </item>
               <item row="0" column="0">
                <layout class="QHBoxLayout" name="horizontalLayout_3">
                 <property name="spacing">
@@ -1499,6 +1568,12 @@ color: #ffffff; /* Cambiar el color del texto a rojo cuando se presiona */
                    <size>
                     <width>150</width>
                     <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>100</height>
                    </size>
                   </property>
                   <property name="text">
@@ -1548,22 +1623,77 @@ color: #ffffff; /* Cambiar el color del texto a rojo cuando se presiona */
                 </item>
                </layout>
               </item>
-              <item row="2" column="0">
-               <spacer name="verticalSpacer_3">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
+              <item row="1" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_2">
+                <property name="spacing">
+                 <number>6</number>
                 </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
+                <item>
+                 <widget class="QLabel" name="label_2">
+                  <property name="minimumSize">
+                   <size>
+                    <width>150</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>100</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>Project name:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="name_files">
+                  <property name="minimumSize">
+                   <size>
+                    <width>375</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>315</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_2">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
               </item>
              </layout>
             </widget>
            </widget>
+          </item>
+          <item row="1" column="0">
+           <spacer name="verticalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
@@ -1571,6 +1701,15 @@ color: #ffffff; /* Cambiar el color del texto a rojo cuando se presiona */
          <layout class="QGridLayout" name="gridLayout_26">
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea_4">
+            <property name="minimumSize">
+             <size>
+              <width>590</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: #354052</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -1582,8 +1721,8 @@ color: #ffffff; /* Cambiar el color del texto a rojo cuando se presiona */
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>598</width>
-               <height>950</height>
+               <width>573</width>
+               <height>954</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_25">
@@ -1601,9 +1740,9 @@ color: #ffffff; /* Cambiar el color del texto a rojo cuando se presiona */
                    <item>
                     <widget class="QLabel" name="label_30">
                      <property name="text">
-                      <string>dp - Particle Class Diameter
-(cm) (2-200 *10^-4 or -1 for
-table value)</string>
+                      <string>dp - Particle Class 
+Diameter(cm) (2-200 *10^-4
+ or -1 fortable value)</string>
                      </property>
                     </widget>
                    </item>
@@ -1988,7 +2127,7 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_16">
                      <property name="minimumSize">
                       <size>
-                       <width>228</width>
+                       <width>275</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -2043,7 +2182,7 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_35">
                      <property name="minimumSize">
                       <size>
-                       <width>228</width>
+                       <width>275</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -2098,12 +2237,18 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_36">
                      <property name="minimumSize">
                       <size>
-                       <width>157</width>
+                       <width>275</width>
                        <height>0</height>
                       </size>
                      </property>
+                     <property name="font">
+                      <font>
+                       <family>Georgia</family>
+                       <pointsize>-1</pointsize>
+                      </font>
+                     </property>
                      <property name="text">
-                      <string>Incoming Sedimentograph Input file for VFSmod</string>
+                      <string>Incoming Sedimentograph for VFSmod</string>
                      </property>
                     </widget>
                    </item>
@@ -2153,7 +2298,7 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_37">
                      <property name="minimumSize">
                       <size>
-                       <width>228</width>
+                       <width>275</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -2208,7 +2353,7 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_38">
                      <property name="minimumSize">
                       <size>
-                       <width>228</width>
+                       <width>275</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -2475,12 +2620,34 @@ typical0.01-0.07</string>
             </widget>
            </widget>
           </item>
+          <item row="0" column="1">
+           <spacer name="horizontalSpacer_7">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
          </layout>
         </widget>
         <widget class="QWidget" name="page_vfs">
          <layout class="QGridLayout" name="gridLayout_27">
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea_5">
+            <property name="minimumSize">
+             <size>
+              <width>590</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: #354052</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -2492,8 +2659,8 @@ typical0.01-0.07</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>598</width>
-               <height>701</height>
+               <width>573</width>
+               <height>702</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_24">
@@ -2512,7 +2679,7 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_4">
                      <property name="minimumSize">
                       <size>
-                       <width>85</width>
+                       <width>246</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -2577,7 +2744,7 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_6">
                      <property name="minimumSize">
                       <size>
-                       <width>164</width>
+                       <width>246</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -2615,7 +2782,7 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_7">
                      <property name="minimumSize">
                       <size>
-                       <width>164</width>
+                       <width>246</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -2653,7 +2820,7 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_10">
                      <property name="minimumSize">
                       <size>
-                       <width>164</width>
+                       <width>246</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -2689,6 +2856,12 @@ typical0.01-0.07</string>
                   <layout class="QHBoxLayout" name="horizontalLayout_10">
                    <item>
                     <widget class="QLabel" name="label_11">
+                     <property name="minimumSize">
+                      <size>
+                       <width>246</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>Incoming Sediment Characteristics</string>
                      </property>
@@ -2723,7 +2896,7 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_12">
                      <property name="minimumSize">
                       <size>
-                       <width>164</width>
+                       <width>246</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -2761,7 +2934,7 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_13">
                      <property name="minimumSize">
                       <size>
-                       <width>164</width>
+                       <width>246</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -2799,7 +2972,7 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_quality_properties">
                      <property name="minimumSize">
                       <size>
-                       <width>164</width>
+                       <width>246</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -2852,6 +3025,18 @@ typical0.01-0.07</string>
                 <layout class="QGridLayout" name="gridLayout_15">
                  <item row="0" column="0">
                   <widget class="QCheckBox" name="water_quality">
+                   <property name="minimumSize">
+                    <size>
+                     <width>246</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>246</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
                    <property name="text">
                     <string>Include Water Quality</string>
                    </property>
@@ -2893,7 +3078,7 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_9">
                      <property name="minimumSize">
                       <size>
-                       <width>164</width>
+                       <width>246</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -2948,7 +3133,7 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_39">
                      <property name="minimumSize">
                       <size>
-                       <width>164</width>
+                       <width>246</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -3003,7 +3188,7 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_40">
                      <property name="minimumSize">
                       <size>
-                       <width>164</width>
+                       <width>246</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -3058,7 +3243,7 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_41">
                      <property name="minimumSize">
                       <size>
-                       <width>164</width>
+                       <width>246</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -3113,7 +3298,7 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_42">
                      <property name="minimumSize">
                       <size>
-                       <width>164</width>
+                       <width>246</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -3168,7 +3353,7 @@ typical0.01-0.07</string>
                     <widget class="QLabel" name="label_water_summary">
                      <property name="minimumSize">
                       <size>
-                       <width>164</width>
+                       <width>246</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -3224,12 +3409,28 @@ typical0.01-0.07</string>
             </widget>
            </widget>
           </item>
+          <item row="0" column="1">
+           <spacer name="horizontalSpacer_8">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
          </layout>
         </widget>
         <widget class="QWidget" name="page_design_simple">
          <layout class="QGridLayout" name="gridLayout_28">
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea_6">
+            <property name="styleSheet">
+             <string notr="true">background-color: #354052</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -3241,137 +3442,125 @@ typical0.01-0.07</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>727</width>
-               <height>565</height>
+               <width>899</width>
+               <height>582</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_29">
-              <item row="2" column="0">
-               <widget class="QFrame" name="frame_15">
+              <item row="0" column="0">
+               <widget class="QFrame" name="frame_13">
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
                 </property>
                 <property name="frameShadow">
                  <enum>QFrame::Raised</enum>
                 </property>
-                <layout class="QGridLayout" name="gridLayout_20">
-                 <item row="0" column="1">
-                  <layout class="QHBoxLayout" name="horizontalLayout_42">
-                   <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_8">
-                     <item>
-                      <widget class="QLabel" name="label_54">
-                       <property name="text">
-                        <string>Lower</string>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignCenter</set>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lower_length"/>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="lower_spacing"/>
-                     </item>
-                    </layout>
-                   </item>
-                   <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_9">
-                     <item>
-                      <widget class="QLabel" name="label_55">
-                       <property name="text">
-                        <string>Upper</string>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignCenter</set>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="upper_length"/>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="upper_spacing"/>
-                     </item>
-                    </layout>
-                   </item>
-                   <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_10">
-                     <item>
-                      <widget class="QLabel" name="label_56">
-                       <property name="text">
-                        <string>Increment</string>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignCenter</set>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="increment_length"/>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="increment_spacing"/>
-                     </item>
-                    </layout>
-                   </item>
-                   <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_11">
-                     <item>
-                      <widget class="QLabel" name="label_57">
-                       <property name="text">
-                        <string>Base</string>
-                       </property>
-                       <property name="alignment">
-                        <set>Qt::AlignCenter</set>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="base_length"/>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="base_spacing"/>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </item>
+                <layout class="QGridLayout" name="gridLayout_18">
                  <item row="0" column="0">
-                  <layout class="QVBoxLayout" name="verticalLayout_12">
+                  <layout class="QHBoxLayout" name="horizontalLayout_40">
                    <item>
-                    <widget class="QCheckBox" name="design_length">
+                    <widget class="QLabel" name="label_51">
+                     <property name="minimumSize">
+                      <size>
+                       <width>119</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
-                      <string>VFS Length (m)</string>
+                      <string>UH Project File:</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="design_spacing">
-                     <property name="text">
-                      <string>Grass/Vegetation Media Spacing (cm)</string>
+                    <widget class="QLineEdit" name="design_uh_file">
+                     <property name="maximumSize">
+                      <size>
+                       <width>315</width>
+                       <height>16777215</height>
+                      </size>
                      </property>
                     </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="browse_design_uh">
+                     <property name="maximumSize">
+                      <size>
+                       <width>16777215</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_9">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
                    </item>
                   </layout>
                  </item>
                  <item row="1" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_43">
+                  <layout class="QHBoxLayout" name="horizontalLayout_41">
                    <item>
-                    <widget class="QLabel" name="label_59">
+                    <widget class="QLabel" name="label_53">
+                     <property name="minimumSize">
+                      <size>
+                       <width>119</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="text">
-                      <string>Design Results Filename (Specify a short name without .ext)</string>
+                      <string>VFS Project File:</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="name_design_csv">
-                     <property name="text">
-                      <string>design_results</string>
+                    <widget class="QLineEdit" name="design_vfs_file">
+                     <property name="maximumSize">
+                      <size>
+                       <width>315</width>
+                       <height>16777215</height>
+                      </size>
                      </property>
                     </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="browse_design_vfs">
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_10">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
                    </item>
                   </layout>
                  </item>
@@ -3554,6 +3743,12 @@ typical0.01-0.07</string>
                     <layout class="QHBoxLayout" name="horizontalLayout_45">
                      <item>
                       <widget class="QLabel" name="label_60">
+                       <property name="minimumSize">
+                        <size>
+                         <width>101</width>
+                         <height>0</height>
+                        </size>
+                       </property>
                        <property name="text">
                         <string>Start (mm)</string>
                        </property>
@@ -3607,6 +3802,13 @@ typical0.01-0.07</string>
                  <item row="2" column="0" rowspan="2">
                   <layout class="QVBoxLayout" name="verticalLayout_13">
                    <item>
+                    <widget class="QLabel" name="label_130">
+                     <property name="text">
+                      <string>Select option</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
                     <widget class="QRadioButton" name="specific">
                      <property name="text">
                       <string>Design Storm Specific Values</string>
@@ -3649,64 +3851,141 @@ typical0.01-0.07</string>
                 </layout>
                </widget>
               </item>
-              <item row="0" column="0">
-               <widget class="QFrame" name="frame_13">
+              <item row="2" column="0">
+               <widget class="QFrame" name="frame_15">
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
                 </property>
                 <property name="frameShadow">
                  <enum>QFrame::Raised</enum>
                 </property>
-                <layout class="QGridLayout" name="gridLayout_18">
-                 <item row="0" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_40">
+                <layout class="QGridLayout" name="gridLayout_20">
+                 <item row="0" column="1">
+                  <layout class="QHBoxLayout" name="horizontalLayout_42">
                    <item>
-                    <widget class="QLabel" name="label_51">
+                    <layout class="QVBoxLayout" name="verticalLayout_8">
+                     <item>
+                      <widget class="QLabel" name="label_54">
+                       <property name="text">
+                        <string>Lower</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="lower_length"/>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="lower_spacing"/>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QVBoxLayout" name="verticalLayout_9">
+                     <item>
+                      <widget class="QLabel" name="label_55">
+                       <property name="text">
+                        <string>Upper</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="upper_length"/>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="upper_spacing"/>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QVBoxLayout" name="verticalLayout_10">
+                     <item>
+                      <widget class="QLabel" name="label_56">
+                       <property name="text">
+                        <string>Increment</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="increment_length"/>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="increment_spacing"/>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QVBoxLayout" name="verticalLayout_11">
+                     <item>
+                      <widget class="QLabel" name="label_57">
+                       <property name="text">
+                        <string>Base</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="base_length"/>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="base_spacing"/>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="0" column="0">
+                  <layout class="QVBoxLayout" name="verticalLayout_12">
+                   <item>
+                    <widget class="QLabel" name="label_131">
                      <property name="text">
-                      <string>UH Project File:</string>
+                      <string>Select parameter</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="design_uh_file"/>
+                    <widget class="QCheckBox" name="design_length">
+                     <property name="text">
+                      <string>VFS Length (m)</string>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="browse_design_uh">
+                    <widget class="QCheckBox" name="design_spacing">
                      <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../button_icons.qrc">
-                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                      <string>Grass/Vegetation Media Spacing (cm)</string>
                      </property>
                     </widget>
                    </item>
                   </layout>
                  </item>
                  <item row="1" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_41">
+                  <layout class="QHBoxLayout" name="horizontalLayout_43">
                    <item>
-                    <widget class="QLabel" name="label_53">
+                    <widget class="QLabel" name="label_59">
                      <property name="text">
-                      <string>VFS Project File:</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="design_vfs_file"/>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="browse_design_vfs">
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../button_icons.qrc">
-                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                      <string>Design Results Filename (Specify a short name without .ext)</string>
                      </property>
                     </widget>
                    </item>
                   </layout>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QLineEdit" name="name_design_csv">
+                   <property name="text">
+                    <string>design_results</string>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -3735,11 +4014,37 @@ typical0.01-0.07</string>
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="page_design_advanced"/>
+        <widget class="QWidget" name="page_design_advanced">
+         <layout class="QGridLayout" name="gridLayout_91">
+          <item row="0" column="0">
+           <widget class="QScrollArea" name="scrollArea_13">
+            <property name="styleSheet">
+             <string notr="true">background-color: #354052</string>
+            </property>
+            <property name="widgetResizable">
+             <bool>true</bool>
+            </property>
+            <widget class="QWidget" name="scrollAreaWidgetContents_13">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>897</width>
+               <height>580</height>
+              </rect>
+             </property>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
         <widget class="QWidget" name="page_calibration_hydrograph">
          <layout class="QGridLayout" name="gridLayout_58">
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea_7">
+            <property name="styleSheet">
+             <string notr="true">background-color: #354052</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -3751,12 +4056,12 @@ typical0.01-0.07</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>945</width>
-               <height>634</height>
+               <width>969</width>
+               <height>607</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_31">
-              <item row="3" column="1">
+              <item row="4" column="1">
                <widget class="QFrame" name="frame_40">
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
@@ -4084,36 +4389,7 @@ typical0.01-0.07</string>
                 </layout>
                </widget>
               </item>
-              <item row="1" column="0">
-               <layout class="QHBoxLayout" name="horizontalLayout_49">
-                <item>
-                 <widget class="QLabel" name="label_64">
-                  <property name="text">
-                   <string>Hydrograph Measured
-Data File</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="hydrograph_file"/>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="browse_hydrograph_3">
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="edit_hydrograph">
-                  <property name="text">
-                   <string>Edit</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item row="3" column="0">
+              <item row="4" column="0">
                <widget class="QFrame" name="frame_19">
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
@@ -4580,47 +4856,7 @@ Data File</string>
                 </layout>
                </widget>
               </item>
-              <item row="0" column="0">
-               <widget class="QFrame" name="frame_12">
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_22">
-                 <item row="0" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout">
-                   <item>
-                    <widget class="QLabel" name="label_63">
-                     <property name="text">
-                      <string>VFS Project Name</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="vfs_project"/>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="browse_project">
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_65">
-                <property name="text">
-                 <string>Select parameter(s) to be changed or calibrated:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="2">
+              <item row="4" column="2">
                <layout class="QVBoxLayout" name="verticalLayout_16">
                 <item>
                  <widget class="QPushButton" name="advanced_2">
@@ -4652,6 +4888,100 @@ Data File</string>
                 </item>
                </layout>
               </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_65">
+                <property name="text">
+                 <string>Select parameter(s) to be changed or calibrated:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QFrame" name="frame_12">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_22"/>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <layout class="QHBoxLayout" name="horizontalLayout_49">
+                <item>
+                 <widget class="QLabel" name="label_64">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>Hydrograph Measured
+Data File</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="hydrograph_file">
+                  <property name="minimumSize">
+                   <size>
+                    <width>175</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="browse_hydrograph_3">
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="edit_hydrograph">
+                  <property name="text">
+                   <string>Edit</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="2" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout">
+                <item>
+                 <widget class="QLabel" name="label_63">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>VFS Project Name</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="vfs_project">
+                  <property name="minimumSize">
+                   <size>
+                    <width>175</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="browse_project">
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
              </layout>
             </widget>
            </widget>
@@ -4662,6 +4992,12 @@ Data File</string>
          <layout class="QGridLayout" name="gridLayout_34">
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea_2">
+            <property name="styleSheet">
+             <string notr="true">background-color: #354052</string>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
             <property name="widgetResizable">
              <bool>true</bool>
             </property>
@@ -4670,8 +5006,8 @@ Data File</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>613</width>
-               <height>580</height>
+               <width>899</width>
+               <height>582</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_71">
@@ -5534,6 +5870,9 @@ Data File</string>
          <layout class="QGridLayout" name="gridLayout_32">
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea_8">
+            <property name="styleSheet">
+             <string notr="true">background-color: #354052</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -5545,7 +5884,7 @@ Data File</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>958</width>
+               <width>899</width>
                <height>582</height>
               </rect>
              </property>
@@ -5736,8 +6075,8 @@ Data File</string>
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>284</width>
-                      <height>255</height>
+                      <width>267</width>
+                      <height>247</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_79">
@@ -5983,6 +6322,12 @@ Data File</string>
          <layout class="QGridLayout" name="gridLayout_77">
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea_10">
+            <property name="styleSheet">
+             <string notr="true">background-color: #354052</string>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
             <property name="widgetResizable">
              <bool>true</bool>
             </property>
@@ -5991,8 +6336,8 @@ Data File</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>1036</width>
-               <height>563</height>
+               <width>1123</width>
+               <height>565</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_87">
@@ -6181,6 +6526,9 @@ Data File</string>
          <layout class="QGridLayout" name="gridLayout_76">
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea_9">
+            <property name="styleSheet">
+             <string notr="true">background-color: #354052</string>
+            </property>
             <property name="widgetResizable">
              <bool>true</bool>
             </property>
@@ -6189,7 +6537,7 @@ Data File</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>1036</width>
+               <width>1123</width>
                <height>563</height>
               </rect>
              </property>
