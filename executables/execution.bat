@@ -1,3 +1,3 @@
-cd "C:\Users\ASUS\OneDrive\Documentos\Vfsmod\Prueba\" 
-"C:\Users\ASUS\OneDrive - UPNA\Tesis\Vfsmod\Programa\qvfsmod\executables\vfsm" name.prj 
+cd "C:/borrar\sensitivity\" 
+"C:\qvfsmod\executables\vfsm" sensitivity.prj 
 Pause 

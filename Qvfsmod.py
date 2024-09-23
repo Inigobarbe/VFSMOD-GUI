@@ -15,7 +15,7 @@
 
 
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, Qt
+from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QThread,pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QFileDialog,QButtonGroup
 # Initialize Qt resources from file resources.py
@@ -37,13 +37,8 @@ from ui.vfsmod_hydrograph import vfsmod_hydrograph
 from ui.warning_message import warning_message
 from ui.warning_message_calibration import warning_message_calibration
 from ui.design_results import design_results
-from ui.calibration_hydrograph import calibration_hydrograph
-from ui.calibration_sedimentograph import calibration_sedimentograph
 from ui.design_results_graph import design_results_graph
 from ui.calibration_advanced_settings import calibration_advanced_settings
-from ui.sensitivity_analysis import sensitivity_analysis
-from ui.sensitivity_results import sensitivity_results
-from ui.sensitivity_results_sobol import sensitivity_results_sobol
 from ui.sedimentograph_output import sedimentograph_output
 from ui.user_output_1 import user_output_1
 from ui.user_output_2 import user_output_2
@@ -76,6 +71,7 @@ from matplotlib.ticker import FuncFormatter
 from PyQt5.QtWidgets import QVBoxLayout,QTableWidgetItem,QProgressDialog,QLabel, QLineEdit
 
 import sys
+
 
 class qvfsmod:
     """QGIS Plugin Implementation."""
@@ -135,13 +131,8 @@ class qvfsmod:
         self.dlg_warning_message = warning_message()
         self.dlg_warning_message_calibration = warning_message_calibration()
         self.dlg_design_results = design_results()
-        self.dlg_calibration_sedimentograph = calibration_sedimentograph()
-        self.dlg_calibration_hydrograph = calibration_hydrograph()
         self.dlg_design_results_graph = design_results_graph()
         self.dlg_calibration_advanced_settings = calibration_advanced_settings()
-        self.dlg_sensitivity_analysis = sensitivity_analysis()
-        self.dlg_sensitivity_results = sensitivity_results()
-        self.dlg_sensitivity_results_sobol = sensitivity_results_sobol()
         self.dlg_sedimentograph_output = sedimentograph_output()
         self.dlg_user_output_1 = user_output_1()
         self.dlg_user_output_2 = user_output_2()
@@ -445,77 +436,84 @@ class qvfsmod:
         self.dlg_base.design_spacing.stateChanged.connect(lambda _, b = "spacing":self.uncheck_length_spacing(b))
         
         #Button to add information to the sensitivity table 
-        self.dlg_sensitivity_analysis.add.clicked.connect(self.add_sensitivity_table)
+        self.dlg_base.add.clicked.connect(self.add_sensitivity_table)
         #Button to delete information of the sensitivity table
-        self.dlg_sensitivity_analysis.remove.clicked.connect(self.delete_sensitivity_table)
+        self.dlg_base.remove.clicked.connect(self.delete_sensitivity_table)
         
         #Show design graph 
         self.dlg_design_results.graph.clicked.connect(self.show_design_graph)
         
+        #In design disable lineEdits depending on selection
+        self.dlg_base.specific.toggled.connect(self.disable_storm_line_edits_design)
+        self.dlg_base.design_length.clicked.connect(self.disable_storm_line_edits_design)
+        self.dlg_base.design_spacing.clicked.connect(self.disable_storm_line_edits_design)
+        self.disable_storm_line_edits_design() #by default
+        
         #In calibration enable/disable lineEdits depending on selection
         #First with the hidrograph
-        self.hydrology_checks = [[[self.dlg_calibration_hydrograph.no_vertical,self.dlg_calibration_hydrograph.change_vertical,self.dlg_calibration_hydrograph.calibrate_vertical],[self.dlg_calibration_hydrograph.new_vertical,self.dlg_calibration_hydrograph.min_vertical,self.dlg_calibration_hydrograph.max_vertical]],
-            [[self.dlg_calibration_hydrograph.no_average,self.dlg_calibration_hydrograph.change_average,self.dlg_calibration_hydrograph.calibrate_average],[self.dlg_calibration_hydrograph.new_average,self.dlg_calibration_hydrograph.min_average,self.dlg_calibration_hydrograph.max_average]],
-            [[self.dlg_calibration_hydrograph.no_saturated,self.dlg_calibration_hydrograph.change_saturated,self.dlg_calibration_hydrograph.calibrate_saturated],[self.dlg_calibration_hydrograph.new_saturated,self.dlg_calibration_hydrograph.min_saturated,self.dlg_calibration_hydrograph.max_saturated]],
-            [[self.dlg_calibration_hydrograph.no_initial,self.dlg_calibration_hydrograph.change_initial,self.dlg_calibration_hydrograph.calibrate_initial],[self.dlg_calibration_hydrograph.new_initial,self.dlg_calibration_hydrograph.min_initial,self.dlg_calibration_hydrograph.max_initial]],
-            [[self.dlg_calibration_hydrograph.no_maximum,self.dlg_calibration_hydrograph.change_maximum,self.dlg_calibration_hydrograph.calibrate_maximum],[self.dlg_calibration_hydrograph.new_maximum,self.dlg_calibration_hydrograph.min_maximum,self.dlg_calibration_hydrograph.max_maximum]],
-            [[self.dlg_calibration_hydrograph.no_fraction,self.dlg_calibration_hydrograph.change_fraction,self.dlg_calibration_hydrograph.calibrate_fraction],[self.dlg_calibration_hydrograph.new_fraction,self.dlg_calibration_hydrograph.min_fraction,self.dlg_calibration_hydrograph.max_fraction]],
-            [[self.dlg_calibration_hydrograph.no_width,self.dlg_calibration_hydrograph.change_width,self.dlg_calibration_hydrograph.calibrate_width],[self.dlg_calibration_hydrograph.new_width,self.dlg_calibration_hydrograph.min_width,self.dlg_calibration_hydrograph.max_width]],
-            [[self.dlg_calibration_hydrograph.no_length,self.dlg_calibration_hydrograph.change_length,self.dlg_calibration_hydrograph.calibrate_length],[self.dlg_calibration_hydrograph.new_length,self.dlg_calibration_hydrograph.min_length,self.dlg_calibration_hydrograph.max_length]],
-            [[self.dlg_calibration_hydrograph.no_manning,self.dlg_calibration_hydrograph.change_manning,self.dlg_calibration_hydrograph.calibrate_manning],[self.dlg_calibration_hydrograph.new_manning,self.dlg_calibration_hydrograph.min_manning,self.dlg_calibration_hydrograph.max_manning]],
-            [[self.dlg_calibration_hydrograph.no_slope,self.dlg_calibration_hydrograph.change_slope,self.dlg_calibration_hydrograph.calibrate_slope],[self.dlg_calibration_hydrograph.new_slope,self.dlg_calibration_hydrograph.min_slope,self.dlg_calibration_hydrograph.max_slope]]]
+        self.hydrology_checks = [[[self.dlg_base.no_vertical,self.dlg_base.change_vertical,self.dlg_base.calibrate_vertical],[self.dlg_base.new_vertical,self.dlg_base.min_vertical,self.dlg_base.max_vertical]],
+            [[self.dlg_base.no_average,self.dlg_base.change_average,self.dlg_base.calibrate_average],[self.dlg_base.new_average,self.dlg_base.min_average,self.dlg_base.max_average]],
+            [[self.dlg_base.no_saturated,self.dlg_base.change_saturated,self.dlg_base.calibrate_saturated],[self.dlg_base.new_saturated,self.dlg_base.min_saturated,self.dlg_base.max_saturated]],
+            [[self.dlg_base.no_initial,self.dlg_base.change_initial,self.dlg_base.calibrate_initial],[self.dlg_base.new_initial,self.dlg_base.min_initial,self.dlg_base.max_initial]],
+            [[self.dlg_base.no_maximum,self.dlg_base.change_maximum,self.dlg_base.calibrate_maximum],[self.dlg_base.new_maximum,self.dlg_base.min_maximum,self.dlg_base.max_maximum]],
+            [[self.dlg_base.no_fraction,self.dlg_base.change_fraction,self.dlg_base.calibrate_fraction],[self.dlg_base.new_fraction,self.dlg_base.min_fraction,self.dlg_base.max_fraction]],
+            [[self.dlg_base.no_width,self.dlg_base.change_width,self.dlg_base.calibrate_width],[self.dlg_base.new_width,self.dlg_base.min_width,self.dlg_base.max_width]],
+            [[self.dlg_base.no_length,self.dlg_base.change_length,self.dlg_base.calibrate_length],[self.dlg_base.new_length,self.dlg_base.min_length,self.dlg_base.max_length]],
+            [[self.dlg_base.no_manning,self.dlg_base.change_manning,self.dlg_base.calibrate_manning],[self.dlg_base.new_manning,self.dlg_base.min_manning,self.dlg_base.max_manning]],
+            [[self.dlg_base.no_slope,self.dlg_base.change_slope,self.dlg_base.calibrate_slope],[self.dlg_base.new_slope,self.dlg_base.min_slope,self.dlg_base.max_slope]]]
         for i in self.hydrology_checks:
             i[0][0].toggled.connect(self.draw_calibration_hydrology)
             i[0][1].toggled.connect(self.draw_calibration_hydrology)
             i[0][2].toggled.connect(self.draw_calibration_hydrology)
         
         #The same for sedimentograph
-        self.sedimentograph_checks = [[[self.dlg_calibration_sedimentograph.no_spacing,self.dlg_calibration_sedimentograph.change_spacing,self.dlg_calibration_sedimentograph.calibrate_spacing],[self.dlg_calibration_sedimentograph.new_spacing,self.dlg_calibration_sedimentograph.min_spacing,self.dlg_calibration_sedimentograph.max_spacing]],
-            [[self.dlg_calibration_sedimentograph.no_roughness,self.dlg_calibration_sedimentograph.change_roughness,self.dlg_calibration_sedimentograph.calibrate_roughness],[self.dlg_calibration_sedimentograph.new_roughness,self.dlg_calibration_sedimentograph.min_roughness,self.dlg_calibration_sedimentograph.max_roughness]],
-            [[self.dlg_calibration_sedimentograph.no_height,self.dlg_calibration_sedimentograph.change_height,self.dlg_calibration_sedimentograph.calibrate_height],[self.dlg_calibration_sedimentograph.new_height,self.dlg_calibration_sedimentograph.min_height,self.dlg_calibration_sedimentograph.max_height]],
-            [[self.dlg_calibration_sedimentograph.no_bare,self.dlg_calibration_sedimentograph.change_bare,self.dlg_calibration_sedimentograph.calibrate_bare],[self.dlg_calibration_sedimentograph.new_bare,self.dlg_calibration_sedimentograph.min_bare,self.dlg_calibration_sedimentograph.max_bare]],
-            [[self.dlg_calibration_sedimentograph.no_coarse,self.dlg_calibration_sedimentograph.change_coarse,self.dlg_calibration_sedimentograph.calibrate_coarse],[self.dlg_calibration_sedimentograph.new_coarse,self.dlg_calibration_sedimentograph.min_coarse,self.dlg_calibration_sedimentograph.max_coarse]],
-            [[self.dlg_calibration_sedimentograph.no_incoming,self.dlg_calibration_sedimentograph.change_incoming,self.dlg_calibration_sedimentograph.calibrate_incoming],[self.dlg_calibration_sedimentograph.new_incoming,self.dlg_calibration_sedimentograph.min_incoming,self.dlg_calibration_sedimentograph.max_incoming]],
-            [[self.dlg_calibration_sedimentograph.no_porosity,self.dlg_calibration_sedimentograph.change_porosity,self.dlg_calibration_sedimentograph.calibrate_porosity],[self.dlg_calibration_sedimentograph.new_porosity,self.dlg_calibration_sedimentograph.min_porosity,self.dlg_calibration_sedimentograph.max_porosity]],
-            [[self.dlg_calibration_sedimentograph.no_class,self.dlg_calibration_sedimentograph.change_class,self.dlg_calibration_sedimentograph.calibrate_class],[self.dlg_calibration_sedimentograph.new_class,self.dlg_calibration_sedimentograph.min_class,self.dlg_calibration_sedimentograph.max_class]],
-            [[self.dlg_calibration_sedimentograph.no_density,self.dlg_calibration_sedimentograph.change_density,self.dlg_calibration_sedimentograph.calibrate_density],[self.dlg_calibration_sedimentograph.new_density,self.dlg_calibration_sedimentograph.min_density,self.dlg_calibration_sedimentograph.max_density]]]
+        self.sedimentograph_checks = [[[self.dlg_base.no_spacing,self.dlg_base.change_spacing,self.dlg_base.calibrate_spacing],[self.dlg_base.new_spacing,self.dlg_base.min_spacing,self.dlg_base.max_spacing]],
+            [[self.dlg_base.no_roughness,self.dlg_base.change_roughness,self.dlg_base.calibrate_roughness],[self.dlg_base.new_roughness,self.dlg_base.min_roughness,self.dlg_base.max_roughness]],
+            [[self.dlg_base.no_height,self.dlg_base.change_height,self.dlg_base.calibrate_height],[self.dlg_base.new_height,self.dlg_base.min_height,self.dlg_base.max_height]],
+            [[self.dlg_base.no_bare,self.dlg_base.change_bare,self.dlg_base.calibrate_bare],[self.dlg_base.new_bare,self.dlg_base.min_bare,self.dlg_base.max_bare]],
+            [[self.dlg_base.no_coarse,self.dlg_base.change_coarse,self.dlg_base.calibrate_coarse],[self.dlg_base.new_coarse,self.dlg_base.min_coarse,self.dlg_base.max_coarse]],
+            [[self.dlg_base.no_incoming,self.dlg_base.change_incoming,self.dlg_base.calibrate_incoming],[self.dlg_base.new_incoming,self.dlg_base.min_incoming,self.dlg_base.max_incoming]],
+            [[self.dlg_base.no_porosity,self.dlg_base.change_porosity,self.dlg_base.calibrate_porosity],[self.dlg_base.new_porosity,self.dlg_base.min_porosity,self.dlg_base.max_porosity]],
+            [[self.dlg_base.no_class,self.dlg_base.change_class,self.dlg_base.calibrate_class],[self.dlg_base.new_class,self.dlg_base.min_class,self.dlg_base.max_class]],
+            [[self.dlg_base.no_density,self.dlg_base.change_density,self.dlg_base.calibrate_density],[self.dlg_base.new_density,self.dlg_base.min_density,self.dlg_base.max_density]]]
         for i in self.sedimentograph_checks:
             i[0][0].toggled.connect(self.draw_calibration_sedimentograph)
             i[0][1].toggled.connect(self.draw_calibration_sedimentograph)
             i[0][2].toggled.connect(self.draw_calibration_sedimentograph)
         
         #Show advances settings of calibration
-        self.dlg_calibration_hydrograph.advanced.clicked.connect(self.dlg_calibration_advanced_settings.show)
-        self.dlg_calibration_sedimentograph.advanced.clicked.connect(self.dlg_calibration_advanced_settings.show)
+        self.dlg_base.advanced_hydrograph.clicked.connect(self.dlg_calibration_advanced_settings.show)
+        self.dlg_base.advanced_sedimentograph.clicked.connect(self.dlg_calibration_advanced_settings.show)
         self.dlg_calibration_advanced_settings.close_dialog.clicked.connect(self.dlg_calibration_advanced_settings.close)
         
         #Browse files in calibration
-        self.dlg_calibration_hydrograph.browse_project.clicked.connect(lambda _, b = ["prj",self.dlg_calibration_hydrograph,self.dlg_calibration_hydrograph.vfs_project]:self.browse_files_calibration(b))
-        self.dlg_calibration_hydrograph.browse_hydrograph.clicked.connect(lambda _, b = ["txt",self.dlg_calibration_hydrograph,self.dlg_calibration_hydrograph.hydrograph_file]:self.browse_files_calibration(b))
-        self.dlg_calibration_sedimentograph.browse_project.clicked.connect(lambda _, b = ["prj",self.dlg_calibration_sedimentograph,self.dlg_calibration_sedimentograph.vfs_file]:self.browse_files_calibration(b))
-        self.dlg_calibration_sedimentograph.browse_sedimentograph.clicked.connect(lambda _, b = ["txt",self.dlg_calibration_sedimentograph,self.dlg_calibration_sedimentograph.sedimentograph_file]:self.browse_files_calibration(b))
+        self.dlg_base.browse_project.clicked.connect(lambda _, b = ["prj",self.dlg_base,self.dlg_base.vfs_project]:self.browse_files_calibration(b))
+        self.dlg_base.browse_hydrograph_calibration.clicked.connect(lambda _, b = ["txt",self.dlg_base,self.dlg_base.hydrograph_file]:self.browse_files_calibration(b))
+        self.dlg_base.browse_project_sedimentograph.clicked.connect(lambda _, b = ["prj",self.dlg_base,self.dlg_base.vfs_file]:self.browse_files_calibration(b))
+        self.dlg_base.browse_sedimentograph_calibration.clicked.connect(lambda _, b = ["txt",self.dlg_base,self.dlg_base.sedimentograph_file]:self.browse_files_calibration(b))
         
         #Run calibration
-        self.dlg_calibration_hydrograph.run.clicked.connect(self.run_calibration_hydrograph)
+        self.dlg_base.run_hydrograph.clicked.connect(self.run_calibration_hydrograph)
+        self.dlg_base.run_sedimentograph.clicked.connect(self.run_calibration_sedimentograph)
         
         #Add distributions to combobox
-        self.dlg_sensitivity_analysis.distributions.addItems(["Uniform","Logaritmic uniform","Triangular","Normal","Lognormal","Normal truncated"])
+        self.dlg_base.distributions.addItems(["Uniform","Logaritmic uniform","Triangular","Normal","Lognormal","Normal truncated"])
         
         #Change bounds in sensitivity dialog if distribution changed
-        self.dlg_sensitivity_analysis.distributions.currentIndexChanged.connect(self.change_bounds_sensitivity)
+        self.dlg_base.distributions.currentIndexChanged.connect(self.change_bounds_sensitivity)
         #Add new parameters to distribution in sensitivity dialog
-        self.dlg_sensitivity_analysis.distributions.currentIndexChanged.connect(self.distribution_parameters)
+        self.dlg_base.distributions.currentIndexChanged.connect(self.distribution_parameters)
         
         #Change number of samples in dialog depending on sensitivity analysis metod
-        self.dlg_sensitivity_analysis.sobol.toggled.connect(self.change_sensitivity_method)
-        self.dlg_sensitivity_analysis.morris.toggled.connect(self.change_sensitivity_method)
-        self.dlg_sensitivity_analysis.trajectories.textChanged.connect(self.change_sensitivity_method)
+        self.dlg_base.sobol.toggled.connect(self.change_sensitivity_method)
+        self.dlg_base.morris.toggled.connect(self.change_sensitivity_method)
+        self.dlg_base.trajectories.textChanged.connect(self.change_sensitivity_method)
         
         #Sensitivity analysis dialog buttons
-        buttons = [self.dlg_sensitivity_analysis.all_parameters,self.dlg_sensitivity_analysis.rainfall_event,
-            self.dlg_sensitivity_analysis.source_area,self.dlg_sensitivity_analysis.erosion_parameters,
-            self.dlg_sensitivity_analysis.buffer_dimensions,self.dlg_sensitivity_analysis.kinematic_wave,
-            self.dlg_sensitivity_analysis.infiltration,self.dlg_sensitivity_analysis.buffer_vegetation,self.dlg_sensitivity_analysis.incoming_sediment]
+        buttons = [self.dlg_base.all_parameters,self.dlg_base.rainfall_event,
+            self.dlg_base.source_area,self.dlg_base.erosion_parameters,
+            self.dlg_base.buffer_dimensions,self.dlg_base.kinematic_wave,
+            self.dlg_base.infiltration,self.dlg_base.buffer_vegetation,self.dlg_base.incoming_sediment]
         #Dictionary for the sensitivity parameters and information of the place where is saved {Name: [extension, row, column, uh/vfs]}
         self.sensitivity_parameters = {"Rainfall (mm)":["inp",0,0,"uh"],"Storm duration (h)":["inp",0,4,"uh"],"Curve number":["inp",0,1,"uh"],
                 "Source Area Length along the slope (m)":["inp",0,5,"uh"], "Source Area Slope as a fraction":["inp",0,6,"uh"],"Source Area (ha)":["inp",0,2,"uh"],
@@ -524,50 +522,50 @@ class qvfsmod:
                 "Number of Nodes":["ikw",2,1,"vfs"],"Time Weight Factor":["ikw",2,2,"vfs"],"Number of Elemental Nodal Points":["ikw",2,5,"vfs"],"Courant Number":["ikw",2,3,"vfs"],"Maximum Iterations":["ikw",2,4,"vfs"],
                 "Vertical Saturated K":["iso",0,0,"vfs"],"Average Suction at the Wetting Front":["iso",0,1,"vfs"],"Initial Water Content":["iso",0,3,"vfs"],"Saturated Water Content":["iso",0,2,"vfs"],"Maximum Surface Storage":["iso",0,4,"vfs"],"Fraction of the filter where ponding is checked":["iso",0,5,"vfs"],
                 "Spacing for grass stems (cm)":["igr",0,0,"vfs"],"Roughness-Grass Mannings n VN":["igr",0,1,"vfs"],"Height of grass (cm)":["igr",0,2,"vfs"],"Roughness-Bare surface Mannings n (Vn2)":["igr",0,3,"vfs"],
-                "Incoming flow sediment concentration (g/cm^3)":["isd",0,2,"vfs"],"Sediment particle size, diameter d50 (cm)":["isd",1,0,"vfs"],"Porosity of deposited sediment as a fraction":["isd",0,3,"vfs"],"Portion of Particles from incoming sediment with diameter >0.0037 cm":["isd",0,1,"vfs"],"Sediment particle density (g/cm^3)":["isd",1,1,"vfs"]}
+                "Incoming flow sediment concentration (g/cm^3)":["isd",0,2,"vfs"],"Sediment particle size, diameter d50 (cm)":["isd",1,0,"vfs"],"Porosity of deposited sediment as a fraction":["isd",0,3,"vfs"],"Portion of Particles from incoming sediment \nwith diameter >0.0037 cm":["isd",0,1,"vfs"],"Sediment particle density (g/cm^3)":["isd",1,1,"vfs"]}
         for i in buttons:
             i.clicked.connect(lambda _, b = i:self.show_buttons_sensitivity_dialog(b))
         
         #Search sensitivity parameter
-        self.dlg_sensitivity_analysis.search.textChanged.connect(self.search_sensitivity_parameter)
+        self.dlg_base.search.textChanged.connect(self.search_sensitivity_parameter)
         
         #Run sensitivity analysis
-        self.dlg_sensitivity_analysis.accept.clicked.connect(self.run_sensitivity_analysis)
+        self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis)
         
         #Show sensitivity results
-        self.dlg_base.sensitivity_results.clicked.connect(self.show_graph_sensitivity)
-        self.dlg_base.sensitivity_results_sobol.clicked.connect(self.show_graph_sensitivity_sobol)
+        self.dlg_base.morris_results.clicked.connect(self.show_graph_sensitivity)
+        self.dlg_base.sobol_results.clicked.connect(self.show_graph_sensitivity_sobol)
         
         #Browse file sensitivity graph
-        self.dlg_sensitivity_results.browse.clicked.connect(self.browse_files_sensitivity_results)
-        self.dlg_sensitivity_results_sobol.browse.clicked.connect(self.browse_files_sensitivity_results_sobol)
+        self.dlg_base.browse.clicked.connect(self.browse_files_sensitivity_results)
+        self.dlg_base.browse_2.clicked.connect(self.browse_files_sensitivity_results_sobol)
         
         #Update sensitivity graph for Morris
-        self.dlg_sensitivity_results.csv_results.textChanged.connect(self.update_sensitivity_graph)
-        check_boxes = [self.dlg_sensitivity_results.runoff_source_mm,self.dlg_sensitivity_results.runoff_source_m3,
-            self.dlg_sensitivity_results.runoff_filter_mm,self.dlg_sensitivity_results.runoff_filter_m3,
-            self.dlg_sensitivity_results.infiltration_filter_m3,self.dlg_sensitivity_results.sediment_input,
-            self.dlg_sensitivity_results.concentration_sediment,self.dlg_sensitivity_results.sediment_output,
-            self.dlg_sensitivity_results.sediment_runoff_exit,self.dlg_sensitivity_results.sediment_delivery,
-            self.dlg_sensitivity_results.runoff_delivery]
+        self.dlg_base.csv_results.textChanged.connect(self.update_sensitivity_graph)
+        check_boxes = [self.dlg_base.runoff_source_mm,self.dlg_base.runoff_source_m3,
+            self.dlg_base.runoff_filter_mm,self.dlg_base.runoff_filter_m3,
+            self.dlg_base.infiltration_filter_m3,self.dlg_base.sediment_input,
+            self.dlg_base.concentration_sediment,self.dlg_base.sediment_output,
+            self.dlg_base.sediment_runoff_exit,self.dlg_base.sediment_delivery,
+            self.dlg_base.runoff_delivery]
         for i in check_boxes:
             i.toggled.connect(self.update_sensitivity_graph)
         
         #Update sensitivity graph for Sobol
-        self.dlg_sensitivity_results_sobol.csv_results.textChanged.connect(self.update_sensitivity_graph_sobol)
-        check_boxes = [self.dlg_sensitivity_results_sobol.runoff_source_mm,self.dlg_sensitivity_results_sobol.runoff_source_m3,
-            self.dlg_sensitivity_results_sobol.runoff_filter_mm,self.dlg_sensitivity_results_sobol.runoff_filter_m3,
-            self.dlg_sensitivity_results_sobol.infiltration_filter_m3,self.dlg_sensitivity_results_sobol.sediment_input,
-            self.dlg_sensitivity_results_sobol.concentration_sediment,self.dlg_sensitivity_results_sobol.sediment_output,
-            self.dlg_sensitivity_results_sobol.sediment_runoff_exit,self.dlg_sensitivity_results_sobol.sediment_delivery,
-            self.dlg_sensitivity_results_sobol.runoff_delivery]
+        self.dlg_base.csv_results_2.textChanged.connect(self.update_sensitivity_graph_sobol)
+        check_boxes = [self.dlg_base.runoff_source_mm_2,self.dlg_base.runoff_source_m3_2,
+            self.dlg_base.runoff_filter_mm_2,self.dlg_base.runoff_filter_m3_2,
+            self.dlg_base.infiltration_filter_m3_2,self.dlg_base.sediment_input_2,
+            self.dlg_base.concentration_sediment_2,self.dlg_base.sediment_output_2,
+            self.dlg_base.sediment_runoff_exit_2,self.dlg_base.sediment_delivery_2,
+            self.dlg_base.runoff_delivery_2]
         for i in check_boxes:
             i.toggled.connect(self.update_sensitivity_graph_sobol)
         
         #Browse files in sensitivity analysis
-        self.dlg_sensitivity_analysis.browse_uh.clicked.connect(lambda _, b = "lis":self.browse_files_sensitivity(b))
-        self.dlg_sensitivity_analysis.browse_vfs.clicked.connect(lambda _, b = "prj":self.browse_files_sensitivity(b))
-        self.dlg_sensitivity_analysis.browse_file.clicked.connect(lambda _, b = "csv":self.browse_files_sensitivity(b))
+        self.dlg_base.browse_uh.clicked.connect(lambda _, b = "lis":self.browse_files_sensitivity(b))
+        self.dlg_base.browse_vfs.clicked.connect(lambda _, b = "prj":self.browse_files_sensitivity(b))
+        self.dlg_base.browse_file.clicked.connect(lambda _, b = "csv":self.browse_files_sensitivity(b))
         
         #Disable the ability to modify the timestep of the user defined storm and center items
         self.set_timestep_non_editable()
@@ -583,7 +581,51 @@ class qvfsmod:
         #Same for vfsmod hyetograph and hydrograph
         self.dlg_vfsmod_hydrograph.tableWidget.itemChanged.connect(self.update_vfsmod_hydrograph_graph)
         self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.connect(self.update_vfsmod_hyetograph_graph)
-        
+    
+    def disable_storm_line_edits_design(self):
+        """Method to enable disable lineEdits in designe"""
+        storms_time = [self.dlg_base.lineEdit_4,self.dlg_base.lineEdit_5,self.dlg_base.lineEdit_6,self.dlg_base.lineEdit_7,
+                self.dlg_base.lineEdit_8,self.dlg_base.lineEdit_9,self.dlg_base.lineEdit_10]
+        storms_increment = [self.dlg_base.start,self.dlg_base.end,self.dlg_base.increment]
+        vfs = [self.dlg_base.lower_length,self.dlg_base.upper_length,self.dlg_base.increment_length,self.dlg_base.base_length]
+        spacing = [self.dlg_base.lower_spacing,self.dlg_base.upper_spacing,self.dlg_base.increment_spacing,self.dlg_base.base_spacing]
+        #Storm
+        if self.dlg_base.specific.isChecked():
+            for i in storms_time:
+                i.setEnabled(True)
+                i.setStyleSheet("background-color: #354052;")
+            for k in storms_increment:
+                k.setEnabled(False)
+                k.setStyleSheet("background-color: lightgrey;")
+        else:
+            for i in storms_time:
+                i.setEnabled(False)
+                i.setStyleSheet("background-color: lightgrey;")
+            for k in storms_increment:
+                k.setEnabled(True)
+                k.setStyleSheet("background-color: #354052;")
+        #Vegetation and spacing
+        if self.dlg_base.design_length.isChecked():
+            for i in vfs:
+                i.setEnabled(True)
+                i.setStyleSheet("background-color: #354052;")
+            for k in spacing:
+                k.setEnabled(False)
+                k.setStyleSheet("background-color: lightgrey;")
+        elif self.dlg_base.design_spacing.isChecked():
+            for i in vfs:
+                i.setEnabled(False)
+                i.setStyleSheet("background-color: lightgrey;")
+            for k in spacing:
+                k.setEnabled(True)
+                k.setStyleSheet("background-color: #354052;")
+        else:
+            for i in vfs:
+                i.setEnabled(False)
+                i.setStyleSheet("background-color: lightgrey;")
+            for k in spacing:
+                k.setEnabled(False)
+                k.setStyleSheet("background-color: lightgrey;")
     
     def show_calibration_buttons(self):
         """Method to add buttons to show calibration buttons and to show the dialog"""
@@ -1457,38 +1499,36 @@ class qvfsmod:
     def browse_files_sensitivity_results_sobol(self):
         """Method to select the file for sensitivity analysis graph between the local files for Sobol"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
-        fname = QFileDialog.getOpenFileName(self.dlg_sensitivity_results_sobol, "Select Sobol Sensitivity Analysis Results File",working_directory+"\\sensitivity\\output" , "CSV files (*.csv)")
+        fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Sobol Sensitivity Analysis Results File",working_directory+"\\sensitivity\\output" , "CSV files (*.csv)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
                 text = os.path.relpath(fname[0], working_directory)
             else: #absolute path
                 text = fname[0]
-            self.dlg_sensitivity_results_sobol.csv_results.setText(text)
+            self.dlg_base.csv_results_2.setText(text)
     
     def browse_files_sensitivity_results(self):
         """Method to select the file for sensitivity analysis graph between the local files for Morris"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
-        fname = QFileDialog.getOpenFileName(self.dlg_sensitivity_results, "Select Morris Sensitivity Analysis Results File",working_directory+"\\sensitivity\\output" , "CSV files (*.csv)")
+        fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Morris Sensitivity Analysis Results File",working_directory+"\\sensitivity\\output" , "CSV files (*.csv)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
                 text = os.path.relpath(fname[0], working_directory)
             else: #absolute path
                 text = fname[0]
-            self.dlg_sensitivity_results.csv_results.setText(text)
+            self.dlg_base.csv_results.setText(text)
     
     def show_graph_sensitivity_sobol(self):
         """Method to add the graph of sensitivity analysis for Sobol"""
-        #First show dialog
-        self.dlg_sensitivity_results_sobol.show()
         if not hasattr(self, 'canvas_sensitivity_graph_sobol'):
             # Si no existe, crear el canvas y añadirlo al layout
             self.canvas_sensitivity_graph_sobol = FigureCanvas(plt.Figure(figsize=(15, 6)))
             
             # Asignar un layout al QFrame si no tiene uno
-            layout = QVBoxLayout(self.dlg_sensitivity_results_sobol.frame_2)
-            self.dlg_sensitivity_results_sobol.frame_2.setLayout(layout)
+            layout = QVBoxLayout(self.dlg_base.frame_64)
+            self.dlg_base.frame_64.setLayout(layout)
             
             # Añadir el canvas al layout
             layout.addWidget(self.canvas_sensitivity_graph_sobol)
@@ -1498,13 +1538,13 @@ class qvfsmod:
         
         #Then we create the graph
         self.ax_sobol = self.canvas_sensitivity_graph_sobol.figure.subplots(1, 2)
-        if self.dlg_sensitivity_results_sobol.csv_results.text()!="":
+        if self.dlg_base.csv_results_2.text()!="":
             self.update_sensitivity_graph_sobol()
         
     def update_sensitivity_graph_sobol(self):
         """Method to update the graph of the sensitivity for Sobol"""
         #Warning messages
-        ruta = self.obtain_direction_vfsmod(self.dlg_sensitivity_results_sobol.csv_results.text())
+        ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_2.text())
         if os.path.exists(ruta):
             with open(ruta, "r") as archivo:
                 lineas = archivo.readlines()
@@ -1519,17 +1559,17 @@ class qvfsmod:
             
             #Obtain data
             #Obtain ouputs parameter
-            if self.dlg_sensitivity_results_sobol.runoff_source_mm.isChecked():output_column = "Total Runoff from source (mm)"
-            if self.dlg_sensitivity_results_sobol.runoff_source_m3.isChecked():output_column = "Total Runoff from Source (m3)"
-            if self.dlg_sensitivity_results_sobol.runoff_filter_mm.isChecked():output_column = "Total Runoff out from Filter (mm)"
-            if self.dlg_sensitivity_results_sobol.runoff_filter_m3.isChecked():output_column = "Total Runoff out from Filter (m3)"
-            if self.dlg_sensitivity_results_sobol.infiltration_filter_m3.isChecked():output_column = "Total Infiltration in Filter (m3)"
-            if self.dlg_sensitivity_results_sobol.sediment_input.isChecked():output_column = "Mass Sediment Input to Filter (kg)"
-            if self.dlg_sensitivity_results_sobol.concentration_sediment.isChecked():output_column = "Concentration Sediment in Runoff from source Area (g/L)"
-            if self.dlg_sensitivity_results_sobol.sediment_output.isChecked():output_column = "Mass Sediment Output from Filter (kg)"
-            if self.dlg_sensitivity_results_sobol.sediment_runoff_exit.isChecked():output_column = "Concentration Sediment in Runoff exiting the Filter (g/L)"
-            if self.dlg_sensitivity_results_sobol.sediment_delivery.isChecked():output_column = "Sediment Delivery Ratio"
-            if self.dlg_sensitivity_results_sobol.runoff_delivery.isChecked():output_column = "Runoff Delivery Ratio"
+            if self.dlg_base.runoff_source_mm_2.isChecked():output_column = "Total Runoff from source (mm)"
+            if self.dlg_base.runoff_source_m3_2.isChecked():output_column = "Total Runoff from Source (m3)"
+            if self.dlg_base.runoff_filter_mm_2.isChecked():output_column = "Total Runoff out from Filter (mm)"
+            if self.dlg_base.runoff_filter_m3_2.isChecked():output_column = "Total Runoff out from Filter (m3)"
+            if self.dlg_base.infiltration_filter_m3_2.isChecked():output_column = "Total Infiltration in Filter (m3)"
+            if self.dlg_base.sediment_input_2.isChecked():output_column = "Mass Sediment Input to Filter (kg)"
+            if self.dlg_base.concentration_sediment_2.isChecked():output_column = "Concentration Sediment in Runoff from source Area (g/L)"
+            if self.dlg_base.sediment_output_2.isChecked():output_column = "Mass Sediment Output from Filter (kg)"
+            if self.dlg_base.sediment_runoff_exit_2.isChecked():output_column = "Concentration Sediment in Runoff exiting the Filter (g/L)"
+            if self.dlg_base.sediment_delivery_2.isChecked():output_column = "Sediment Delivery Ratio"
+            if self.dlg_base.runoff_delivery_2.isChecked():output_column = "Runoff Delivery Ratio"
             
             names_inputs = []
             s1 = []
@@ -1568,15 +1608,13 @@ class qvfsmod:
         
     def show_graph_sensitivity(self):
         """Method to add the graph of sensitivity analysis for Morris"""
-        #First show dialog
-        self.dlg_sensitivity_results.show()
         if not hasattr(self, 'canvas_sensitivity_graph'):
             # Si no existe, crear el canvas y añadirlo al layout
             self.canvas_sensitivity_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
             
             # Asignar un layout al QFrame si no tiene uno
-            layout = QVBoxLayout(self.dlg_sensitivity_results.frame_2)
-            self.dlg_sensitivity_results.frame_2.setLayout(layout)
+            layout = QVBoxLayout(self.dlg_base.frame_62)
+            self.dlg_base.frame_62.setLayout(layout)
             
             # Añadir el canvas al layout
             layout.addWidget(self.canvas_sensitivity_graph)
@@ -1586,13 +1624,13 @@ class qvfsmod:
         
         #Then we create the graph
         self.ax = self.canvas_sensitivity_graph.figure.subplots()
-        if self.dlg_sensitivity_results.csv_results.text()!="":
+        if self.dlg_base.csv_results.text()!="":
             self.update_sensitivity_graph()
     
     def update_sensitivity_graph(self):
         """Method to update the graph of the sensitivity"""
         #Warning messages
-        ruta = self.obtain_direction_vfsmod(self.dlg_sensitivity_results.csv_results.text())
+        ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results.text())
         if os.path.exists(ruta):
             with open(ruta, "r") as archivo:
                 lineas = archivo.readlines()
@@ -1606,17 +1644,17 @@ class qvfsmod:
             
             #Obtain data
             #Obtain ouputs parameter
-            if self.dlg_sensitivity_results.runoff_source_mm.isChecked():output_column = "Total Runoff from source (mm)"
-            if self.dlg_sensitivity_results.runoff_source_m3.isChecked():output_column = "Total Runoff from Source (m3)"
-            if self.dlg_sensitivity_results.runoff_filter_mm.isChecked():output_column = "Total Runoff out from Filter (mm)"
-            if self.dlg_sensitivity_results.runoff_filter_m3.isChecked():output_column = "Total Runoff out from Filter (m3)"
-            if self.dlg_sensitivity_results.infiltration_filter_m3.isChecked():output_column = "Total Infiltration in Filter (m3)"
-            if self.dlg_sensitivity_results.sediment_input.isChecked():output_column = "Mass Sediment Input to Filter (kg)"
-            if self.dlg_sensitivity_results.concentration_sediment.isChecked():output_column = "Concentration Sediment in Runoff from source Area (g/L)"
-            if self.dlg_sensitivity_results.sediment_output.isChecked():output_column = "Mass Sediment Output from Filter (kg)"
-            if self.dlg_sensitivity_results.sediment_runoff_exit.isChecked():output_column = "Concentration Sediment in Runoff exiting the Filter (g/L)"
-            if self.dlg_sensitivity_results.sediment_delivery.isChecked():output_column = "Sediment Delivery Ratio"
-            if self.dlg_sensitivity_results.runoff_delivery.isChecked():output_column = "Runoff Delivery Ratio"
+            if self.dlg_base.runoff_source_mm.isChecked():output_column = "Total Runoff from source (mm)"
+            if self.dlg_base.runoff_source_m3.isChecked():output_column = "Total Runoff from Source (m3)"
+            if self.dlg_base.runoff_filter_mm.isChecked():output_column = "Total Runoff out from Filter (mm)"
+            if self.dlg_base.runoff_filter_m3.isChecked():output_column = "Total Runoff out from Filter (m3)"
+            if self.dlg_base.infiltration_filter_m3.isChecked():output_column = "Total Infiltration in Filter (m3)"
+            if self.dlg_base.sediment_input.isChecked():output_column = "Mass Sediment Input to Filter (kg)"
+            if self.dlg_base.concentration_sediment.isChecked():output_column = "Concentration Sediment in Runoff from source Area (g/L)"
+            if self.dlg_base.sediment_output.isChecked():output_column = "Mass Sediment Output from Filter (kg)"
+            if self.dlg_base.sediment_runoff_exit.isChecked():output_column = "Concentration Sediment in Runoff exiting the Filter (g/L)"
+            if self.dlg_base.sediment_delivery.isChecked():output_column = "Sediment Delivery Ratio"
+            if self.dlg_base.runoff_delivery.isChecked():output_column = "Runoff Delivery Ratio"
 
             
             
@@ -1655,8 +1693,8 @@ class qvfsmod:
             self.ax.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
             self.ax.yaxis.set_major_formatter(FuncFormatter(formato_con_separador))
             #Labels
-            self.ax.set_xlabel("Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 8,family="arial",weight = "bold",color = "black")
-            self.ax.set_ylabel("Standard Deviation of Elementary Effects ($\sigma_{i}$)",size = 8,family="arial",weight = "bold",color = "black")
+            self.ax.set_xlabel("Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 14,family="arial",weight = "bold",color = "black")
+            self.ax.set_ylabel("Standard Deviation of Elementary Effects ($\sigma_{i}$)",size = 14,family="arial",weight = "bold",color = "black")
                     
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
             self.canvas_sensitivity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
@@ -1677,7 +1715,7 @@ class qvfsmod:
         else:
             select = "Select CSV File"
             types = "CSV files (*.csv)"
-        fname = QFileDialog.getOpenFileName(self.dlg_sensitivity_analysis, select,working_directory , types)
+        fname = QFileDialog.getOpenFileName(self.dlg_base, select,working_directory , types)
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
@@ -1685,11 +1723,11 @@ class qvfsmod:
             else: #absolute path
                 text = fname[0]
         if information == "prj":
-            self.dlg_sensitivity_analysis.vfs_file.setText(text)
+            self.dlg_base.vfs_file_sensitivity.setText(text)
         elif information == "lis":
-            self.dlg_sensitivity_analysis.uh_file.setText(text)
+            self.dlg_base.uh_file_sensitivity.setText(text)
         else:
-            self.dlg_sensitivity_analysis.file_save.setText(text)
+            self.dlg_base.file_save.setText(text)
     
     def run_sensitivity_analysis(self):
         """Method to run whole sensitivity analysis"""
@@ -1698,10 +1736,10 @@ class qvfsmod:
         
         #Create the samples
         self.problem = {'num_vars': len(self.dic_data),'names': list(self.dic_data.keys()),'bounds': [x[1] for x in self.dic_data.values()],"dists":[x[0] for x in self.dic_data.values()]}
-        if self.dlg_sensitivity_analysis.sobol.isChecked():
-            self.param_values = saltelli.sample(self.problem, int(self.dlg_sensitivity_analysis.trajectories.text()))
-        elif self.dlg_sensitivity_analysis.morris.isChecked():
-            self.param_values = sample_morris(self.problem, int(self.dlg_sensitivity_analysis.trajectories.text()))
+        if self.dlg_base.sobol.isChecked():
+            self.param_values = saltelli.sample(self.problem, int(self.dlg_base.trajectories.text()))
+        elif self.dlg_base.morris.isChecked():
+            self.param_values = sample_morris(self.problem, int(self.dlg_base.trajectories.text()))
         
         #We start obtaining the results
         #Create folders of sensitivity analysis
@@ -1710,11 +1748,11 @@ class qvfsmod:
         self.move_files_sensitivity_analysis()
         
         #Create dataframe to save the results
-        self.results_sensitivity = pd.DataFrame(columns={"Total Runoff from source (mm)","Total Runoff from Source (m3)",
+        self.results_sensitivity = pd.DataFrame(columns=["Total Runoff from source (mm)","Total Runoff from Source (m3)",
             "Total Runoff out from Filter (mm)","Total Runoff out from Filter (m3)","Total Infiltration in Filter (m3)",
             "Mass Sediment Input to Filter (kg)","Concentration Sediment in Runoff from source Area (g/L)",
             "Mass Sediment Output from Filter (kg)","Concentration Sediment in Runoff exiting the Filter (g/L)",
-            "Sediment Delivery Ratio","Runoff Delivery Ratio"})
+            "Sediment Delivery Ratio","Runoff Delivery Ratio"])
         number_outputs = len(self.results_sensitivity.columns)
         #Add the parameters names 
         for i in self.dic_data.keys():
@@ -1735,8 +1773,8 @@ class qvfsmod:
             self.number_execution_sensitivity+=1
             
         #Save results in CSV
-        path = self.obtain_direction_vfsmod(self.dlg_sensitivity_analysis.file_save.text())
-        if self.dlg_sensitivity_analysis.sobol.isChecked():
+        path = self.obtain_direction_vfsmod(self.dlg_base.file_save.text())
+        if self.dlg_base.sobol.isChecked():
             with open(path, 'w') as f:
                 #Add first row
                 f.write("Sobol sensitivity indexes" + '\n')
@@ -1749,7 +1787,7 @@ class qvfsmod:
                         f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}_{si['S2'][input_parameter_k]}_{si['S2_conf'][input_parameter_k]}" + '\n')
                 f.write("----------------------------------------------------------------------" + '\n')
                 
-        elif self.dlg_sensitivity_analysis.morris.isChecked():
+        elif self.dlg_base.morris.isChecked():
             with open(path, 'w') as f:
                 #Add first row
                 f.write("Morris sensitivity indexes" + '\n')
@@ -1820,7 +1858,7 @@ class qvfsmod:
         #Prj
         prj_file = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\sensitivity.prj"
         #Check if water quality is simulated
-        with open(self.obtain_direction_vfsmod(self.dlg_sensitivity_analysis.vfs_file.text()), "r") as archivo:
+        with open(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity.text()), "r") as archivo:
             lineas = archivo.readlines()
         self.water_quality = False
         for i in lineas:
@@ -1861,9 +1899,9 @@ class qvfsmod:
         def copy_paste(process,type_input):
             ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\sensitivity\\inputs\\sensitivity.{type_input}" 
             if process == "UH":
-                ruta = self.obtain_direction_vfsmod(self.dlg_sensitivity_analysis.uh_file.text())
+                ruta = self.obtain_direction_vfsmod(self.dlg_base.uh_file_sensitivity.text())
             elif process == "VFS":
-                ruta = self.obtain_direction_vfsmod(self.dlg_sensitivity_analysis.vfs_file.text())
+                ruta = self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity.text())
             if os.path.exists(ruta) and os.path.isfile(ruta):
                 #First we open .prj and obtain the direction of the copying file
                 with open(ruta, "r") as archivo:
@@ -1949,7 +1987,7 @@ class qvfsmod:
     def change_buffer_length_sensitivity(self,value_change):
         """Method to modifi length of buffer in sensitivity analysis"""
         #First we save the .ikw file path
-        ruta = self.obtain_direction_vfsmod(self.dlg_sensitivity_analysis.vfs_file.text())
+        ruta = self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity.text())
         ikw = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\inputs\\sensitivity.ikw"
         #We substitute value of length
         with open(ikw, "r") as archivo:
@@ -2122,37 +2160,37 @@ class qvfsmod:
         """Method to create the dictionary that will contain the parameters of the sensitivity analysis"""
         #Functions to convert user specified inputs into inputs that SALib can read
         def distribution_parameters_fun(row):
-            if str(self.dlg_sensitivity_analysis.table.item(row, 1).text()) == "Uniform":
+            if str(self.dlg_base.table.item(row, 1).text()) == "Uniform":
                 distribution = "unif"
-                texto = str(self.dlg_sensitivity_analysis.table.item(row, 2).text())
+                texto = str(self.dlg_base.table.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-            elif str(self.dlg_sensitivity_analysis.table.item(row, 1).text()) == "Logaritmic uniform":
+            elif str(self.dlg_base.table.item(row, 1).text()) == "Logaritmic uniform":
                 distribution = "logunif"
-                texto = str(self.dlg_sensitivity_analysis.table.item(row, 2).text())
+                texto = str(self.dlg_base.table.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-            elif str(self.dlg_sensitivity_analysis.table.item(row, 1).text()) == "Triangular":
+            elif str(self.dlg_base.table.item(row, 1).text()) == "Triangular":
                 distribution = "triang"
-                texto = str(self.dlg_sensitivity_analysis.table.item(row, 2).text())
+                texto = str(self.dlg_base.table.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-            elif str(self.dlg_sensitivity_analysis.table.item(row, 1).text()) == "Normal":
+            elif str(self.dlg_base.table.item(row, 1).text()) == "Normal":
                 distribution = "norm"
-                texto = str(self.dlg_sensitivity_analysis.table.item(row, 2).text())
+                texto = str(self.dlg_base.table.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-            elif str(self.dlg_sensitivity_analysis.table.item(row, 1).text()) == "Normal truncated":
+            elif str(self.dlg_base.table.item(row, 1).text()) == "Normal truncated":
                 distribution = "truncnorm"
-                texto = str(self.dlg_sensitivity_analysis.table.item(row, 2).text())
+                texto = str(self.dlg_base.table.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-            elif str(self.dlg_sensitivity_analysis.table.item(row, 1).text()) == "Lognormal":
+            elif str(self.dlg_base.table.item(row, 1).text()) == "Lognormal":
                 distribution = "lognorm"
-                texto = str(self.dlg_sensitivity_analysis.table.item(row, 2).text())
+                texto = str(self.dlg_base.table.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
             return distribution, parameters
         
         #Diccionario nombre en el diálogo - [parametros del análisis de sensibilidad]
         dic_data = {}
-        for i in range(self.dlg_sensitivity_analysis.table.rowCount()):
+        for i in range(self.dlg_base.table.rowCount()):
             #Diccionario [Parametro] = (Distribucion, Parametros)
-            name = self.dlg_sensitivity_analysis.table.item(i, 0).text()
+            name = self.dlg_base.table.item(i, 0).text()
             #Obtain name of distribution and parameters
             dis,param = distribution_parameters_fun(i)
             dic_data[name] = [dis,param]
@@ -2161,27 +2199,27 @@ class qvfsmod:
     
     def distribution_parameters(self):
         """Method to add/delete new labels depending on choosed distribution"""
-        distribution = [self.dlg_sensitivity_analysis.distributions.itemText(i) for i in range(self.dlg_sensitivity_analysis.distributions.count())][self.dlg_sensitivity_analysis.distributions.currentIndex()]
+        distribution = [self.dlg_base.distributions.itemText(i) for i in range(self.dlg_base.distributions.count())][self.dlg_base.distributions.currentIndex()]
         
         # Obtén el número de filas actual en el GridLayout
-        numRows = self.dlg_sensitivity_analysis.gridLayout_6.rowCount()
+        numRows = self.dlg_base.gridLayout_81.rowCount()
         
         def delete_elements():
             try:
-                widget = self.dlg_sensitivity_analysis.third
-                self.dlg_sensitivity_analysis.gridLayout_6.removeWidget(widget)
+                widget = self.dlg_base.third
+                self.dlg_base.gridLayout_81.removeWidget(widget)
                 widget.deleteLater()
-                widget = self.dlg_sensitivity_analysis.third_label
-                self.dlg_sensitivity_analysis.gridLayout_6.removeWidget(widget)
+                widget = self.dlg_base.third_label
+                self.dlg_base.gridLayout_81.removeWidget(widget)
                 widget.deleteLater()
             except:
                 pass
             try:
-                widget = self.dlg_sensitivity_analysis.fourth
-                self.dlg_sensitivity_analysis.gridLayout_6.removeWidget(widget)
+                widget = self.dlg_base.fourth
+                self.dlg_base.gridLayout_81.removeWidget(widget)
                 widget.deleteLater()
-                widget = self.dlg_sensitivity_analysis.fourth_label
-                self.dlg_sensitivity_analysis.gridLayout_6.removeWidget(widget)
+                widget = self.dlg_base.fourth_label
+                self.dlg_base.gridLayout_81.removeWidget(widget)
                 widget.deleteLater()
             except:
                 pass
@@ -2200,11 +2238,11 @@ class qvfsmod:
 
             #Luego se añade
             # Crea un nuevo QLabel y QLineEdit
-            self.dlg_sensitivity_analysis.third_label = QLabel("Peak")
-            self.dlg_sensitivity_analysis.third = QLineEdit()
+            self.dlg_base.third_label = QLabel("Peak")
+            self.dlg_base.third = QLineEdit()
             # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
-            self.dlg_sensitivity_analysis.gridLayout_6.addWidget(self.dlg_sensitivity_analysis.third_label, 4, 0)
-            self.dlg_sensitivity_analysis.gridLayout_6.addWidget(self.dlg_sensitivity_analysis.third, 4, 1)
+            self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third_label, 4, 0)
+            self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third, 4, 1)
 
         elif distribution=="Normal":
             #Primero se borra
@@ -2220,25 +2258,25 @@ class qvfsmod:
             
             #Luego se añade
             # Crea un nuevo QLabel y QLineEdit
-            self.dlg_sensitivity_analysis.third_label = QLabel("Mean")
-            self.dlg_sensitivity_analysis.third = QLineEdit()
+            self.dlg_base.third_label = QLabel("Mean")
+            self.dlg_base.third = QLineEdit()
             # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
-            self.dlg_sensitivity_analysis.gridLayout_6.addWidget(self.dlg_sensitivity_analysis.third_label, 4, 0)
-            self.dlg_sensitivity_analysis.gridLayout_6.addWidget(self.dlg_sensitivity_analysis.third, 4, 1)
+            self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third_label, 4, 0)
+            self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third, 4, 1)
             
             # Crea un nuevo QLabel y QLineEdit
-            self.dlg_sensitivity_analysis.fourth_label = QLabel("Standard deviation")
-            self.dlg_sensitivity_analysis.fourth = QLineEdit()
+            self.dlg_base.fourth_label = QLabel("Standard deviation")
+            self.dlg_base.fourth = QLineEdit()
             # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
-            self.dlg_sensitivity_analysis.gridLayout_6.addWidget(self.dlg_sensitivity_analysis.fourth_label, 5, 0)
-            self.dlg_sensitivity_analysis.gridLayout_6.addWidget(self.dlg_sensitivity_analysis.fourth, 5, 1)
+            self.dlg_base.gridLayout_81.addWidget(self.dlg_base.fourth_label, 5, 0)
+            self.dlg_base.gridLayout_81.addWidget(self.dlg_base.fourth, 5, 1)
             
     def change_bounds_sensitivity(self):
         """Metod to change bounds labels if distribution changed"""
         def change_lines(bound1,bound2,bound3=None,bound4=None):
-            self.dlg_sensitivity_analysis.label_3.setText(bound1)
-            self.dlg_sensitivity_analysis.label_4.setText(bound2)
-        distribution = [self.dlg_sensitivity_analysis.distributions.itemText(i) for i in range(self.dlg_sensitivity_analysis.distributions.count())][self.dlg_sensitivity_analysis.distributions.currentIndex()]
+            self.dlg_base.label_123.setText(bound1)
+            self.dlg_base.label_121.setText(bound2)
+        distribution = [self.dlg_base.distributions.itemText(i) for i in range(self.dlg_base.distributions.count())][self.dlg_base.distributions.currentIndex()]
         
         if distribution=="Uniform":
             change_lines("Minimum","Maximum")
@@ -2255,11 +2293,11 @@ class qvfsmod:
     
     def delete_sensitivity_table(self):
         """Method to delete sensitivity analysis parameters to table"""
-        numero_filas = self.dlg_sensitivity_analysis.table.rowCount()
+        numero_filas = self.dlg_base.table.rowCount()
         if numero_filas > 0:
-            self.dlg_sensitivity_analysis.table.removeRow(numero_filas - 1)
+            self.dlg_base.table.removeRow(numero_filas - 1)
         if numero_filas == 1:
-            self.dlg_sensitivity_analysis.table.setColumnCount(0)
+            self.dlg_base.table.setColumnCount(0)
         
         #Update number of samples
         self.change_sensitivity_method()
@@ -2267,71 +2305,71 @@ class qvfsmod:
     def add_sensitivity_table(self):
         """Method to add information to the sensitivity analysis table"""
         #Metod to add sensitivity analysis parameters to table
-        if self.dlg_sensitivity_analysis.table.columnCount() == 0:
+        if self.dlg_base.table.columnCount() == 0:
             #Añadir columnas
             nombres_columnas = ["Parameter","Distribution","Distribution parameters"]
-            self.dlg_sensitivity_analysis.table.setColumnCount(len(nombres_columnas))
-            self.dlg_sensitivity_analysis.table.setHorizontalHeaderLabels(nombres_columnas)
+            self.dlg_base.table.setColumnCount(len(nombres_columnas))
+            self.dlg_base.table.setHorizontalHeaderLabels(nombres_columnas)
             #Cambiar el ancho de las columnas
-            self.dlg_sensitivity_analysis.table.setColumnWidth(nombres_columnas.index("Parameter"), 180)
-            self.dlg_sensitivity_analysis.table.setColumnWidth(nombres_columnas.index("Distribution parameters"), 200)
+            self.dlg_base.table.setColumnWidth(nombres_columnas.index("Parameter"), 180)
+            self.dlg_base.table.setColumnWidth(nombres_columnas.index("Distribution parameters"), 200)
             
         #Añadir filas
         def add_element(columna,texto):
             item = QTableWidgetItem(texto)
-            self.dlg_sensitivity_analysis.table.setItem(numero_filas, columna, item)
+            self.dlg_base.table.setItem(numero_filas, columna, item)
             item.setTextAlignment(Qt.AlignCenter)
         
         #Primero la información de los lineEdits
-        numero_filas = self.dlg_sensitivity_analysis.table.rowCount()
-        self.dlg_sensitivity_analysis.table.setRowCount(numero_filas + 1)
+        numero_filas = self.dlg_base.table.rowCount()
+        self.dlg_base.table.setRowCount(numero_filas + 1)
         #Add parameter
-        add_element(0,self.dlg_sensitivity_analysis.parameter_name.text())
+        add_element(0,self.dlg_base.parameter_name.text())
         #Add distribution
-        distribution = [self.dlg_sensitivity_analysis.distributions.itemText(i) for i in range(self.dlg_sensitivity_analysis.distributions.count())][self.dlg_sensitivity_analysis.distributions.currentIndex()]
+        distribution = [self.dlg_base.distributions.itemText(i) for i in range(self.dlg_base.distributions.count())][self.dlg_base.distributions.currentIndex()]
         add_element(1,distribution)
         #Add distribution parameters
         if distribution=="Uniform" or distribution=="Logaritmic uniform":
-            add_element(2,f"min:{self.dlg_sensitivity_analysis.first.text()},max:{self.dlg_sensitivity_analysis.second.text()}")
+            add_element(2,f"min:{self.dlg_base.first.text()},max:{self.dlg_base.second.text()}")
         elif distribution == "Triangular":
-            add_element(2,f"min:{self.dlg_sensitivity_analysis.first.text()},max:{self.dlg_sensitivity_analysis.second.text()},peak:{self.dlg_sensitivity_analysis.third.text()}")
+            add_element(2,f"min:{self.dlg_base.first.text()},max:{self.dlg_base.second.text()},peak:{self.dlg_base.third.text()}")
         elif distribution == "Normal" or distribution == "Lognormal":
-            add_element(2,f"mean:{self.dlg_sensitivity_analysis.first.text()},stdv:{self.dlg_sensitivity_analysis.second.text()}")
+            add_element(2,f"mean:{self.dlg_base.first.text()},stdv:{self.dlg_base.second.text()}")
         elif distribution == "Normal truncated":
-            add_element(2,f"min:{self.dlg_sensitivity_analysis.first.text()},max:{self.dlg_sensitivity_analysis.second.text()},mean:{self.dlg_sensitivity_analysis.third.text()},stdv:{self.dlg_sensitivity_analysis.fourth.text()}")
+            add_element(2,f"min:{self.dlg_base.first.text()},max:{self.dlg_base.second.text()},mean:{self.dlg_base.third.text()},stdv:{self.dlg_base.fourth.text()}")
         
         #Update number of samples
         self.change_sensitivity_method()
     
     def change_sensitivity_method(self):
         """Method to change sensitivity inputs depending on selected senstitivity metod"""
-        if self.dlg_sensitivity_analysis.sobol.isChecked():
-            self.dlg_sensitivity_analysis.label_6.setText("M")
+        if self.dlg_base.sobol.isChecked():
+            self.dlg_base.label_125.setText("M")
             try:
-                if self.dlg_sensitivity_analysis.trajectories.text()=="" or self.dlg_sensitivity_analysis.table.rowCount()==0:
-                    self.dlg_sensitivity_analysis.samples.setText("")
+                if self.dlg_base.trajectories.text()=="" or self.dlg_base.table.rowCount()==0:
+                    self.dlg_base.samples.setText("")
                 else:
-                    self.dlg_sensitivity_analysis.samples.setText(str(int(self.dlg_sensitivity_analysis.trajectories.text())*(2*self.dlg_sensitivity_analysis.table.rowCount()+2)))
+                    self.dlg_base.samples.setText(str(int(self.dlg_base.trajectories.text())*(2*self.dlg_base.table.rowCount()+2)))
             except:
                 pass
-        elif self.dlg_sensitivity_analysis.morris.isChecked():
-            self.dlg_sensitivity_analysis.label_6.setText("Trajectories")
+        elif self.dlg_base.morris.isChecked():
+            self.dlg_base.label_125.setText("Trajectories")
             try:
-                if self.dlg_sensitivity_analysis.trajectories.text()=="" or self.dlg_sensitivity_analysis.table.rowCount()==0:
-                    self.dlg_sensitivity_analysis.samples.setText("")
+                if self.dlg_base.trajectories.text()=="" or self.dlg_base.table.rowCount()==0:
+                    self.dlg_base.samples.setText("")
                 else:
-                    self.dlg_sensitivity_analysis.samples.setText(str(int(self.dlg_sensitivity_analysis.trajectories.text())*(self.dlg_sensitivity_analysis.table.rowCount()+1)))
+                    self.dlg_base.samples.setText(str(int(self.dlg_base.trajectories.text())*(self.dlg_base.table.rowCount()+1)))
             except:
                 pass
         
     def search_sensitivity_parameter(self):
         """Method to search sensitivity parameter in the dialog"""
         #Metod to search a sensitiviy input
-        texto = str(self.dlg_sensitivity_analysis.search.text())
+        texto = str(self.dlg_base.search.text())
         #If text == "" then delete every button
         if texto =="":
-            while self.dlg_sensitivity_analysis.verticalLayout_2.count():
-                child = self.dlg_sensitivity_analysis.verticalLayout_2.takeAt(0)
+            while self.dlg_base.verticalLayout_19.count():
+                child = self.dlg_base.verticalLayout_19.takeAt(0)
                 if child.widget():
                     child.widget().deleteLater()
         else:
@@ -2341,15 +2379,15 @@ class qvfsmod:
                     elementos.append(i)
             try: #if it doesnt find a name
                 #Delete all elements of vertical layout of scroll area
-                while self.dlg_sensitivity_analysis.verticalLayout_2.count():
-                    child = self.dlg_sensitivity_analysis.verticalLayout_2.takeAt(0)
+                while self.dlg_base.verticalLayout_19.count():
+                    child = self.dlg_base.verticalLayout_19.takeAt(0)
                     if child.widget():
                         child.widget().deleteLater()
                 #Add new button to the scroll area
                 for nombre in elementos:
-                    boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                    boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
                     boton.setObjectName(nombre)
-                    self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                    self.dlg_base.verticalLayout_19.addWidget(boton)
                     política_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                     boton.setSizePolicy(política_tamaño)
                     boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
@@ -2359,102 +2397,102 @@ class qvfsmod:
     def show_buttons_sensitivity_dialog(self,button):
         """Method to add buttons to sensitivity dialog"""
         #Delete all elements of vertical layout of scroll area
-        while self.dlg_sensitivity_analysis.verticalLayout_2.count():
-            child = self.dlg_sensitivity_analysis.verticalLayout_2.takeAt(0)
+        while self.dlg_base.verticalLayout_19.count():
+            child = self.dlg_base.verticalLayout_19.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
         #Add element
-        if button == self.dlg_sensitivity_analysis.all_parameters:
+        if button == self.dlg_base.all_parameters:
             for nombre in self.sensitivity_parameters.keys():
-                boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
-                self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                self.dlg_base.verticalLayout_19.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                 boton.setSizePolicy(politica_tamaño)
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
-        if button == self.dlg_sensitivity_analysis.rainfall_event:
+        if button == self.dlg_base.rainfall_event:
             parameters = ["Rainfall (mm)","Storm duration (h)","Curve number"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
-                self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                self.dlg_base.verticalLayout_19.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                 boton.setSizePolicy(politica_tamaño)
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
                 
-        if button == self.dlg_sensitivity_analysis.source_area:
+        if button == self.dlg_base.source_area:
             parameters = ["Source Area Length along the slope (m)", "Source Area Slope as a fraction","Source Area (ha)"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
-                self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                self.dlg_base.verticalLayout_19.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                 boton.setSizePolicy(politica_tamaño)
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
                 
-        if button == self.dlg_sensitivity_analysis.erosion_parameters:
+        if button == self.dlg_base.erosion_parameters:
             parameters = ["Soil erodibility (K)","Percent organic matter","Crop factor","Particle Class Diameter","Practice Factor"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
-                self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                self.dlg_base.verticalLayout_19.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                 boton.setSizePolicy(politica_tamaño)
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
                 
-        if button == self.dlg_sensitivity_analysis.buffer_dimensions:
+        if button == self.dlg_base.buffer_dimensions:
             parameters = ["Buffer length (m)","Width of the Strip (m)","Filter Manning n (RNA, s/m^1/3)","Average Filter Slope"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
-                self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                self.dlg_base.verticalLayout_19.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                 boton.setSizePolicy(politica_tamaño)
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
                 
-        if button == self.dlg_sensitivity_analysis.kinematic_wave:
+        if button == self.dlg_base.kinematic_wave:
             parameters = ["Number of Nodes","Time Weight Factor","Number of Elemental Nodal Points","Courant Number","Maximum Iterations"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
-                self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                self.dlg_base.verticalLayout_19.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                 boton.setSizePolicy(politica_tamaño)
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
                 
-        if button == self.dlg_sensitivity_analysis.infiltration:
+        if button == self.dlg_base.infiltration:
             parameters = ["Vertical Saturated K","Average Suction at the Wetting Front","Initial Water Content","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
-                self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                self.dlg_base.verticalLayout_19.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                 boton.setSizePolicy(politica_tamaño)
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
                 
-        if button == self.dlg_sensitivity_analysis.buffer_vegetation:
+        if button == self.dlg_base.buffer_vegetation:
             parameters = ["Spacing for grass stems (cm)","Roughness-Grass Mannings n VN","Height of grass (cm)","Roughness-Bare surface Mannings n (Vn2)"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
-                self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                self.dlg_base.verticalLayout_19.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                 boton.setSizePolicy(politica_tamaño)
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
                 
-        if button == self.dlg_sensitivity_analysis.incoming_sediment:
-            parameters = ["Incoming flow sediment concentration (g/cm^3)","Sediment particle size, diameter d50 (cm)","Porosity of deposited sediment as a fraction","Portion of Particles from incoming sediment with diameter >0.0037 cm","Sediment particle density (g/cm^3)"]
+        if button == self.dlg_base.incoming_sediment:
+            parameters = ["Incoming flow sediment concentration (g/cm^3)","Sediment particle size, diameter d50 (cm)","Porosity of deposited sediment as a fraction","Portion of Particles from incoming sediment \nwith diameter >0.0037 cm","Sediment particle density (g/cm^3)"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_sensitivity_analysis.scrollAreaWidgetContents_2)
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
-                self.dlg_sensitivity_analysis.verticalLayout_2.addWidget(boton)
+                self.dlg_base.verticalLayout_19.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                 boton.setSizePolicy(politica_tamaño)
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
         
     def add_parameter_name_sensitivity(self,name):
         """Method to add the parameter name to the lineEdit in sensitivity analysis dialog"""
-        self.dlg_sensitivity_analysis.parameter_name.setText(name)
+        self.dlg_base.parameter_name.setText(name)
     
     def browse_files_calibration(self,information):
         """Method to select the file between the local files"""
@@ -2462,7 +2500,7 @@ class qvfsmod:
         if information[0]=="prj": 
             select = "Select VFS Project File"
             types = "PRJ files (*.prj)"
-        elif information[2]==self.dlg_calibration_hydrograph.hydrograph_file: select = "Select Hydrograph Measured Data File"
+        elif information[2]==self.dlg_base.hydrograph_file: select = "Select Hydrograph Measured Data File"
         else: select = "Select Sedimentograph Measured Data File"
         if information[0]=="txt": 
             types = "TXT files (*.txt)"
@@ -2487,7 +2525,23 @@ class qvfsmod:
         
         #Update bat for calibration and execute
         self.update_bat_calibration()
-        subprocess.run(self.plugin_directory+"\\executables\\execution.bat")
+        #execute bat
+        #first we create the thread class to be able to use the dialog when executing
+        class ejecutor(QThread):
+            resultado_signal = pyqtSignal(list)
+            def __init__(self, plugin_directory):
+                super().__init__()
+                self.plugin_directory = plugin_directory
+            def run(self):
+                resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
+                    capture_output=True, 
+                    text=True, 
+                    shell=True)
+                self.resultado_signal.emit([resultado.stdout,resultado.stderr])
+                
+        self.worker = ejecutor(self.plugin_directory)
+        self.worker.start()
+        self.worker.resultado_signal.connect(self.calibration_execution_result)
     
     def create_inverse_file_sedimentograph(self):
         """Method to create the inverse file for hydrograph calibration"""
@@ -2505,15 +2559,15 @@ class qvfsmod:
         else: plot = "n"
         if self.dlg_calibration_advanced_settings.constrain_yes.isChecked():constrain = "y"
         else: constrain = "n"
-        spacing = calibration(self.dlg_calibration_sedimentograph.change_spacing,self.dlg_calibration_sedimentograph.calibrate_spacing)
-        roughness_grass = calibration(self.dlg_calibration_sedimentograph.change_roughness,self.dlg_calibration_sedimentograph.calibrate_roughness)
-        height = calibration(self.dlg_calibration_sedimentograph.change_height,self.dlg_calibration_sedimentograph.calibrate_height)
-        roughness_bare = calibration(self.dlg_calibration_sedimentograph.change_bare,self.dlg_calibration_sedimentograph.calibrate_bare)
-        coarse = calibration(self.dlg_calibration_sedimentograph.change_coarse,self.dlg_calibration_sedimentograph.calibrate_coarse)
-        incoming = calibration(self.dlg_calibration_sedimentograph.change_incoming,self.dlg_calibration_sedimentograph.calibrate_incoming)
-        porosity = calibration(self.dlg_calibration_sedimentograph.change_porosity,self.dlg_calibration_sedimentograph.calibrate_porosity)
-        sediment_class = calibration(self.dlg_calibration_sedimentograph.change_class,self.dlg_calibration_sedimentograph.calibrate_class)
-        sediment_density = calibration(self.dlg_calibration_sedimentograph.change_density,self.dlg_calibration_sedimentograph.calibrate_density)
+        spacing = calibration(self.dlg_base.change_spacing,self.dlg_base.calibrate_spacing)
+        roughness_grass = calibration(self.dlg_base.change_roughness,self.dlg_base.calibrate_roughness)
+        height = calibration(self.dlg_base.change_height,self.dlg_base.calibrate_height)
+        roughness_bare = calibration(self.dlg_base.change_bare,self.dlg_base.calibrate_bare)
+        coarse = calibration(self.dlg_base.change_coarse,self.dlg_base.calibrate_coarse)
+        incoming = calibration(self.dlg_base.change_incoming,self.dlg_base.calibrate_incoming)
+        porosity = calibration(self.dlg_base.change_porosity,self.dlg_base.calibrate_porosity)
+        sediment_class = calibration(self.dlg_base.change_class,self.dlg_base.calibrate_class)
+        sediment_density = calibration(self.dlg_base.change_density,self.dlg_base.calibrate_density)
 
         #Change inputs if "Change" has selected
         self.change_inputs_calibration_sedimentograph([spacing,roughness_grass,height,roughness_bare,coarse,incoming,porosity,sediment_class,sediment_density])
@@ -2522,10 +2576,10 @@ class qvfsmod:
         path = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.cfg"
         with open(path, 'w') as archivo:
             archivo.write("Indicate project name\n")
-            archivo.write(f"{self.dlg_calibration_sedimentograph.vfs_file.text()}\n\n")
+            archivo.write(f"{self.dlg_base.vfs_file.text()}\n\n")
             archivo.write(f"Give file for fitted parameters\n{self.dlg_calibration_advanced_settings.exit_file.text()}.out\n\n")
             archivo.write(f"Give file for measured hydrograph\nno_name.out\n\n")
-            archivo.write(f"Give file for measured sedimentograph\n{self.dlg_calibration_sedimentograph.sedimentograph_file.text()}\n\n")
+            archivo.write(f"Give file for measured sedimentograph\n{self.dlg_base.sedimentograph_file.text()}\n\n")
             archivo.write(f"Fix number of iterations for GMCS or use 0 for setting automatically iter=100*np^2\n {self.dlg_calibration_advanced_settings.iterations.text()}\n\n")
             archivo.write(f"Plot Inverse simulation (y/n)\n{plot}\n\n")
             archivo.write(f"Constrain NMS to parameter space (y/n)\n{constrain}\n\n")
@@ -2534,47 +2588,47 @@ class qvfsmod:
             archivo.write(f"-1 %Vertical saturated K (m/s)\n-1 %Average suction at the wetting front (m)\n-1 %Saturated water content (m3/m3)\n-1 %Initial water content (m3/m3)\n-1 % Maximum surface storage (m)\n-1 % Filter fraction where ponding is checked\n-1 % Filter width\n-1 % Filter length\n-1 % nk\n-1 % Sok\n\n")
             archivo.write("Sediment module parameters\n")
             if spacing == "nan":
-                archivo.write(f"{spacing}  {self.dlg_calibration_sedimentograph.min_spacing.text()}  {self.dlg_calibration_sedimentograph.max_spacing.text()} % Spacing for grass stems (cm)\n")
+                archivo.write(f"{spacing}  {self.dlg_base.min_spacing.text()}  {self.dlg_base.max_spacing.text()} % Spacing for grass stems (cm)\n")
             else:
                 archivo.write(f"{spacing} % Spacing for grass stems (cm)\n")
             
             if roughness_grass == "nan":
-                archivo.write(f"{roughness_grass}  {self.dlg_calibration_sedimentograph.min_roughness.text()}  {self.dlg_calibration_sedimentograph.max_roughness.text()} % Roughness- grass Manning's (s/cm^1/3)\n")
+                archivo.write(f"{roughness_grass}  {self.dlg_base.min_roughness.text()}  {self.dlg_base.max_roughness.text()} % Roughness- grass Manning's (s/cm^1/3)\n")
             else:
                 archivo.write(f"{roughness_grass} % Roughness- grass Manning's (s/cm^1/3)\n")
             
             if height == "nan":
-                archivo.write(f"{height}  {self.dlg_calibration_sedimentograph.min_height.text()}  {self.dlg_calibration_sedimentograph.max_height.text()} % Height of grass (cm)\n")
+                archivo.write(f"{height}  {self.dlg_base.min_height.text()}  {self.dlg_base.max_height.text()} % Height of grass (cm)\n")
             else:
                 archivo.write(f"{height} % Height of grass (cm)\n")
             
             if roughness_bare == "nan":
-                archivo.write(f"{roughness_bare}  {self.dlg_calibration_sedimentograph.min_bare.text()}  {self.dlg_calibration_sedimentograph.max_bare.text()} % Roughness- bare surface Manning's n (s/m^1/3)\n")
+                archivo.write(f"{roughness_bare}  {self.dlg_base.min_bare.text()}  {self.dlg_base.max_bare.text()} % Roughness- bare surface Manning's n (s/m^1/3)\n")
             else:
                 archivo.write(f"{roughness_bare} % Roughness- bare surface Manning's n (s/m^1/3)\n")
             
             if coarse == "nan":
-                archivo.write(f"{coarse}  {self.dlg_calibration_sedimentograph.min_coarse.text()}  {self.dlg_calibration_sedimentograph.max_coarse.text()} % Coarse sediment fraction d>0.0037cm (g/g)\n")
+                archivo.write(f"{coarse}  {self.dlg_base.min_coarse.text()}  {self.dlg_base.max_coarse.text()} % Coarse sediment fraction d>0.0037cm (g/g)\n")
             else:
                 archivo.write(f"{coarse} % Coarse sediment fraction d>0.0037cm (g/g)\n")
             
             if incoming == "nan":
-                archivo.write(f"{incoming}  {self.dlg_calibration_sedimentograph.min_incoming.text()}  {self.dlg_calibration_sedimentograph.max_incoming.text()} % Incoming Flow sediment concentration, (g/cm3)\n")
+                archivo.write(f"{incoming}  {self.dlg_base.min_incoming.text()}  {self.dlg_base.max_incoming.text()} % Incoming Flow sediment concentration, (g/cm3)\n")
             else:
                 archivo.write(f"{incoming} % Incoming Flow sediment concentration, (g/cm3)\n")
             
             if porosity == "nan":
-                archivo.write(f"{porosity}  {self.dlg_calibration_sedimentograph.min_porosity.text()}  {self.dlg_calibration_sedimentograph.max_porosity.text()} % Porosity of deposited sediment (m3/m3)\n")
+                archivo.write(f"{porosity}  {self.dlg_base.min_porosity.text()}  {self.dlg_base.max_porosity.text()} % Porosity of deposited sediment (m3/m3)\n")
             else:
                 archivo.write(f"{porosity} % Porosity of deposited sediment (m3/m3)\n")
             
             if sediment_class == "nan":
-                archivo.write(f"{sediment_class}  {self.dlg_calibration_sedimentograph.min_class.text()}  {self.dlg_calibration_sedimentograph.max_class.text()} % Sediment particle class, diameter d50 (cm)\n")
+                archivo.write(f"{sediment_class}  {self.dlg_base.min_class.text()}  {self.dlg_base.max_class.text()} % Sediment particle class, diameter d50 (cm)\n")
             else:
                 archivo.write(f"{sediment_class} % Sediment particle class, diameter d50 (cm)\n")
             
             if sediment_density == "nan":
-                archivo.write(f"{sediment_density}  {self.dlg_calibration_sedimentograph.min_density.text()}  {self.dlg_calibration_sedimentograph.max_density.text()} % Sediment particle density\n")
+                archivo.write(f"{sediment_density}  {self.dlg_base.min_density.text()}  {self.dlg_base.max_density.text()} % Sediment particle density\n")
             else:
                 archivo.write(f"{sediment_density} % Sediment particle density\n")
             
@@ -2584,7 +2638,7 @@ class qvfsmod:
         """Method to change the inputs in the calibration of sedimentograph if change is selected"""
         #Function to modify inputs
         def modify_inputs(extension, row, column, new_value):
-            prj = self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.vfs_project.text())
+            prj = self.obtain_direction_vfsmod(self.dlg_base.vfs_project.text())
             with open(prj, "r") as archivo:
                 lineas_prj = archivo.readlines()
             for i in lineas_prj:
@@ -2611,39 +2665,39 @@ class qvfsmod:
         
         #spacing
         if inputs[0]==2:
-            modify_inputs("igr",0,0,self.dlg_calibration_hydrograph.new_spacing.text())
+            modify_inputs("igr",0,0,self.dlg_base.new_spacing.text())
         #roughness grass
         if inputs[1]==2:
-            modify_inputs("igr",0,1,self.dlg_calibration_hydrograph.new_roughness.text())
+            modify_inputs("igr",0,1,self.dlg_base.new_roughness.text())
         #height
         if inputs[2]==2:
-            modify_inputs("igr",0,2,self.dlg_calibration_hydrograph.new_height.text())
+            modify_inputs("igr",0,2,self.dlg_base.new_height.text())
         #roughness bare
         if inputs[3]==2:
-            modify_inputs("igr",0,3,self.dlg_calibration_hydrograph.new_bare.text())
+            modify_inputs("igr",0,3,self.dlg_base.new_bare.text())
         #coarse
         if inputs[4]==2:
-            modify_inputs("isd",0,1,self.dlg_calibration_hydrograph.new_coarse.text())
+            modify_inputs("isd",0,1,self.dlg_base.new_coarse.text())
         #incoming
         if inputs[5]==2:
-            modify_inputs("isd",0,2,self.dlg_calibration_hydrograph.new_incoming.text())
+            modify_inputs("isd",0,2,self.dlg_base.new_incoming.text())
         #porosity
         if inputs[6]==2:
-            modify_inputs("isd",0,3,self.dlg_calibration_hydrograph.new_porosity.text())
+            modify_inputs("isd",0,3,self.dlg_base.new_porosity.text())
         #sediment_class
         if inputs[7]==2:
-            modify_inputs("isd",1,0,self.dlg_calibration_hydrograph.new_class.text())
+            modify_inputs("isd",1,0,self.dlg_base.new_class.text())
         #sediment_density
         if inputs[8]==2:
-            modify_inputs("isd",1,1,self.dlg_calibration_hydrograph.new_density.text())
+            modify_inputs("isd",1,1,self.dlg_base.new_density.text())
         
     
     def move_files_calibration_sedimentograph(self):
         """Method to move files to the corresponding folders for calibration"""
         #Move prj to inverse
-        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_calibration_sedimentograph.vfs_file.text()), self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_calibration_sedimentograph.vfs_file.text())}")
+        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_base.vfs_file.text()), self.dlg_base.working_directory_vfsmod.text()+os.path.basename(self.dlg_base.vfs_file.text()))
         #Move sedimentograph
-        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_calibration_sedimentograph.sedimentograph_file.text()),self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_calibration_sedimentograph.sedimentograph_file.text())}")
+        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_base.sedimentograph_file.text()),self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_base.sedimentograph_file.text())}")
         #Move executables of UH and VFS to main directory
         shutil.copyfile(self.plugin_directory+"\\executables\\uh.exe",self.dlg_base.working_directory_vfsmod.text()+"\\uh.exe")
         shutil.copyfile(self.plugin_directory+"\\executables\\vfsm.exe",self.dlg_base.working_directory_vfsmod.text()+"\\vfsm.exe")
@@ -2660,10 +2714,34 @@ class qvfsmod:
         #Create file for hydrograph calibration and change inputs if "Change" is selected
         self.create_inverse_file_hydrograph()
             
-        #Update bat for calibration and execute
+        #Update bat for calibration
         self.update_bat_calibration()
-        subprocess.run(self.plugin_directory+"\\executables\\execution.bat")
-    
+        
+        #execute bat
+        #first we create the thread class to be able to use the dialog when executing
+        class ejecutor(QThread):
+            resultado_signal = pyqtSignal(list)
+            def __init__(self, plugin_directory):
+                super().__init__()
+                self.plugin_directory = plugin_directory
+            def run(self):
+                resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
+                    capture_output=True, 
+                    text=True, 
+                    shell=True)
+                self.resultado_signal.emit([resultado.stdout,resultado.stderr])
+                
+        self.worker = ejecutor(self.plugin_directory)
+        self.worker.start()
+        self.worker.resultado_signal.connect(self.calibration_execution_result)
+                  
+        
+    def calibration_execution_result(self,resultado):
+        """Method to show the final result of calibration execution"""
+        if "Calculate Jacobian matrix" in str(resultado[0]):
+            self.warning_message("Calibration executed succesfully!")
+        else:
+            self.warning_message(str(resultado[1]))  
     
     def update_bat_calibration(self):
         """Method to update the bat of the hydrograph"""
@@ -2679,9 +2757,9 @@ class qvfsmod:
     def move_files_calibration_hydrograph(self):
         """Method to move files to the corresponding folders for calibration"""
         #Move prj to inverse
-        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.vfs_project.text()), self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_calibration_hydrograph.vfs_project.text())}")
+        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_base.vfs_project.text()), self.dlg_base.working_directory_vfsmod.text()+os.path.basename(self.dlg_base.vfs_project.text()))
         #Move hydrograph
-        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.hydrograph_file.text()),self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_calibration_hydrograph.hydrograph_file.text())}")
+        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_base.hydrograph_file.text()),self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_base.hydrograph_file.text())}")
         #Move executables of UH and VFS to main directory
         shutil.copyfile(self.plugin_directory+"\\executables\\uh.exe",self.dlg_base.working_directory_vfsmod.text()+"\\uh.exe")
         shutil.copyfile(self.plugin_directory+"\\executables\\vfsm.exe",self.dlg_base.working_directory_vfsmod.text()+"\\vfsm.exe")
@@ -2703,16 +2781,16 @@ class qvfsmod:
         else: plot = "n"
         if self.dlg_calibration_advanced_settings.constrain_yes.isChecked():constrain = "y"
         else: constrain = "n"
-        vertical = calibration(self.dlg_calibration_hydrograph.change_vertical,self.dlg_calibration_hydrograph.calibrate_vertical)
-        average = calibration(self.dlg_calibration_hydrograph.change_average,self.dlg_calibration_hydrograph.calibrate_average)
-        saturated = calibration(self.dlg_calibration_hydrograph.change_saturated,self.dlg_calibration_hydrograph.calibrate_saturated)
-        initial = calibration(self.dlg_calibration_hydrograph.change_initial,self.dlg_calibration_hydrograph.calibrate_initial)
-        maximum = calibration(self.dlg_calibration_hydrograph.change_maximum,self.dlg_calibration_hydrograph.calibrate_maximum)
-        fraction = calibration(self.dlg_calibration_hydrograph.change_fraction,self.dlg_calibration_hydrograph.calibrate_fraction)
-        width = calibration(self.dlg_calibration_hydrograph.change_width,self.dlg_calibration_hydrograph.calibrate_width)
-        length = calibration(self.dlg_calibration_hydrograph.change_length,self.dlg_calibration_hydrograph.calibrate_length)
-        manning = calibration(self.dlg_calibration_hydrograph.change_manning,self.dlg_calibration_hydrograph.calibrate_manning)
-        slope = calibration(self.dlg_calibration_hydrograph.change_slope,self.dlg_calibration_hydrograph.calibrate_slope)
+        vertical = calibration(self.dlg_base.change_vertical,self.dlg_base.calibrate_vertical)
+        average = calibration(self.dlg_base.change_average,self.dlg_base.calibrate_average)
+        saturated = calibration(self.dlg_base.change_saturated,self.dlg_base.calibrate_saturated)
+        initial = calibration(self.dlg_base.change_initial,self.dlg_base.calibrate_initial)
+        maximum = calibration(self.dlg_base.change_maximum,self.dlg_base.calibrate_maximum)
+        fraction = calibration(self.dlg_base.change_fraction,self.dlg_base.calibrate_fraction)
+        width = calibration(self.dlg_base.change_width,self.dlg_base.calibrate_width)
+        length = calibration(self.dlg_base.change_length,self.dlg_base.calibrate_length)
+        manning = calibration(self.dlg_base.change_manning,self.dlg_base.calibrate_manning)
+        slope = calibration(self.dlg_base.change_slope,self.dlg_base.calibrate_slope)
         
         #Change inputs if "Change" has selected
         self.change_inputs_calibration_hydrograph([vertical,average,saturated,initial,maximum,fraction,width,length,manning,slope])
@@ -2721,9 +2799,9 @@ class qvfsmod:
         path = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.cfg"
         with open(path, 'w') as archivo:
             archivo.write("Indicate project name\n")
-            archivo.write(f"{self.dlg_calibration_hydrograph.vfs_project.text()}\n\n")
+            archivo.write(f"{self.dlg_base.vfs_project.text()}\n\n")
             archivo.write(f"Give file for fitted parameters\n{self.dlg_calibration_advanced_settings.exit_file.text()}.out\n\n")
-            archivo.write(f"Give file for measured hydrograph\n{self.dlg_calibration_hydrograph.hydrograph_file.text()}\n\n")
+            archivo.write(f"Give file for measured hydrograph\n{self.dlg_base.hydrograph_file.text()}\n\n")
             archivo.write("Give file for measured sedimentograph\nno_name.out\n\n")
             archivo.write(f"Fix number of iterations for GMCS or use 0 for setting automatically iter=100*np^2\n {self.dlg_calibration_advanced_settings.iterations.text()}\n\n")
             archivo.write(f"Plot Inverse simulation (y/n)\n{plot}\n\n")
@@ -2731,52 +2809,52 @@ class qvfsmod:
             archivo.write(f"VFSmod parameters\nIndicate values for fixed parameters and use nan for parameters to be\noptimized\n[nan    lower limit    upper limit\n\n")
             archivo.write(f"Flow module parameters\n")
             if vertical == "nan":
-                archivo.write(f"{vertical}  {self.dlg_calibration_hydrograph.min_vertical.text()}  {self.dlg_calibration_hydrograph.max_vertical.text()} % Vertical saturated K (m/s)\n")
+                archivo.write(f"{vertical}  {self.dlg_base.min_vertical.text()}  {self.dlg_base.max_vertical.text()} % Vertical saturated K (m/s)\n")
             else:
                 archivo.write(f"{vertical} % Vertical saturated K (m/s)\n")
                 
             if average == "nan":
-                archivo.write(f"{average}  {self.dlg_calibration_hydrograph.min_average.text()}  {self.dlg_calibration_hydrograph.max_average.text()} % Average suction at the wetting front (m)\n")
+                archivo.write(f"{average}  {self.dlg_base.min_average.text()}  {self.dlg_base.max_average.text()} % Average suction at the wetting front (m)\n")
             else:
                 archivo.write(f"{average} % Average suction at the wetting front (m)\n")
             
             if saturated == "nan":
-                archivo.write(f"{saturated}  {self.dlg_calibration_hydrograph.min_saturated.text()}  {self.dlg_calibration_hydrograph.max_saturated.text()} % Saturated water content (m3/m3)\n")
+                archivo.write(f"{saturated}  {self.dlg_base.min_saturated.text()}  {self.dlg_base.max_saturated.text()} % Saturated water content (m3/m3)\n")
             else:
                 archivo.write(f"{saturated} % Saturated water content (m3/m3)\n")
             
             if initial == "nan":
-                archivo.write(f"{initial}  {self.dlg_calibration_hydrograph.min_initial.text()}  {self.dlg_calibration_hydrograph.max_initial.text()} % Initial water content (m3/m3)\n")
+                archivo.write(f"{initial}  {self.dlg_base.min_initial.text()}  {self.dlg_base.max_initial.text()} % Initial water content (m3/m3)\n")
             else:
                 archivo.write(f"{initial} % Initial water content (m3/m3)\n")
             
             if maximum == "nan":
-                archivo.write(f"{maximum}  {self.dlg_calibration_hydrograph.min_maximum.text()}  {self.dlg_calibration_hydrograph.max_maximum.text()} % Maximum surface storage (m)\n")
+                archivo.write(f"{maximum}  {self.dlg_base.min_maximum.text()}  {self.dlg_base.max_maximum.text()} % Maximum surface storage (m)\n")
             else:
                 archivo.write(f"{maximum} % Maximum surface storage (m)\n")
             
             if fraction == "nan":
-                archivo.write(f"{fraction}  {self.dlg_calibration_hydrograph.min_fraction.text()}  {self.dlg_calibration_hydrograph.max_fraction.text()} % Filter fraction where ponding is checked\n")
+                archivo.write(f"{fraction}  {self.dlg_base.min_fraction.text()}  {self.dlg_base.max_fraction.text()} % Filter fraction where ponding is checked\n")
             else:
                 archivo.write(f"{fraction} % Filter fraction where ponding is checked\n")
             
             if width == "nan":
-                archivo.write(f"{width}  {self.dlg_calibration_hydrograph.min_width.text()}  {self.dlg_calibration_hydrograph.max_width.text()} % Filter width\n")
+                archivo.write(f"{width}  {self.dlg_base.min_width.text()}  {self.dlg_base.max_width.text()} % Filter width\n")
             else:
                 archivo.write(f"{width} % Filter width\n")
             
             if length == "nan":
-                archivo.write(f"{length}  {self.dlg_calibration_hydrograph.min_length.text()}  {self.dlg_calibration_hydrograph.max_length.text()} % Filter length\n")
+                archivo.write(f"{length}  {self.dlg_base.min_length.text()}  {self.dlg_base.max_length.text()} % Filter length\n")
             else:
                 archivo.write(f"{length} % Filter length\n")
             
             if manning == "nan":
-                archivo.write(f"{manning}  {self.dlg_calibration_hydrograph.min_manning.text()}  {self.dlg_calibration_hydrograph.max_manning.text()} % nk\n")
+                archivo.write(f"{manning}  {self.dlg_base.min_manning.text()}  {self.dlg_base.max_manning.text()} % nk\n")
             else:
                 archivo.write(f"{manning} % nk\n")
             
             if slope == "nan":
-                archivo.write(f"{slope}  {self.dlg_calibration_hydrograph.min_slope.text()}  {self.dlg_calibration_hydrograph.max_slope.text()} % Sok\n")
+                archivo.write(f"{slope}  {self.dlg_base.min_slope.text()}  {self.dlg_base.max_slope.text()} % Sok\n")
             else:
                 archivo.write(f"{slope} % Sok\n")
             
@@ -2787,7 +2865,7 @@ class qvfsmod:
         """Method to change the inputs in the calibration of hydrograph if change is selected"""
         #Function to modify inputs
         def modify_inputs(extension, row, column, new_value):
-            prj = self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.vfs_project.text())
+            prj = self.obtain_direction_vfsmod(self.dlg_base.vfs_project.text())
             with open(prj, "r") as archivo:
                 lineas_prj = archivo.readlines()
             for i in lineas_prj:
@@ -2814,40 +2892,40 @@ class qvfsmod:
         
         #vertical
         if inputs[0]==2:
-            modify_inputs("iso",0,0,self.dlg_calibration_hydrograph.new_vertical.text())
+            modify_inputs("iso",0,0,self.dlg_base.new_vertical.text())
         #average
         if inputs[1]==2:
-            modify_inputs("iso",0,1,self.dlg_calibration_hydrograph.new_average.text())
+            modify_inputs("iso",0,1,self.dlg_base.new_average.text())
         #saturated
         if inputs[2]==2:
-            modify_inputs("iso",0,2,self.dlg_calibration_hydrograph.new_saturatedl.text())
+            modify_inputs("iso",0,2,self.dlg_base.new_saturatedl.text())
         #initial
         if inputs[3]==2:
-            modify_inputs("iso",0,3,self.dlg_calibration_hydrograph.new_initial.text())
+            modify_inputs("iso",0,3,self.dlg_base.new_initial.text())
         #maximum
         if inputs[4]==2:
-            modify_inputs("iso",0,4,self.dlg_calibration_hydrograph.new_maximum.text())
+            modify_inputs("iso",0,4,self.dlg_base.new_maximum.text())
         #fraction
         if inputs[5]==2:
-            modify_inputs("iso",0,5,self.dlg_calibration_hydrograph.new_fraction.text())
+            modify_inputs("iso",0,5,self.dlg_base.new_fraction.text())
         #width
         if inputs[6]==2:
-            modify_inputs("ikw",1,0,self.dlg_calibration_hydrograph.new_width.text())
+            modify_inputs("ikw",1,0,self.dlg_base.new_width.text())
         #length
         if inputs[7]==2:
-            self.modify_ikw_file_calibration(self.dlg_calibration_hydrograph.new_length.text())
+            self.modify_ikw_file_calibration(self.dlg_base.new_length.text())
         #manning
         if inputs[8]==2:
-            self.modify_mannign_slope_hydrograph_calibration(1,self.dlg_calibration_hydrograph.new_manning.text())
+            self.modify_mannign_slope_hydrograph_calibration(1,self.dlg_base.new_manning.text())
         #slope
         if inputs[9]==2:
-            self.modify_mannign_slope_hydrograph_calibration(2,self.dlg_calibration_hydrograph.new_slope.text())
+            self.modify_mannign_slope_hydrograph_calibration(2,self.dlg_base.new_slope.text())
         
     
     def modify_mannign_slope_hydrograph_calibration(self,column,new_value):
         """Method to modify the manning and slope for hydrograph calibration"""
         #We obtain information of ikw file
-        prj = self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.vfs_project.text())
+        prj = self.obtain_direction_vfsmod(self.dlg_base.vfs_project.text())
         with open(prj, "r") as archivo:
             lineas_prj = archivo.readlines()
         ikw = lineas_prj[0].split("=")[-1]
@@ -2876,7 +2954,7 @@ class qvfsmod:
     def modify_ikw_file_calibration(self,value_change):
         """Metod to modify the ikw file for the hydrograph calibration"""
         #We obtain information of ikw file
-        prj = self.obtain_direction_vfsmod(self.dlg_calibration_hydrograph.vfs_project.text())
+        prj = self.obtain_direction_vfsmod(self.dlg_base.vfs_project.text())
         with open(prj, "r") as archivo:
             lineas_prj = archivo.readlines()
         ikw = lineas_prj[0].split("=")[-1]
@@ -2978,7 +3056,7 @@ class qvfsmod:
                 i[1][2].setEnabled(False)
                 
             elif i[0][1].isChecked():#change is selected
-                i[1][0].setStyleSheet("background-color: white;")
+                i[1][0].setStyleSheet("background-color: #354052;")
                 i[1][0].setEnabled(True)
                 i[1][1].setStyleSheet("background-color: lightgrey;")
                 i[1][1].setEnabled(False)
@@ -2988,9 +3066,9 @@ class qvfsmod:
             elif i[0][2].isChecked():#calibrate is selected
                 i[1][0].setStyleSheet("background-color: lightgrey;")
                 i[1][0].setEnabled(False)
-                i[1][1].setStyleSheet("background-color: white;")
+                i[1][1].setStyleSheet("background-color: #354052;")
                 i[1][1].setEnabled(True)
-                i[1][2].setStyleSheet("background-color: white;")
+                i[1][2].setStyleSheet("background-color: #354052;")
                 i[1][2].setEnabled(True)
             
     def draw_calibration_sedimentograph(self):
@@ -3005,7 +3083,7 @@ class qvfsmod:
                 i[1][2].setEnabled(False)
                 
             elif i[0][1].isChecked():#change is selected
-                i[1][0].setStyleSheet("background-color: white;")
+                i[1][0].setStyleSheet("background-color: #354052;")
                 i[1][0].setEnabled(True)
                 i[1][1].setStyleSheet("background-color: lightgrey;")
                 i[1][1].setEnabled(False)
@@ -3015,9 +3093,9 @@ class qvfsmod:
             elif i[0][2].isChecked():#calibrate is selected
                 i[1][0].setStyleSheet("background-color: lightgrey;")
                 i[1][0].setEnabled(False)
-                i[1][1].setStyleSheet("background-color: white;")
+                i[1][1].setStyleSheet("background-color: #354052;")
                 i[1][1].setEnabled(True)
-                i[1][2].setStyleSheet("background-color: white;")
+                i[1][2].setStyleSheet("background-color: #354052;")
                 i[1][2].setEnabled(True)
                 
     def uncheck_length_spacing(self,parameter):
@@ -3139,11 +3217,11 @@ class qvfsmod:
             self.modify_igr_file_design()
         
         #We add the information of the loops to the files and we execute the file
-        self.df_results_design = pd.DataFrame(columns={"Total Runoff from source (mm)","Total Runoff from Source (m3)",
+        self.df_results_design = pd.DataFrame(columns=["Total Runoff from source (mm)","Total Runoff from Source (m3)",
             "Total Runoff out from Filter (mm)","Total Runoff out from Filter (m3)","Total Infiltration in Filter",
             "Mass Sediment Input to Filter","Concentration Sediment in Runoff from source Area",
             "Mass Sediment Output from Filter","Concentration Sediment in Runoff exiting the Filter",
-            "Sediment Delivery Ratio","Runoff Delivery Ratio"})
+            "Sediment Delivery Ratio","Runoff Delivery Ratio"])
         
         #Start with the progress bar
         self.progress_metod(start = True)
@@ -4814,7 +4892,7 @@ class qvfsmod:
     
     def default_values(self):
         """Method to set default values for input values"""
-        self.dlg_base.working_directory_vfsmod.setText(r"C:\Users\ASUS\OneDrive\Documentos\Vfsmod\Prueba")
+        self.dlg_base.working_directory_vfsmod.setText(r"C:\Prueba")
         #self.dlg_base.name_files.setText("prueba")
         self.dlg_base.uh_file.setText(".lis")
         self.dlg_base.uh_input.setText("inputs\.inp")
@@ -4881,25 +4959,25 @@ class qvfsmod:
                 item.setTextAlignment(Qt.AlignCenter)
         
         #Calibration
-        self.dlg_calibration_hydrograph.no_vertical.setChecked(True)
-        self.dlg_calibration_hydrograph.no_average.setChecked(True)
-        self.dlg_calibration_hydrograph.no_saturated.setChecked(True)
-        self.dlg_calibration_hydrograph.no_initial.setChecked(True)
-        self.dlg_calibration_hydrograph.no_maximum.setChecked(True)
-        self.dlg_calibration_hydrograph.no_fraction.setChecked(True)
-        self.dlg_calibration_hydrograph.no_width.setChecked(True)
-        self.dlg_calibration_hydrograph.no_length.setChecked(True)
-        self.dlg_calibration_hydrograph.no_manning.setChecked(True)
-        self.dlg_calibration_hydrograph.no_slope.setChecked(True)
-        self.dlg_calibration_sedimentograph.no_spacing.setChecked(True)
-        self.dlg_calibration_sedimentograph.no_roughness.setChecked(True)
-        self.dlg_calibration_sedimentograph.no_height.setChecked(True)
-        self.dlg_calibration_sedimentograph.no_bare.setChecked(True)
-        self.dlg_calibration_sedimentograph.no_coarse.setChecked(True)
-        self.dlg_calibration_sedimentograph.no_incoming.setChecked(True)
-        self.dlg_calibration_sedimentograph.no_porosity.setChecked(True)
-        self.dlg_calibration_sedimentograph.no_class.setChecked(True)
-        self.dlg_calibration_sedimentograph.no_density.setChecked(True)
+        self.dlg_base.no_vertical.setChecked(True)
+        self.dlg_base.no_average.setChecked(True)
+        self.dlg_base.no_saturated.setChecked(True)
+        self.dlg_base.no_initial.setChecked(True)
+        self.dlg_base.no_maximum.setChecked(True)
+        self.dlg_base.no_fraction.setChecked(True)
+        self.dlg_base.no_width.setChecked(True)
+        self.dlg_base.no_length.setChecked(True)
+        self.dlg_base.no_manning.setChecked(True)
+        self.dlg_base.no_slope.setChecked(True)
+        self.dlg_base.no_spacing.setChecked(True)
+        self.dlg_base.no_roughness.setChecked(True)
+        self.dlg_base.no_height.setChecked(True)
+        self.dlg_base.no_bare.setChecked(True)
+        self.dlg_base.no_coarse.setChecked(True)
+        self.dlg_base.no_incoming.setChecked(True)
+        self.dlg_base.no_porosity.setChecked(True)
+        self.dlg_base.no_class.setChecked(True)
+        self.dlg_base.no_density.setChecked(True)
         
         
     def user_defined_storm_type(self):
