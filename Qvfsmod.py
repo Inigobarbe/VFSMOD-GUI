@@ -57,6 +57,10 @@ from libraries.SALib.analyze import sobol
 from libraries.SALib.sample.morris import sample as sample_morris 
 from libraries.SALib.analyze.morris import analyze as analyze_morris
 
+from libraries.SALib.sample.fast_sampler import sample as sample_fast
+from libraries.SALib.analyze.fast import analyze as analyze_fast
+
+
 import os.path
 import pandas as pd
 import subprocess
@@ -501,13 +505,19 @@ class qvfsmod:
         
         #Change bounds in sensitivity dialog if distribution changed
         self.dlg_base.distributions.currentIndexChanged.connect(self.change_bounds_sensitivity)
+        self.dlg_base.oat.toggled.connect(self.change_bounds_sensitivity)
+        self.dlg_base.oat.toggled.connect(self.distribution_parameters)
         #Add new parameters to distribution in sensitivity dialog
         self.dlg_base.distributions.currentIndexChanged.connect(self.distribution_parameters)
         
         #Change number of samples in dialog depending on sensitivity analysis metod
         self.dlg_base.sobol.toggled.connect(self.change_sensitivity_method)
         self.dlg_base.morris.toggled.connect(self.change_sensitivity_method)
+        self.dlg_base.fast.toggled.connect(self.change_sensitivity_method)
         self.dlg_base.trajectories.textChanged.connect(self.change_sensitivity_method)
+        
+        #Set checked true OAT
+        self.dlg_base.oat.setChecked(True)
         
         #Sensitivity analysis dialog buttons
         buttons = [self.dlg_base.all_parameters,self.dlg_base.rainfall_event,
@@ -1734,12 +1744,28 @@ class qvfsmod:
         #Create the dictionary for the sensitivity analysis
         self.dic_data = self.create_dictionary_sensitivity_analysis()
         
-        #Create the samples
-        self.problem = {'num_vars': len(self.dic_data),'names': list(self.dic_data.keys()),'bounds': [x[1] for x in self.dic_data.values()],"dists":[x[0] for x in self.dic_data.values()]}
+        #Create problem variable
+        if not self.dlg_base.oat.isChecked():
+            self.problem = {'num_vars': len(self.dic_data),'names': list(self.dic_data.keys()),'bounds': [x[1] for x in self.dic_data.values()],"dists":[x[0] for x in self.dic_data.values()]}
+        #Create samples
         if self.dlg_base.sobol.isChecked():
             self.param_values = saltelli.sample(self.problem, int(self.dlg_base.trajectories.text()))
         elif self.dlg_base.morris.isChecked():
             self.param_values = sample_morris(self.problem, int(self.dlg_base.trajectories.text()))
+        elif self.dlg_base.fast.isChecked():
+            if int(self.dlg_base.trajectories.text())<=64:
+                self.warning_message("N value must be higher than 64 when executing FAST")
+                return
+            self.param_values = sample_fast(self.problem, int(self.dlg_base.trajectories.text()))
+        elif self.dlg_base.oat.isChecked():
+            values = []
+            for i in self.dic_data.values():
+                values.append(i)
+            print(values)
+            self.param_values = np.column_stack(tuple(values))
+            print(self.param_values)
+            print(self.dic_data)
+            return
         
         #We start obtaining the results
         #Create folders of sensitivity analysis
@@ -1799,8 +1825,22 @@ class qvfsmod:
                     for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
                         f.write(f"{input_parameter}:{si['mu_star'][input_parameter_k]}_{si['sigma'][input_parameter_k]}" + '\n')
                 f.write("----------------------------------------------------------------------" + '\n')
-                
-        self.results_sensitivity.to_csv(self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\output\\sensitivity.csv", mode='a',index=False, float_format='%.5f')
+        
+        elif self.dlg_base.fast.isChecked():
+            with open(path, 'w') as f:
+                #Add first row
+                f.write("FAST sensitivity indexes" + '\n')
+                #Add sensitivity indexes for each output
+                for i in self.results_sensitivity.columns[-number_outputs:]:
+                    f.write("----------------------------------------------------------------------" + '\n')
+                    f.write(f"{i}" + '\n')
+                    si = analyze_fast(self.problem,np.array(self.results_sensitivity[i]))
+                    for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
+                        f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}" + '\n')
+                f.write("----------------------------------------------------------------------" + '\n')
+        
+        #Append results
+        self.results_sensitivity.to_csv(path, mode='a',index=False, float_format='%.5f')
         
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)
@@ -2159,43 +2199,61 @@ class qvfsmod:
     def create_dictionary_sensitivity_analysis(self):
         """Method to create the dictionary that will contain the parameters of the sensitivity analysis"""
         #Functions to convert user specified inputs into inputs that SALib can read
-        def distribution_parameters_fun(row):
-            if str(self.dlg_base.table.item(row, 1).text()) == "Uniform":
-                distribution = "unif"
-                texto = str(self.dlg_base.table.item(row, 2).text())
-                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-            elif str(self.dlg_base.table.item(row, 1).text()) == "Logaritmic uniform":
-                distribution = "logunif"
-                texto = str(self.dlg_base.table.item(row, 2).text())
-                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-            elif str(self.dlg_base.table.item(row, 1).text()) == "Triangular":
-                distribution = "triang"
-                texto = str(self.dlg_base.table.item(row, 2).text())
-                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-            elif str(self.dlg_base.table.item(row, 1).text()) == "Normal":
-                distribution = "norm"
-                texto = str(self.dlg_base.table.item(row, 2).text())
-                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-            elif str(self.dlg_base.table.item(row, 1).text()) == "Normal truncated":
-                distribution = "truncnorm"
-                texto = str(self.dlg_base.table.item(row, 2).text())
-                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-            elif str(self.dlg_base.table.item(row, 1).text()) == "Lognormal":
-                distribution = "lognorm"
-                texto = str(self.dlg_base.table.item(row, 2).text())
-                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-            return distribution, parameters
-        
-        #Diccionario nombre en el diálogo - [parametros del análisis de sensibilidad]
-        dic_data = {}
-        for i in range(self.dlg_base.table.rowCount()):
-            #Diccionario [Parametro] = (Distribucion, Parametros)
-            name = self.dlg_base.table.item(i, 0).text()
-            #Obtain name of distribution and parameters
-            dis,param = distribution_parameters_fun(i)
-            dic_data[name] = [dis,param]
-        
-        return dic_data
+        if self.dlg_base.oat.isChecked():
+            dic_data = {}
+            for i in range(self.dlg_base.table_oat.rowCount()):
+                name = self.dlg_base.table_oat.item(i, 0).text()
+                base = float(self.dlg_base.table_oat.item(i, 1).text().split(",")[0].split(":")[-1])
+                minimum = float(self.dlg_base.table_oat.item(i, 1).text().split(",")[1].split(":")[-1])
+                maximum = float(self.dlg_base.table_oat.item(i, 1).text().split(",")[2].split(":")[-1])
+                increment = float(self.dlg_base.table_oat.item(i, 1).text().split(",")[3].split(":")[-1])
+                values = [base]
+                value = minimum
+                while True:
+                    values.append(value)
+                    value += increment
+                    if value>maximum:
+                        break
+                dic_data[name] = values
+            return dic_data
+        else:
+            def distribution_parameters_fun(row):
+                if str(self.dlg_base.table.item(row, 1).text()) == "Uniform":
+                    distribution = "unif"
+                    texto = str(self.dlg_base.table.item(row, 2).text())
+                    parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+                elif str(self.dlg_base.table.item(row, 1).text()) == "Logaritmic uniform":
+                    distribution = "logunif"
+                    texto = str(self.dlg_base.table.item(row, 2).text())
+                    parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+                elif str(self.dlg_base.table.item(row, 1).text()) == "Triangular":
+                    distribution = "triang"
+                    texto = str(self.dlg_base.table.item(row, 2).text())
+                    parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+                elif str(self.dlg_base.table.item(row, 1).text()) == "Normal":
+                    distribution = "norm"
+                    texto = str(self.dlg_base.table.item(row, 2).text())
+                    parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+                elif str(self.dlg_base.table.item(row, 1).text()) == "Normal truncated":
+                    distribution = "truncnorm"
+                    texto = str(self.dlg_base.table.item(row, 2).text())
+                    parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+                elif str(self.dlg_base.table.item(row, 1).text()) == "Lognormal":
+                    distribution = "lognorm"
+                    texto = str(self.dlg_base.table.item(row, 2).text())
+                    parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+                return distribution, parameters
+            
+            #Diccionario nombre en el diálogo - [parametros del análisis de sensibilidad]
+            dic_data = {}
+            for i in range(self.dlg_base.table.rowCount()):
+                #Diccionario [Parametro] = (Distribucion, Parametros)
+                name = self.dlg_base.table.item(i, 0).text()
+                #Obtain name of distribution and parameters
+                dis,param = distribution_parameters_fun(i)
+                dic_data[name] = [dis,param]
+            
+            return dic_data
     
     def distribution_parameters(self):
         """Method to add/delete new labels depending on choosed distribution"""
@@ -2223,53 +2281,71 @@ class qvfsmod:
                 widget.deleteLater()
             except:
                 pass
-        
-        if distribution=="Uniform":
+        if self.dlg_base.oat.isChecked():
             #Primero se borra
             delete_elements()
-        
-        elif distribution=="Logaritmic uniform":
-            #Primero se borra
-            delete_elements()
- 
-        elif distribution=="Triangular":
-            #Primero se borra
-            delete_elements()
-
             #Luego se añade
             # Crea un nuevo QLabel y QLineEdit
-            self.dlg_base.third_label = QLabel("Peak")
-            self.dlg_base.third = QLineEdit()
-            # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
-            self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third_label, 4, 0)
-            self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third, 4, 1)
-
-        elif distribution=="Normal":
-            #Primero se borra
-            delete_elements()
-        
-        if distribution=="Lognormal":
-            #Primero se borra
-            delete_elements()
-        
-        if distribution=="Normal truncated":
-            #Primero se borra
-            delete_elements()
-            
-            #Luego se añade
-            # Crea un nuevo QLabel y QLineEdit
-            self.dlg_base.third_label = QLabel("Mean")
+            self.dlg_base.third_label = QLabel("Maximum value")
             self.dlg_base.third = QLineEdit()
             # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
             self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third_label, 4, 0)
             self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third, 4, 1)
             
             # Crea un nuevo QLabel y QLineEdit
-            self.dlg_base.fourth_label = QLabel("Standard deviation")
+            self.dlg_base.fourth_label = QLabel("Increment")
             self.dlg_base.fourth = QLineEdit()
             # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
             self.dlg_base.gridLayout_81.addWidget(self.dlg_base.fourth_label, 5, 0)
             self.dlg_base.gridLayout_81.addWidget(self.dlg_base.fourth, 5, 1)
+        else:
+            if distribution=="Uniform":
+                #Primero se borra
+                delete_elements()
+                
+            
+            elif distribution=="Logaritmic uniform":
+                #Primero se borra
+                delete_elements()
+     
+            elif distribution=="Triangular":
+                #Primero se borra
+                delete_elements()
+
+                #Luego se añade
+                # Crea un nuevo QLabel y QLineEdit
+                self.dlg_base.third_label = QLabel("Peak")
+                self.dlg_base.third = QLineEdit()
+                # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
+                self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third_label, 4, 0)
+                self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third, 4, 1)
+
+            elif distribution=="Normal":
+                #Primero se borra
+                delete_elements()
+            
+            if distribution=="Lognormal":
+                #Primero se borra
+                delete_elements()
+            
+            if distribution=="Normal truncated":
+                #Primero se borra
+                delete_elements()
+                
+                #Luego se añade
+                # Crea un nuevo QLabel y QLineEdit
+                self.dlg_base.third_label = QLabel("Mean")
+                self.dlg_base.third = QLineEdit()
+                # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
+                self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third_label, 4, 0)
+                self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third, 4, 1)
+                
+                # Crea un nuevo QLabel y QLineEdit
+                self.dlg_base.fourth_label = QLabel("Standard deviation")
+                self.dlg_base.fourth = QLineEdit()
+                # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
+                self.dlg_base.gridLayout_81.addWidget(self.dlg_base.fourth_label, 5, 0)
+                self.dlg_base.gridLayout_81.addWidget(self.dlg_base.fourth, 5, 1)
             
     def change_bounds_sensitivity(self):
         """Metod to change bounds labels if distribution changed"""
@@ -2277,69 +2353,87 @@ class qvfsmod:
             self.dlg_base.label_123.setText(bound1)
             self.dlg_base.label_121.setText(bound2)
         distribution = [self.dlg_base.distributions.itemText(i) for i in range(self.dlg_base.distributions.count())][self.dlg_base.distributions.currentIndex()]
-        
-        if distribution=="Uniform":
-            change_lines("Minimum","Maximum")
-        if distribution=="Logaritmic uniform":
-            change_lines("Minimum","Maximum")
-        if distribution=="Triangular":
-            change_lines("Minimum","Maximum","Peak")
-        if distribution=="Normal":
-            change_lines("Mean","Standard deviation")
-        if distribution=="Lognormal":
-            change_lines("Mean","Standard deviation")
-        if distribution=="Normal truncated":
-            change_lines("Minimum","Maximum","Mean","Standard deviation")
+        if self.dlg_base.oat.isChecked():
+            change_lines("Base value","Minimum value","Maximum value","Increment")
+        else:
+            if distribution=="Uniform":
+                change_lines("Minimum","Maximum")
+            if distribution=="Logaritmic uniform":
+                change_lines("Minimum","Maximum")
+            if distribution=="Triangular":
+                change_lines("Minimum","Maximum","Peak")
+            if distribution=="Normal":
+                change_lines("Mean","Standard deviation")
+            if distribution=="Lognormal":
+                change_lines("Mean","Standard deviation")
+            if distribution=="Normal truncated":
+                change_lines("Minimum","Maximum","Mean","Standard deviation")
     
     def delete_sensitivity_table(self):
         """Method to delete sensitivity analysis parameters to table"""
-        numero_filas = self.dlg_base.table.rowCount()
+        if self.dlg_base.oat.isChecked(): table = self.dlg_base.table_oat
+        elif not self.dlg_base.oat.isChecked(): table = self.dlg_base.table
+        numero_filas = table.rowCount()
         if numero_filas > 0:
-            self.dlg_base.table.removeRow(numero_filas - 1)
+            table.removeRow(numero_filas - 1)
         if numero_filas == 1:
-            self.dlg_base.table.setColumnCount(0)
+            table.setColumnCount(0)
         
         #Update number of samples
         self.change_sensitivity_method()
     
     def add_sensitivity_table(self):
         """Method to add information to the sensitivity analysis table"""
-        #Metod to add sensitivity analysis parameters to table
-        if self.dlg_base.table.columnCount() == 0:
+        #Method to add sensitivity analysis parameters to table
+        if self.dlg_base.oat.isChecked(): table = self.dlg_base.table_oat
+        elif not self.dlg_base.oat.isChecked(): table = self.dlg_base.table
+        
+        
+        if table.columnCount() == 0:
             #Añadir columnas
-            nombres_columnas = ["Parameter","Distribution","Distribution parameters"]
-            self.dlg_base.table.setColumnCount(len(nombres_columnas))
-            self.dlg_base.table.setHorizontalHeaderLabels(nombres_columnas)
+            if self.dlg_base.oat.isChecked(): nombres_columnas = ["Parameter","Values"]
+            elif not self.dlg_base.oat.isChecked(): nombres_columnas = ["Parameter","Distribution","Distribution parameters"]
+            
+            table.setColumnCount(len(nombres_columnas))
+            table.setHorizontalHeaderLabels(nombres_columnas)
             #Cambiar el ancho de las columnas
-            self.dlg_base.table.setColumnWidth(nombres_columnas.index("Parameter"), 180)
-            self.dlg_base.table.setColumnWidth(nombres_columnas.index("Distribution parameters"), 200)
+            if self.dlg_base.oat.isChecked():
+                table.setColumnWidth(nombres_columnas.index("Parameter"), 180)
+                table.setColumnWidth(nombres_columnas.index("Values"), 260)
+            elif not self.dlg_base.oat.isChecked():
+                table.setColumnWidth(nombres_columnas.index("Parameter"), 180)
+                table.setColumnWidth(nombres_columnas.index("Distribution parameters"), 200)
             
         #Añadir filas
         def add_element(columna,texto):
             item = QTableWidgetItem(texto)
-            self.dlg_base.table.setItem(numero_filas, columna, item)
+            table.setItem(numero_filas, columna, item)
             item.setTextAlignment(Qt.AlignCenter)
         
         #Primero la información de los lineEdits
-        numero_filas = self.dlg_base.table.rowCount()
-        self.dlg_base.table.setRowCount(numero_filas + 1)
+        numero_filas = table.rowCount()
+        table.setRowCount(numero_filas + 1)
         #Add parameter
         add_element(0,self.dlg_base.parameter_name.text())
         #Add distribution
         distribution = [self.dlg_base.distributions.itemText(i) for i in range(self.dlg_base.distributions.count())][self.dlg_base.distributions.currentIndex()]
-        add_element(1,distribution)
+        if not self.dlg_base.oat.isChecked():
+            add_element(1,distribution)
         #Add distribution parameters
-        if distribution=="Uniform" or distribution=="Logaritmic uniform":
-            add_element(2,f"min:{self.dlg_base.first.text()},max:{self.dlg_base.second.text()}")
-        elif distribution == "Triangular":
-            add_element(2,f"min:{self.dlg_base.first.text()},max:{self.dlg_base.second.text()},peak:{self.dlg_base.third.text()}")
-        elif distribution == "Normal" or distribution == "Lognormal":
-            add_element(2,f"mean:{self.dlg_base.first.text()},stdv:{self.dlg_base.second.text()}")
-        elif distribution == "Normal truncated":
-            add_element(2,f"min:{self.dlg_base.first.text()},max:{self.dlg_base.second.text()},mean:{self.dlg_base.third.text()},stdv:{self.dlg_base.fourth.text()}")
-        
-        #Update number of samples
-        self.change_sensitivity_method()
+        if self.dlg_base.oat.isChecked():
+            add_element(1,f"base:{self.dlg_base.first.text()},min:{self.dlg_base.second.text()},max:{self.dlg_base.third.text()},increment:{self.dlg_base.fourth.text()}")
+        elif not self.dlg_base.oat.isChecked():
+            if distribution=="Uniform" or distribution=="Logaritmic uniform":
+                add_element(2,f"min:{self.dlg_base.first.text()},max:{self.dlg_base.second.text()}")
+            elif distribution == "Triangular":
+                add_element(2,f"min:{self.dlg_base.first.text()},max:{self.dlg_base.second.text()},peak:{self.dlg_base.third.text()}")
+            elif distribution == "Normal" or distribution == "Lognormal":
+                add_element(2,f"mean:{self.dlg_base.first.text()},stdv:{self.dlg_base.second.text()}")
+            elif distribution == "Normal truncated":
+                add_element(2,f"min:{self.dlg_base.first.text()},max:{self.dlg_base.second.text()},mean:{self.dlg_base.third.text()},stdv:{self.dlg_base.fourth.text()}")
+            
+            #Update number of samples
+            self.change_sensitivity_method()
     
     def change_sensitivity_method(self):
         """Method to change sensitivity inputs depending on selected senstitivity metod"""
@@ -2359,6 +2453,15 @@ class qvfsmod:
                     self.dlg_base.samples.setText("")
                 else:
                     self.dlg_base.samples.setText(str(int(self.dlg_base.trajectories.text())*(self.dlg_base.table.rowCount()+1)))
+            except:
+                pass
+        elif self.dlg_base.fast.isChecked():
+            self.dlg_base.label_125.setText("N")
+            try:
+                if self.dlg_base.trajectories.text()=="" or self.dlg_base.table.rowCount()==0:
+                    self.dlg_base.samples.setText("")
+                else:
+                    self.dlg_base.samples.setText(str(int(self.dlg_base.trajectories.text())*(self.dlg_base.table.rowCount())))
             except:
                 pass
         
@@ -4892,7 +4995,7 @@ class qvfsmod:
     
     def default_values(self):
         """Method to set default values for input values"""
-        self.dlg_base.working_directory_vfsmod.setText(r"C:\Prueba")
+        self.dlg_base.working_directory_vfsmod.setText(r"C:/borrar")
         #self.dlg_base.name_files.setText("prueba")
         self.dlg_base.uh_file.setText(".lis")
         self.dlg_base.uh_input.setText("inputs\.inp")
