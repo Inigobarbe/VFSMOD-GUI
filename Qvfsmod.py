@@ -577,6 +577,11 @@ class qvfsmod:
         self.dlg_base.browse_vfs.clicked.connect(lambda _, b = "prj":self.browse_files_sensitivity(b))
         self.dlg_base.browse_file.clicked.connect(lambda _, b = "csv":self.browse_files_sensitivity(b))
         
+        #Add base value to dialog in OAT sensitivity analysis
+        self.dlg_base.uh_file_sensitivity.textChanged.connect(self.add_base_value_dialog_oat)
+        self.dlg_base.vfs_file_sensitivity.textChanged.connect(self.add_base_value_dialog_oat)
+        self.dlg_base.parameter_name.textChanged.connect(self.add_base_value_dialog_oat)
+        
         #Disable the ability to modify the timestep of the user defined storm and center items
         self.set_timestep_non_editable()
         
@@ -592,6 +597,52 @@ class qvfsmod:
         self.dlg_vfsmod_hydrograph.tableWidget.itemChanged.connect(self.update_vfsmod_hydrograph_graph)
         self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.connect(self.update_vfsmod_hyetograph_graph)
     
+    
+    def add_base_value_dialog_oat(self):
+        """Method to add the base value to the dialog of sensitivity when using OAT"""
+        if self.dlg_base.oat.isChecked() and self.dlg_base.parameter_name.text()!="":
+            parameter = self.dlg_base.parameter_name.text()
+            extension = self.sensitivity_parameters[parameter][0]
+            row = self.sensitivity_parameters[parameter][1]
+            column = self.sensitivity_parameters[parameter][2]
+            process = self.sensitivity_parameters[parameter][3]
+            
+            if extension == "inp":
+                path = self.obtain_direction_vfsmod(self.dlg_base.uh_file_sensitivity.text())
+            else:
+                path = self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity.text())
+            
+            if os.path.exists(path) and os.path.isfile(path):
+                #First we open the file and obtain the direction of the copying file
+                with open(path, "r") as archivo:
+                    lineas = archivo.readlines()
+                for i in lineas:
+                    if i[:3]==extension:
+                        path_input = i.split("=")[-1]
+                if not os.path.isabs(path_input): #relative path
+                    path_input = os.path.join(os.path.dirname(path), path_input)
+                path_input = path_input.replace("\n", "") #take out the line jumps
+                
+                
+                if os.path.exists(path_input):  
+                    with open(path_input, 'r') as file:
+                        lineas = file.readlines()
+                    if parameter == "Filter Manning n (RNA, s/m^1/3)" or parameter == "Average Filter Slope":
+                        number_segments = int(lineas[3])
+                        df = pd.DataFrame(data = {"Distance":[list(map(float, lineas[x].split()))[0] for x in range(4,4+number_segments)],
+                                                 "Roughness":[list(map(float, lineas[x].split()))[1] for x in range(4,4+number_segments)],
+                                                 "Slope":[list(map(float, lineas[x].split()))[2] for x in range(4,4+number_segments)]})
+                        if parameter == "Filter Manning n (RNA, s/m^1/3)":
+                            value = sum(df["Roughness"])/len(df)
+                        elif parameter == "Average Filter Slope":
+                            value = round(sum(df["Slope"])/len(df),4)
+                    else:
+                        value = self.add_values_dialog(lineas,row,column,self.dlg_base.rainfall,retrieve = True)
+                        
+                    self.dlg_base.first.setText(str(value))
+                    
+                    
+                
     def disable_storm_line_edits_design(self):
         """Method to enable disable lineEdits in designe"""
         storms_time = [self.dlg_base.lineEdit_4,self.dlg_base.lineEdit_5,self.dlg_base.lineEdit_6,self.dlg_base.lineEdit_7,
@@ -1758,14 +1809,22 @@ class qvfsmod:
                 return
             self.param_values = sample_fast(self.problem, int(self.dlg_base.trajectories.text()))
         elif self.dlg_base.oat.isChecked():
-            values = []
-            for i in self.dic_data.values():
-                values.append(i)
-            print(values)
-            self.param_values = np.column_stack(tuple(values))
-            print(self.param_values)
-            print(self.dic_data)
-            return
+            #Put OAT input values as the format for the other sensitivity analysis
+            lista_de_listas = []
+            for k,i in enumerate(self.dic_data.values()):
+                lista_de_listas.append([i,k])
+            lista_general = []
+            for k, lista in enumerate(lista_de_listas):
+                for m in lista[0]:
+                    sub = []
+                    for h in range(len(lista_de_listas)):
+                        if lista_de_listas[h][1]==k:
+                            sub.append(m)
+                        else:
+                            sub.append(lista_de_listas[h][0][0])
+                    lista_general.append(sub)
+
+            self.param_values = np.array(lista_general)
         
         #We start obtaining the results
         #Create folders of sensitivity analysis
@@ -1837,6 +1896,12 @@ class qvfsmod:
                     si = analyze_fast(self.problem,np.array(self.results_sensitivity[i]))
                     for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
                         f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}" + '\n')
+                f.write("----------------------------------------------------------------------" + '\n')
+        
+        elif self.dlg_base.oat.isChecked():
+            with open(path, 'w') as f:
+                #Add first row
+                f.write("OAT sensitivity results" + '\n')
                 f.write("----------------------------------------------------------------------" + '\n')
         
         #Append results
@@ -2399,7 +2464,7 @@ class qvfsmod:
             #Cambiar el ancho de las columnas
             if self.dlg_base.oat.isChecked():
                 table.setColumnWidth(nombres_columnas.index("Parameter"), 180)
-                table.setColumnWidth(nombres_columnas.index("Values"), 260)
+                table.setColumnWidth(nombres_columnas.index("Values"), 300)
             elif not self.dlg_base.oat.isChecked():
                 table.setColumnWidth(nombres_columnas.index("Parameter"), 180)
                 table.setColumnWidth(nombres_columnas.index("Distribution parameters"), 200)
