@@ -17,7 +17,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QThread,pyqtSignal
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QAction, QFileDialog,QButtonGroup
+from PyQt5.QtWidgets import QAction, QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy
 # Initialize Qt resources from file resources.py
 from resources import *
 # Import the code for the dialog
@@ -172,6 +172,7 @@ class qvfsmod:
         self.dlg_base.sensitivity_parameters.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sensitivity_analysis))
         self.dlg_base.morris_results.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_morris_results))
         self.dlg_base.sobol_results.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sobol_results))
+        self.dlg_base.local_results.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.oat_results))
         
         #Conditions to show differente stacked widgets pages
         self.dlg_base.calibration.clicked.connect(self.show_calibration_buttons)
@@ -545,6 +546,7 @@ class qvfsmod:
         #Show sensitivity results
         self.dlg_base.morris_results.clicked.connect(self.show_graph_sensitivity)
         self.dlg_base.sobol_results.clicked.connect(self.show_graph_sensitivity_sobol)
+        self.dlg_base.local_results.clicked.connect(self.show_graph_sensitivity_oat)
         
         #Browse file sensitivity graph
         self.dlg_base.browse.clicked.connect(self.browse_files_sensitivity_results)
@@ -596,7 +598,135 @@ class qvfsmod:
         #Same for vfsmod hyetograph and hydrograph
         self.dlg_vfsmod_hydrograph.tableWidget.itemChanged.connect(self.update_vfsmod_hydrograph_graph)
         self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.connect(self.update_vfsmod_hyetograph_graph)
+        
+        #Browse csv of oat sensitivity analysis
+        self.dlg_base.browse_oat_csv.clicked.connect(self.browse_csv_oat)
+        
+        #Add inputs to OAT results dialog
+        self.dlg_base.csv_results_oat.textChanged.connect(self.add_inputs_oat_results)
     
+    
+    def add_inputs_oat_results(self):
+        """Method to add inputs into oat sensitivity results"""
+        #First delete previous layout if it exits
+        if self.dlg_base.inputs_oat.layout() is not None:
+            for i in reversed(range(self.dlg_base.inputs_oat.layout().count())): 
+                widget = self.dlg_base.inputs_oat.layout().itemAt(i).widget()
+                if widget is not None: 
+                    widget.deleteLater()  # Eliminar el widget
+            self.dlg_base.inputs_oat.layout().deleteLater()
+        #Then create
+        if os.path.exists(self.obtain_direction_vfsmod(self.dlg_base.csv_results_oat.text())):
+            try:
+                layout = QVBoxLayout()
+                # Crear un QLabel con el texto que quieras
+                label = QLabel("Inputs")
+
+                # Añadir el QLabel al layout
+                layout.addWidget(label)
+                
+                #Name of inputs
+                df = pd.read_csv(self.obtain_direction_vfsmod(self.dlg_base.csv_results_oat.text()), skiprows=2)
+                inputs = list(df.columns)[:-11]
+                
+                self.dictionary_radio_inputs = {}
+                # Crear y añadir varios QRadioButton
+                for opcion in inputs:
+                    radio_button = QRadioButton(opcion)
+                    #Connect funciton but only one time
+                    radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_sensitity_graph_oat() if checked else None)
+                    self.dictionary_radio_inputs[radio_button] = opcion
+                    layout.addWidget(radio_button)
+                
+                #add spacer
+                spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+                layout.addItem(spacer)
+
+                # Establecer el layout en el frame `self.dlg_base.inputs_oat`
+                self.dlg_base.inputs_oat.setLayout(layout)
+            except:
+                pass
+    
+    def show_graph_sensitivity_oat(self):   
+        """Method to add OAT sensitivity analysis graph"""
+        if not hasattr(self, 'canvas_sensitivity_graph_oat'):
+            # Si no existe, crear el canvas y añadirlo al layout
+            self.canvas_sensitivity_graph_oat = FigureCanvas(plt.Figure(figsize=(15, 6)))
+            
+            # Asignar un layout al QFrame si no tiene uno
+            layout = QVBoxLayout(self.dlg_base.frame_24)
+            self.dlg_base.frame_24.setLayout(layout)
+            
+            # Añadir el canvas al layout
+            layout.addWidget(self.canvas_sensitivity_graph_oat)
+        else:
+            # Si ya existe, simplemente limpiar el canvas
+            self.canvas_sensitivity_graph_oat.figure.clear()
+        
+        #Then we create the graph
+        self.ax_oat = self.canvas_sensitivity_graph_oat.figure.subplots()
+        if self.dlg_base.csv_results_oat.text()!="":
+            self.update_sensitity_graph_oat()
+         
+    def update_sensitity_graph_oat(self):
+        if len(self.dictionary_radio_inputs)>1:
+            for i in self.dictionary_radio_inputs:
+                if i.isChecked():
+                    input_parameter = self.dictionary_radio_inputs[i]
+                    break
+        df = pd.read_csv(self.obtain_direction_vfsmod(self.dlg_base.csv_results_oat.text()), skiprows=2)
+        #Warning messages
+        ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_oat.text())
+        if os.path.exists(ruta):
+            with open(ruta, "r") as archivo:
+                lineas = archivo.readlines()
+            #If the csv is not of a Morris sensitivity analysis then give error
+            if lineas[0]!="OAT sensitivity results" + '\n':
+                self.warning_message("Please select a csv file that cointains Sobol sensitivity analysis results")
+                return
+                
+            #Clear graph before drawing
+            self.ax_oat.clear()
+            
+            #Obtain data 
+            
+            #Get output
+            if self.dlg_base.runoff_source_mm_3.isChecked():output_column = "Total Runoff from source (mm)"
+            elif self.dlg_base.runoff_source_m3_3.isChecked():output_column = "Total Runoff from Source (m3)"
+            elif self.dlg_base.runoff_filter_mm_3.isChecked():output_column = "Total Runoff out from Filter (mm)"
+            elif self.dlg_base.runoff_filter_m3_3.isChecked():output_column = "Total Runoff out from Filter (m3)"
+            elif self.dlg_base.infiltration_filter_m3_3.isChecked():output_column = "Total Infiltration in Filter (m3)"
+            elif self.dlg_base.sediment_input_3.isChecked():output_column = "Mass Sediment Input to Filter (kg)"
+            elif self.dlg_base.concentration_sediment_3.isChecked():output_column = "Concentration Sediment in Runoff from source Area (g/L)"
+            elif self.dlg_base.sediment_output_3.isChecked():output_column = "Mass Sediment Output from Filter (kg)"
+            elif self.dlg_base.sediment_runoff_exit_3.isChecked():output_column = "Concentration Sediment in Runoff exiting the Filter (g/L)"
+            elif self.dlg_base.sediment_delivery_3.isChecked():output_column = "Sediment Delivery Ratio"
+            elif self.dlg_base.runoff_delivery_3.isChecked():output_column = "Runoff Delivery Ratio"
+            
+            x = df[input_parameter]
+            y = df[output_column]
+            #Create graph
+            self.ax_oat.plot(x, y, marker='o', linestyle='-', color='b')
+
+            #Separador de miles
+            def formato_con_separador(valor, pos):
+                if max(list(y))>10:
+                    return "{:,.0f}".format(valor)
+                else:
+                    return "{:,.2f}".format(valor)
+            self.ax_oat.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+            self.ax_oat.yaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+            #Labels
+            self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
+            self.ax_oat.set_ylabel(output_column,size = 14,family="arial",weight = "bold",color = "black")
+                    
+            
+            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+            self.canvas_sensitivity_graph_oat.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
+            self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
+            #Draw canvas
+            self.canvas_sensitivity_graph_oat.draw()
+        
     
     def add_base_value_dialog_oat(self):
         """Method to add the base value to the dialog of sensitivity when using OAT"""
@@ -1555,7 +1685,6 @@ class qvfsmod:
         # Deshabilitar el encabezado vertical (números de fila)
         self.dlg_user_storm.tableWidget.verticalHeader().setVisible(False)
 
-
         
     def browse_files_sensitivity_results_sobol(self):
         """Method to select the file for sensitivity analysis graph between the local files for Sobol"""
@@ -1568,6 +1697,18 @@ class qvfsmod:
             else: #absolute path
                 text = fname[0]
             self.dlg_base.csv_results_2.setText(text)
+    
+    def browse_csv_oat(self):
+        """Method to add csv of oat results"""
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        fname = QFileDialog.getOpenFileName(self.dlg_base, "Select OAT Sensitivity Analysis Results File",working_directory+"\\sensitivity\\output" , "CSV files (*.csv)")
+        if fname[0]!="":
+            #Put the relative path if the file is inside the folder
+            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
+                text = os.path.relpath(fname[0], working_directory)
+            else: #absolute path
+                text = fname[0]
+            self.dlg_base.csv_results_oat.setText(text)
     
     def browse_files_sensitivity_results(self):
         """Method to select the file for sensitivity analysis graph between the local files for Morris"""
@@ -1611,7 +1752,7 @@ class qvfsmod:
                 lineas = archivo.readlines()
             #If the csv is not of a Morris sensitivity analysis then give error
             if lineas[0]!="Sobol sensitivity indexes" + '\n':
-                self.warning_message("Please select a csv file that cointains Morris sensitivity analysis results")
+                self.warning_message("Please select a csv file that cointains Sobol sensitivity analysis results")
                 return
                 
             #Clear graph before drawing
@@ -1900,12 +2041,23 @@ class qvfsmod:
         
         elif self.dlg_base.oat.isChecked():
             with open(path, 'w') as f:
-                #Add first row
-                f.write("OAT sensitivity results" + '\n')
-                f.write("----------------------------------------------------------------------" + '\n')
+                f.write("OAT sensitivity indexes" + '\n')
+                start = [0,0]
+                print(self.dic_data)
+                for i in self.dic_data.keys():
+                    f.write(i + " results" + '\n')
+                    a = len(self.dic_data[i])
+                    start[1] += start[0]+a
+                    data = self.results_sensitivity.iloc[start[0]:start[1],:]
+                    #Put dataframe
+                    f.write(','.join(data.columns) + '\n')
+                    for index, row in data.iterrows():
+                        f.write(','.join(map(str, row.values)) + '\n')
+                    start[0]=start[0]+a
         
         #Append results
-        self.results_sensitivity.to_csv(path, mode='a',index=False, float_format='%.5f')
+        if not self.dlg_base.oat.isChecked():
+            self.results_sensitivity.to_csv(path, mode='a',index=False, float_format='%.5f')
         
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)

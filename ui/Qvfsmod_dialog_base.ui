@@ -734,7 +734,7 @@ QPushButton:checked {
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="QPushButton" name="pushButton_17">
+             <widget class="QPushButton" name="local_results">
               <property name="text">
                <string>    LOCAL RESULTS</string>
               </property>
@@ -1549,7 +1549,7 @@ QTableCornerButton::section {
 </string>
         </property>
         <property name="currentIndex">
-         <number>10</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="page_folder">
          <layout class="QGridLayout" name="gridLayout_16">
@@ -1575,8 +1575,8 @@ QTableCornerButton::section {
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>595</width>
-               <height>77</height>
+               <width>899</width>
+               <height>150</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_7">
@@ -6976,7 +6976,7 @@ Solution Parameters</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>1108</width>
+               <width>1124</width>
                <height>575</height>
               </rect>
              </property>
@@ -6990,7 +6990,95 @@ Solution Parameters</string>
                  <enum>QFrame::Raised</enum>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_39">
-                 <item row="0" column="0">
+                 <item row="2" column="1">
+                  <layout class="QHBoxLayout" name="horizontalLayout_129">
+                   <item>
+                    <widget class="QPushButton" name="pushButton_30">
+                     <property name="text">
+                      <string>Copy to Clipboard</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="pushButton_31">
+                     <property name="text">
+                      <string>Print</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="pushButton_32">
+                     <property name="text">
+                      <string>Edit</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QFrame" name="frame_23">
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QVBoxLayout" name="verticalLayout_15">
+                    <item>
+                     <widget class="QLabel" name="label_68">
+                      <property name="text">
+                       <string>Plots</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="radioButton">
+                      <property name="text">
+                       <string>Input vs Output</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="radioButton_2">
+                      <property name="text">
+                       <string>Absolute sensitivity</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="radioButton_3">
+                      <property name="text">
+                       <string>Relative base sensitivity</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="radioButton_4">
+                      <property name="text">
+                       <string>Relative sensitivity</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer name="verticalSpacer_12">
+                      <property name="orientation">
+                       <enum>Qt::Vertical</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>20</width>
+                        <height>40</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
                   <layout class="QHBoxLayout" name="horizontalLayout_128">
                    <item>
                     <widget class="QLabel" name="label_132">
@@ -7000,10 +7088,10 @@ Solution Parameters</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="csv_results_3"/>
+                    <widget class="QLineEdit" name="csv_results_oat"/>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="browse_3">
+                    <widget class="QPushButton" name="browse_oat_csv">
                      <property name="text">
                       <string/>
                      </property>
@@ -7011,7 +7099,7 @@ Solution Parameters</string>
                    </item>
                   </layout>
                  </item>
-                 <item row="1" column="0">
+                 <item row="1" column="1">
                   <widget class="QFrame" name="frame_22">
                    <property name="frameShape">
                     <enum>QFrame::StyledPanel</enum>
@@ -7123,67 +7211,7 @@ Solution Parameters</string>
                    </layout>
                   </widget>
                  </item>
-                 <item row="1" column="1">
-                  <widget class="QFrame" name="frame_23">
-                   <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Raised</enum>
-                   </property>
-                   <layout class="QVBoxLayout" name="verticalLayout_15">
-                    <item>
-                     <widget class="QLabel" name="label_68">
-                      <property name="text">
-                       <string>Plots</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QRadioButton" name="radioButton">
-                      <property name="text">
-                       <string>Input vs Output</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QRadioButton" name="radioButton_2">
-                      <property name="text">
-                       <string>Absolute sensitivity</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QRadioButton" name="radioButton_3">
-                      <property name="text">
-                       <string>Relative base sensitivity</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QRadioButton" name="radioButton_4">
-                      <property name="text">
-                       <string>Relative sensitivity</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <spacer name="verticalSpacer_12">
-                      <property name="orientation">
-                       <enum>Qt::Vertical</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>20</width>
-                        <height>40</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                 <item row="1" column="2">
+                 <item row="1" column="3">
                   <widget class="QFrame" name="frame_24">
                    <property name="minimumSize">
                     <size>
@@ -7199,30 +7227,15 @@ Solution Parameters</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_129">
-                   <item>
-                    <widget class="QPushButton" name="pushButton_30">
-                     <property name="text">
-                      <string>Copy to Clipboard</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="pushButton_31">
-                     <property name="text">
-                      <string>Print</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="pushButton_32">
-                     <property name="text">
-                      <string>Edit</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
+                 <item row="1" column="0">
+                  <widget class="QFrame" name="inputs_oat">
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
