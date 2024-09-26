@@ -574,6 +574,17 @@ class qvfsmod:
         for i in check_boxes:
             i.toggled.connect(self.update_sensitivity_graph_sobol)
         
+        #Update sensitivity graph for OAT
+        check_boxes = [self.dlg_base.runoff_source_mm_3,self.dlg_base.runoff_source_m3_3,
+            self.dlg_base.runoff_filter_mm_3,self.dlg_base.runoff_filter_m3_3,
+            self.dlg_base.infiltration_filter_m3_3,self.dlg_base.sediment_input_3,
+            self.dlg_base.concentration_sediment_3,self.dlg_base.sediment_output_3,
+            self.dlg_base.sediment_runoff_exit_3,self.dlg_base.sediment_delivery_3,
+            self.dlg_base.runoff_delivery_3,
+            self.dlg_base.input_output,self.dlg_base.absolute,self.dlg_base.relative_base,self.dlg_base.relative_sensitivity]
+        for i in check_boxes:
+            i.toggled.connect(lambda checked, rb=i: self.update_sensitity_graph_oat() if checked else None)
+        
         #Browse files in sensitivity analysis
         self.dlg_base.browse_uh.clicked.connect(lambda _, b = "lis":self.browse_files_sensitivity(b))
         self.dlg_base.browse_vfs.clicked.connect(lambda _, b = "prj":self.browse_files_sensitivity(b))
@@ -626,8 +637,9 @@ class qvfsmod:
                 layout.addWidget(label)
                 
                 #Name of inputs
-                df = pd.read_csv(self.obtain_direction_vfsmod(self.dlg_base.csv_results_oat.text()), skiprows=2)
-                inputs = list(df.columns)[:-11]
+                with open(self.obtain_direction_vfsmod(self.dlg_base.csv_results_oat.text()), mode='r', encoding='utf-8') as file:
+                    lines = file.read().splitlines()
+                inputs = lines[1].split(":")[-1].split(",")
                 
                 self.dictionary_radio_inputs = {}
                 # Crear y añadir varios QRadioButton
@@ -665,8 +677,6 @@ class qvfsmod:
         
         #Then we create the graph
         self.ax_oat = self.canvas_sensitivity_graph_oat.figure.subplots()
-        if self.dlg_base.csv_results_oat.text()!="":
-            self.update_sensitity_graph_oat()
          
     def update_sensitity_graph_oat(self):
         if len(self.dictionary_radio_inputs)>1:
@@ -674,7 +684,6 @@ class qvfsmod:
                 if i.isChecked():
                     input_parameter = self.dictionary_radio_inputs[i]
                     break
-        df = pd.read_csv(self.obtain_direction_vfsmod(self.dlg_base.csv_results_oat.text()), skiprows=2)
         #Warning messages
         ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_oat.text())
         if os.path.exists(ruta):
@@ -682,13 +691,27 @@ class qvfsmod:
                 lineas = archivo.readlines()
             #If the csv is not of a Morris sensitivity analysis then give error
             if lineas[0]!="OAT sensitivity results" + '\n':
-                self.warning_message("Please select a csv file that cointains Sobol sensitivity analysis results")
+                self.warning_message("Please select a csv file that contains OAT sensitivity analysis results")
                 return
                 
             #Clear graph before drawing
             self.ax_oat.clear()
             
             #Obtain data 
+            with open(self.obtain_direction_vfsmod(self.dlg_base.csv_results_oat.text()), mode='r', encoding='utf-8') as file:
+                lines = file.read().splitlines()
+            # Ignorar la primera línea ("OAT sensitivity results")
+            lines = lines[1:]
+            for i in range(len(lines)):
+                if lines[i] == f"{input_parameter} results":
+                    columns = lines[i+1].split(",")
+                    rows = []
+                    for k in range(i+2,len(lines)):
+                        if lines[k][:2]=="--":
+                            break
+                        rows.append(lines[k].split(","))
+                    break
+            df = pd.DataFrame(rows, columns=columns)
             
             #Get output
             if self.dlg_base.runoff_source_mm_3.isChecked():output_column = "Total Runoff from source (mm)"
@@ -703,29 +726,123 @@ class qvfsmod:
             elif self.dlg_base.sediment_delivery_3.isChecked():output_column = "Sediment Delivery Ratio"
             elif self.dlg_base.runoff_delivery_3.isChecked():output_column = "Runoff Delivery Ratio"
             
-            x = df[input_parameter]
-            y = df[output_column]
-            #Create graph
-            self.ax_oat.plot(x, y, marker='o', linestyle='-', color='b')
-
-            #Separador de miles
-            def formato_con_separador(valor, pos):
-                if max(list(y))>10:
-                    return "{:,.0f}".format(valor)
-                else:
-                    return "{:,.2f}".format(valor)
-            self.ax_oat.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
-            self.ax_oat.yaxis.set_major_formatter(FuncFormatter(formato_con_separador))
-            #Labels
-            self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
-            self.ax_oat.set_ylabel(output_column,size = 14,family="arial",weight = "bold",color = "black")
-                    
+            x = [float(x) for x in df[input_parameter]]
+            y = [float(x) for x in df[output_column]]
             
-            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-            self.canvas_sensitivity_graph_oat.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
-            self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
-            #Draw canvas
-            self.canvas_sensitivity_graph_oat.draw()
+            base_input = x[0]
+            base_output = y[0]
+            print(base_input)
+            print(base_output)
+            
+            unique_pairs = {}
+            for xi, yi in zip(x, y):
+                if xi not in unique_pairs:
+                    unique_pairs[xi] = yi
+
+            # Extraer los pares únicos y ordenarlos por el valor de x
+            x_sorted = sorted(unique_pairs.keys())
+            y_sorted = [unique_pairs[xi] for xi in x_sorted]
+            
+            #Input output graph
+            if self.dlg_base.input_output.isChecked():
+                #Create graph
+                self.ax_oat.plot(x_sorted, y_sorted, marker='o', linestyle='-', color='b')
+                #Separador de miles
+                def formato_con_separador(valor, pos):
+                    if max(list(y_sorted))>10:
+                        return "{:,.0f}".format(valor)
+                    else:
+                        return "{:,.2f}".format(valor)
+                self.ax_oat.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+                self.ax_oat.yaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+                #Labels
+                self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_oat.set_ylabel(output_column,size = 14,family="arial",weight = "bold",color = "black")
+                # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+                self.canvas_sensitivity_graph_oat.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
+                self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
+                #Draw canvas
+                self.canvas_sensitivity_graph_oat.draw()
+            
+            #Absolute sensitivity graph
+            elif self.dlg_base.absolute.isChecked():
+                absolute_sensitivity = []
+                for i in range(len(x_sorted)-1):
+                    absolute_sensitivity.append((y_sorted[i+1]-y_sorted[i])/(x_sorted[i+1]-x_sorted[i]))
+                #Create graph
+                self.ax_oat.plot(x_sorted[:-1], absolute_sensitivity, marker='o', linestyle='-', color='b')
+                #Separador de miles
+                def formato_con_separador(valor, pos):
+                    if max(list(absolute_sensitivity))>10:
+                        return "{:,.0f}".format(valor)
+                    else:
+                        return "{:,.2f}".format(valor)
+                self.ax_oat.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+                self.ax_oat.yaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+                #Labels
+                self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_oat.set_ylabel(f"Absolute sensitivity\n{output_column}",size = 14,family="arial",weight = "bold",color = "black")
+                # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+                self.canvas_sensitivity_graph_oat.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
+                self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
+                #Draw canvas
+                self.canvas_sensitivity_graph_oat.draw()
+            
+            #Relative sensitivity graph respect to base
+            elif self.dlg_base.relative_base.isChecked():
+                relative_sensitivity = []
+                for i in range(len(x_sorted)-1):
+                    try:
+                        relative_sensitivity.append((y_sorted[i+1]-base_output)/(x_sorted[i+1]-base_input)*(base_input/base_output))
+                    except ZeroDivisionError:
+                        relative_sensitivity.append(np.nan)
+                #Create graph
+                self.ax_oat.plot(x_sorted[:-1], relative_sensitivity, marker='o', linestyle='-', color='b')
+                #Separador de miles
+                def formato_con_separador(valor, pos):
+                    if max(list(relative_sensitivity))>10:
+                        return "{:,.0f}".format(valor)
+                    else:
+                        return "{:,.2f}".format(valor)
+                self.ax_oat.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+                self.ax_oat.yaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+                #Labels
+                self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_oat.set_ylabel(f"Base relative sensitivity\n{output_column}",size = 14,family="arial",weight = "bold",color = "black")
+                # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+                self.canvas_sensitivity_graph_oat.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
+                self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
+                #Draw canvas
+                self.canvas_sensitivity_graph_oat.draw()
+            
+            
+            #Relative sensitivity graph
+            elif self.dlg_base.relative_sensitivity.isChecked():
+                relative_sensitivity = []
+                for i in range(len(x_sorted)-1):
+                    try:
+                        relative_sensitivity.append((y_sorted[i+1]-y_sorted[i])/(x_sorted[i+1]-x_sorted[i])*(x_sorted[i]/y_sorted[i]))
+                    except ZeroDivisionError:
+                        relative_sensitivity.append(np.nan)
+                #Create graph
+                self.ax_oat.plot(x_sorted[:-1], relative_sensitivity, marker='o', linestyle='-', color='b')
+                #Separador de miles
+                def formato_con_separador(valor, pos):
+                    if max(list(relative_sensitivity))>10:
+                        return "{:,.0f}".format(valor)
+                    else:
+                        return "{:,.2f}".format(valor)
+                self.ax_oat.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+                self.ax_oat.yaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+                #Labels
+                self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_oat.set_ylabel(f"Relative sensitivity\n{output_column}",size = 14,family="arial",weight = "bold",color = "black")
+                # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+                self.canvas_sensitivity_graph_oat.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
+                self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
+                #Draw canvas
+                self.canvas_sensitivity_graph_oat.draw()
+            
         
     
     def add_base_value_dialog_oat(self):
@@ -1752,7 +1869,7 @@ class qvfsmod:
                 lineas = archivo.readlines()
             #If the csv is not of a Morris sensitivity analysis then give error
             if lineas[0]!="Sobol sensitivity indexes" + '\n':
-                self.warning_message("Please select a csv file that cointains Sobol sensitivity analysis results")
+                self.warning_message("Please select a csv file that contains Sobol sensitivity analysis results")
                 return
                 
             #Clear graph before drawing
@@ -1838,7 +1955,7 @@ class qvfsmod:
                 lineas = archivo.readlines()
             #If the csv is not of a Morris sensitivity analysis then give error
             if lineas[0]!="Morris sensitivity indexes" + '\n':
-                self.warning_message("Please select a csv file that cointains Morris sensitivity analysis results")
+                self.warning_message("Please select a csv file that contains Morris sensitivity analysis results")
                 return
                 
             #Clear graph before drawing
@@ -2041,9 +2158,17 @@ class qvfsmod:
         
         elif self.dlg_base.oat.isChecked():
             with open(path, 'w') as f:
-                f.write("OAT sensitivity indexes" + '\n')
+                f.write("OAT sensitivity results" + '\n')
+                string = f"Studied parameters:"
+                for i in range(len(self.dic_data)):
+                    string += list(self.dic_data.keys())[i]
+                    if i!= len(self.dic_data)-1:
+                        string +=","
+                    else:
+                        string += "\n"
+                f.write(string)
                 start = [0,0]
-                print(self.dic_data)
+                f.write("----------------------------------------------------------------------" + '\n')
                 for i in self.dic_data.keys():
                     f.write(i + " results" + '\n')
                     a = len(self.dic_data[i])
@@ -2054,6 +2179,7 @@ class qvfsmod:
                     for index, row in data.iterrows():
                         f.write(','.join(map(str, row.values)) + '\n')
                     start[0]=start[0]+a
+                    f.write("----------------------------------------------------------------------" + '\n')
         
         #Append results
         if not self.dlg_base.oat.isChecked():

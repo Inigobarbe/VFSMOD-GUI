@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1224</width>
-    <height>650</height>
+    <height>672</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -1549,7 +1549,7 @@ QTableCornerButton::section {
 </string>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>10</number>
         </property>
         <widget class="QWidget" name="page_folder">
          <layout class="QGridLayout" name="gridLayout_16">
@@ -1745,7 +1745,7 @@ QTableCornerButton::section {
                <x>0</x>
                <y>0</y>
                <width>573</width>
-               <height>966</height>
+               <height>968</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_25">
@@ -2683,7 +2683,7 @@ typical0.01-0.07</string>
                <x>0</x>
                <y>0</y>
                <width>573</width>
-               <height>713</height>
+               <height>720</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_24">
@@ -3485,8 +3485,8 @@ typical0.01-0.07</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>899</width>
-               <height>594</height>
+               <width>696</width>
+               <height>413</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_29">
@@ -4085,8 +4085,8 @@ typical0.01-0.07</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>897</width>
-               <height>592</height>
+               <width>98</width>
+               <height>28</height>
               </rect>
              </property>
             </widget>
@@ -4112,7 +4112,7 @@ typical0.01-0.07</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>882</width>
+               <width>841</width>
                <height>634</height>
               </rect>
              </property>
@@ -5067,8 +5067,8 @@ Data File</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>899</width>
-               <height>594</height>
+               <width>893</width>
+               <height>562</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_71">
@@ -5926,8 +5926,8 @@ Data File</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>899</width>
-               <height>594</height>
+               <width>897</width>
+               <height>593</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_22">
@@ -6517,7 +6517,7 @@ Solution Parameters</string>
                       <x>0</x>
                       <y>0</y>
                       <width>290</width>
-                      <height>174</height>
+                      <height>28</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_79">
@@ -6555,8 +6555,8 @@ Solution Parameters</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>899</width>
-               <height>594</height>
+               <width>888</width>
+               <height>415</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_87">
@@ -6770,8 +6770,8 @@ Solution Parameters</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>899</width>
-               <height>594</height>
+               <width>888</width>
+               <height>415</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_89">
@@ -6977,7 +6977,7 @@ Solution Parameters</string>
                <x>0</x>
                <y>0</y>
                <width>1124</width>
-               <height>575</height>
+               <height>597</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_40">
@@ -7032,7 +7032,7 @@ Solution Parameters</string>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QRadioButton" name="radioButton">
+                     <widget class="QRadioButton" name="input_output">
                       <property name="text">
                        <string>Input vs Output</string>
                       </property>
@@ -7042,21 +7042,21 @@ Solution Parameters</string>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QRadioButton" name="radioButton_2">
+                     <widget class="QRadioButton" name="absolute">
                       <property name="text">
                        <string>Absolute sensitivity</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QRadioButton" name="radioButton_3">
+                     <widget class="QRadioButton" name="relative_base">
                       <property name="text">
                        <string>Relative base sensitivity</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QRadioButton" name="radioButton_4">
+                     <widget class="QRadioButton" name="relative_sensitivity">
                       <property name="text">
                        <string>Relative sensitivity</string>
                       </property>
