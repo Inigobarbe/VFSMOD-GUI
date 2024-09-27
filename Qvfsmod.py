@@ -171,6 +171,8 @@ class qvfsmod:
         self.dlg_base.sensitivity_parameters.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sensitivity_analysis))
         self.dlg_base.sobol_results.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sobol_results))
         self.dlg_base.local_results.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.oat_results))
+        self.dlg_base.execution_uncertainity.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.uncertainity_page))
+        self.dlg_base.results_uncertainity.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_results_uncertainity))
         
         #Conditions to show differente stacked widgets pages
         self.dlg_base.calibration.clicked.connect(self.show_calibration_buttons)
@@ -437,10 +439,12 @@ class qvfsmod:
         self.dlg_base.design_length.stateChanged.connect(lambda _, b = "length":self.uncheck_length_spacing(b))
         self.dlg_base.design_spacing.stateChanged.connect(lambda _, b = "spacing":self.uncheck_length_spacing(b))
         
-        #Button to add information to the sensitivity table 
+        #Button to add information to the sensitivity table and to uncertainity
         self.dlg_base.add.clicked.connect(self.add_sensitivity_table)
-        #Button to delete information of the sensitivity table
+        self.dlg_base.add_uncertainity.clicked.connect(self.add_uncertainity_table)
+        #Button to delete information of the sensitivity table an to uncertainity
         self.dlg_base.remove.clicked.connect(self.delete_sensitivity_table)
+        self.dlg_base.remove_uncertainity.clicked.connect(self.delete_uncertainity_table)
         
         #Show design graph 
         self.dlg_design_results.graph.clicked.connect(self.show_design_graph)
@@ -500,6 +504,7 @@ class qvfsmod:
         
         #Add distributions to combobox
         self.dlg_base.distributions.addItems(["Uniform","Logaritmic uniform","Triangular","Normal","Lognormal","Normal truncated"])
+        self.dlg_base.distributions_uncertainity.addItems(["Uniform","Logaritmic uniform","Triangular","Normal","Lognormal","Normal truncated"])
         
         #Change bounds in sensitivity dialog if distribution changed
         self.dlg_base.distributions.currentIndexChanged.connect(self.change_bounds_sensitivity)
@@ -507,6 +512,10 @@ class qvfsmod:
         self.dlg_base.oat.toggled.connect(self.distribution_parameters)
         #Add new parameters to distribution in sensitivity dialog
         self.dlg_base.distributions.currentIndexChanged.connect(self.distribution_parameters)
+        
+        #Same for uncertainity analysis
+        self.dlg_base.distributions_uncertainity.currentIndexChanged.connect(self.change_bounds_uncertainity)
+        self.dlg_base.distributions_uncertainity.currentIndexChanged.connect(self.distribution_parameters_uncertainity)
         
         #Change number of samples in dialog depending on sensitivity analysis metod
         self.dlg_base.sobol.toggled.connect(self.change_sensitivity_method)
@@ -534,11 +543,25 @@ class qvfsmod:
         for i in buttons:
             i.clicked.connect(lambda _, b = i:self.show_buttons_sensitivity_dialog(b))
         
+        #Same for uncertainity
+        buttons = [self.dlg_base.all_parameters_2,self.dlg_base.rainfall_event_2,
+            self.dlg_base.source_area_2,self.dlg_base.erosion_parameters_2,
+            self.dlg_base.buffer_dimensions_2,self.dlg_base.kinematic_wave_2,
+            self.dlg_base.infiltration_2,self.dlg_base.buffer_vegetation_2,self.dlg_base.incoming_sediment_2]
+        for i in buttons:
+            i.clicked.connect(lambda _, b = i:self.show_buttons_uncertainity_dialog(b))
+        
         #Search sensitivity parameter
         self.dlg_base.search.textChanged.connect(self.search_sensitivity_parameter)
         
+        #Search uncertainity parameter
+        self.dlg_base.search_uncertainity.textChanged.connect(self.search_uncertainity_parameter)
+        
         #Run sensitivity analysis
         self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis)
+        
+        #Run uncertainity analysis
+        self.dlg_base.run_uncertainity.clicked.connect(self.run_uncertainity_analysis)
         
         #Show sensitivity results
         self.dlg_base.sobol_results.clicked.connect(self.show_graph_sensitivity_global)
@@ -577,10 +600,20 @@ class qvfsmod:
         self.dlg_base.browse_vfs.clicked.connect(lambda _, b = "prj":self.browse_files_sensitivity(b))
         self.dlg_base.browse_file.clicked.connect(lambda _, b = "csv":self.browse_files_sensitivity(b))
         
+        #Browse files in uncertainity analysis
+        self.dlg_base.browse_uh_uncertainity.clicked.connect(lambda _, b = "lis":self.browse_files_uncertainity(b))
+        self.dlg_base.browse_vfs_uncertainity.clicked.connect(lambda _, b = "prj":self.browse_files_uncertainity(b))
+        self.dlg_base.browse_file_uncertainity.clicked.connect(lambda _, b = "csv":self.browse_files_uncertainity(b))
+        
         #Add base value to dialog in OAT sensitivity analysis
         self.dlg_base.uh_file_sensitivity.textChanged.connect(self.add_base_value_dialog_oat)
         self.dlg_base.vfs_file_sensitivity.textChanged.connect(self.add_base_value_dialog_oat)
         self.dlg_base.parameter_name.textChanged.connect(self.add_base_value_dialog_oat)
+        
+        #Same for uncertainity
+        self.dlg_base.uh_file_uncertainity.textChanged.connect(self.add_base_value_dialog_uncertainity)
+        self.dlg_base.vfs_file_uncertainity.textChanged.connect(self.add_base_value_dialog_uncertainity)
+        self.dlg_base.parameter_name_uncertainity.textChanged.connect(self.add_base_value_dialog_uncertainity)
         
         #Disable the ability to modify the timestep of the user defined storm and center items
         self.set_timestep_non_editable()
@@ -874,6 +907,49 @@ class qvfsmod:
                         value = self.add_values_dialog(lineas,row,column,self.dlg_base.rainfall,retrieve = True)
                         
                     self.dlg_base.first.setText(str(value))
+    
+    def add_base_value_dialog_uncertainity(self):
+        """Method to add the base value to the dialog of uncertainity"""
+        if self.dlg_base.parameter_name_uncertainity.text()!="":
+            parameter = self.dlg_base.parameter_name_uncertainity.text()
+            extension = self.sensitivity_parameters[parameter][0]
+            row = self.sensitivity_parameters[parameter][1]
+            column = self.sensitivity_parameters[parameter][2]
+            process = self.sensitivity_parameters[parameter][3]
+            
+            if extension == "inp":
+                path = self.obtain_direction_vfsmod(self.dlg_base.uh_file_uncertainity.text())
+            else:
+                path = self.obtain_direction_vfsmod(self.dlg_base.vfs_file_uncertainity.text())
+            
+            if os.path.exists(path) and os.path.isfile(path):
+                #First we open the file and obtain the direction of the copying file
+                with open(path, "r") as archivo:
+                    lineas = archivo.readlines()
+                for i in lineas:
+                    if i[:3]==extension:
+                        path_input = i.split("=")[-1]
+                if not os.path.isabs(path_input): #relative path
+                    path_input = os.path.join(os.path.dirname(path), path_input)
+                path_input = path_input.replace("\n", "") #take out the line jumps
+                
+                
+                if os.path.exists(path_input):  
+                    with open(path_input, 'r') as file:
+                        lineas = file.readlines()
+                    if parameter == "Filter Manning n (RNA, s/m^1/3)" or parameter == "Average Filter Slope":
+                        number_segments = int(lineas[3])
+                        df = pd.DataFrame(data = {"Distance":[list(map(float, lineas[x].split()))[0] for x in range(4,4+number_segments)],
+                                                 "Roughness":[list(map(float, lineas[x].split()))[1] for x in range(4,4+number_segments)],
+                                                 "Slope":[list(map(float, lineas[x].split()))[2] for x in range(4,4+number_segments)]})
+                        if parameter == "Filter Manning n (RNA, s/m^1/3)":
+                            value = sum(df["Roughness"])/len(df)
+                        elif parameter == "Average Filter Slope":
+                            value = round(sum(df["Slope"])/len(df),4)
+                    else:
+                        value = self.add_values_dialog(lineas,row,column,self.dlg_base.rainfall,retrieve = True)
+                        
+                    self.dlg_base.base_uncertainity.setText(str(value))
                     
                     
                 
@@ -1787,7 +1863,10 @@ class qvfsmod:
         # Deshabilitar el encabezado vertical (números de fila)
         self.dlg_user_storm.tableWidget.verticalHeader().setVisible(False)
 
-        
+    
+    
+
+    
     def browse_files_sensitivity_results_sobol(self):
         """Method to select the file for sensitivity analysis graph between the local files for Sobol"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
@@ -2052,6 +2131,32 @@ class qvfsmod:
                 self.canvas_sensitivity_graph.draw()
     
 
+    def browse_files_uncertainity(self,information):
+        """Method to select the file for uncertainity analysis between the local files"""
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        if information=="prj": 
+            select = "Select VFS Project File"
+            types = "PRJ files (*.prj)"
+        elif information == "lis": 
+            select = "Select UH Project File"
+            types = "LIS files (*.lis)"
+        else:
+            select = "Select CSV File"
+            types = "CSV files (*.csv)"
+        fname = QFileDialog.getOpenFileName(self.dlg_base, select,working_directory , types)
+        if fname[0]!="":
+            #Put the relative path if the file is inside the folder
+            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
+                text = os.path.relpath(fname[0], working_directory)
+            else: #absolute path
+                text = fname[0]
+        if information == "prj":
+            self.dlg_base.vfs_file_uncertainity.setText(text)
+        elif information == "lis":
+            self.dlg_base.uh_file_uncertainity.setText(text)
+        else:
+            self.dlg_base.file_save_uncertainity.setText(text)
+    
     
     def browse_files_sensitivity(self,information):
         """Method to select the file for sensitivity analysis between the local files"""
@@ -2093,10 +2198,10 @@ class qvfsmod:
         elif self.dlg_base.morris.isChecked():
             self.param_values = sample_morris(self.problem, int(self.dlg_base.trajectories.text()))
         elif self.dlg_base.fast.isChecked():
-            if int(self.dlg_base.trajectories.text())<=64:
-                self.warning_message("N value must be higher than 64 when executing FAST")
+            if int(self.dlg_base.trajectories.text())<=4:
+                self.warning_message("N value must be higher than 4 when executing FAST")
                 return
-            self.param_values = sample_fast(self.problem, int(self.dlg_base.trajectories.text()))
+            self.param_values = sample_fast(self.problem, int(self.dlg_base.trajectories.text()), M = 1)
         elif self.dlg_base.oat.isChecked():
             #Put OAT input values as the format for the other sensitivity analysis
             lista_de_listas = []
@@ -2219,11 +2324,157 @@ class qvfsmod:
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)
         self.warning_message("Sensitivity analysis completed succesfully!")
+    
+    def run_uncertainity_analysis(self):
+        """Method to run whole uncertainity analysis"""
+        #Create the dictionary for the sensitivity analysis
+        self.dic_data = self.create_dictionary_uncertainity_analysis()
+        
+        #Warning
+        if int(self.dlg_base.samples_uncertainity.text())<=4:
+            self.warning_message("N value must be higher than 4 when executing FAST")
+            return
+        
+        #We will use the fast sample to obtain randomized samples for each input
+        values = []
+        for parameter in self.dic_data.keys():
+            #Create problem variable
+            self.problem = {'num_vars': 1,'names': [parameter],'bounds': [self.dic_data[parameter][1][1:]],"dists":[self.dic_data[parameter][0]]}
+            #Create samples
+            samples = sample_fast(self.problem, int(self.dlg_base.samples_uncertainity.text()), M = 1)
+            base_value = self.dic_data[parameter][1][0]
+            values.append([base_value] + [samples[x,0] for x in range(len(samples))])
+
+        
+        #If more than one parameter is selected then modify one parameter and remain the rest with base value
+        lista_de_listas = []
+        for k,i in enumerate(values):
+            lista_de_listas.append([i,k])
+        lista_general = []
+        for k, lista in enumerate(lista_de_listas):
+            for m in lista[0][1:]:
+                sub = []
+                for h in range(len(lista_de_listas)):
+                    if lista_de_listas[h][1]==k:
+                        sub.append(m)
+                    else:
+                        sub.append(lista_de_listas[h][0][0])
+                lista_general.append(sub)
+        self.param_values = np.array(lista_general)
+
+
+        #We start obtaining the results
+        #Create folders of uncertainity analysis
+        self.create_folder_uncertainity_analysis()
+        #Move files to uncertainity analysis folder
+        self.move_files_uncertainity_analysis()
+        
+        #Create dataframe to save the results
+        self.results_sensitivity = pd.DataFrame(columns=["Total Runoff from source (mm)","Total Runoff from Source (m3)",
+            "Total Runoff out from Filter (mm)","Total Runoff out from Filter (m3)","Total Infiltration in Filter (m3)",
+            "Mass Sediment Input to Filter (kg)","Concentration Sediment in Runoff from source Area (g/L)",
+            "Mass Sediment Output from Filter (kg)","Concentration Sediment in Runoff exiting the Filter (g/L)",
+            "Sediment Delivery Ratio","Runoff Delivery Ratio"])
+        number_outputs = len(self.results_sensitivity.columns)
+        #Add the parameters names 
+        for i in self.dic_data.keys():
+            self.results_sensitivity.insert(0,i,None)
+        
+        self.number_execution_sensitivity = 0
+        self.sensitivity_error = False
+        #Results are obtained
+        #Start with the progress bar
+        self.progress_metod(start = True)
+        for k in self.param_values:
+            self.execution_uncertainity_analysis()
+            if self.sensitivity_error:
+                self.progress_metod(close = True)
+                return
+            #Save results
+            self.save_results_uncertainity_analysis()
+            self.number_execution_sensitivity+=1
+            
+        #Save results in CSV
+        path = self.obtain_direction_vfsmod(self.dlg_base.file_save_uncertainity.text())
+        print(self.results_sensitivity)
+        with open(path, 'w') as f:
+            f.write("Uncertainity analysis results" + '\n')
+            string = f"Studied parameters:"
+            for i in range(len(self.dic_data)):
+                string += list(self.dic_data.keys())[i]
+                if i!= len(self.dic_data)-1:
+                    string +=","
+                else:
+                    string += "\n"
+            f.write(string)
+            start = [0,0]
+            f.write("----------------------------------------------------------------------" + '\n')
+            for k,i in enumerate(self.dic_data.keys()):
+                f.write(i + " results" + '\n')
+                a = len(values[k])-1
+                start[1] += start[0]+a
+                data = self.results_sensitivity.iloc[start[0]:start[1],:]
+                #Put dataframe
+                f.write(','.join(data.columns) + '\n')
+                for index, row in data.iterrows():
+                    f.write(','.join(map(str, row.values)) + '\n')
+                start[0]=start[0]+a
+                f.write("----------------------------------------------------------------------" + '\n')
+        print(values)
+        
+        #Close progress bar and warning message of ending
+        self.progress_metod(close = True)
+        self.warning_message("Uncertainity analysis completed succesfully!")
         
     def save_results_sensitivity_analysis(self):
         """Method to save sensitivity results"""
         #Obtain the values
         ruta = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\output\\sensitivity.osp"
+        with open(ruta, "r") as archivo:
+            lineas = archivo.readlines()
+        #Function to obtain specific results form .osp file
+        def obtain_result(string):
+            for i in lineas:
+                if i.split("=")[-1]==string:
+                    for k in i.split("=")[0].split(" "):
+                        try:
+                            output = float(k)
+                            break
+                        except:
+                            pass
+            return output
+        
+        #Obtain results
+        runoff_from_source_mm = obtain_result(" Total Runoff from Source (mm depth over Source Area)\n")
+        runoff_from_source_m3 = obtain_result(" Total Runoff from Source\n")
+        runoff_out_filter_mm = obtain_result(" Total Runoff out from Filter (mm depth over Source+Filter)\n")
+        runoff_out_filter_m3 = obtain_result(" Total Runoff out from Filter\n")
+        infiltration_filter = obtain_result(" Total Infiltration in Filter\n")
+        mass_sediment_input_filter = obtain_result(" Mass Sediment Input to Filter\n")
+        concentration_sediment_source = obtain_result(" Concentration Sediment in Runoff from source Area\n")
+        sediment_out_filter = obtain_result(" Mass Sediment Output from Filter\n")
+        concentration_sediment_filter = obtain_result(" Concentration Sediment in Runoff exiting the Filter\n")
+        sdr = obtain_result(" Sediment Delivery Ratio\n")
+        rdr = obtain_result(" Runoff Delivery Ratio\n")
+        
+        #Dataframe to concatenate results
+        df_conc = pd.DataFrame(data = {"Total Runoff from source (mm)":[runoff_from_source_mm],
+            "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm)":[runoff_out_filter_mm],
+            "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter (m3)":[infiltration_filter],
+            "Mass Sediment Input to Filter (kg)":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area (g/L)":[concentration_sediment_source],
+            "Mass Sediment Output from Filter (kg)":[sediment_out_filter],"Concentration Sediment in Runoff exiting the Filter (g/L)":[concentration_sediment_filter],
+            "Sediment Delivery Ratio":[sdr],"Runoff Delivery Ratio":[rdr]})
+        
+        #Add the parameters names
+        for k,i in enumerate(self.dic_data.keys()):
+            df_conc.insert(0,i,[self.param_values[self.number_execution_sensitivity][k]])
+            
+        self.results_sensitivity = pd.concat([self.results_sensitivity,df_conc], ignore_index=True)
+    
+    def save_results_uncertainity_analysis(self):
+        """Method to save uncertainity results"""
+        #Obtain the values
+        ruta = self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\output\\uncertainity.osp"
         with open(ruta, "r") as archivo:
             lineas = archivo.readlines()
         #Function to obtain specific results form .osp file
@@ -2349,6 +2600,93 @@ class qvfsmod:
         #IWQ
         if self.water_quality:
             copy_paste("VFS","iwq")
+    
+    
+    def move_files_uncertainity_analysis(self):
+        """Method to move files to the corresponding folders for uncertainity analysis"""
+        #Prj
+        prj_file = self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\uncertainity.prj"
+        #Check if water quality is simulated
+        with open(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_uncertainity.text()), "r") as archivo:
+            lineas = archivo.readlines()
+        self.water_quality = False
+        for i in lineas:
+            if i[:3]=="iwq":
+                self.water_quality = True
+            
+        #Create file
+        with open(prj_file, 'w') as archivo:
+            archivo.write(f"ikw=inputs\\uncertainity.ikw  \n")
+            archivo.write(f"iso=inputs\\uncertainity.iso  \n")
+            archivo.write(f"igr=inputs\\uncertainity.igr  \n")
+            archivo.write(f"isd=inputs\\uncertainity.isd  \n")
+            archivo.write(f"irn=inputs\\uncertainity.irn  \n")
+            archivo.write(f"iro=inputs\\uncertainity.iro  \n")
+            if self.water_quality:
+                archivo.write(f"iwq=inputs\\uncertainity.iwq  \n")
+            archivo.write(f"og1=output\\uncertainity.og1  \n")
+            archivo.write(f"og2=output\\uncertainity.og2  \n")
+            archivo.write(f"ohy=output\\uncertainity.ohy  \n")
+            archivo.write(f"osm=output\\uncertainity.osm  \n")
+            archivo.write(f"osp=output\\uncertainity.osp  \n")
+            if self.water_quality:
+                archivo.write(f"owq=output\\uncertainity.owq  \n")
+        
+        #UH
+        lis_file = self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\uncertainity.lis"
+        #Create file
+        with open(lis_file, 'w') as archivo:
+            archivo.write(f"inp=inputs\\uncertainity.inp  \n")
+            archivo.write(f"iro=inputs\\uncertainity.iro  \n")
+            archivo.write(f"irn=inputs\\uncertainity.irn  \n")
+            archivo.write(f"isd=inputs\\uncertainity.isd  \n")
+            archivo.write(f"out=inputs\\uncertainity.out  \n")
+            archivo.write(f"hyt=inputs\\uncertainity.hyt  \n")
+        
+        #REST OF THE FILES
+        #Function to copy and paste the inputs to create the files to use in the uncertainity analysis
+        def copy_paste(process,type_input):
+            ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\uncertainity\\inputs\\uncertainity.{type_input}" 
+            if process == "UH":
+                ruta = self.obtain_direction_vfsmod(self.dlg_base.uh_file_uncertainity.text())
+            elif process == "VFS":
+                ruta = self.obtain_direction_vfsmod(self.dlg_base.vfs_file_uncertainity.text())
+            if os.path.exists(ruta) and os.path.isfile(ruta):
+                #First we open .prj and obtain the direction of the copying file
+                with open(ruta, "r") as archivo:
+                    lineas = archivo.readlines()
+                for i in lineas:
+                    if i[:3]==type_input:
+                        ikw = i.split("=")[-1]
+                if not os.path.isabs(ikw): #relative path
+                    ikw = os.path.join(os.path.dirname(ruta), ikw)
+                ikw = ikw.replace("\n", "") #take out the line jumps
+                print(type_input)
+                print("copiar",ikw)
+                print("pegar",ruta_pegar)
+                shutil.copyfile(ikw, ruta_pegar)
+        #INP
+        copy_paste("UH","inp")
+        #OUT
+        copy_paste("UH","out")
+        #HYT
+        copy_paste("UH","hyt")
+        
+        #IKW
+        copy_paste("VFS","ikw")
+        #ISO
+        copy_paste("VFS","iso")
+        #IGR
+        copy_paste("VFS","igr")
+        #ISD
+        copy_paste("VFS","isd")
+        #IRN
+        copy_paste("VFS","irn")
+        #IRO
+        copy_paste("VFS","iro")
+        #IWQ
+        if self.water_quality:
+            copy_paste("VFS","iwq")
             
     
     def create_folder_sensitivity_analysis(self):
@@ -2369,12 +2707,59 @@ class qvfsmod:
         if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\sensitivity\output"):
             create_folder("sensitivity\output")
     
+    def create_folder_uncertainity_analysis(self):
+        """Method to create the folder needed to uncertainity analysis"""
+        def create_folder(name_folder): #function to create a folder
+            parent_dir = self.dlg_base.working_directory_vfsmod.text()
+            path_file = os.path.join(parent_dir, name_folder)
+            mode = 0o666
+            try:
+                os.mkdir(path_file, mode)
+            except:
+                pass
+            
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+r"\uncertainity"):
+            create_folder("uncertainity")
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+r"\uncertainity\inputs"):
+            create_folder("uncertainity\inputs")
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+r"\uncertainity\output"):
+            create_folder("uncertainity\output")
+    
     def modify_inputs_sensitivity(self,extension, row, column, new_value, process):
         """Method to modfiy inputs in sensitivity analysis"""
         if process == "uh":
             ruta = os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\sensitivity\sensitivity.lis"
         else:
             ruta = os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\sensitivity\sensitivity.prj"
+        with open(ruta, "r") as archivo:
+            lineas_prj = archivo.readlines()
+        for i in lineas_prj:
+            if i.split(".")[-1].replace("\n", "").replace(" ","") == extension:
+                filepath = i.split("=")[-1]
+                break
+        if not os.path.isabs(filepath): #relative path
+            filepath = os.path.join(os.path.dirname(ruta), filepath)
+        filepath = filepath.replace("\n", "")
+
+        with open(filepath, 'r') as file:
+            lineas = file.readlines()
+        numbers_str = lineas[row]
+        # Use regex to find all numbers in the string
+        matches = re.findall(r'\S+', numbers_str)
+        # Replace the specific number at the given index
+        matches[column] = str(new_value)
+        # Rebuild the string by replacing only the specific number
+        lineas[row] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+        with open(filepath, 'w') as archivo:
+            for i in lineas:
+                archivo.write(i)
+    
+    def modify_inputs_uncertainity(self,extension, row, column, new_value, process):
+        """Method to modfiy inputs in uncertainity analysis"""
+        if process == "uh":
+            ruta = os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+r"\uncertainity\uncertainity.lis"
+        else:
+            ruta = os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+r"\uncertainity\uncertainity.prj"
         with open(ruta, "r") as archivo:
             lineas_prj = archivo.readlines()
         for i in lineas_prj:
@@ -2469,10 +2854,105 @@ class qvfsmod:
         with open(self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\inputs\\sensitivity.ikw", 'w') as archivo:
             archivo.write(contenido)
     
+    
+    def change_buffer_length_uncertainity(self,value_change):
+        """Method to modifi length of buffer in uncertainity analysis"""
+        #First we save the .ikw file path
+        ruta = self.obtain_direction_vfsmod(self.dlg_base.vfs_file_uncertainity.text())
+        ikw = self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\inputs\\uncertainity.ikw"
+        #We substitute value of length
+        with open(ikw, "r") as archivo:
+            lineas = archivo.readlines()
+        
+        #Then we update the segments
+        number_segments = int(lineas[3])
+        length = list(map(float, lineas[2].split()))[0]
+        new_interval = length/number_segments
+
+        #Data frame, but we take it from the original, not from the last execution
+        #We import dataframe of segments from the original file
+        with open(ruta, "r") as archivo:
+            lineas_prj = archivo.readlines()
+        ikw = lineas_prj[0].split("=")[-1]
+        if not os.path.isabs(ikw): #relative path
+            ikw = os.path.join(os.path.dirname(ruta), ikw)
+        ikw = ikw.replace("\n", "")
+        with open(ikw, "r") as archivo:
+            lineas_ikw_original = archivo.readlines()
+            
+        df = pd.DataFrame(data = {"Distance":[list(map(float, lineas_ikw_original[x].split()))[0] for x in range(4,4+number_segments)],
+                             "Manning":[list(map(float, lineas_ikw_original[x].split()))[1] for x in range(4,4+number_segments)],
+                             "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
+        
+        #We update the dataframe
+        new_distances = np.linspace(new_interval, new_interval * number_segments, number_segments)
+        def weighted_average(df, new_distances, new_interval, column):
+            averages = []
+            for dist in new_distances:
+                start, end = dist - new_interval, dist
+                
+                # Calcular el solapamiento entre los intervalos originales y el nuevo intervalo
+                overlap = np.minimum(df["Distance"], end) - np.maximum(df["Distance"].shift(fill_value=0), start)
+                
+                # Asegurarse de que el solapamiento sea positivo o al menos cero
+                overlap = np.clip(overlap, 0, new_interval)
+                
+                # Calcular los pesos basados en el solapamiento
+                weights = overlap / new_interval
+                
+                # Verificar si la suma de los pesos es mayor que cero para evitar NaN
+                total_weight = np.sum(weights)
+                if total_weight > 0:
+                    avg = np.sum(weights * df[column]) / total_weight
+                    averages.append(round(avg, 6))
+                else:
+                    # Si no hay pesos válidos, usar el valor del intervalo anterior o un valor predeterminado
+                    averages.append(df[column].iloc[0])  # o cualquier otro valor predeterminado
+            return averages
+
+        new_df = pd.DataFrame({
+            "Distance": new_distances,
+            "Manning": weighted_average(df, new_distances, new_interval, "Manning"),
+            "Slope": weighted_average(df, new_distances, new_interval, "Slope")
+        })
+        #Add to the file information
+        contenido = ""
+        for i in lineas[:4]:    
+            contenido+=f"{i}"
+        for i in range(len(new_df)):
+            contenido +=f" {new_df.iloc[i,0]}   {new_df.iloc[i,1]}   {new_df.iloc[i,2]}\n"
+        for i in lineas[-8:]:    
+            contenido+=f"{i}"
+        with open(self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\inputs\\uncertainity.ikw", 'w') as archivo:
+            archivo.write(contenido)
+    
     def change_filter_manning_sensitivity(self,value_change,column):
         """Method to change the manning and slope value of the buffer in sensitivity analysis"""
         #We obtain information of ikw file
         ikw = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\inputs\\sensitivity.ikw"
+        
+        with open(ikw, "r") as archivo:
+            lineas = archivo.readlines()
+        
+        for row in range(4,len(lineas)):
+            numbers_str = lineas[row]
+            # Use regex to find all numbers in the string
+            matches = re.findall(r'\S+', numbers_str)
+            # Replace the specific number at the given index
+            if len(matches)==1:
+                break
+            matches[column] = str(value_change)
+            # Rebuild the string by replacing only the specific number
+            lineas[row] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+            
+            with open(ikw, 'w') as archivo:
+                for i in lineas:
+                    archivo.write(i)
+    
+    def change_filter_manning_uncertainity(self,value_change,column):
+        """Method to change the manning and slope value of the buffer in uncertainity analysis"""
+        #We obtain information of ikw file
+        ikw = self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\inputs\\uncertainity.ikw"
         
         with open(ikw, "r") as archivo:
             lineas = archivo.readlines()
@@ -2548,11 +3028,79 @@ class qvfsmod:
             self.sensitivity_error = True
             return
     
+    def execution_uncertainity_analysis(self):
+        """Method for the each execution of the uncertainity analysis"""
+        #Progress bar update
+        self.progress_metod(start = False,execution = self.number_execution_sensitivity+1,number_combinations = len(self.param_values))
+        #We change the values of the inputs
+        execute_uh = False
+        for k,i in enumerate(self.dic_data.keys()):
+            #Change inputs
+            value_change = self.param_values[self.number_execution_sensitivity][k]
+            #If buffer length, rougheness or slope is selected then change in another way
+            if i == "Buffer length (m)":
+                information_parameter = self.sensitivity_parameters[i]
+                self.modify_inputs_uncertainity(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3])
+                self.change_buffer_length_uncertainity(value_change)
+            elif i == "Filter Manning n (RNA, s/m^1/3)":
+                self.change_filter_manning_uncertainity(value_change,1)
+            elif i == "Average Filter Slope":
+                self.change_filter_manning_uncertainity(value_change,2)
+            else:
+                information_parameter = self.sensitivity_parameters[i]
+                self.modify_inputs_uncertainity(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3])
+            #Check if there is the need to execute UH
+            if information_parameter[3]=="uh":
+                execute_uh = True
+               
+        
+        #We execute
+        #Only execute UH if there are parameters that need to be executed in UH
+        if execute_uh:
+            self.update_bat_uh_uncertainity()
+            resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
+                capture_output=True, 
+                text=True, 
+                shell=True)
+            #Put warning
+            if not "...FINISHED..." in resultado.stdout:
+                self.warning_message(str(resultado.stdout))
+                self.sensitivity_error = True
+                return
+                
+        #Correct hietograph file
+        self.correct_irn_file(self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\inputs\\uncertainity.irn") 
+        
+        #VFS
+        self.update_bat_vfs_uncertainity()
+        resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
+                capture_output=True, 
+                text=True, 
+                shell=True)
+        
+        #Put warning
+        if not "...FINISHED..." in resultado.stdout:
+            self.warning_message(str(resultado.stdout))
+            self.sensitivity_error = True
+            return
+    
+    
     def update_bat_uh_sensitivity(self):
         """Method to update the bat for execution of UH for sensitivity analysis"""
         f = open(self.plugin_directory+"\\executables\\execution.bat","w+")
         linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\sensitivity\\"')
         linea_dos = f'"{self.plugin_directory}\\executables\\uh" sensitivity.lis'
+        linea_tres = "Pause"
+        f.write("{} \n".format(linea_uno))
+        f.write("{} \n".format(linea_dos))
+        f.write("{} \n".format(linea_tres))
+        f.close()
+    
+    def update_bat_uh_uncertainity(self):
+        """Method to update the bat for execution of UH for uncertainity analysis"""
+        f = open(self.plugin_directory+"\\executables\\execution.bat","w+")
+        linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\uncertainity\\"')
+        linea_dos = f'"{self.plugin_directory}\\executables\\uh" uncertainity.lis'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
         f.write("{} \n".format(linea_dos))
@@ -2569,7 +3117,59 @@ class qvfsmod:
         f.write("{} \n".format(linea_dos))
         f.write("{} \n".format(linea_tres))
         f.close()
+        
+    def update_bat_vfs_uncertainity(self):
+        """Method to update the bat for execution of VFS for uncertainity analysis"""
+        f = open(self.plugin_directory+"\\executables\\execution.bat","w+")
+        linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\uncertainity\\"')
+        linea_dos = f'"{self.plugin_directory}\\executables\\vfsm" uncertainity.prj'
+        linea_tres = "Pause"
+        f.write("{} \n".format(linea_uno))
+        f.write("{} \n".format(linea_dos))
+        f.write("{} \n".format(linea_tres))
+        f.close()
     
+    
+    def create_dictionary_uncertainity_analysis(self):
+        """Method to create the dictionary that will contain the parameters of the uncertainity analysis"""
+        #Functions to convert user specified inputs into inputs that SALib can read
+        def distribution_parameters_fun(row):
+            if str(self.dlg_base.table_uncertainity.item(row, 1).text()) == "Uniform":
+                distribution = "unif"
+                texto = str(self.dlg_base.table_uncertainity.item(row, 2).text())
+                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+            elif str(self.dlg_base.table_uncertainity.item(row, 1).text()) == "Logaritmic uniform":
+                distribution = "logunif"
+                texto = str(self.dlg_base.table_uncertainity.item(row, 2).text())
+                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+            elif str(self.dlg_base.table_uncertainity.item(row, 1).text()) == "Triangular":
+                distribution = "triang"
+                texto = str(self.dlg_base.table_uncertainity.item(row, 2).text())
+                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+            elif str(self.dlg_base.table_uncertainity.item(row, 1).text()) == "Normal":
+                distribution = "norm"
+                texto = str(self.dlg_base.table_uncertainity.item(row, 2).text())
+                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+            elif str(self.dlg_base.table_uncertainity.item(row, 1).text()) == "Normal truncated":
+                distribution = "truncnorm"
+                texto = str(self.dlg_base.table_uncertainity.item(row, 2).text())
+                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+            elif str(self.dlg_base.table_uncertainity.item(row, 1).text()) == "Lognormal":
+                distribution = "lognorm"
+                texto = str(self.dlg_base.table_uncertainity.item(row, 2).text())
+                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+            return distribution, parameters
+            
+        #Diccionario nombre en el diálogo - [parametros del análisis de sensibilidad]
+        dic_data = {}
+        for i in range(self.dlg_base.table_uncertainity.rowCount()):
+            #Diccionario [Parametro] = (Distribucion, Parametros)
+            name = self.dlg_base.table_uncertainity.item(i, 0).text()
+            #Obtain name of distribution and parameters
+            dis,param = distribution_parameters_fun(i)
+            dic_data[name] = [dis,param]
+        return dic_data
+        
     def create_dictionary_sensitivity_analysis(self):
         """Method to create the dictionary that will contain the parameters of the sensitivity analysis"""
         #Functions to convert user specified inputs into inputs that SALib can read
@@ -2677,7 +3277,6 @@ class qvfsmod:
                 #Primero se borra
                 delete_elements()
                 
-            
             elif distribution=="Logaritmic uniform":
                 #Primero se borra
                 delete_elements()
@@ -2720,6 +3319,80 @@ class qvfsmod:
                 # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
                 self.dlg_base.gridLayout_81.addWidget(self.dlg_base.fourth_label, 5, 0)
                 self.dlg_base.gridLayout_81.addWidget(self.dlg_base.fourth, 5, 1)
+    
+    def distribution_parameters_uncertainity(self):
+        """Method to add/delete new labels depending on choosed distribution"""
+        distribution = [self.dlg_base.distributions_uncertainity.itemText(i) for i in range(self.dlg_base.distributions_uncertainity.count())][self.dlg_base.distributions_uncertainity.currentIndex()]
+        
+        # Obtén el número de filas actual en el GridLayout
+        numRows = self.dlg_base.gridLayout_84.rowCount()
+        
+        def delete_elements():
+            try:
+                widget = self.dlg_base.third_2
+                self.dlg_base.gridLayout_84.removeWidget(widget)
+                widget.deleteLater()
+                widget = self.dlg_base.third_label_2
+                self.dlg_base.gridLayout_84.removeWidget(widget)
+                widget.deleteLater()
+            except:
+                pass
+            try:
+                widget = self.dlg_base.fourth_2
+                self.dlg_base.gridLayout_84.removeWidget(widget)
+                widget.deleteLater()
+                widget = self.dlg_base.fourth_label_2
+                self.dlg_base.gridLayout_84.removeWidget(widget)
+                widget.deleteLater()
+            except:
+                pass
+
+        if distribution=="Uniform":
+            #Primero se borra
+            delete_elements()
+            
+        elif distribution=="Logaritmic uniform":
+            #Primero se borra
+            delete_elements()
+ 
+        elif distribution=="Triangular":
+            #Primero se borra
+            delete_elements()
+
+            #Luego se añade
+            # Crea un nuevo QLabel y QLineEdit
+            self.dlg_base.third_label_2 = QLabel("Peak")
+            self.dlg_base.third_2 = QLineEdit()
+            # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
+            self.dlg_base.gridLayout_84.addWidget(self.dlg_base.third_label_2, 5, 0)
+            self.dlg_base.gridLayout_84.addWidget(self.dlg_base.third_2, 5, 1)
+
+        elif distribution=="Normal":
+            #Primero se borra
+            delete_elements()
+        
+        if distribution=="Lognormal":
+            #Primero se borra
+            delete_elements()
+        
+        if distribution=="Normal truncated":
+            #Primero se borra
+            delete_elements()
+            
+            #Luego se añade
+            # Crea un nuevo QLabel y QLineEdit
+            self.dlg_base.third_label_2 = QLabel("Mean")
+            self.dlg_base.third_2 = QLineEdit()
+            # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
+            self.dlg_base.gridLayout_84.addWidget(self.dlg_base.third_label_2, 5, 0)
+            self.dlg_base.gridLayout_84.addWidget(self.dlg_base.third_2, 5, 1)
+            
+            # Crea un nuevo QLabel y QLineEdit
+            self.dlg_base.fourth_label_2 = QLabel("Standard deviation")
+            self.dlg_base.fourth_2 = QLineEdit()
+            # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
+            self.dlg_base.gridLayout_84.addWidget(self.dlg_base.fourth_label_2, 6, 0)
+            self.dlg_base.gridLayout_84.addWidget(self.dlg_base.fourth_2, 6, 1)
             
     def change_bounds_sensitivity(self):
         """Metod to change bounds labels if distribution changed"""
@@ -2743,6 +3416,26 @@ class qvfsmod:
             if distribution=="Normal truncated":
                 change_lines("Minimum","Maximum","Mean","Standard deviation")
     
+    def change_bounds_uncertainity(self):
+        """Metod to change bounds labels if distribution changed"""
+        def change_lines(bound1,bound2,bound3=None,bound4 = None):
+            self.dlg_base.label_141.setText(bound1)
+            self.dlg_base.label_139.setText(bound2)
+
+        distribution = [self.dlg_base.distributions_uncertainity.itemText(i) for i in range(self.dlg_base.distributions_uncertainity.count())][self.dlg_base.distributions_uncertainity.currentIndex()]
+        if distribution=="Uniform":
+            change_lines("Minimum","Maximum")
+        if distribution=="Logaritmic uniform":
+            change_lines("Minimum","Maximum")
+        if distribution=="Triangular":
+            change_lines("Minimum","Maximum","Peak")
+        if distribution=="Normal":
+            change_lines("Mean","Standard deviation")
+        if distribution=="Lognormal":
+            change_lines("Mean","Standard deviation")
+        if distribution=="Normal truncated":
+            change_lines("Minimum","Maximum","Mean","Standard deviation")
+    
     def delete_sensitivity_table(self):
         """Method to delete sensitivity analysis parameters to table"""
         if self.dlg_base.oat.isChecked(): table = self.dlg_base.table_oat
@@ -2755,6 +3448,15 @@ class qvfsmod:
         
         #Update number of samples
         self.change_sensitivity_method()
+    
+    def delete_uncertainity_table(self):
+        """Method to delete uncertainity analysis parameters to table"""
+        table = self.dlg_base.table_uncertainity
+        numero_filas = table.rowCount()
+        if numero_filas > 0:
+            table.removeRow(numero_filas - 1)
+        if numero_filas == 1:
+            table.setColumnCount(0)
     
     def add_sensitivity_table(self):
         """Method to add information to the sensitivity analysis table"""
@@ -2809,6 +3511,46 @@ class qvfsmod:
             #Update number of samples
             self.change_sensitivity_method()
     
+    def add_uncertainity_table(self):
+        """Method to add information to the sensitivity analysis table"""
+        #Method to add uncertainity analysis parameters to table
+
+        table = self.dlg_base.table_uncertainity
+        
+        if table.columnCount() == 0:
+            #Añadir columnas
+            nombres_columnas = ["Parameter","Distribution","Distribution parameters"]
+            
+            table.setColumnCount(len(nombres_columnas))
+            table.setHorizontalHeaderLabels(nombres_columnas)
+            #Cambiar el ancho de las columnas
+            table.setColumnWidth(nombres_columnas.index("Parameter"), 180)
+            table.setColumnWidth(nombres_columnas.index("Distribution parameters"), 200)
+            
+        #Añadir filas
+        def add_element(columna,texto):
+            item = QTableWidgetItem(texto)
+            table.setItem(numero_filas, columna, item)
+            item.setTextAlignment(Qt.AlignCenter)
+        
+        #Primero la información de los lineEdits
+        numero_filas = table.rowCount()
+        table.setRowCount(numero_filas + 1)
+        #Add parameter
+        add_element(0,self.dlg_base.parameter_name_uncertainity.text())
+        #Add distribution
+        distribution = [self.dlg_base.distributions_uncertainity.itemText(i) for i in range(self.dlg_base.distributions_uncertainity.count())][self.dlg_base.distributions_uncertainity.currentIndex()]
+        add_element(1,distribution)
+        if distribution=="Uniform" or distribution=="Logaritmic uniform":
+            add_element(2,f"base:{self.dlg_base.base_uncertainity.text()},min:{self.dlg_base.first_2.text()},max:{self.dlg_base.second_2.text()}")
+        elif distribution == "Triangular":
+            add_element(2,f"base:{self.dlg_base.base_uncertainity.text()},min:{self.dlg_base.first_2.text()},max:{self.dlg_base.second_2.text()},peak:{self.dlg_base.third_2.text()}")
+        elif distribution == "Normal" or distribution == "Lognormal":
+            add_element(2,f"base:{self.dlg_base.base_uncertainity.text()},mean:{self.dlg_base.first_2.text()},stdv:{self.dlg_base.second_2.text()}")
+        elif distribution == "Normal truncated":
+            add_element(2,f"base:{self.dlg_base.base_uncertainity.text()},min:{self.dlg_base.first_2.text()},max:{self.dlg_base.second_2.text()},mean:{self.dlg_base.third_2.text()},stdv:{self.dlg_base.fourth_2.text()}")
+            
+    
     def change_sensitivity_method(self):
         """Method to change sensitivity inputs depending on selected senstitivity metod"""
         if self.dlg_base.sobol.isChecked():
@@ -2838,7 +3580,7 @@ class qvfsmod:
                     self.dlg_base.samples.setText(str(int(self.dlg_base.trajectories.text())*(self.dlg_base.table.rowCount())))
             except:
                 pass
-        
+    
     def search_sensitivity_parameter(self):
         """Method to search sensitivity parameter in the dialog"""
         #Metod to search a sensitiviy input
@@ -2865,6 +3607,39 @@ class qvfsmod:
                     boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
                     boton.setObjectName(nombre)
                     self.dlg_base.verticalLayout_19.addWidget(boton)
+                    política_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                    boton.setSizePolicy(política_tamaño)
+                    boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
+            except:
+                pass
+    
+    
+    def search_uncertainity_parameter(self):
+        """Method to search sensitivity parameter in the dialog"""
+        #Metod to search a sensitiviy input
+        texto = str(self.dlg_base.search_uncertainity.text())
+        #If text == "" then delete every button
+        if texto =="":
+            while self.dlg_base.verticalLayout_21.count():
+                child = self.dlg_base.verticalLayout_21.takeAt(0)
+                if child.widget():
+                    child.widget().deleteLater()
+        else:
+            elementos = []
+            for i in self.sensitivity_parameters.keys():
+                if texto.lower() in i.lower():
+                    elementos.append(i)
+            try: #if it doesnt find a name
+                #Delete all elements of vertical layout of scroll area
+                while self.dlg_base.verticalLayout_21.count():
+                    child = self.dlg_base.verticalLayout_21.takeAt(0)
+                    if child.widget():
+                        child.widget().deleteLater()
+                #Add new button to the scroll area
+                for nombre in elementos:
+                    boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                    boton.setObjectName(nombre)
+                    self.dlg_base.verticalLayout_21.addWidget(boton)
                     política_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                     boton.setSizePolicy(política_tamaño)
                     boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
@@ -2966,10 +3741,110 @@ class qvfsmod:
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                 boton.setSizePolicy(politica_tamaño)
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
+    
+    def show_buttons_uncertainity_dialog(self,button):
+        """Method to add buttons to uncertainity dialog"""
+        #Delete all elements of vertical layout of scroll area
+        while self.dlg_base.verticalLayout_21.count():
+            child = self.dlg_base.verticalLayout_21.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+        #Add element
+        if button == self.dlg_base.all_parameters_2:
+            for nombre in self.sensitivity_parameters.keys():
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_21.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
+        if button == self.dlg_base.rainfall_event_2:
+            parameters = ["Rainfall (mm)","Storm duration (h)","Curve number"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_21.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
+                
+        if button == self.dlg_base.source_area_2:
+            parameters = ["Source Area Length along the slope (m)", "Source Area Slope as a fraction","Source Area (ha)"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_21.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
+                
+        if button == self.dlg_base.erosion_parameters_2:
+            parameters = ["Soil erodibility (K)","Percent organic matter","Crop factor","Particle Class Diameter","Practice Factor"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_21.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
+                
+        if button == self.dlg_base.buffer_dimensions_2:
+            parameters = ["Buffer length (m)","Width of the Strip (m)","Filter Manning n (RNA, s/m^1/3)","Average Filter Slope"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_21.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
+                
+        if button == self.dlg_base.kinematic_wave_2:
+            parameters = ["Number of Nodes","Time Weight Factor","Number of Elemental Nodal Points","Courant Number","Maximum Iterations"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_21.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
+                
+        if button == self.dlg_base.infiltration_2:
+            parameters = ["Vertical Saturated K","Average Suction at the Wetting Front","Initial Water Content","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_21.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
+                
+        if button == self.dlg_base.buffer_vegetation_2:
+            parameters = ["Spacing for grass stems (cm)","Roughness-Grass Mannings n VN","Height of grass (cm)","Roughness-Bare surface Mannings n (Vn2)"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_21.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
+                
+        if button == self.dlg_base.incoming_sediment_2:
+            parameters = ["Incoming flow sediment concentration (g/cm^3)","Sediment particle size, diameter d50 (cm)","Porosity of deposited sediment as a fraction","Portion of Particles from incoming sediment \nwith diameter >0.0037 cm","Sediment particle density (g/cm^3)"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_21.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
         
     def add_parameter_name_sensitivity(self,name):
         """Method to add the parameter name to the lineEdit in sensitivity analysis dialog"""
         self.dlg_base.parameter_name.setText(name)
+    
+    def add_parameter_name_uncertainity(self,name):
+        """Method to add the parameter name to the lineEdit in sensitivity analysis dialog"""
+        self.dlg_base.parameter_name_uncertainity.setText(name)
     
     def browse_files_calibration(self,information):
         """Method to select the file between the local files"""
