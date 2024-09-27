@@ -567,6 +567,9 @@ class qvfsmod:
         self.dlg_base.sobol_results.clicked.connect(self.show_graph_sensitivity_global)
         self.dlg_base.local_results.clicked.connect(self.show_graph_sensitivity_oat)
         
+        #Show uncertainity results
+        self.dlg_base.results_uncertainity.clicked.connect(self.show_graph_sensitivity_uncertainity)
+        
         #Browse file sensitivity graph
         self.dlg_base.browse.clicked.connect(self.browse_files_sensitivity_results)
         self.dlg_base.browse_2.clicked.connect(self.browse_files_sensitivity_results_sobol)
@@ -594,6 +597,17 @@ class qvfsmod:
             self.dlg_base.input_output,self.dlg_base.absolute,self.dlg_base.relative_base,self.dlg_base.relative_sensitivity]
         for i in check_boxes:
             i.toggled.connect(lambda checked, rb=i: self.update_sensitity_graph_oat() if checked else None)
+            
+        #Update sensitivity graph for uncertainity
+        check_boxes = [self.dlg_base.runoff_source_mm_4,self.dlg_base.runoff_source_m3_4,
+            self.dlg_base.runoff_filter_mm_4,self.dlg_base.runoff_filter_m3_4,
+            self.dlg_base.infiltration_filter_m3_4,self.dlg_base.sediment_input_4,
+            self.dlg_base.concentration_sediment_4,self.dlg_base.sediment_output_4,
+            self.dlg_base.sediment_runoff_exit_4,self.dlg_base.sediment_delivery_4,
+            self.dlg_base.runoff_delivery_4,
+            self.dlg_base.input_uncertainity,self.dlg_base.output_uncertainity,self.dlg_base.input_uncertainity_cumulative,self.dlg_base.output_uncertainity_cumulative]
+        for i in check_boxes:
+            i.toggled.connect(lambda checked, rb=i: self.update_graph_uncertainity() if checked else None)
         
         #Browse files in sensitivity analysis
         self.dlg_base.browse_uh.clicked.connect(lambda _, b = "lis":self.browse_files_sensitivity(b))
@@ -633,9 +647,14 @@ class qvfsmod:
         #Browse csv of oat sensitivity analysis
         self.dlg_base.browse_oat_csv.clicked.connect(self.browse_csv_oat)
         
+        #Same for uncertainity
+        self.dlg_base.browse_uncertainity_csv.clicked.connect(self.browse_csv_uncertainity)
+        
         #Add inputs to OAT results dialog
         self.dlg_base.csv_results_oat.textChanged.connect(self.add_inputs_oat_results)
-    
+        
+        #Add inputs to uncertainity results dialog
+        self.dlg_base.csv_results_uncertainity.textChanged.connect(self.add_inputs_uncertainity_results)
     
     def add_inputs_oat_results(self):
         """Method to add inputs into oat sensitivity results"""
@@ -679,6 +698,48 @@ class qvfsmod:
             except:
                 pass
     
+    def add_inputs_uncertainity_results(self):
+        """Method to add inputs into uncertainity sensitivity results"""
+        #First delete previous layout if it exits
+        if self.dlg_base.inputs_uncertainity.layout() is not None:
+            for i in reversed(range(self.dlg_base.inputs_uncertainity.layout().count())): 
+                widget = self.dlg_base.inputs_uncertainity.layout().itemAt(i).widget()
+                if widget is not None: 
+                    widget.deleteLater()  # Eliminar el widget
+            self.dlg_base.inputs_uncertainity.layout().deleteLater()
+        #Then create
+        if os.path.exists(self.obtain_direction_vfsmod(self.dlg_base.csv_results_uncertainity.text())):
+            try:
+                layout = QVBoxLayout()
+                # Crear un QLabel con el texto que quieras
+                label = QLabel("Inputs")
+
+                # Añadir el QLabel al layout
+                layout.addWidget(label)
+                
+                #Name of inputs
+                with open(self.obtain_direction_vfsmod(self.dlg_base.csv_results_uncertainity.text()), mode='r', encoding='utf-8') as file:
+                    lines = file.read().splitlines()
+                inputs = lines[1].split(":")[-1].split(",")
+                
+                self.dictionary_radio_inputs_uncertainity = {}
+                # Crear y añadir varios QRadioButton
+                for opcion in inputs:
+                    radio_button = QRadioButton(opcion)
+                    #Connect funciton but only one time
+                    radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_graph_uncertainity() if checked else None)
+                    self.dictionary_radio_inputs_uncertainity[radio_button] = opcion
+                    layout.addWidget(radio_button)
+                
+                #add spacer
+                spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+                layout.addItem(spacer)
+
+                # Establecer el layout en el frame `self.dlg_base.inputs_uncertainity`
+                self.dlg_base.inputs_uncertainity.setLayout(layout)
+            except:
+                pass
+    
     def show_graph_sensitivity_oat(self):   
         """Method to add OAT sensitivity analysis graph"""
         if not hasattr(self, 'canvas_sensitivity_graph_oat'):
@@ -709,7 +770,7 @@ class qvfsmod:
         if os.path.exists(ruta):
             with open(ruta, "r") as archivo:
                 lineas = archivo.readlines()
-            #If the csv is not of a Morris sensitivity analysis then give error
+            #If the csv is not of a OAT sensitivity analysis then give error
             if lineas[0]!="OAT sensitivity results" + '\n':
                 self.warning_message("Please select a csv file that contains OAT sensitivity analysis results")
                 return
@@ -751,8 +812,6 @@ class qvfsmod:
             
             base_input = x[0]
             base_output = y[0]
-            print(base_input)
-            print(base_output)
             
             unique_pairs = {}
             for xi, yi in zip(x, y):
@@ -862,8 +921,185 @@ class qvfsmod:
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
                 #Draw canvas
                 self.canvas_sensitivity_graph_oat.draw()
+    
+    def show_graph_sensitivity_uncertainity(self):
+        """Method to add the graph of sensitivity analysis for uncertainity"""
+        if not hasattr(self, 'canvas_uncertainity_graph'):
+            # Si no existe, crear el canvas y añadirlo al layout
+            self.canvas_uncertainity_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
             
-        
+            # Asignar un layout al QFrame si no tiene uno
+            layout = QVBoxLayout(self.dlg_base.frame_68)
+            self.dlg_base.frame_68.setLayout(layout)
+            
+            # Añadir el canvas al layout
+            layout.addWidget(self.canvas_uncertainity_graph)
+        else:
+            # Si ya existe, simplemente limpiar el canvas
+            self.canvas_uncertainity_graph.figure.clear()
+    
+    
+    def update_graph_uncertainity(self):
+        if len(self.dictionary_radio_inputs_uncertainity)>1:
+            for i in self.dictionary_radio_inputs_uncertainity:
+                if i.isChecked():
+                    input_parameter = self.dictionary_radio_inputs_uncertainity[i]
+                    break
+        #Warning messages
+        ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_uncertainity.text())
+        if os.path.exists(ruta):
+            with open(ruta, "r") as archivo:
+                lineas = archivo.readlines()
+            #If the csv is not of a Uncertainity sensitivity analysis then give error
+            if lineas[0]!="Uncertainity analysis results" + '\n':
+                self.warning_message("Please select a csv file that contains Uncertainity analysis results")
+                return
+                
+            #Clear graph before drawing
+            #Create and clear axis before drawing
+            self.canvas_uncertainity_graph.figure.clear()
+            self.ax_uncertainity = self.canvas_uncertainity_graph.figure.subplots()
+            
+            #Obtain data 
+            with open(self.obtain_direction_vfsmod(self.dlg_base.csv_results_uncertainity.text()), mode='r', encoding='utf-8') as file:
+                lines = file.read().splitlines()
+            # Ignorar la primera línea ("Uncertainity analysis results")
+            lines = lines[1:]
+            for i in range(len(lines)):
+                if lines[i] == f"{input_parameter} results":
+                    columns = lines[i+1].split(",")
+                    rows = []
+                    for k in range(i+2,len(lines)):
+                        if lines[k][:2]=="--":
+                            break
+                        rows.append(lines[k].split(","))
+                    break
+            df = pd.DataFrame(rows, columns=columns)
+            
+            #Get output
+            if self.dlg_base.runoff_source_mm_4.isChecked():output_column = "Total Runoff from source (mm)"
+            elif self.dlg_base.runoff_source_m3_4.isChecked():output_column = "Total Runoff from Source (m3)"
+            elif self.dlg_base.runoff_filter_mm_4.isChecked():output_column = "Total Runoff out from Filter (mm)"
+            elif self.dlg_base.runoff_filter_m3_4.isChecked():output_column = "Total Runoff out from Filter (m3)"
+            elif self.dlg_base.infiltration_filter_m3_4.isChecked():output_column = "Total Infiltration in Filter (m3)"
+            elif self.dlg_base.sediment_input_4.isChecked():output_column = "Mass Sediment Input to Filter (kg)"
+            elif self.dlg_base.concentration_sediment_4.isChecked():output_column = "Concentration Sediment in Runoff from source Area (g/L)"
+            elif self.dlg_base.sediment_output_4.isChecked():output_column = "Mass Sediment Output from Filter (kg)"
+            elif self.dlg_base.sediment_runoff_exit_4.isChecked():output_column = "Concentration Sediment in Runoff exiting the Filter (g/L)"
+            elif self.dlg_base.sediment_delivery_4.isChecked():output_column = "Sediment Delivery Ratio"
+            elif self.dlg_base.runoff_delivery_4.isChecked():output_column = "Runoff Delivery Ratio"
+            
+            x = [float(x) for x in df[input_parameter]]
+            y = [float(x) for x in df[output_column]]
+            
+            
+            #Input frquency graph
+            if self.dlg_base.input_uncertainity.isChecked():
+                #Create graph
+                if len(x)<10:bins = 3
+                elif len(x)<20:bins = 5
+                elif len(x)<50: bins = 10
+                elif len(x)<100: bins = 15
+                else: bins = 20
+                self.ax_uncertainity.hist(x, bins=bins, color='blue', edgecolor='black')
+                #Separador de miles
+                def formato_con_separador(valor, pos):
+                    if max(list(x))>10:
+                        return "{:,.0f}".format(valor)
+                    else:
+                        return "{:,.2f}".format(valor)
+                self.ax_uncertainity.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+                #Labels
+                self.ax_uncertainity.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_uncertainity.set_ylabel("Frequency",size = 14,family="arial",weight = "bold",color = "black")
+                # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+                self.canvas_uncertainity_graph.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
+                self.canvas_uncertainity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
+                #Draw canvas
+                self.canvas_uncertainity_graph.draw()
+            
+            #Input frquency graph cumulative
+            if self.dlg_base.input_uncertainity_cumulative.isChecked():
+                #Create graph
+                if len(x)<10:bins = 3
+                elif len(x)<20:bins = 5
+                elif len(x)<50: bins = 10
+                elif len(x)<100: bins = 15
+                else: bins = 20
+                x_sorted = np.sort(x)
+                # Calcular la frecuencia acumulativa
+                y = np.arange(1, len(x_sorted) + 1) / len(x_sorted)
+                # Graficar la frecuencia acumulativa con líneas
+                self.ax_uncertainity.plot(x_sorted, y, color='blue', linestyle='-', marker='')
+                #Separador de miles
+                def formato_con_separador(valor, pos):
+                    if max(list(x))>10:
+                        return "{:,.0f}".format(valor)
+                    else:
+                        return "{:,.2f}".format(valor)
+                self.ax_uncertainity.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+                #Labels
+                self.ax_uncertainity.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_uncertainity.set_ylabel("Frequency",size = 14,family="arial",weight = "bold",color = "black")
+                # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+                self.canvas_uncertainity_graph.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
+                self.canvas_uncertainity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
+                #Draw canvas
+                self.canvas_uncertainity_graph.draw()
+            
+            #Output frequency graph
+            elif self.dlg_base.output_uncertainity.isChecked():
+                #Create graph
+                if len(x)<10:bins = 3
+                elif len(x)<20:bins = 5
+                elif len(x)<50: bins = 10
+                elif len(x)<100: bins = 15
+                else: bins = 20
+                self.ax_uncertainity.hist(y, bins=bins, color='blue', edgecolor='black')
+                #Separador de miles
+                def formato_con_separador(valor, pos):
+                    if max(list(y))>10:
+                        return "{:,.0f}".format(valor)
+                    else:
+                        return "{:,.2f}".format(valor)
+                self.ax_uncertainity.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+                #Labels
+                self.ax_uncertainity.set_xlabel(output_column,size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_uncertainity.set_ylabel("Frequency",size = 14,family="arial",weight = "bold",color = "black")
+                # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+                self.canvas_uncertainity_graph.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
+                self.canvas_uncertainity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
+                #Draw canvas
+                self.canvas_uncertainity_graph.draw()
+            
+            #Output frequency graph cumulative
+            elif self.dlg_base.output_uncertainity_cumulative.isChecked():
+                #Create graph
+                if len(x)<10:bins = 3
+                elif len(x)<20:bins = 5
+                elif len(x)<50: bins = 10
+                elif len(x)<100: bins = 15
+                else: bins = 20
+                x_sorted = np.sort(y)
+                # Calcular la frecuencia acumulativa
+                y = np.arange(1, len(x_sorted) + 1) / len(x_sorted)
+                # Graficar la frecuencia acumulativa con líneas
+                self.ax_uncertainity.plot(x_sorted, y, color='blue', linestyle='-', marker='')
+                #Separador de miles
+                def formato_con_separador(valor, pos):
+                    if max(list(x_sorted))>10:
+                        return "{:,.0f}".format(valor)
+                    else:
+                        return "{:,.2f}".format(valor)
+                self.ax_uncertainity.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+                #Labels
+                self.ax_uncertainity.set_xlabel(output_column,size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_uncertainity.set_ylabel("Frequency",size = 14,family="arial",weight = "bold",color = "black")
+                # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+                self.canvas_uncertainity_graph.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
+                self.canvas_uncertainity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
+                #Draw canvas
+                self.canvas_uncertainity_graph.draw()
     
     def add_base_value_dialog_oat(self):
         """Method to add the base value to the dialog of sensitivity when using OAT"""
@@ -1903,6 +2139,18 @@ class qvfsmod:
                 text = fname[0]
             self.dlg_base.csv_results_oat.setText(text)
     
+    def browse_csv_uncertainity(self):
+        """Method to add csv of uncertainity results"""
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Uncertainity Analysis Results File",working_directory+"\\uncertainity\\output" , "CSV files (*.csv)")
+        if fname[0]!="":
+            #Put the relative path if the file is inside the folder
+            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
+                text = os.path.relpath(fname[0], working_directory)
+            else: #absolute path
+                text = fname[0]
+            self.dlg_base.csv_results_uncertainity.setText(text)
+    
     def browse_files_sensitivity_results(self):
         """Method to select the file for sensitivity analysis graph between the local files for Morris"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
@@ -1916,7 +2164,7 @@ class qvfsmod:
             self.dlg_base.csv_results_morris.setText(text)
     
     def show_graph_sensitivity_global(self):
-        """Method to add the graph of sensitivity analysis for Sobol"""
+        """Method to add the graph of global sensitivity analysis"""
         if not hasattr(self, 'canvas_sensitivity_graph'):
             # Si no existe, crear el canvas y añadirlo al layout
             self.canvas_sensitivity_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
@@ -2396,7 +2644,6 @@ class qvfsmod:
             
         #Save results in CSV
         path = self.obtain_direction_vfsmod(self.dlg_base.file_save_uncertainity.text())
-        print(self.results_sensitivity)
         with open(path, 'w') as f:
             f.write("Uncertainity analysis results" + '\n')
             string = f"Studied parameters:"
@@ -2420,7 +2667,6 @@ class qvfsmod:
                     f.write(','.join(map(str, row.values)) + '\n')
                 start[0]=start[0]+a
                 f.write("----------------------------------------------------------------------" + '\n')
-        print(values)
         
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)
@@ -2661,9 +2907,6 @@ class qvfsmod:
                 if not os.path.isabs(ikw): #relative path
                     ikw = os.path.join(os.path.dirname(ruta), ikw)
                 ikw = ikw.replace("\n", "") #take out the line jumps
-                print(type_input)
-                print("copiar",ikw)
-                print("pegar",ruta_pegar)
                 shutil.copyfile(ikw, ruta_pegar)
         #INP
         copy_paste("UH","inp")

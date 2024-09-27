@@ -1632,7 +1632,7 @@ QTableCornerButton::section {
 </string>
         </property>
         <property name="currentIndex">
-         <number>10</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="page_folder">
          <layout class="QGridLayout" name="gridLayout_16">
@@ -7749,10 +7749,271 @@ Solution Parameters</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>886</width>
-               <height>614</height>
+               <width>1157</width>
+               <height>597</height>
               </rect>
              </property>
+             <layout class="QGridLayout" name="gridLayout_96">
+              <item row="0" column="0">
+               <widget class="QFrame" name="frame_71">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_95">
+                 <item row="0" column="1">
+                  <layout class="QHBoxLayout" name="horizontalLayout_139">
+                   <item>
+                    <widget class="QLabel" name="label_143">
+                     <property name="text">
+                      <string>Uncertainity results file</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="csv_results_uncertainity"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="browse_uncertainity_csv">
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QFrame" name="frame_69">
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QVBoxLayout" name="verticalLayout_17">
+                    <item>
+                     <widget class="QLabel" name="label_73">
+                      <property name="text">
+                       <string>Outputs</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="runoff_source_mm_4">
+                      <property name="text">
+                       <string>Total Runoff from source (mm)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="runoff_source_m3_4">
+                      <property name="text">
+                       <string>Total Runoff from Source (m3)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="runoff_filter_mm_4">
+                      <property name="text">
+                       <string>Total Runoff out from Filter (mm)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="runoff_filter_m3_4">
+                      <property name="text">
+                       <string>Total Runoff out from Filter (m3)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="infiltration_filter_m3_4">
+                      <property name="text">
+                       <string>Total Infiltration in Filter (m3)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="sediment_input_4">
+                      <property name="text">
+                       <string>Mass Sediment Input to Filter (kg)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="concentration_sediment_4">
+                      <property name="text">
+                       <string>Concentration Sediment in Runoff from source Area (g/L)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="sediment_output_4">
+                      <property name="text">
+                       <string>Mass Sediment Output from Filter (kg)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="sediment_runoff_exit_4">
+                      <property name="text">
+                       <string>Concentration Sediment in Runoff exiting the Filter (g/L)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="sediment_delivery_4">
+                      <property name="text">
+                       <string>Sediment Delivery Ratio</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="runoff_delivery_4">
+                      <property name="text">
+                       <string>Runoff Delivery Ratio</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer name="verticalSpacer_15">
+                      <property name="orientation">
+                       <enum>Qt::Vertical</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>20</width>
+                        <height>40</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_138">
+                      <item>
+                       <widget class="QPushButton" name="pushButton_33">
+                        <property name="text">
+                         <string>Copy to Clipboard</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="pushButton_34">
+                        <property name="text">
+                         <string>Print</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="pushButton_35">
+                        <property name="text">
+                         <string>Edit</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="1" column="3">
+                  <widget class="QFrame" name="frame_68">
+                   <property name="minimumSize">
+                    <size>
+                     <width>460</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QFrame" name="frame_70">
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QVBoxLayout" name="verticalLayout_22">
+                    <item>
+                     <widget class="QLabel" name="label_74">
+                      <property name="text">
+                       <string>Plots</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="input_uncertainity">
+                      <property name="text">
+                       <string>Input frequency</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="input_uncertainity_cumulative">
+                      <property name="text">
+                       <string>Input cumulative frequency</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="output_uncertainity">
+                      <property name="text">
+                       <string>Output frequency</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QRadioButton" name="output_uncertainity_cumulative">
+                      <property name="text">
+                       <string>Output cumulative frequency</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer name="verticalSpacer_16">
+                      <property name="orientation">
+                       <enum>Qt::Vertical</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>20</width>
+                        <height>40</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QFrame" name="inputs_uncertainity">
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </widget>
           </item>
