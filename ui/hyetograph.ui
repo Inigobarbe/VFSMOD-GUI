@@ -13,6 +13,109 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QLabel {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 16px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+}
+
+QLineEdit {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+    background-color: #f0f0f0; /* Color de fondo del QLineEdit */
+    border: 1px solid #000000; /* Borde blanco */
+}
+
+QComboBox {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+    background-color: #cfd4da; /* Fondo oscuro del ComboBox */
+}
+
+QRadioButton {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+}
+
+QCheckBox {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+}
+
+/* Cambiar la fuente y estilo de los QPushButton */
+QPushButton {
+    font-family: 'Georgia'; /* Cambiar la fuente */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto negro */
+    background-color: #cfd4da; /* Fondo gris claro */
+    border: 1px solid #a1a6ad; /* Borde gris medio */
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 5px; /* Espaciado interno */
+}
+
+/* Estilo cuando el ratón pasa sobre el botón */
+QPushButton:hover {
+    color: #000000; /* Mantener el texto negro */
+    background-color: #b7bcc3; /* Fondo gris un poco más oscuro al pasar el mouse */
+}
+
+/* Estilo cuando el botón está presionado */
+QPushButton:pressed {
+    background-color: #a6acb3; /* Fondo ligeramente más oscuro al presionar */
+    color: #000000; /* Mantener el texto negro cuando se presiona */
+}
+
+
+
+/* Estilo general para QTableWidget y QTableView */
+QTableWidget, QTableView {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Tamaño de la fuente */
+    color: #000000; /* Color del texto negro */
+    background-color: #e6e9ed; /* Fondo gris claro para la tabla */
+    gridline-color: #a1a6ad; /* Color de las líneas de la tabla (gris medio) */
+    selection-background-color: #b7bcc3; /* Color de fondo cuando se selecciona una celda (gris suave) */
+    selection-color: #000000; /* Color del texto cuando la celda está seleccionada (negro) */
+}
+
+/* Estilo para el encabezado horizontal de la tabla */
+QHeaderView::section {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Tamaño de la fuente */
+    color: #000000; /* Color del texto negro */
+    background-color: #cfd4da; /* Fondo gris claro del encabezado */
+    border: 1px solid #a1a6ad; /* Borde gris medio entre las secciones */
+    padding: 4px; /* Espaciado interno en el encabezado */
+}
+
+/* Estilo para las celdas de la tabla al pasar el mouse */
+QTableWidget::item:hover, QTableView::item:hover {
+    background-color: #b7bcc3; /* Fondo gris suave al pasar el mouse */
+    color: #000000; /* Mantener el texto negro */
+}
+
+/* Estilo para las celdas cuando están seleccionadas */
+QTableWidget::item:selected, QTableView::item:selected {
+    background-color: #a6acb3; /* Fondo gris intermedio cuando está seleccionado */
+    color: #000000; /* Texto negro cuando está seleccionado */
+}
+
+/* Ajustar el tamaño de las celdas */
+QTableWidget::item, QTableView::item {
+    padding: 4px; /* Espaciado interno de las celdas */
+}
+
+/* Estilo para el borde inferior de la tabla */
+QTableCornerButton::section {
+    background-color: #cfd4da; /* Fondo del botón de esquina */
+    border: 1px solid #a1a6ad; /* Borde gris medio del botón de esquina */
+}</string>
+  </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <widget class="QFrame" name="frame">

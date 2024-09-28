@@ -6,12 +6,115 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>672</width>
-    <height>592</height>
+    <width>907</width>
+    <height>734</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QLabel {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 16px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+}
+
+QLineEdit {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+    background-color: #f0f0f0; /* Color de fondo del QLineEdit */
+    border: 1px solid #000000; /* Borde blanco */
+}
+
+QComboBox {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+    background-color: #cfd4da; /* Fondo oscuro del ComboBox */
+}
+
+QRadioButton {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+}
+
+QCheckBox {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+}
+
+/* Cambiar la fuente y estilo de los QPushButton */
+QPushButton {
+    font-family: 'Georgia'; /* Cambiar la fuente */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto negro */
+    background-color: #cfd4da; /* Fondo gris claro */
+    border: 1px solid #a1a6ad; /* Borde gris medio */
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 5px; /* Espaciado interno */
+}
+
+/* Estilo cuando el ratón pasa sobre el botón */
+QPushButton:hover {
+    color: #000000; /* Mantener el texto negro */
+    background-color: #b7bcc3; /* Fondo gris un poco más oscuro al pasar el mouse */
+}
+
+/* Estilo cuando el botón está presionado */
+QPushButton:pressed {
+    background-color: #a6acb3; /* Fondo ligeramente más oscuro al presionar */
+    color: #000000; /* Mantener el texto negro cuando se presiona */
+}
+
+
+
+/* Estilo general para QTableWidget y QTableView */
+QTableWidget, QTableView {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Tamaño de la fuente */
+    color: #000000; /* Color del texto negro */
+    background-color: #e6e9ed; /* Fondo gris claro para la tabla */
+    gridline-color: #a1a6ad; /* Color de las líneas de la tabla (gris medio) */
+    selection-background-color: #b7bcc3; /* Color de fondo cuando se selecciona una celda (gris suave) */
+    selection-color: #000000; /* Color del texto cuando la celda está seleccionada (negro) */
+}
+
+/* Estilo para el encabezado horizontal de la tabla */
+QHeaderView::section {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Tamaño de la fuente */
+    color: #000000; /* Color del texto negro */
+    background-color: #cfd4da; /* Fondo gris claro del encabezado */
+    border: 1px solid #a1a6ad; /* Borde gris medio entre las secciones */
+    padding: 4px; /* Espaciado interno en el encabezado */
+}
+
+/* Estilo para las celdas de la tabla al pasar el mouse */
+QTableWidget::item:hover, QTableView::item:hover {
+    background-color: #b7bcc3; /* Fondo gris suave al pasar el mouse */
+    color: #000000; /* Mantener el texto negro */
+}
+
+/* Estilo para las celdas cuando están seleccionadas */
+QTableWidget::item:selected, QTableView::item:selected {
+    background-color: #a6acb3; /* Fondo gris intermedio cuando está seleccionado */
+    color: #000000; /* Texto negro cuando está seleccionado */
+}
+
+/* Ajustar el tamaño de las celdas */
+QTableWidget::item, QTableView::item {
+    padding: 4px; /* Espaciado interno de las celdas */
+}
+
+/* Estilo para el borde inferior de la tabla */
+QTableCornerButton::section {
+    background-color: #cfd4da; /* Fondo del botón de esquina */
+    border: 1px solid #a1a6ad; /* Borde gris medio del botón de esquina */
+}</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_10">
    <item row="0" column="0">
@@ -24,8 +127,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>635</width>
-        <height>678</height>
+        <width>870</width>
+        <height>772</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_9">
@@ -104,7 +207,8 @@
            <widget class="QLabel" name="label_2">
             <property name="font">
              <font>
-              <pointsize>10</pointsize>
+              <family>Georgia</family>
+              <pointsize>-1</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
@@ -127,7 +231,8 @@
               <widget class="QLabel" name="label_3">
                <property name="font">
                 <font>
-                 <pointsize>9</pointsize>
+                 <family>Georgia</family>
+                 <pointsize>-1</pointsize>
                  <weight>75</weight>
                  <bold>true</bold>
                 </font>
@@ -141,6 +246,18 @@
               <layout class="QHBoxLayout" name="horizontalLayout">
                <item>
                 <widget class="QLabel" name="label_4">
+                 <property name="minimumSize">
+                  <size>
+                   <width>250</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>250</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>Vertical Saturated K, VKS</string>
                  </property>
@@ -148,13 +265,34 @@
                </item>
                <item>
                 <widget class="QLineEdit" name="line_vertical_ms">
+                 <property name="maximumSize">
+                  <size>
+                   <width>150</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>1.33E-05</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QLabel" name="label_5">
+                 <property name="minimumSize">
+                  <size>
+                   <width>207</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>207</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>m/s or</string>
                  </property>
@@ -164,6 +302,9 @@
                 <widget class="QLineEdit" name="line_vertical_cmh">
                  <property name="text">
                   <string>4.788</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
                  </property>
                 </widget>
                </item>
@@ -180,15 +321,37 @@
               <layout class="QHBoxLayout" name="horizontalLayout_2">
                <item>
                 <widget class="QLabel" name="label_7">
+                 <property name="minimumSize">
+                  <size>
+                   <width>250</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>250</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
-                  <string>Average Suction at the Wetting Front, Sav (m)</string>
+                  <string>Average Suction at the 
+Wetting Front, Sav (m)</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QLineEdit" name="line_average">
+                 <property name="maximumSize">
+                  <size>
+                   <width>150</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>0.37904</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
                  </property>
                 </widget>
                </item>
@@ -198,6 +361,18 @@
               <layout class="QHBoxLayout" name="horizontalLayout_3">
                <item>
                 <widget class="QLabel" name="label_8">
+                 <property name="minimumSize">
+                  <size>
+                   <width>207</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>207</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>Bottom Depth (cm)</string>
                  </property>
@@ -208,6 +383,19 @@
                  <property name="text">
                   <string>15</string>
                  </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QWidget" name="widget" native="true">
+                 <property name="minimumSize">
+                  <size>
+                   <width>38</width>
+                   <height>0</height>
+                  </size>
+                 </property>
                 </widget>
                </item>
               </layout>
@@ -216,6 +404,8 @@
               <widget class="QLabel" name="label_9">
                <property name="font">
                 <font>
+                 <family>Georgia</family>
+                 <pointsize>-1</pointsize>
                  <weight>75</weight>
                  <bold>true</bold>
                 </font>
@@ -229,6 +419,18 @@
               <layout class="QHBoxLayout" name="horizontalLayout_4">
                <item>
                 <widget class="QLabel" name="label_10">
+                 <property name="minimumSize">
+                  <size>
+                   <width>250</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>250</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>Initial Water Content, OI</string>
                  </property>
@@ -236,8 +438,17 @@
                </item>
                <item>
                 <widget class="QLineEdit" name="line_initial">
+                 <property name="maximumSize">
+                  <size>
+                   <width>150</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>0.125</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
                  </property>
                 </widget>
                </item>
@@ -247,6 +458,18 @@
               <layout class="QHBoxLayout" name="horizontalLayout_5">
                <item>
                 <widget class="QLabel" name="label_11">
+                 <property name="minimumSize">
+                  <size>
+                   <width>207</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>207</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>Saturated Water Content, OS</string>
                  </property>
@@ -256,6 +479,19 @@
                 <widget class="QLineEdit" name="line_saturated">
                  <property name="text">
                   <string>0.311</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QWidget" name="widget_2" native="true">
+                 <property name="minimumSize">
+                  <size>
+                   <width>38</width>
+                   <height>0</height>
+                  </size>
                  </property>
                 </widget>
                </item>
@@ -277,7 +513,8 @@
               <widget class="QLabel" name="label_14">
                <property name="font">
                 <font>
-                 <pointsize>9</pointsize>
+                 <family>Georgia</family>
+                 <pointsize>-1</pointsize>
                  <weight>75</weight>
                  <bold>true</bold>
                 </font>
@@ -291,6 +528,18 @@
               <layout class="QHBoxLayout" name="horizontalLayout_6">
                <item>
                 <widget class="QLabel" name="label_15">
+                 <property name="minimumSize">
+                  <size>
+                   <width>250</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>250</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>Vertical Saturated K, VKS</string>
                  </property>
@@ -298,13 +547,34 @@
                </item>
                <item>
                 <widget class="QLineEdit" name="line_vertical_ms_2">
+                 <property name="maximumSize">
+                  <size>
+                   <width>150</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>1.33E-05</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QLabel" name="label_16">
+                 <property name="minimumSize">
+                  <size>
+                   <width>207</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>207</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>m/s or</string>
                  </property>
@@ -314,6 +584,9 @@
                 <widget class="QLineEdit" name="line_vertical_cmh_2">
                  <property name="text">
                   <string>4.788</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
                  </property>
                 </widget>
                </item>
@@ -330,15 +603,37 @@
               <layout class="QHBoxLayout" name="horizontalLayout_7">
                <item>
                 <widget class="QLabel" name="label_18">
+                 <property name="minimumSize">
+                  <size>
+                   <width>250</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>250</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
-                  <string>Average Suction at the Wetting Front, Sav (m)</string>
+                  <string>Average Suction at the 
+Wetting Front, Sav (m)</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QLineEdit" name="line_average_2">
+                 <property name="maximumSize">
+                  <size>
+                   <width>150</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>0.37904</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
                  </property>
                 </widget>
                </item>
@@ -348,6 +643,18 @@
               <layout class="QHBoxLayout" name="horizontalLayout_8">
                <item>
                 <widget class="QLabel" name="label_19">
+                 <property name="minimumSize">
+                  <size>
+                   <width>207</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>207</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>Bottom Depth (cm)</string>
                  </property>
@@ -358,6 +665,19 @@
                  <property name="text">
                   <string>100</string>
                  </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QWidget" name="widget_3" native="true">
+                 <property name="minimumSize">
+                  <size>
+                   <width>38</width>
+                   <height>0</height>
+                  </size>
+                 </property>
                 </widget>
                </item>
               </layout>
@@ -366,6 +686,8 @@
               <widget class="QLabel" name="label_20">
                <property name="font">
                 <font>
+                 <family>Georgia</family>
+                 <pointsize>-1</pointsize>
                  <weight>75</weight>
                  <bold>true</bold>
                 </font>
@@ -379,6 +701,18 @@
               <layout class="QHBoxLayout" name="horizontalLayout_9">
                <item>
                 <widget class="QLabel" name="label_21">
+                 <property name="minimumSize">
+                  <size>
+                   <width>250</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>250</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>Initial Water Content, OI</string>
                  </property>
@@ -386,8 +720,17 @@
                </item>
                <item>
                 <widget class="QLineEdit" name="line_initial_2">
+                 <property name="maximumSize">
+                  <size>
+                   <width>150</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string> 0.125</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
                  </property>
                 </widget>
                </item>
@@ -397,6 +740,18 @@
               <layout class="QHBoxLayout" name="horizontalLayout_10">
                <item>
                 <widget class="QLabel" name="label_22">
+                 <property name="minimumSize">
+                  <size>
+                   <width>207</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>207</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>Saturated Water Content, OS</string>
                  </property>
@@ -406,6 +761,19 @@
                 <widget class="QLineEdit" name="line_saturated_2">
                  <property name="text">
                   <string>0.311</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QWidget" name="widget_4" native="true">
+                 <property name="minimumSize">
+                  <size>
+                   <width>38</width>
+                   <height>0</height>
+                  </size>
                  </property>
                 </widget>
                </item>
@@ -427,6 +795,18 @@
               <layout class="QHBoxLayout" name="horizontalLayout_14">
                <item>
                 <widget class="QLabel" name="label_12">
+                 <property name="minimumSize">
+                  <size>
+                   <width>250</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>250</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>Maximum Surface Storage, SM (m)</string>
                  </property>
@@ -434,10 +814,38 @@
                </item>
                <item>
                 <widget class="QLineEdit" name="line_maximum">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>150</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>0</string>
                  </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
                 </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_2">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
                </item>
               </layout>
              </item>
@@ -445,6 +853,18 @@
               <layout class="QHBoxLayout" name="horizontalLayout_15">
                <item>
                 <widget class="QLabel" name="label_13">
+                 <property name="minimumSize">
+                  <size>
+                   <width>250</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>250</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>Fraction of the filter where ponding is checked, (0&lt;=SCHK&lt;=1)</string>
                  </property>
@@ -452,10 +872,38 @@
                </item>
                <item>
                 <widget class="QLineEdit" name="line_fraction">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>150</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>1</string>
                  </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
                 </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_3">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
                </item>
               </layout>
              </item>
@@ -474,43 +922,6 @@
           <enum>QFrame::Raised</enum>
          </property>
          <layout class="QGridLayout" name="gridLayout_7">
-          <item row="0" column="0" colspan="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_12">
-            <item>
-             <widget class="QCheckBox" name="check_input">
-              <property name="text">
-               <string>Soil saturated hydraulic conductivity
-anisotropy ratio </string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="line_input">
-              <property name="text">
-               <string>-0.5</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="0" column="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_11">
-            <item>
-             <widget class="QLabel" name="label_23">
-              <property name="text">
-               <string>Water Table Depth, WTD (m)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="line_water_depth">
-              <property name="text">
-               <string>1.0</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
           <item row="2" column="0">
            <widget class="QFrame" name="frame_7">
             <property name="frameShape">
@@ -524,6 +935,8 @@ anisotropy ratio </string>
               <widget class="QLabel" name="label_24">
                <property name="font">
                 <font>
+                 <family>Georgia</family>
+                 <pointsize>-1</pointsize>
                  <weight>75</weight>
                  <bold>true</bold>
                 </font>
@@ -553,6 +966,50 @@ anisotropy ratio </string>
             </layout>
            </widget>
           </item>
+          <item row="0" column="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_11">
+            <item>
+             <widget class="QLabel" name="label_23">
+              <property name="text">
+               <string>Water Table Depth, WTD (m)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="line_water_depth">
+              <property name="text">
+               <string>1.0</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_26">
+            <property name="font">
+             <font>
+              <family>Georgia</family>
+              <pointsize>-1</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Soil Characteristic Curves</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QPushButton" name="show_parameters">
+            <property name="text">
+             <string>Show 
+Parameters</string>
+            </property>
+           </widget>
+          </item>
           <item row="2" column="1">
            <widget class="QFrame" name="frame_8">
             <property name="frameShape">
@@ -573,6 +1030,8 @@ anisotropy ratio </string>
               <widget class="QLabel" name="label_25">
                <property name="font">
                 <font>
+                 <family>Georgia</family>
+                 <pointsize>-1</pointsize>
                  <weight>75</weight>
                  <bold>true</bold>
                 </font>
@@ -602,26 +1061,64 @@ anisotropy ratio </string>
             </layout>
            </widget>
           </item>
-          <item row="2" column="2">
-           <widget class="QPushButton" name="show_parameters">
-            <property name="text">
-             <string>Show 
-Parameters</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="label_26">
-            <property name="font">
-             <font>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Soil Characteristic Curves</string>
-            </property>
-           </widget>
+          <item row="0" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_12">
+            <item>
+             <widget class="QCheckBox" name="check_input">
+              <property name="minimumSize">
+               <size>
+                <width>262</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>250</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Soil saturated hydraulic 
+conductivity anisotropy ratio </string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="line_input">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>150</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>-0.5</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>

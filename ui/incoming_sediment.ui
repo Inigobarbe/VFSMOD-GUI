@@ -6,12 +6,115 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>528</width>
-    <height>278</height>
+    <width>700</width>
+    <height>279</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QLabel {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 16px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+}
+
+QLineEdit {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+    background-color: #f0f0f0; /* Color de fondo del QLineEdit */
+    border: 1px solid #000000; /* Borde blanco */
+}
+
+QComboBox {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+    background-color: #cfd4da; /* Fondo oscuro del ComboBox */
+}
+
+QRadioButton {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+}
+
+QCheckBox {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+}
+
+/* Cambiar la fuente y estilo de los QPushButton */
+QPushButton {
+    font-family: 'Georgia'; /* Cambiar la fuente */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto negro */
+    background-color: #cfd4da; /* Fondo gris claro */
+    border: 1px solid #a1a6ad; /* Borde gris medio */
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 5px; /* Espaciado interno */
+}
+
+/* Estilo cuando el ratón pasa sobre el botón */
+QPushButton:hover {
+    color: #000000; /* Mantener el texto negro */
+    background-color: #b7bcc3; /* Fondo gris un poco más oscuro al pasar el mouse */
+}
+
+/* Estilo cuando el botón está presionado */
+QPushButton:pressed {
+    background-color: #a6acb3; /* Fondo ligeramente más oscuro al presionar */
+    color: #000000; /* Mantener el texto negro cuando se presiona */
+}
+
+
+
+/* Estilo general para QTableWidget y QTableView */
+QTableWidget, QTableView {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Tamaño de la fuente */
+    color: #000000; /* Color del texto negro */
+    background-color: #e6e9ed; /* Fondo gris claro para la tabla */
+    gridline-color: #a1a6ad; /* Color de las líneas de la tabla (gris medio) */
+    selection-background-color: #b7bcc3; /* Color de fondo cuando se selecciona una celda (gris suave) */
+    selection-color: #000000; /* Color del texto cuando la celda está seleccionada (negro) */
+}
+
+/* Estilo para el encabezado horizontal de la tabla */
+QHeaderView::section {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Tamaño de la fuente */
+    color: #000000; /* Color del texto negro */
+    background-color: #cfd4da; /* Fondo gris claro del encabezado */
+    border: 1px solid #a1a6ad; /* Borde gris medio entre las secciones */
+    padding: 4px; /* Espaciado interno en el encabezado */
+}
+
+/* Estilo para las celdas de la tabla al pasar el mouse */
+QTableWidget::item:hover, QTableView::item:hover {
+    background-color: #b7bcc3; /* Fondo gris suave al pasar el mouse */
+    color: #000000; /* Mantener el texto negro */
+}
+
+/* Estilo para las celdas cuando están seleccionadas */
+QTableWidget::item:selected, QTableView::item:selected {
+    background-color: #a6acb3; /* Fondo gris intermedio cuando está seleccionado */
+    color: #000000; /* Texto negro cuando está seleccionado */
+}
+
+/* Ajustar el tamaño de las celdas */
+QTableWidget::item, QTableView::item {
+    padding: 4px; /* Espaciado interno de las celdas */
+}
+
+/* Estilo para el borde inferior de la tabla */
+QTableCornerButton::section {
+    background-color: #cfd4da; /* Fondo del botón de esquina */
+    border: 1px solid #a1a6ad; /* Borde gris medio del botón de esquina */
+}</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="1" column="0">
@@ -67,6 +170,12 @@
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QLabel" name="label">
+          <property name="minimumSize">
+           <size>
+            <width>229</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
            <string>Incoming flow sediment
 concentration (g/cm^3)-Cl</string>
@@ -78,6 +187,9 @@ concentration (g/cm^3)-Cl</string>
           <property name="text">
            <string>0.0258</string>
           </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
          </widget>
         </item>
        </layout>
@@ -86,6 +198,12 @@ concentration (g/cm^3)-Cl</string>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
          <widget class="QLabel" name="label_4">
+          <property name="minimumSize">
+           <size>
+            <width>262</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
            <string>Porosity of deposited sediment
 (fraction -POR)</string>
@@ -97,6 +215,9 @@ concentration (g/cm^3)-Cl</string>
           <property name="text">
            <string>0.434</string>
           </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
          </widget>
         </item>
        </layout>
@@ -105,6 +226,12 @@ concentration (g/cm^3)-Cl</string>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <widget class="QLabel" name="label_2">
+          <property name="minimumSize">
+           <size>
+            <width>229</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
            <string>Incoming sediment particle class
 (NPART)</string>
@@ -116,6 +243,9 @@ concentration (g/cm^3)-Cl</string>
           <property name="text">
            <string>7</string>
           </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
          </widget>
         </item>
        </layout>
@@ -124,6 +254,12 @@ concentration (g/cm^3)-Cl</string>
        <layout class="QHBoxLayout" name="horizontalLayout_5">
         <item>
          <widget class="QLabel" name="label_5">
+          <property name="minimumSize">
+           <size>
+            <width>262</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
            <string>Portion of Particles from incoming
 sediment with diameter &gt; 0.0037 cm
@@ -136,6 +272,9 @@ sediment with diameter &gt; 0.0037 cm
           <property name="text">
            <string>1</string>
           </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
          </widget>
         </item>
        </layout>
@@ -144,6 +283,12 @@ sediment with diameter &gt; 0.0037 cm
        <layout class="QHBoxLayout" name="horizontalLayout_6">
         <item>
          <widget class="QLabel" name="label_6">
+          <property name="minimumSize">
+           <size>
+            <width>262</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
            <string>Sediment particle density (g/cm^3)
 - SG (read only if NPART = 7)</string>
@@ -155,6 +300,9 @@ sediment with diameter &gt; 0.0037 cm
           <property name="text">
            <string>2.6</string>
           </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
          </widget>
         </item>
        </layout>
@@ -163,6 +311,12 @@ sediment with diameter &gt; 0.0037 cm
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QLabel" name="label_3">
+          <property name="minimumSize">
+           <size>
+            <width>229</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
            <string>Sediment particle size, diameter
 d50 (cm) - DP (read only if 
@@ -174,6 +328,9 @@ NPART = 7)</string>
          <widget class="QLineEdit" name="line_size">
           <property name="text">
            <string>0.0023</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
           </property>
          </widget>
         </item>

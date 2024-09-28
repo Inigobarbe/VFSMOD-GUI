@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1224</width>
-    <height>672</height>
+    <height>709</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -1532,55 +1532,57 @@ QPushButton:checked {
          <string notr="true">QLabel {
     font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
     font-size: 16px; /* Cambiar el tamaño de la fuente */
-    color: #ffffff; /* Color del texto (blanco) */
+    color: #000000; /* Color del texto (blanco) */
 }
 
 QLineEdit {
     font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
     font-size: 14px; /* Cambiar el tamaño de la fuente */
-    color: #ffffff; /* Color del texto (blanco) */
+    color: #000000; /* Color del texto (blanco) */
     background-color: #f0f0f0; /* Color de fondo del QLineEdit */
-    border: 1px solid #ffffff; /* Borde blanco */
+    border: 1px solid #000000; /* Borde blanco */
 }
 
 QComboBox {
     font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
     font-size: 14px; /* Cambiar el tamaño de la fuente */
-    color: #ffffff; /* Color del texto (blanco) */
-    background-color: #7b8087; /* Fondo oscuro del ComboBox */
+    color: #000000; /* Color del texto (blanco) */
+    background-color: #cfd4da; /* Fondo oscuro del ComboBox */
 }
 
 QRadioButton {
     font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
     font-size: 14px; /* Cambiar el tamaño de la fuente */
-    color: #ffffff; /* Color del texto (blanco) */
+    color: #000000; /* Color del texto (blanco) */
 }
 
 QCheckBox {
     font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
     font-size: 14px; /* Cambiar el tamaño de la fuente */
-    color: #ffffff; /* Color del texto (blanco) */
+    color: #000000; /* Color del texto (blanco) */
 }
 
 /* Cambiar la fuente y estilo de los QPushButton */
 QPushButton {
     font-family: 'Georgia'; /* Cambiar la fuente */
     font-size: 14px; /* Cambiar el tamaño de la fuente */
-    color: #ffffff; /* Color del texto */
-    background-color: #7b8087; /* Fondo oscuro */
-    border: 1px solid #000000; /* Borde negro */
+    color: #000000; /* Color del texto negro */
+    background-color: #cfd4da; /* Fondo gris claro */
+    border: 1px solid #a1a6ad; /* Borde gris medio */
     border-radius: 5px; /* Bordes redondeados */
     padding: 5px; /* Espaciado interno */
 }
 
+/* Estilo cuando el ratón pasa sobre el botón */
 QPushButton:hover {
-    color: #ffffff; /* Cambiar el color del texto al pasar el mouse */
-    background-color: #ffffff; /* Fondo más claro al pasar el mouse */
+    color: #000000; /* Mantener el texto negro */
+    background-color: #b7bcc3; /* Fondo gris un poco más oscuro al pasar el mouse */
 }
 
+/* Estilo cuando el botón está presionado */
 QPushButton:pressed {
-    background-color: #2b3a4a; /* Fondo más oscuro al presionar */
-    color: #ffffff; /* Cambiar el color del texto a blanco cuando se presiona */
+    background-color: #a6acb3; /* Fondo ligeramente más oscuro al presionar */
+    color: #000000; /* Mantener el texto negro cuando se presiona */
 }
 
 
@@ -1589,33 +1591,33 @@ QPushButton:pressed {
 QTableWidget, QTableView {
     font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
     font-size: 14px; /* Tamaño de la fuente */
-    color: #ffffff; /* Color del texto (blanco) */
-    background-color: #7b8087; /* Fondo oscuro similar al QPushButton */
-    gridline-color: #ffffff; /* Color de las líneas de la tabla (blancas) */
-    selection-background-color: #2b3a4a; /* Color de fondo cuando se selecciona una celda */
-    selection-color: #ffffff; /* Color del texto cuando la celda está seleccionada */
+    color: #000000; /* Color del texto negro */
+    background-color: #e6e9ed; /* Fondo gris claro para la tabla */
+    gridline-color: #a1a6ad; /* Color de las líneas de la tabla (gris medio) */
+    selection-background-color: #b7bcc3; /* Color de fondo cuando se selecciona una celda (gris suave) */
+    selection-color: #000000; /* Color del texto cuando la celda está seleccionada (negro) */
 }
 
 /* Estilo para el encabezado horizontal de la tabla */
 QHeaderView::section {
     font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
     font-size: 14px; /* Tamaño de la fuente */
-    color: #ffffff; /* Color del texto */
-    background-color: #4a4f57; /* Fondo oscuro del encabezado */
-    border: 1px solid #000000; /* Borde negro entre las secciones */
+    color: #000000; /* Color del texto negro */
+    background-color: #cfd4da; /* Fondo gris claro del encabezado */
+    border: 1px solid #a1a6ad; /* Borde gris medio entre las secciones */
     padding: 4px; /* Espaciado interno en el encabezado */
 }
 
 /* Estilo para las celdas de la tabla al pasar el mouse */
 QTableWidget::item:hover, QTableView::item:hover {
-    background-color: #ffffff; /* Fondo más claro al pasar el mouse */
-    color: #2b3a4a; /* Color del texto al pasar el mouse (oscuro) */
+    background-color: #b7bcc3; /* Fondo gris suave al pasar el mouse */
+    color: #000000; /* Mantener el texto negro */
 }
 
 /* Estilo para las celdas cuando están seleccionadas */
 QTableWidget::item:selected, QTableView::item:selected {
-    background-color: #2b3a4a; /* Fondo más oscuro cuando está seleccionado */
-    color: #ffffff; /* Texto blanco cuando está seleccionado */
+    background-color: #a6acb3; /* Fondo gris intermedio cuando está seleccionado */
+    color: #000000; /* Texto negro cuando está seleccionado */
 }
 
 /* Ajustar el tamaño de las celdas */
@@ -1625,16 +1627,17 @@ QTableWidget::item, QTableView::item {
 
 /* Estilo para el borde inferior de la tabla */
 QTableCornerButton::section {
-    background-color: #7b8087; /* Fondo del botón de esquina */
-    border: 1px solid #000000; /* Borde del botón de esquina */
-}
-
-</string>
+    background-color: #cfd4da; /* Fondo del botón de esquina */
+    border: 1px solid #a1a6ad; /* Borde gris medio del botón de esquina */
+}</string>
         </property>
         <property name="currentIndex">
          <number>0</number>
         </property>
         <widget class="QWidget" name="page_folder">
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <layout class="QGridLayout" name="gridLayout_16">
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea">
@@ -1645,7 +1648,7 @@ QTableCornerButton::section {
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color: #354052</string>
+             <string notr="true"/>
             </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
@@ -1663,6 +1666,61 @@ QTableCornerButton::section {
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_7">
+              <item row="1" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_2">
+                <property name="spacing">
+                 <number>6</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_2">
+                  <property name="minimumSize">
+                   <size>
+                    <width>150</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>100</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>Project name:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="name_files">
+                  <property name="minimumSize">
+                   <size>
+                    <width>375</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>315</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_2">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
               <item row="0" column="0">
                <layout class="QHBoxLayout" name="horizontalLayout_3">
                 <property name="spacing">
@@ -1729,60 +1787,18 @@ QTableCornerButton::section {
                 </item>
                </layout>
               </item>
-              <item row="1" column="0">
-               <layout class="QHBoxLayout" name="horizontalLayout_2">
-                <property name="spacing">
-                 <number>6</number>
+              <item row="0" column="1">
+               <spacer name="horizontalSpacer_4">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
                 </property>
-                <item>
-                 <widget class="QLabel" name="label_2">
-                  <property name="minimumSize">
-                   <size>
-                    <width>150</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>16777215</width>
-                    <height>100</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Project name:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="name_files">
-                  <property name="minimumSize">
-                   <size>
-                    <width>375</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>315</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_2">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
              </layout>
             </widget>
@@ -1804,6 +1820,9 @@ QTableCornerButton::section {
          </layout>
         </widget>
         <widget class="QWidget" name="page_uh">
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <layout class="QGridLayout" name="gridLayout_26">
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea_4">
@@ -1814,7 +1833,7 @@ QTableCornerButton::section {
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color: #354052</string>
+             <string notr="true"/>
             </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
@@ -2752,7 +2771,7 @@ typical0.01-0.07</string>
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color: #354052</string>
+             <string notr="true"/>
             </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
@@ -2770,408 +2789,11 @@ typical0.01-0.07</string>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_24">
-              <item row="0" column="0">
-               <widget class="QFrame" name="frame_7">
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_11">
-                 <item row="0" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_4">
-                   <item>
-                    <widget class="QLabel" name="label_4">
-                     <property name="minimumSize">
-                      <size>
-                       <width>246</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>Filter Strip Project File:</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="line_project_vfsmod">
-                     <property name="maximumSize">
-                      <size>
-                       <width>315</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="browse_vfsmod_project">
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../button_icons.qrc">
-                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QFrame" name="frame_8">
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_12">
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_5">
-                   <property name="font">
-                    <font>
-                     <family>Georgia</family>
-                     <pointsize>-1</pointsize>
-                     <weight>75</weight>
-                     <bold>true</bold>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Input files</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_5">
-                   <item>
-                    <widget class="QLabel" name="label_6">
-                     <property name="minimumSize">
-                      <size>
-                       <width>246</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>Overland Flow Inputs</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="line_overland"/>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="edit_overland">
-                     <property name="text">
-                      <string>Edit</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="browse_overland">
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../button_icons.qrc">
-                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item row="2" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_6">
-                   <item>
-                    <widget class="QLabel" name="label_7">
-                     <property name="minimumSize">
-                      <size>
-                       <width>246</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>Infiltration - Soil Properties</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="line_infiltration"/>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="edit_infiltration">
-                     <property name="text">
-                      <string>Edit</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="browse_infiltration">
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../button_icons.qrc">
-                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item row="3" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_9">
-                   <item>
-                    <widget class="QLabel" name="label_10">
-                     <property name="minimumSize">
-                      <size>
-                       <width>246</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>Buffer Vegetation Properties</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="line_buffer"/>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="edit_buffer">
-                     <property name="text">
-                      <string>Edit</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="browse_buffer">
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../button_icons.qrc">
-                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item row="4" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_10">
-                   <item>
-                    <widget class="QLabel" name="label_11">
-                     <property name="minimumSize">
-                      <size>
-                       <width>246</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>Incoming Sediment Characteristics</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="line_incoming"/>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="edit_incoming">
-                     <property name="text">
-                      <string>Edit</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="browse_incoming">
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../button_icons.qrc">
-                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item row="5" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_11">
-                   <item>
-                    <widget class="QLabel" name="label_12">
-                     <property name="minimumSize">
-                      <size>
-                       <width>246</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>Storm Hyetograph</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="line_storm"/>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="edit_storm">
-                     <property name="text">
-                      <string>Edit</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="browse_storm">
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../button_icons.qrc">
-                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item row="6" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_12">
-                   <item>
-                    <widget class="QLabel" name="label_13">
-                     <property name="minimumSize">
-                      <size>
-                       <width>246</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>Source Area Storm Runoff</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="line_source"/>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="edit_source">
-                     <property name="text">
-                      <string>Edit</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="browse_source">
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../button_icons.qrc">
-                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item row="7" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_36">
-                   <item>
-                    <widget class="QLabel" name="label_quality_properties">
-                     <property name="minimumSize">
-                      <size>
-                       <width>246</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>Water Quality (Properties)</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="line_water"/>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="edit_water">
-                     <property name="text">
-                      <string>Edit</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="browse_water">
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../button_icons.qrc">
-                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
-              </item>
               <item row="3" column="0">
                <widget class="QPushButton" name="run_vfsmod">
                 <property name="text">
                  <string>Run This Project</string>
                 </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QFrame" name="frame_11">
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_15">
-                 <item row="0" column="0">
-                  <widget class="QCheckBox" name="water_quality">
-                   <property name="minimumSize">
-                    <size>
-                     <width>246</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>246</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Include Water Quality</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QComboBox" name="combo_water">
-                   <property name="minimumSize">
-                    <size>
-                     <width>204</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="2">
-                  <spacer name="horizontalSpacer_3">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
                </widget>
               </item>
               <item row="4" column="0">
@@ -3531,6 +3153,403 @@ typical0.01-0.07</string>
                 </layout>
                </widget>
               </item>
+              <item row="2" column="0">
+               <widget class="QFrame" name="frame_8">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_12">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_5">
+                   <property name="font">
+                    <font>
+                     <family>Georgia</family>
+                     <pointsize>-1</pointsize>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Input files</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <layout class="QHBoxLayout" name="horizontalLayout_5">
+                   <item>
+                    <widget class="QLabel" name="label_6">
+                     <property name="minimumSize">
+                      <size>
+                       <width>246</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Overland Flow Inputs</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="line_overland"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="edit_overland">
+                     <property name="text">
+                      <string>Edit</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="browse_overland">
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="2" column="0">
+                  <layout class="QHBoxLayout" name="horizontalLayout_6">
+                   <item>
+                    <widget class="QLabel" name="label_7">
+                     <property name="minimumSize">
+                      <size>
+                       <width>246</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Infiltration - Soil Properties</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="line_infiltration"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="edit_infiltration">
+                     <property name="text">
+                      <string>Edit</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="browse_infiltration">
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="3" column="0">
+                  <layout class="QHBoxLayout" name="horizontalLayout_9">
+                   <item>
+                    <widget class="QLabel" name="label_10">
+                     <property name="minimumSize">
+                      <size>
+                       <width>246</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Buffer Vegetation Properties</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="line_buffer"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="edit_buffer">
+                     <property name="text">
+                      <string>Edit</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="browse_buffer">
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="4" column="0">
+                  <layout class="QHBoxLayout" name="horizontalLayout_10">
+                   <item>
+                    <widget class="QLabel" name="label_11">
+                     <property name="minimumSize">
+                      <size>
+                       <width>246</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Incoming Sediment Characteristics</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="line_incoming"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="edit_incoming">
+                     <property name="text">
+                      <string>Edit</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="browse_incoming">
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="5" column="0">
+                  <layout class="QHBoxLayout" name="horizontalLayout_11">
+                   <item>
+                    <widget class="QLabel" name="label_12">
+                     <property name="minimumSize">
+                      <size>
+                       <width>246</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Storm Hyetograph</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="line_storm"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="edit_storm">
+                     <property name="text">
+                      <string>Edit</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="browse_storm">
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="6" column="0">
+                  <layout class="QHBoxLayout" name="horizontalLayout_12">
+                   <item>
+                    <widget class="QLabel" name="label_13">
+                     <property name="minimumSize">
+                      <size>
+                       <width>246</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Source Area Storm Runoff</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="line_source"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="edit_source">
+                     <property name="text">
+                      <string>Edit</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="browse_source">
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="7" column="0">
+                  <layout class="QHBoxLayout" name="horizontalLayout_36">
+                   <item>
+                    <widget class="QLabel" name="label_quality_properties">
+                     <property name="minimumSize">
+                      <size>
+                       <width>246</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Water Quality (Properties)</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="line_water"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="edit_water">
+                     <property name="text">
+                      <string>Edit</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="browse_water">
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QFrame" name="frame_11">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_15">
+                 <item row="0" column="0">
+                  <widget class="QCheckBox" name="water_quality">
+                   <property name="minimumSize">
+                    <size>
+                     <width>246</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>246</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Include Water Quality</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QComboBox" name="combo_water">
+                   <property name="minimumSize">
+                    <size>
+                     <width>204</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <spacer name="horizontalSpacer_3">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QFrame" name="frame_7">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_11">
+                 <item row="0" column="0">
+                  <layout class="QHBoxLayout" name="horizontalLayout_4">
+                   <item>
+                    <widget class="QLabel" name="label_4">
+                     <property name="minimumSize">
+                      <size>
+                       <width>246</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Filter Strip Project File:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="line_project_vfsmod">
+                     <property name="maximumSize">
+                      <size>
+                       <width>315</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="browse_vfsmod_project">
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+              </item>
              </layout>
             </widget>
            </widget>
@@ -3555,7 +3574,7 @@ typical0.01-0.07</string>
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea_6">
             <property name="styleSheet">
-             <string notr="true">background-color: #354052</string>
+             <string notr="true"/>
             </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
@@ -3569,7 +3588,7 @@ typical0.01-0.07</string>
                <x>0</x>
                <y>0</y>
                <width>888</width>
-               <height>616</height>
+               <height>653</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_29">
@@ -3611,6 +3630,9 @@ typical0.01-0.07</string>
                        <property name="text">
                         <string>0</string>
                        </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
                       </widget>
                      </item>
                     </layout>
@@ -3631,6 +3653,9 @@ typical0.01-0.07</string>
                       <widget class="QLineEdit" name="lineEdit_5">
                        <property name="text">
                         <string>0</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
                        </property>
                       </widget>
                      </item>
@@ -3653,6 +3678,9 @@ typical0.01-0.07</string>
                        <property name="text">
                         <string>0</string>
                        </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
                       </widget>
                      </item>
                     </layout>
@@ -3673,6 +3701,9 @@ typical0.01-0.07</string>
                       <widget class="QLineEdit" name="lineEdit_7">
                        <property name="text">
                         <string>0</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
                        </property>
                       </widget>
                      </item>
@@ -3695,6 +3726,9 @@ typical0.01-0.07</string>
                        <property name="text">
                         <string>0</string>
                        </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
                       </widget>
                      </item>
                     </layout>
@@ -3716,6 +3750,9 @@ typical0.01-0.07</string>
                        <property name="text">
                         <string>0</string>
                        </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
                       </widget>
                      </item>
                     </layout>
@@ -3736,6 +3773,9 @@ typical0.01-0.07</string>
                       <widget class="QLineEdit" name="lineEdit_10">
                        <property name="text">
                         <string>0</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
                        </property>
                       </widget>
                      </item>
@@ -3761,7 +3801,11 @@ typical0.01-0.07</string>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="start"/>
+                      <widget class="QLineEdit" name="start">
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </item>
@@ -3775,7 +3819,11 @@ typical0.01-0.07</string>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="end"/>
+                      <widget class="QLineEdit" name="end">
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </item>
@@ -3789,7 +3837,11 @@ typical0.01-0.07</string>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="increment"/>
+                      <widget class="QLineEdit" name="increment">
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </item>
@@ -4001,10 +4053,18 @@ typical0.01-0.07</string>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lower_length"/>
+                      <widget class="QLineEdit" name="lower_length">
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="lower_spacing"/>
+                      <widget class="QLineEdit" name="lower_spacing">
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </item>
@@ -4021,10 +4081,18 @@ typical0.01-0.07</string>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="upper_length"/>
+                      <widget class="QLineEdit" name="upper_length">
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="upper_spacing"/>
+                      <widget class="QLineEdit" name="upper_spacing">
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </item>
@@ -4041,10 +4109,18 @@ typical0.01-0.07</string>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="increment_length"/>
+                      <widget class="QLineEdit" name="increment_length">
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="increment_spacing"/>
+                      <widget class="QLineEdit" name="increment_spacing">
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </item>
@@ -4061,10 +4137,18 @@ typical0.01-0.07</string>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="base_length"/>
+                      <widget class="QLineEdit" name="base_length">
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="base_spacing"/>
+                      <widget class="QLineEdit" name="base_spacing">
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </item>
@@ -4158,7 +4242,7 @@ typical0.01-0.07</string>
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea_13">
             <property name="styleSheet">
-             <string notr="true">background-color: #354052</string>
+             <string notr="true"/>
             </property>
             <property name="widgetResizable">
              <bool>true</bool>
@@ -4169,7 +4253,7 @@ typical0.01-0.07</string>
                <x>0</x>
                <y>0</y>
                <width>886</width>
-               <height>614</height>
+               <height>651</height>
               </rect>
              </property>
             </widget>
@@ -4182,7 +4266,7 @@ typical0.01-0.07</string>
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea_7">
             <property name="styleSheet">
-             <string notr="true">background-color: #354052</string>
+             <string notr="true"/>
             </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
@@ -4195,8 +4279,8 @@ typical0.01-0.07</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>871</width>
-               <height>634</height>
+               <width>888</width>
+               <height>653</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_30">
@@ -4226,13 +4310,25 @@ typical0.01-0.07</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="new_maximum"/>
+                    <widget class="QLineEdit" name="new_maximum">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="min_maximum"/>
+                    <widget class="QLineEdit" name="min_maximum">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="max_maximum"/>
+                    <widget class="QLineEdit" name="max_maximum">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -4253,13 +4349,25 @@ typical0.01-0.07</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="new_length"/>
+                    <widget class="QLineEdit" name="new_length">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="min_length"/>
+                    <widget class="QLineEdit" name="min_length">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="max_length"/>
+                    <widget class="QLineEdit" name="max_length">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -4280,13 +4388,25 @@ typical0.01-0.07</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="new_manning"/>
+                    <widget class="QLineEdit" name="new_manning">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="min_manning"/>
+                    <widget class="QLineEdit" name="min_manning">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="max_manning"/>
+                    <widget class="QLineEdit" name="max_manning">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -4307,13 +4427,25 @@ typical0.01-0.07</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="new_vertical"/>
+                    <widget class="QLineEdit" name="new_vertical">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="min_vertical"/>
+                    <widget class="QLineEdit" name="min_vertical">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="max_vertical"/>
+                    <widget class="QLineEdit" name="max_vertical">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -4334,13 +4466,25 @@ typical0.01-0.07</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="new_fraction"/>
+                    <widget class="QLineEdit" name="new_fraction">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="min_fraction"/>
+                    <widget class="QLineEdit" name="min_fraction">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="max_fraction"/>
+                    <widget class="QLineEdit" name="max_fraction">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -4361,13 +4505,25 @@ typical0.01-0.07</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="new_initial"/>
+                    <widget class="QLineEdit" name="new_initial">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="min_initial"/>
+                    <widget class="QLineEdit" name="min_initial">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="max_initial"/>
+                    <widget class="QLineEdit" name="max_initial">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -4388,13 +4544,25 @@ typical0.01-0.07</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="new_slope"/>
+                    <widget class="QLineEdit" name="new_slope">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="min_slope"/>
+                    <widget class="QLineEdit" name="min_slope">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="max_slope"/>
+                    <widget class="QLineEdit" name="max_slope">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -4415,13 +4583,25 @@ typical0.01-0.07</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="new_saturated"/>
+                    <widget class="QLineEdit" name="new_saturated">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="min_saturated"/>
+                    <widget class="QLineEdit" name="min_saturated">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="max_saturated"/>
+                    <widget class="QLineEdit" name="max_saturated">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -4442,13 +4622,25 @@ typical0.01-0.07</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="new_average"/>
+                    <widget class="QLineEdit" name="new_average">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="min_average"/>
+                    <widget class="QLineEdit" name="min_average">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="max_average"/>
+                    <widget class="QLineEdit" name="max_average">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -4469,13 +4661,25 @@ typical0.01-0.07</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="new_width"/>
+                    <widget class="QLineEdit" name="new_width">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="min_width"/>
+                    <widget class="QLineEdit" name="min_width">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="max_width"/>
+                    <widget class="QLineEdit" name="max_width">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -5137,7 +5341,7 @@ Data File</string>
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea_2">
             <property name="styleSheet">
-             <string notr="true">background-color: #354052</string>
+             <string notr="true"/>
             </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
@@ -5151,7 +5355,7 @@ Data File</string>
                <x>0</x>
                <y>0</y>
                <width>893</width>
-               <height>599</height>
+               <height>636</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_71">
@@ -5231,13 +5435,25 @@ Data File</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="new_spacing"/>
+                    <widget class="QLineEdit" name="new_spacing">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="min_spacing"/>
+                    <widget class="QLineEdit" name="min_spacing">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="max_spacing"/>
+                    <widget class="QLineEdit" name="max_spacing">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -5258,13 +5474,25 @@ Data File</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="new_incoming"/>
+                    <widget class="QLineEdit" name="new_incoming">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="min_incoming"/>
+                    <widget class="QLineEdit" name="min_incoming">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="max_incoming"/>
+                    <widget class="QLineEdit" name="max_incoming">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -5285,13 +5513,25 @@ Data File</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="new_class"/>
+                    <widget class="QLineEdit" name="new_class">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="min_class"/>
+                    <widget class="QLineEdit" name="min_class">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="max_class"/>
+                    <widget class="QLineEdit" name="max_class">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -5312,13 +5552,25 @@ Data File</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="new_bare"/>
+                    <widget class="QLineEdit" name="new_bare">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="min_bare"/>
+                    <widget class="QLineEdit" name="min_bare">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="max_bare"/>
+                    <widget class="QLineEdit" name="max_bare">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -5339,13 +5591,25 @@ Data File</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="new_density"/>
+                    <widget class="QLineEdit" name="new_density">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="min_density"/>
+                    <widget class="QLineEdit" name="min_density">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="max_density"/>
+                    <widget class="QLineEdit" name="max_density">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -5366,13 +5630,25 @@ Data File</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="new_porosity"/>
+                    <widget class="QLineEdit" name="new_porosity">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="min_porosity"/>
+                    <widget class="QLineEdit" name="min_porosity">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="max_porosity"/>
+                    <widget class="QLineEdit" name="max_porosity">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -5393,13 +5669,25 @@ Data File</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="new_coarse"/>
+                    <widget class="QLineEdit" name="new_coarse">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="min_coarse"/>
+                    <widget class="QLineEdit" name="min_coarse">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="max_coarse"/>
+                    <widget class="QLineEdit" name="max_coarse">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -5420,13 +5708,25 @@ Data File</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="new_roughness"/>
+                    <widget class="QLineEdit" name="new_roughness">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="min_roughness"/>
+                    <widget class="QLineEdit" name="min_roughness">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="max_roughness"/>
+                    <widget class="QLineEdit" name="max_roughness">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -5447,13 +5747,25 @@ Data File</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="new_height"/>
+                    <widget class="QLineEdit" name="new_height">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="min_height"/>
+                    <widget class="QLineEdit" name="min_height">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="max_height"/>
+                    <widget class="QLineEdit" name="max_height">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -5996,7 +6308,7 @@ Data File</string>
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea_8">
             <property name="styleSheet">
-             <string notr="true">background-color: #354052</string>
+             <string notr="true"/>
             </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
@@ -6010,7 +6322,7 @@ Data File</string>
                <x>0</x>
                <y>0</y>
                <width>897</width>
-               <height>599</height>
+               <height>636</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_22">
@@ -6600,7 +6912,7 @@ Solution Parameters</string>
                       <x>0</x>
                       <y>0</y>
                       <width>290</width>
-                      <height>179</height>
+                      <height>216</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_79">
@@ -6625,7 +6937,7 @@ Solution Parameters</string>
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea_9">
             <property name="styleSheet">
-             <string notr="true">background-color: #354052</string>
+             <string notr="true"/>
             </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
@@ -6639,7 +6951,7 @@ Solution Parameters</string>
                <x>0</x>
                <y>0</y>
                <width>1002</width>
-               <height>599</height>
+               <height>636</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_43">
@@ -6939,7 +7251,7 @@ Solution Parameters</string>
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea_3">
             <property name="styleSheet">
-             <string notr="true">background-color: #354052</string>
+             <string notr="true"/>
             </property>
             <property name="widgetResizable">
              <bool>true</bool>
@@ -6950,7 +7262,7 @@ Solution Parameters</string>
                <x>0</x>
                <y>0</y>
                <width>1124</width>
-               <height>597</height>
+               <height>634</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_40">
@@ -7224,7 +7536,7 @@ Solution Parameters</string>
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea_10">
             <property name="styleSheet">
-             <string notr="true">background-color: #354052</string>
+             <string notr="true"/>
             </property>
             <property name="widgetResizable">
              <bool>true</bool>
@@ -7235,7 +7547,7 @@ Solution Parameters</string>
                <x>0</x>
                <y>0</y>
                <width>897</width>
-               <height>620</height>
+               <height>634</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_89">
@@ -7598,7 +7910,7 @@ Solution Parameters</string>
                       <x>0</x>
                       <y>0</y>
                       <width>290</width>
-                      <height>200</height>
+                      <height>214</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_86">
@@ -7739,7 +8051,7 @@ Solution Parameters</string>
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea_16">
             <property name="styleSheet">
-             <string notr="true">background-color: #354052</string>
+             <string notr="true"/>
             </property>
             <property name="widgetResizable">
              <bool>true</bool>
@@ -7750,7 +8062,7 @@ Solution Parameters</string>
                <x>0</x>
                <y>0</y>
                <width>1157</width>
-               <height>597</height>
+               <height>634</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_96">

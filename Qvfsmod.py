@@ -1200,39 +1200,39 @@ class qvfsmod:
         if self.dlg_base.specific.isChecked():
             for i in storms_time:
                 i.setEnabled(True)
-                i.setStyleSheet("background-color: #354052;")
+                i.setStyleSheet("background-color: #f0f0f0;")
             for k in storms_increment:
                 k.setEnabled(False)
-                k.setStyleSheet("background-color: lightgrey;")
+                k.setStyleSheet("background-color: #d9d9d9;")
         else:
             for i in storms_time:
                 i.setEnabled(False)
-                i.setStyleSheet("background-color: lightgrey;")
+                i.setStyleSheet("background-color: #d9d9d9;")
             for k in storms_increment:
                 k.setEnabled(True)
-                k.setStyleSheet("background-color: #354052;")
+                k.setStyleSheet("background-color: #f0f0f0;")
         #Vegetation and spacing
         if self.dlg_base.design_length.isChecked():
             for i in vfs:
                 i.setEnabled(True)
-                i.setStyleSheet("background-color: #354052;")
+                i.setStyleSheet("background-color: #f0f0f0;")
             for k in spacing:
                 k.setEnabled(False)
-                k.setStyleSheet("background-color: lightgrey;")
+                k.setStyleSheet("background-color: #d9d9d9;")
         elif self.dlg_base.design_spacing.isChecked():
             for i in vfs:
                 i.setEnabled(False)
-                i.setStyleSheet("background-color: lightgrey;")
+                i.setStyleSheet("background-color: #d9d9d9;")
             for k in spacing:
                 k.setEnabled(True)
-                k.setStyleSheet("background-color: #354052;")
+                k.setStyleSheet("background-color: #f0f0f0;")
         else:
             for i in vfs:
                 i.setEnabled(False)
-                i.setStyleSheet("background-color: lightgrey;")
+                i.setStyleSheet("background-color: #d9d9d9;")
             for k in spacing:
                 k.setEnabled(False)
-                k.setStyleSheet("background-color: lightgrey;")
+                k.setStyleSheet("background-color: #d9d9d9;")
     
     def show_calibration_buttons(self):
         """Method to add buttons to show calibration buttons and to show the dialog"""
@@ -4643,54 +4643,54 @@ class qvfsmod:
         """Method to draw the dialog in calibration of hydrology"""
         for i in self.hydrology_checks:
             if i[0][0].isChecked():#no is selected
-                i[1][0].setStyleSheet("background-color: lightgrey;")
+                i[1][0].setStyleSheet("background-color: #d9d9d9;")
                 i[1][0].setEnabled(False)
-                i[1][1].setStyleSheet("background-color: lightgrey;")
+                i[1][1].setStyleSheet("background-color: #d9d9d9;")
                 i[1][1].setEnabled(False)
-                i[1][2].setStyleSheet("background-color: lightgrey;")
+                i[1][2].setStyleSheet("background-color: #d9d9d9;")
                 i[1][2].setEnabled(False)
                 
             elif i[0][1].isChecked():#change is selected
-                i[1][0].setStyleSheet("background-color: #354052;")
+                i[1][0].setStyleSheet("background-color: #f0f0f0;")
                 i[1][0].setEnabled(True)
-                i[1][1].setStyleSheet("background-color: lightgrey;")
+                i[1][1].setStyleSheet("background-color: #d9d9d9;")
                 i[1][1].setEnabled(False)
-                i[1][2].setStyleSheet("background-color: lightgrey;")
+                i[1][2].setStyleSheet("background-color: #d9d9d9;")
                 i[1][2].setEnabled(False)
                 
             elif i[0][2].isChecked():#calibrate is selected
-                i[1][0].setStyleSheet("background-color: lightgrey;")
+                i[1][0].setStyleSheet("background-color: #d9d9d9;")
                 i[1][0].setEnabled(False)
-                i[1][1].setStyleSheet("background-color: #354052;")
+                i[1][1].setStyleSheet("background-color: #f0f0f0;")
                 i[1][1].setEnabled(True)
-                i[1][2].setStyleSheet("background-color: #354052;")
+                i[1][2].setStyleSheet("background-color: #f0f0f0;")
                 i[1][2].setEnabled(True)
             
     def draw_calibration_sedimentograph(self):
         """Method to draw the dialog in calibration of sedimentograph"""
         for i in self.sedimentograph_checks:
             if i[0][0].isChecked():#no is selected
-                i[1][0].setStyleSheet("background-color: lightgrey;")
+                i[1][0].setStyleSheet("background-color: #d9d9d9;")
                 i[1][0].setEnabled(False)
-                i[1][1].setStyleSheet("background-color: lightgrey;")
+                i[1][1].setStyleSheet("background-color: #d9d9d9;")
                 i[1][1].setEnabled(False)
-                i[1][2].setStyleSheet("background-color: lightgrey;")
+                i[1][2].setStyleSheet("background-color: #d9d9d9;")
                 i[1][2].setEnabled(False)
                 
             elif i[0][1].isChecked():#change is selected
-                i[1][0].setStyleSheet("background-color: #354052;")
+                i[1][0].setStyleSheet("background-color: #f0f0f0;")
                 i[1][0].setEnabled(True)
-                i[1][1].setStyleSheet("background-color: lightgrey;")
+                i[1][1].setStyleSheet("background-color: #d9d9d9;")
                 i[1][1].setEnabled(False)
-                i[1][2].setStyleSheet("background-color: lightgrey;")
+                i[1][2].setStyleSheet("background-color: #d9d9d9;")
                 i[1][2].setEnabled(False)
                 
             elif i[0][2].isChecked():#calibrate is selected
-                i[1][0].setStyleSheet("background-color: lightgrey;")
+                i[1][0].setStyleSheet("background-color: #d9d9d9;")
                 i[1][0].setEnabled(False)
-                i[1][1].setStyleSheet("background-color: #354052;")
+                i[1][1].setStyleSheet("background-color: #f0f0f0;")
                 i[1][1].setEnabled(True)
-                i[1][2].setStyleSheet("background-color: #354052;")
+                i[1][2].setStyleSheet("background-color: #f0f0f0;")
                 i[1][2].setEnabled(True)
                 
     def uncheck_length_spacing(self,parameter):
@@ -5536,17 +5536,17 @@ class qvfsmod:
             self.dlg_water_quality.line_koc.setReadOnly(True)
             self.dlg_water_quality.line_oc.setReadOnly(True)
             self.dlg_water_quality.line_kd.setReadOnly(False)
-            self.dlg_water_quality.line_koc.setStyleSheet("background-color: lightgrey;")
-            self.dlg_water_quality.line_oc.setStyleSheet("background-color: lightgrey;")
-            self.dlg_water_quality.line_kd.setStyleSheet("background-color: white;")
+            self.dlg_water_quality.line_koc.setStyleSheet("background-color: #d9d9d9;")
+            self.dlg_water_quality.line_oc.setStyleSheet("background-color: #d9d9d9;")
+            self.dlg_water_quality.line_kd.setStyleSheet("background-color: #f0f0f0;")
             
         else:
             self.dlg_water_quality.line_koc.setReadOnly(False)
             self.dlg_water_quality.line_oc.setReadOnly(False)
             self.dlg_water_quality.line_kd.setReadOnly(True)
-            self.dlg_water_quality.line_koc.setStyleSheet("background-color: white;")
-            self.dlg_water_quality.line_oc.setStyleSheet("background-color: white;")
-            self.dlg_water_quality.line_kd.setStyleSheet("background-color: lightgrey;")
+            self.dlg_water_quality.line_koc.setStyleSheet("background-color: #f0f0f0;")
+            self.dlg_water_quality.line_oc.setStyleSheet("background-color: #f0f0f0;")
+            self.dlg_water_quality.line_kd.setStyleSheet("background-color: #d9d9d9;")
             
             
     
@@ -5651,10 +5651,10 @@ class qvfsmod:
         if self.dlg_infiltration_soil.check_water_table.isChecked():
             self.dlg_infiltration_soil.frame_6.setVisible(True)
             #We change color of lineEdits that are not going to be modifiable
-            self.dlg_infiltration_soil.line_average.setStyleSheet("background-color: lightgrey;")
-            self.dlg_infiltration_soil.line_average_2.setStyleSheet("background-color: lightgrey;")
-            self.dlg_infiltration_soil.line_initial.setStyleSheet("background-color: lightgrey;")
-            self.dlg_infiltration_soil.line_initial_2.setStyleSheet("background-color: lightgrey;")
+            self.dlg_infiltration_soil.line_average.setStyleSheet("background-color: #d9d9d9;")
+            self.dlg_infiltration_soil.line_average_2.setStyleSheet("background-color: #d9d9d9;")
+            self.dlg_infiltration_soil.line_initial.setStyleSheet("background-color: #d9d9d9;")
+            self.dlg_infiltration_soil.line_initial_2.setStyleSheet("background-color: #d9d9d9;")
             #We put not modifiable
             self.dlg_infiltration_soil.line_average.setReadOnly(True)
             self.dlg_infiltration_soil.line_average_2.setReadOnly(True)
@@ -5664,10 +5664,10 @@ class qvfsmod:
         else:
             #We change color of lineEdits that are going to be modifiable
             self.dlg_infiltration_soil.frame_6.setVisible(False)
-            self.dlg_infiltration_soil.line_average.setStyleSheet("background-color: white;")
-            self.dlg_infiltration_soil.line_average_2.setStyleSheet("background-color: white;")
-            self.dlg_infiltration_soil.line_initial.setStyleSheet("background-color: white;")
-            self.dlg_infiltration_soil.line_initial_2.setStyleSheet("background-color: white;")
+            self.dlg_infiltration_soil.line_average.setStyleSheet("background-color: #f0f0f0;")
+            self.dlg_infiltration_soil.line_average_2.setStyleSheet("background-color: #f0f0f0;")
+            self.dlg_infiltration_soil.line_initial.setStyleSheet("background-color: #f0f0f0;")
+            self.dlg_infiltration_soil.line_initial_2.setStyleSheet("background-color: #f0f0f0;")
             #We put modifiable
             self.dlg_infiltration_soil.line_average.setReadOnly(False)
             self.dlg_infiltration_soil.line_average_2.setReadOnly(False)
