@@ -263,6 +263,7 @@ class qvfsmod:
             "Very fine sandy loam","Fine sandy loam","Sandy loam","Coarse sandy loam","Loamy very fine sand","Loamy fine sandy",
             "Loamy sand","Loamy coarse sand","Very fine sandy","Fine sand","Sand","Coarse sand"])
         self.dlg_base.combo_water.addItems(["1. Pesticides","2. Solute Transport","3. Multi-Reactive"])
+        self.dlg_water_quality.calculation.addItems(["No calculation","EU: FOCUS, k(kref,T, θ)","US-EPA,k=kref","k=(kref,T)","k=(kref, θ)"])
         
         #Add to combobox the values that could be graphed in the design process
         self.dlg_design_results_graph.column.addItems(["Total Runoff from source (mm)","Total Runoff from Source (m3)",
@@ -276,6 +277,16 @@ class qvfsmod:
         
         #Watch results from design process
         self.dlg_base.view_results_design.clicked.connect(self.show_design_results)
+        
+        #If no pesticide mass balance/residue calculation is requested then hide frame
+        self.dlg_water_quality.calculation.currentIndexChanged.connect(self.hide_mass_balance_frame)
+        self.dlg_water_quality.frame_5.hide()
+        #Modify table of water quality
+        self.dlg_water_quality.tableWidget.verticalHeader().setVisible(False)
+        self.dlg_water_quality.tableWidget.setColumnWidth(0, 100) 
+        self.dlg_water_quality.tableWidget.setColumnWidth(1, 230)
+        self.dlg_water_quality.tableWidget.setColumnWidth(2, 250)
+        self.dlg_water_quality.days.textChanged.connect(self.change_rows_water_quality)
         
         #If text of the outputs is changed then check if the output exist for UH
         lineEdits = [self.dlg_base.uh_file,self.dlg_base.uh_input,self.dlg_base.line_hydrograph,
@@ -331,6 +342,7 @@ class qvfsmod:
         self.dlg_base.browse_quality.setVisible(False)
         self.dlg_base.output_quality.setVisible(False)
         self.dlg_base.water_quality.stateChanged.connect(self.water_quality_dialog)
+        self.dlg_base.water_quality.stateChanged.connect(self.update_ikw_pesticide)
         
         #Enable second layer in infiltration - soil properties
         self.dlg_infiltration_soil.frame_5.setVisible(False)
@@ -357,7 +369,7 @@ class qvfsmod:
         self.dlg_base.edit_infiltration.clicked.connect(self.dlg_infiltration_soil_show)
         self.dlg_infiltration_soil.show_parameters.clicked.connect(self.show_soil_curves)
         self.dlg_base.edit_buffer.clicked.connect(self.dlg_buffer_properties_show)
-        self.dlg_base.edit_water.clicked.connect(self.dlg_water_quality.show)
+        self.dlg_base.edit_water.clicked.connect(self.dlg_water_quality_show)
         self.dlg_base.edit_incoming.clicked.connect(self.dlg_incoming_sediment_show)
         self.dlg_base.edit_storm.clicked.connect(self.add_hyetograph_to_dialog)
         self.dlg_base.edit_source.clicked.connect(self.add_hydrograph_to_dialog)
@@ -530,7 +542,7 @@ class qvfsmod:
         buttons = [self.dlg_base.all_parameters,self.dlg_base.rainfall_event,
             self.dlg_base.source_area,self.dlg_base.erosion_parameters,
             self.dlg_base.buffer_dimensions,self.dlg_base.kinematic_wave,
-            self.dlg_base.infiltration,self.dlg_base.buffer_vegetation,self.dlg_base.incoming_sediment]
+            self.dlg_base.infiltration,self.dlg_base.buffer_vegetation,self.dlg_base.incoming_sediment, self.dlg_base.water_quality_button]
         #Dictionary for the sensitivity parameters and information of the place where is saved {Name: [extension, row, column, uh/vfs]}
         self.sensitivity_parameters = {"Rainfall (mm)":["inp",0,0,"uh"],"Storm duration (h)":["inp",0,4,"uh"],"Curve number":["inp",0,1,"uh"],
                 "Source Area Length along the slope (m)":["inp",0,5,"uh"], "Source Area Slope as a fraction":["inp",0,6,"uh"],"Source Area (ha)":["inp",0,2,"uh"],
@@ -539,7 +551,8 @@ class qvfsmod:
                 "Number of Nodes":["ikw",2,1,"vfs"],"Time Weight Factor":["ikw",2,2,"vfs"],"Number of Elemental Nodal Points":["ikw",2,5,"vfs"],"Courant Number":["ikw",2,3,"vfs"],"Maximum Iterations":["ikw",2,4,"vfs"],
                 "Vertical Saturated K":["iso",0,0,"vfs"],"Average Suction at the Wetting Front":["iso",0,1,"vfs"],"Initial Water Content":["iso",0,3,"vfs"],"Saturated Water Content":["iso",0,2,"vfs"],"Maximum Surface Storage":["iso",0,4,"vfs"],"Fraction of the filter where ponding is checked":["iso",0,5,"vfs"],
                 "Spacing for grass stems (cm)":["igr",0,0,"vfs"],"Roughness-Grass Mannings n VN":["igr",0,1,"vfs"],"Height of grass (cm)":["igr",0,2,"vfs"],"Roughness-Bare surface Mannings n (Vn2)":["igr",0,3,"vfs"],
-                "Incoming flow sediment concentration (g/cm^3)":["isd",0,2,"vfs"],"Sediment particle size, diameter d50 (cm)":["isd",1,0,"vfs"],"Porosity of deposited sediment as a fraction":["isd",0,3,"vfs"],"Portion of Particles from incoming sediment \nwith diameter >0.0037 cm":["isd",0,1,"vfs"],"Sediment particle density (g/cm^3)":["isd",1,1,"vfs"]}
+                "Incoming flow sediment concentration (g/cm^3)":["isd",0,2,"vfs"],"Sediment particle size, diameter d50 (cm)":["isd",1,0,"vfs"],"Porosity of deposited sediment as a fraction":["isd",0,3,"vfs"],"Portion of Particles from incoming sediment \nwith diameter >0.0037 cm":["isd",0,1,"vfs"],"Sediment particle density (g/cm^3)":["isd",1,1,"vfs"],
+                "Linear sorption coefficient (L/Kg)":["iwq",1,1,"vfs"],"Adsorption coefficient (L/Kg)":["iwq",1,1,"vfs"],"Organic Carbon (%)":["iwq",1,2,"vfs"],"Clay in incoming sediment (%)":["iwq",2,0,"vfs"],"Pesticide half-life (days)":["iwq",4,1,"vfs"],"Topsoil field capacity (m3/m3)":["iwq",4,2,"vfs"],"Total pesticide mass per unit area source field (mg/m2)":["iwq",4,3,"vfs"],"Surface mixing layer thickness (cm)":["iwq",4,4,"vfs"]}
         for i in buttons:
             i.clicked.connect(lambda _, b = i:self.show_buttons_sensitivity_dialog(b))
         
@@ -547,7 +560,7 @@ class qvfsmod:
         buttons = [self.dlg_base.all_parameters_2,self.dlg_base.rainfall_event_2,
             self.dlg_base.source_area_2,self.dlg_base.erosion_parameters_2,
             self.dlg_base.buffer_dimensions_2,self.dlg_base.kinematic_wave_2,
-            self.dlg_base.infiltration_2,self.dlg_base.buffer_vegetation_2,self.dlg_base.incoming_sediment_2]
+            self.dlg_base.infiltration_2,self.dlg_base.buffer_vegetation_2,self.dlg_base.incoming_sediment_2, self.dlg_base.water_quality_button_2]
         for i in buttons:
             i.clicked.connect(lambda _, b = i:self.show_buttons_uncertainity_dialog(b))
         
@@ -655,6 +668,24 @@ class qvfsmod:
         
         #Add inputs to uncertainity results dialog
         self.dlg_base.csv_results_uncertainity.textChanged.connect(self.add_inputs_uncertainity_results)
+    
+    def change_rows_water_quality(self):
+        """Method to add/delete rows from the water quality dialog"""
+        try:
+            num_rows = int(self.dlg_water_quality.days.text())
+            self.dlg_water_quality.tableWidget.setRowCount(num_rows)
+            for row in range(num_rows):
+                item = QTableWidgetItem(str(row+1))
+                self.dlg_water_quality.tableWidget.setItem(row, 0, item) 
+        except:
+            pass
+        
+    def hide_mass_balance_frame(self):
+        """Method to show/hide frame for mass balance calculation in water quality"""
+        if self.dlg_water_quality.calculation.currentIndex() == 0:
+            self.dlg_water_quality.frame_5.hide()
+        else: 
+            self.dlg_water_quality.frame_5.show()
     
     def add_inputs_oat_results(self):
         """Method to add inputs into oat sensitivity results"""
@@ -1475,7 +1506,63 @@ class qvfsmod:
         #Show dialog
         self.dlg_incoming_sediment.show()
     
+    def dlg_water_quality_show(self):
+        """Method to add values of thw iwq file to dialog"""
+        path = self.obtain_direction_vfsmod(self.dlg_base.line_water.text())
+        if os.path.exists(path):
+            with open(path, 'r') as file:
+                lineas = file.readlines()
+            #Direct input
+            direct = self.add_values_dialog(lineas,1,0,self.dlg_water_quality.line_kd, True)
+            if direct == 1: self.dlg_water_quality.check_direct.setChecked(False)
+            else: self.dlg_water_quality.check_direct.setChecked(True)
+            #Kd
+            if direct == 0:
+                self.add_values_dialog(lineas,1,1,self.dlg_water_quality.line_kd)
+            #KOC
+            if direct == 1:
+                self.add_values_dialog(lineas,1,1,self.dlg_water_quality.line_koc)
+                #OC
+                self.add_values_dialog(lineas,1,2,self.dlg_water_quality.line_oc)
+            #Clay content
+            self.add_values_dialog(lineas,2,0,self.dlg_water_quality.line_clay)
+            try: #if igr line does not exist
+                #Pesticide mass balance
+                igr = self.add_values_dialog(lineas,3,0,self.dlg_water_quality.calculation, True)
+                self.dlg_water_quality.calculation.setCurrentIndex(int(igr))
+                if int(igr)>0:
+                    #Days
+                    self.add_values_dialog(lineas,4,0,self.dlg_water_quality.days)
+                    #Pesticide half life
+                    self.add_values_dialog(lineas,4,1,self.dlg_water_quality.half_life)
+                    #Top soil field capacity
+                    self.add_values_dialog(lineas,4,2,self.dlg_water_quality.field_capacity)
+                    #Pesticide mass entering filter
+                    self.add_values_dialog(lineas,4,3,self.dlg_water_quality.mass)
+                    #Surface mixing
+                    self.add_values_dialog(lineas,4,4,self.dlg_water_quality.thickness)
+                    #Air temperature and water content
+                    temperatures = re.findall(r"[-+]?\d*\.\d+|\d+", lineas[5].split("(")[0])
+                    water_contents = re.findall(r"[-+]?\d*\.\d+|\d+", lineas[6].split("(")[0])
+                    self.dlg_water_quality.tableWidget.setRowCount(len(temperatures))
+                    for fila in range(len(temperatures)):
+                        #Day
+                        item = QTableWidgetItem(str(fila+1))
+                        self.dlg_water_quality.tableWidget.setItem(fila, 0, item)
+                        item.setTextAlignment(Qt.AlignCenter)
+                        #Temperature
+                        item = QTableWidgetItem(temperatures[fila])
+                        self.dlg_water_quality.tableWidget.setItem(fila, 1, item)
+                        item.setTextAlignment(Qt.AlignCenter)
+                        #Water content
+                        item = QTableWidgetItem(water_contents[fila])
+                        self.dlg_water_quality.tableWidget.setItem(fila, 2, item)
+                        item.setTextAlignment(Qt.AlignCenter)
+            except:
+                pass
     
+        #Show dialog
+        self.dlg_water_quality.show()
         
     def add_values_dialog(self,lineas,row, column, lineEdit,retrieve =False):
         """Method to add values from the files to the dialog"""
@@ -3984,6 +4071,16 @@ class qvfsmod:
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                 boton.setSizePolicy(politica_tamaño)
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
+        
+        if button == self.dlg_base.water_quality_button:
+            parameters = ["Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Organic Carbon (%)","Clay in incoming sediment (%)","Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_19.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
     
     def show_buttons_uncertainity_dialog(self,button):
         """Method to add buttons to uncertainity dialog"""
@@ -4081,6 +4178,16 @@ class qvfsmod:
                 boton.setSizePolicy(politica_tamaño)
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
         
+        if button == self.dlg_base.water_quality_button_2:
+            parameters = ["Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Organic Carbon (%)","Clay in incoming sediment (%)","Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_21.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
+
     def add_parameter_name_sensitivity(self,name):
         """Method to add the parameter name to the lineEdit in sensitivity analysis dialog"""
         self.dlg_base.parameter_name.setText(name)
@@ -6128,6 +6235,8 @@ class qvfsmod:
         #Put to the front
         self.dlg_warning_message.raise_()
         self.dlg_warning_message.activateWindow()
+        #Adjust size
+        self.dlg_warning_message.adjustSize()
         #Show the dialog
         self.dlg_warning_message.show()
         
@@ -6355,6 +6464,13 @@ class qvfsmod:
         vkd = self.dlg_water_quality.line_kd.text()
         oc = self.dlg_water_quality.line_oc.text()
         clay = self.dlg_water_quality.line_clay.text()
+        days = self.dlg_water_quality.days.text()
+        half_life = self.dlg_water_quality.half_life.text()
+        field_capacity = self.dlg_water_quality.field_capacity.text()
+        mass = self.dlg_water_quality.mass.text()
+        thickness = self.dlg_water_quality.thickness.text()
+        
+        idg = int(self.dlg_water_quality.calculation.currentIndex())
         
         #Create file
         iwq_file =self.obtain_direction_vfsmod(self.dlg_base.line_water.text())
@@ -6365,13 +6481,60 @@ class qvfsmod:
             else:
                 linea_dos = f"{direct_input}	{vkd}; Kd proc.:0= Kd(L/Kg); 1=Koc (Koc L/Kg),%OC)"
             linea_tres = f"{clay}			; %Clay content (in sediment?)"
+            linea_cuatro = f"{idg} IDG"
+            linea_cinco = f"{days} {half_life} {field_capacity} {mass} {thickness} ndgday dgHalf(d) FC(m3/m3) dgPin(mg/m2) dgML(cm)"
+            linea_seis = ""
+            rows = self.dlg_water_quality.tableWidget.rowCount()
+            for row in range(rows):
+                item = self.dlg_water_quality.tableWidget.item(row, 1)
+                value = item.text()
+                linea_seis += f"{value} "
+            linea_seis += "(dgT(i),i=1,ndgday) (Celsius)"
+            
+            linea_siete = ""
+            for row in range(rows):
+                item = self.dlg_water_quality.tableWidget.item(row, 2)
+                value = item.text()
+                linea_siete += f"{value} "
+            linea_siete += "(dgTheta(i),i=1,ndgday (-)"
+            
             archivo.write(f"{linea_uno}\n")
             archivo.write(f"{linea_dos}\n")
             archivo.write(f"{linea_tres}\n")
+            
+            if idg !=0:
+                archivo.write(f"{linea_cuatro}\n")
+                archivo.write(f"{linea_cinco}\n")
+                archivo.write(f"{linea_seis}\n")
+                archivo.write(f"{linea_siete}\n")
+        
+        #Update ikw file to run pesticide module
+        self.update_ikw_pesticide()
         
         #Close dialog
         if close:
             self.dlg_water_quality.close()
+    
+    def update_ikw_pesticide(self):
+        """Method to update ikw when ikw file created"""
+        ikw_file =self.obtain_direction_vfsmod(self.dlg_base.line_overland.text())
+        if os.path.exists(ikw_file):
+            #See if pesticide option is selected
+            if self.dlg_base.water_quality.isChecked():execute_pesticide = 1
+            else: execute_pesticide = 0
+            with open(ikw_file, 'r') as file:
+                lineas = file.readlines()
+            row = 3+int(lineas[3])+1
+            numbers_str = lineas[row]
+            # Use regex to find all numbers in the string
+            matches = re.findall(r'\S+', numbers_str)
+            # Replace the specific number at the given index
+            matches[0] = str(execute_pesticide)
+            # Rebuild the string by replacing only the specific number
+            lineas[row] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+            with open(ikw_file, 'w') as archivo:
+                for i in lineas:
+                    archivo.write(i)
     
     def create_isd_file(self,close =False):
         """Method to create the .isd file"""
@@ -6573,6 +6736,7 @@ class qvfsmod:
         self.dlg_base.no_porosity.setChecked(True)
         self.dlg_base.no_class.setChecked(True)
         self.dlg_base.no_density.setChecked(True)
+
         
         
     def user_defined_storm_type(self):

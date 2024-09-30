@@ -1632,7 +1632,7 @@ QTableCornerButton::section {
 }</string>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="page_folder">
          <property name="styleSheet">
@@ -2002,7 +2002,7 @@ example 1%</string>
                      <property name="text">
                       <string>Soil Erodibility (K) Metric
 (t.ha.h)/(ha.MJ.mm);
-typical0.01-0.07</string>
+typical 0.01-0.07</string>
                      </property>
                     </widget>
                    </item>
@@ -2783,7 +2783,7 @@ typical0.01-0.07</string>
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>0</y>
+               <y>-60</y>
                <width>573</width>
                <height>713</height>
               </rect>
@@ -2805,20 +2805,60 @@ typical0.01-0.07</string>
                  <enum>QFrame::Raised</enum>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_10">
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_8">
-                   <property name="font">
-                    <font>
-                     <family>Georgia</family>
-                     <pointsize>-1</pointsize>
-                     <weight>75</weight>
-                     <bold>true</bold>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Output files</string>
-                   </property>
-                  </widget>
+                 <item row="3" column="0">
+                  <layout class="QHBoxLayout" name="horizontalLayout_33">
+                   <item>
+                    <widget class="QLabel" name="label_40">
+                     <property name="minimumSize">
+                      <size>
+                       <width>246</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Detailed Hydrographs</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="line_hydrograph_2"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="browse_hydrograph_2">
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../button_icons.qrc">
+                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="output_hydrograph_2">
+                     <property name="styleSheet">
+                      <string notr="true">QPushButton {
+                    background-color: #808080;
+                    border: none;
+                    color: white;
+                    padding: 7px 7px;
+                    text-align: center;
+                    text-decoration: none;
+                    font-size: 10px;
+                    margin: 0px 0px;
+                    cursor: pointer;
+                    border-radius: 12px;
+                }
+                QPushButton:hover {
+                    background-color: #45a049; /* Verde oscuro al pasar el ratón */
+                }</string>
+                     </property>
+                     <property name="text">
+                      <string>Output</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
                  </item>
                  <item row="1" column="0">
                   <layout class="QHBoxLayout" name="horizontalLayout_7">
@@ -2875,6 +2915,21 @@ typical0.01-0.07</string>
                    </item>
                   </layout>
                  </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_8">
+                   <property name="font">
+                    <font>
+                     <family>Georgia</family>
+                     <pointsize>-1</pointsize>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Output files</string>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="2" column="0">
                   <layout class="QHBoxLayout" name="horizontalLayout_8">
                    <item>
@@ -2930,10 +2985,10 @@ typical0.01-0.07</string>
                    </item>
                   </layout>
                  </item>
-                 <item row="3" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_33">
+                 <item row="6" column="0">
+                  <layout class="QHBoxLayout" name="horizontalLayout_37">
                    <item>
-                    <widget class="QLabel" name="label_40">
+                    <widget class="QLabel" name="label_water_summary">
                      <property name="minimumSize">
                       <size>
                        <width>246</width>
@@ -2941,15 +2996,15 @@ typical0.01-0.07</string>
                       </size>
                      </property>
                      <property name="text">
-                      <string>Detailed Hydrographs</string>
+                      <string>Water Quality Summary</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="line_hydrograph_2"/>
+                    <widget class="QLineEdit" name="line_quality"/>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="browse_hydrograph_2">
+                    <widget class="QPushButton" name="browse_quality">
                      <property name="text">
                       <string/>
                      </property>
@@ -2960,7 +3015,7 @@ typical0.01-0.07</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="output_hydrograph_2">
+                    <widget class="QPushButton" name="output_quality">
                      <property name="styleSheet">
                       <string notr="true">QPushButton {
                     background-color: #808080;
@@ -3071,61 +3126,6 @@ typical0.01-0.07</string>
                    </item>
                    <item>
                     <widget class="QPushButton" name="output_overall">
-                     <property name="styleSheet">
-                      <string notr="true">QPushButton {
-                    background-color: #808080;
-                    border: none;
-                    color: white;
-                    padding: 7px 7px;
-                    text-align: center;
-                    text-decoration: none;
-                    font-size: 10px;
-                    margin: 0px 0px;
-                    cursor: pointer;
-                    border-radius: 12px;
-                }
-                QPushButton:hover {
-                    background-color: #45a049; /* Verde oscuro al pasar el ratón */
-                }</string>
-                     </property>
-                     <property name="text">
-                      <string>Output</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item row="6" column="0">
-                  <layout class="QHBoxLayout" name="horizontalLayout_37">
-                   <item>
-                    <widget class="QLabel" name="label_water_summary">
-                     <property name="minimumSize">
-                      <size>
-                       <width>246</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>Water Quality Summary</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="line_quality"/>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="browse_quality">
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../button_icons.qrc">
-                       <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="output_quality">
                      <property name="styleSheet">
                       <string notr="true">QPushButton {
                     background-color: #808080;
@@ -6687,9 +6687,9 @@ Data File</string>
                     <property name="geometry">
                      <rect>
                       <x>0</x>
-                      <y>0</y>
+                      <y>-165</y>
                       <width>231</width>
-                      <height>346</height>
+                      <height>381</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_78">
@@ -6756,6 +6756,13 @@ Solution Parameters</string>
                         <widget class="QPushButton" name="incoming_sediment">
                          <property name="text">
                           <string>Incoming Sediment</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="water_quality_button">
+                         <property name="text">
+                          <string>Water Quality</string>
                          </property>
                         </widget>
                        </item>
@@ -7675,9 +7682,9 @@ Solution Parameters</string>
                     <property name="geometry">
                      <rect>
                       <x>0</x>
-                      <y>0</y>
+                      <y>-167</y>
                       <width>231</width>
-                      <height>346</height>
+                      <height>381</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_82">
@@ -7744,6 +7751,13 @@ Solution Parameters</string>
                         <widget class="QPushButton" name="incoming_sediment_2">
                          <property name="text">
                           <string>Incoming Sediment</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="water_quality_button_2">
+                         <property name="text">
+                          <string>Water Quality</string>
                          </property>
                         </widget>
                        </item>
@@ -8062,7 +8076,7 @@ Solution Parameters</string>
                <x>0</x>
                <y>0</y>
                <width>1157</width>
-               <height>634</height>
+               <height>453</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_96">
