@@ -1,3 +1,3 @@
-cd "C:/prueba\" 
-"C:\qvfsmod\executables\vfsm" proyecto.prj 
+cd "C:/borrar\" 
+"C:\qvfsmod\executables\vfsm" prueba.prj 
 Pause 

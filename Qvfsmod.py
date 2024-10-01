@@ -263,7 +263,11 @@ class qvfsmod:
             "Very fine sandy loam","Fine sandy loam","Sandy loam","Coarse sandy loam","Loamy very fine sand","Loamy fine sandy",
             "Loamy sand","Loamy coarse sand","Very fine sandy","Fine sand","Sand","Coarse sand"])
         self.dlg_base.combo_water.addItems(["1. Pesticides","2. Solute Transport","3. Multi-Reactive"])
-        self.dlg_water_quality.calculation.addItems(["No calculation","EU: FOCUS, k(kref,T, θ)","US-EPA,k=kref","k=(kref,T)","k=(kref, θ)"])
+        self.dlg_water_quality.calculation.addItems(["No calculation","Degradation changes with temperature and moisture","Degradation only","Degradation changes with temperature","Degradation changes with moisture"])
+        self.dlg_water_quality.trapping_equation.addItems(["Sabbagh","Refit Sabbagh","Mass balance","Chen"])
+        
+        self.dlg_water_quality.trapping_equation.currentIndexChanged.connect(self.update_pesticide_coefficients)
+        self.dlg_water_quality.frame_2.hide()
         
         #Add to combobox the values that could be graphed in the design process
         self.dlg_design_results_graph.column.addItems(["Total Runoff from source (mm)","Total Runoff from Source (m3)",
@@ -300,9 +304,8 @@ class qvfsmod:
         for i in lineEdits:
             i.textChanged.connect(self.check_vfsmod_output_exist)
         
-        #When project file of UH and VFSMOD changes then update the design project files
-        self.dlg_base.uh_file.textChanged.connect(self.update_design_project_files)
-        self.dlg_base.line_project_vfsmod.textChanged.connect(self.update_design_project_files)
+        #When project file name changes then update to design, calibration, sensitivity analysis and uncertainity
+        self.dlg_base.name_files.textChanged.connect(self.update_project_files)
         
         #Check if added outputs exist in UH and in VFSMOD
         self.check_uh_output_exist()
@@ -552,7 +555,7 @@ class qvfsmod:
                 "Vertical Saturated K":["iso",0,0,"vfs"],"Average Suction at the Wetting Front":["iso",0,1,"vfs"],"Initial Water Content":["iso",0,3,"vfs"],"Saturated Water Content":["iso",0,2,"vfs"],"Maximum Surface Storage":["iso",0,4,"vfs"],"Fraction of the filter where ponding is checked":["iso",0,5,"vfs"],
                 "Spacing for grass stems (cm)":["igr",0,0,"vfs"],"Roughness-Grass Mannings n VN":["igr",0,1,"vfs"],"Height of grass (cm)":["igr",0,2,"vfs"],"Roughness-Bare surface Mannings n (Vn2)":["igr",0,3,"vfs"],
                 "Incoming flow sediment concentration (g/cm^3)":["isd",0,2,"vfs"],"Sediment particle size, diameter d50 (cm)":["isd",1,0,"vfs"],"Porosity of deposited sediment as a fraction":["isd",0,3,"vfs"],"Portion of Particles from incoming sediment \nwith diameter >0.0037 cm":["isd",0,1,"vfs"],"Sediment particle density (g/cm^3)":["isd",1,1,"vfs"],
-                "Linear sorption coefficient (L/Kg)":["iwq",1,1,"vfs"],"Adsorption coefficient (L/Kg)":["iwq",1,1,"vfs"],"Organic Carbon (%)":["iwq",1,2,"vfs"],"Clay in incoming sediment (%)":["iwq",2,0,"vfs"],"Pesticide half-life (days)":["iwq",4,1,"vfs"],"Topsoil field capacity (m3/m3)":["iwq",4,2,"vfs"],"Total pesticide mass per unit area source field (mg/m2)":["iwq",4,3,"vfs"],"Surface mixing layer thickness (cm)":["iwq",4,4,"vfs"]}
+                "Linear sorption coefficient (L/Kg)":["iwq",1,1,"vfs"],"Adsorption coefficient (L/Kg)":["iwq",1,1,"vfs"],"Organic Carbon (%)":["iwq",1,2,"vfs"],"Clay in incoming sediment (%)":["iwq",2,0,"vfs"],"Pesticide half-life (days)":["iwq",4,1,"vfs"],"Topsoil field capacity (m3/m3)":["iwq",4,2,"vfs"],"Total pesticide mass per unit area source field (mg/m2)":["iwq",4,3,"vfs"],"Surface mixing layer thickness (cm)":["iwq",4,4,"vfs"],"Sabbagh a":["iwq",0,1,"vfs"],"Sabbagh b":["iwq",0,2,"vfs"],"Sabbagh c":["iwq",0,3,"vfs"],"Sabbagh d":["iwq",0,4,"vfs"],"Sabbagh e":["iwq",0,5,"vfs"],"Dispersion length of chemical (m)":["iwq",4,5,"vfs"],"Runoff remobilized VFS residue \nfrom last event (mg/m2)":["iwq",4,6,"vfs"]}
         for i in buttons:
             i.clicked.connect(lambda _, b = i:self.show_buttons_sensitivity_dialog(b))
         
@@ -647,6 +650,10 @@ class qvfsmod:
         
         #Add values of the inp file to the dialog
         self.dlg_base.uh_input.textChanged.connect(self.add_values_inp_dialog)
+        self.dlg_base.uh_file.textChanged.connect(self.add_values_uh_outputs_dialog)
+        
+        #Add filepaths to vfs when prj is changed
+        self.dlg_base.line_project_vfsmod.textChanged.connect(self.add_values_vfs_outputs_dialog)
         
         #Default values
         self.default_values()
@@ -1310,7 +1317,50 @@ class qvfsmod:
                 self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sensitivity_analysis)
             else:
                 self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sobol_results)
+    
+    def add_values_vfs_outputs_dialog(self):
+        """Method to add filepaths of prj"""
+        path = self.obtain_direction_vfsmod(self.dlg_base.line_project_vfsmod.text())
+        dictionary = {"ikw":self.dlg_base.line_overland,"iso":self.dlg_base.line_infiltration,"igr":self.dlg_base.line_buffer,
+            "isd":self.dlg_base.line_incoming,"irn":self.dlg_base.line_storm,"iro":self.dlg_base.line_source,"iwq":self.dlg_base.line_water,
+            "og1":self.dlg_base.line_sediment,"og2":self.dlg_base.line_flow,"ohy":self.dlg_base.line_hydrograph_2,
+            "osm":self.dlg_base.line_waterland,"osp":self.dlg_base.line_overall,"owq":self.dlg_base.line_quality}
 
+        if os.path.exists(path):  
+            try:
+                with open(path, 'r') as file:
+                    lineas = file.readlines() 
+                for i in lineas:
+                    if i[:3] in list(dictionary.keys()):
+                        ikw = i.split("=")[-1]
+                        if not os.path.isabs(ikw): #relative path
+                            ikw = os.path.join(os.path.dirname(ruta), ikw)
+                        ikw = ikw.replace("\n", "") #take out the line jumps
+                        text = os.path.relpath(ikw, self.dlg_base.working_directory_vfsmod.text())
+                        dictionary[i[:3]].setText(text)
+            except:
+                pass
+        
+    def add_values_uh_outputs_dialog(self):
+        """Method to add .lis output paths and inp to the dialog"""
+        path = self.obtain_direction_vfsmod(self.dlg_base.uh_file.text())
+        dictionary = {"inp":self.dlg_base.uh_input,"iro":self.dlg_base.line_hydrograph,"irn":self.dlg_base.line_hyetograph,
+            "isd":self.dlg_base.line_sedimentograph,"out":self.dlg_base.line_output_1,"hyt":self.dlg_base.line_output_2}
+
+        if os.path.exists(path):  
+            try:
+                with open(path, 'r') as file:
+                    lineas = file.readlines() 
+                for i in lineas:
+                    if i[:3] in list(dictionary.keys()):
+                        ikw = i.split("=")[-1]
+                        if not os.path.isabs(ikw): #relative path
+                            ikw = os.path.join(os.path.dirname(ruta), ikw)
+                        ikw = ikw.replace("\n", "") #take out the line jumps
+                        text = os.path.relpath(ikw, self.dlg_base.working_directory_vfsmod.text())
+                        dictionary[i[:3]].setText(text)
+            except:
+                pass
     
     def add_values_inp_dialog(self):
         """Method to add values of the inp to the dialog"""
@@ -4073,7 +4123,7 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
         
         if button == self.dlg_base.water_quality_button:
-            parameters = ["Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Organic Carbon (%)","Clay in incoming sediment (%)","Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)"]
+            parameters = ["Sabbagh a","Sabbagh b","Sabbagh c","Sabbagh d","Sabbagh e","Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Organic Carbon (%)","Clay in incoming sediment (%)","Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)","Dispersion length of chemical (m)","Runoff remobilized VFS residue \nfrom last event (mg/m2)"]
             for nombre in parameters:
                 boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
@@ -4179,7 +4229,7 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
         
         if button == self.dlg_base.water_quality_button_2:
-            parameters = ["Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Organic Carbon (%)","Clay in incoming sediment (%)","Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)"]
+            parameters = ["Sabbagh a","Sabbagh b","Sabbagh c","Sabbagh d","Sabbagh e","Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Organic Carbon (%)","Clay in incoming sediment (%)","Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)","Dispersion length of chemical (m)","Runoff remobilized VFS residue \nfrom last event (mg/m2)"]
             for nombre in parameters:
                 boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
                 boton.setObjectName(nombre)
@@ -5453,25 +5503,29 @@ class qvfsmod:
                     pass
         
 
-    def update_design_project_files(self):
+    def update_project_files(self):
         """Method to update the design project files when text changed"""
         #Obtain the absolute paths
-        direction_uh = self.obtain_direction_vfsmod(self.dlg_base.uh_file.text())
-        direction_vfsmod = self.obtain_direction_vfsmod(self.dlg_base.line_project_vfsmod.text())
+        project_name = self.dlg_base.name_files.text()
         
-        #Add the relative paths to dialog
-        working_directory_vfsmod = self.dlg_base.working_directory_vfsmod.text()
-        #We start with UH
-        if os.path.commonpath([os.path.normpath(direction_uh), os.path.normpath(working_directory_vfsmod)]) == os.path.normpath(working_directory_vfsmod):
-            self.dlg_base.design_uh_file.setText(os.path.relpath(direction_uh, working_directory_vfsmod))
-        else:
-            self.dlg_base.design_uh_file.setText(direction_uh)
-        
-        #Then VFS
-        if os.path.commonpath([os.path.normpath(direction_vfsmod), os.path.normpath(working_directory_vfsmod)]) == os.path.normpath(working_directory_vfsmod):
-            self.dlg_base.design_vfs_file.setText(os.path.relpath(direction_vfsmod, working_directory_vfsmod))
-        else:
-            self.dlg_base.design_vfs_file.setText(direction_vfsmod)
+        #Function to add text 
+        def add_text(line, process):
+            if process == "uh":
+                line.setText(project_name+".lis")
+            elif process == "vfs":
+                line.setText(project_name+".prj")
+        #Add paths to design
+        add_text(self.dlg_base.design_uh_file,"uh")
+        add_text(self.dlg_base.design_vfs_file,"vfs")
+        #Add paths to calibration
+        add_text(self.dlg_base.vfs_project,"vfs")
+        add_text(self.dlg_base.vfs_file,"vfs")
+        #Add paths to sensitivity analysis
+        add_text(self.dlg_base.uh_file_sensitivity,"uh")
+        add_text(self.dlg_base.vfs_file_sensitivity,"vfs")
+        #Add paths to uncertainity analysis
+        add_text(self.dlg_base.uh_file_uncertainity,"uh")
+        add_text(self.dlg_base.vfs_file_uncertainity,"vfs")
     
     def folder_creation_vfsmod(self):
         """Method to create folders if they not exist for the output"""
@@ -5509,7 +5563,7 @@ class qvfsmod:
             
         for i in lines:
             if not os.path.exists(self.obtain_direction_vfsmod(i.text())):
-                self.warning_message(f"Check input data\n{self.obtain_direction_vfsmod(i.text())} does not exist and is required to run VFSMOD")
+                self.warning_message(f"Check input data\n{self.obtain_direction_vfsmod(i.text())} does not exist and is required to run VFSMOD.")
                 self.end_execution = True
                 return 
     
@@ -5933,7 +5987,9 @@ class qvfsmod:
                 self.dlg_base.uh_file.setText(os.path.relpath(fname[0], working_directory))
             else: #absolute path
                 self.dlg_base.uh_file.setText(fname[0])
-        
+            #Update filepaths
+            self.add_values_uh_outputs_dialog()
+            
     def select_inp(self):
         """Method to select the .inp file among the local files"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
@@ -6022,7 +6078,9 @@ class qvfsmod:
                 self.dlg_base.line_project_vfsmod.setText(os.path.relpath(fname[0], working_directory))
             else: #absolute path
                 self.dlg_base.line_project_vfsmod.setText(fname[0])
-    
+            #Update filepaths
+            self.add_values_vfs_outputs_dialog()
+            
     def select_ikw(self):
         """Method to select the .ikw file among the local files"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
@@ -6460,6 +6518,12 @@ class qvfsmod:
         #Inputs
         if self.dlg_water_quality.check_direct.isChecked(): direct_input = 0
         else: direct_input = 1
+        IWQPRO = self.dlg_water_quality.trapping_equation.currentIndex()+1
+        a = self.dlg_water_quality.equation_a.text()
+        b = self.dlg_water_quality.equation_b.text()
+        c = self.dlg_water_quality.equation_c.text()
+        d = self.dlg_water_quality.equation_d.text()
+        e = self.dlg_water_quality.equation_e.text()
         vkoc = self.dlg_water_quality.line_koc.text()
         vkd = self.dlg_water_quality.line_kd.text()
         oc = self.dlg_water_quality.line_oc.text()
@@ -6469,20 +6533,22 @@ class qvfsmod:
         field_capacity = self.dlg_water_quality.field_capacity.text()
         mass = self.dlg_water_quality.mass.text()
         thickness = self.dlg_water_quality.thickness.text()
-        
+        dgld = self.dlg_water_quality.dispersion.text()
+        dgmres0 = self.dlg_water_quality.remobilised.text()
         idg = int(self.dlg_water_quality.calculation.currentIndex())
+        imob = self.dlg_water_quality.imob.text()
         
         #Create file
         iwq_file =self.obtain_direction_vfsmod(self.dlg_base.line_water.text())
         with open(iwq_file, 'w') as archivo:
-            linea_uno = "1			; Type of problem; 1=pesticide (Bayer)"
+            linea_uno = f"{IWQPRO} {a} {b} {c} {d} {e} ;IWQPRO CSAB(I)"
             if direct_input == 1:
                 linea_dos = f"{direct_input}	{vkoc}	{oc}	; Kd proc.:0= Kd(L/Kg); 1=Koc (Koc L/Kg),%OC)"
             else:
                 linea_dos = f"{direct_input}	{vkd}; Kd proc.:0= Kd(L/Kg); 1=Koc (Koc L/Kg),%OC)"
             linea_tres = f"{clay}			; %Clay content (in sediment?)"
             linea_cuatro = f"{idg} IDG"
-            linea_cinco = f"{days} {half_life} {field_capacity} {mass} {thickness} ndgday dgHalf(d) FC(m3/m3) dgPin(mg/m2) dgML(cm)"
+            linea_cinco = f"{days} {half_life} {field_capacity} {mass} {thickness} {dgld} {dgmres0}     ; ndgday dgHalf FC dgPin dgML dgLD dgmres0"
             linea_seis = ""
             rows = self.dlg_water_quality.tableWidget.rowCount()
             for row in range(rows):
@@ -6497,6 +6563,7 @@ class qvfsmod:
                 value = item.text()
                 linea_siete += f"{value} "
             linea_siete += "(dgTheta(i),i=1,ndgday (-)"
+            linea_ocho = f"{imob}                                       ; IMOB"
             
             archivo.write(f"{linea_uno}\n")
             archivo.write(f"{linea_dos}\n")
@@ -6507,6 +6574,7 @@ class qvfsmod:
                 archivo.write(f"{linea_cinco}\n")
                 archivo.write(f"{linea_seis}\n")
                 archivo.write(f"{linea_siete}\n")
+                archivo.write(f"{linea_ocho}\n")
         
         #Update ikw file to run pesticide module
         self.update_ikw_pesticide()
@@ -6885,6 +6953,13 @@ class qvfsmod:
         self.ax = self.canvas_design_graph.figure.subplots()
         self.line = None
         self.update_design_graph()
+    
+    def update_pesticide_coefficients(self):
+        """Method to Sabbagh et al. (2009)  equation coefficients"""
+        if self.dlg_water_quality.trapping_equation.currentIndex()==1:
+            self.dlg_water_quality.frame_2.show()
+        else:
+            self.dlg_water_quality.frame_2.hide()
     
     def update_design_graph(self):
         """Method to update the graph of the design"""

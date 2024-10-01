@@ -1632,7 +1632,7 @@ QTableCornerButton::section {
 }</string>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="page_folder">
          <property name="styleSheet">
@@ -2783,7 +2783,7 @@ typical 0.01-0.07</string>
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>-60</y>
+               <y>0</y>
                <width>573</width>
                <height>713</height>
               </rect>
@@ -6687,7 +6687,7 @@ Data File</string>
                     <property name="geometry">
                      <rect>
                       <x>0</x>
-                      <y>-165</y>
+                      <y>0</y>
                       <width>231</width>
                       <height>381</height>
                      </rect>
@@ -7682,7 +7682,7 @@ Solution Parameters</string>
                     <property name="geometry">
                      <rect>
                       <x>0</x>
-                      <y>-167</y>
+                      <y>0</y>
                       <width>231</width>
                       <height>381</height>
                      </rect>
