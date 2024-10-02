@@ -50,6 +50,8 @@ from ui.osm_results import osm_results
 from ui.ohy_results import ohy_results
 from ui.og2_results import og2_results
 from ui.og1_results import og1_results
+from ui.irn_results import irn_results
+from ui.iro_results import iro_results
 
 #Local libraries
 from libraries.SALib.sample import saltelli
@@ -67,6 +69,7 @@ import subprocess
 import shutil
 import numpy as np
 import re
+from scipy.interpolate import interp1d
 from itertools import product
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -148,6 +151,8 @@ class qvfsmod:
         self.dlg_ohy_results = ohy_results()
         self.dlg_og2_results = og2_results()
         self.dlg_og1_results = og1_results()
+        self.dlg_iro_results = iro_results()
+        self.dlg_irn_results = irn_results()
         
         
         #Stacked widget
@@ -247,6 +252,8 @@ class qvfsmod:
         self.dlg_base.name_files.textChanged.connect(self.update_file_names)
         
         self.dlg_design_results.graph.clicked.connect(self.dlg_design_results_graph.show)
+        self.dlg_design_results.design_file.textChanged.connect(self.update_design_results)
+        
         
         #Execution button
         self.dlg_base.execute.clicked.connect(self.uh_execution)
@@ -280,7 +287,7 @@ class qvfsmod:
         self.dlg_design_results_graph.column.currentIndexChanged.connect(self.update_design_graph)
         
         #Watch results from design process
-        self.dlg_base.view_results_design.clicked.connect(self.show_design_results)
+        self.dlg_base.view_results_design.clicked.connect(self.dlg_design_results.show)
         
         #If no pesticide mass balance/residue calculation is requested then hide frame
         self.dlg_water_quality.calculation.currentIndexChanged.connect(self.hide_mass_balance_frame)
@@ -316,8 +323,11 @@ class qvfsmod:
         
         #Show outputs
         #UH
-        self.dlg_base.output_hydrograph.clicked.connect(self.show_hydrograph)
-        self.dlg_base.output_hyetograph.clicked.connect(self.show_hyetograph)
+        self.dlg_base.output_hydrograph.clicked.connect(self.dlg_iro_results_show)
+        self.dlg_iro_results.graph.clicked.connect(self.show_hydrograph)
+        self.dlg_base.output_hyetograph.clicked.connect(self.dlg_irn_results_show)
+        self.dlg_irn_results.graph.clicked.connect(self.show_hyetograph)
+        
         self.dlg_base.output_sedimentograph.clicked.connect(self.show_sedimentograph_results)
         self.dlg_base.output_output1.clicked.connect(self.show_output_1_results)
         self.dlg_base.output_output2.clicked.connect(self.show_output_2_results)
@@ -463,6 +473,9 @@ class qvfsmod:
         
         #Show design graph 
         self.dlg_design_results.graph.clicked.connect(self.show_design_graph)
+        
+        #Browse csv results design
+        self.dlg_design_results.browse_design.clicked.connect(self.browse_design_results_csv)
         
         #In design disable lineEdits depending on selection
         self.dlg_base.specific.toggled.connect(self.disable_storm_line_edits_design)
@@ -2185,6 +2198,32 @@ class qvfsmod:
         #Show dialog
         self.dlg_sedimentograph_output.show()
     
+    def dlg_iro_results_show(self):
+        """Method to show iro results after UH execution"""
+        #Add text
+        path = self.obtain_direction_vfsmod(self.dlg_base.line_hydrograph.text())
+        with open(path, 'r') as file:
+            lineas = file.readlines()
+        contenido = ""
+        for i in lineas:
+            contenido+=i
+        self.dlg_iro_results.textEdit.setPlainText(contenido)
+        #Show dialog
+        self.dlg_iro_results.show()
+    
+    def dlg_irn_results_show(self):
+        """Method to show irn results after UH execution"""
+        #Add text
+        path = self.obtain_direction_vfsmod(self.dlg_base.line_hyetograph.text())
+        with open(path, 'r') as file:
+            lineas = file.readlines()
+        contenido = ""
+        for i in lineas:
+            contenido+=i
+        self.dlg_irn_results.textEdit.setPlainText(contenido)
+        #Show dialog
+        self.dlg_irn_results.show()
+        
     def show_output_1_results(self):
         """Method to show sedimentograph results after UH execution"""
         #Add text
@@ -2238,7 +2277,17 @@ class qvfsmod:
 
     
     
-
+    def browse_design_results_csv(self):
+        """Method tho browse csv with results of design"""
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        fname = QFileDialog.getOpenFileName(self.dlg_design_results, "Select Design Results File",working_directory , "CSV files (*.csv)")
+        if fname[0]!="":
+            #Put the relative path if the file is inside the folder
+            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
+                text = os.path.relpath(fname[0], working_directory)
+            else: #absolute path
+                text = fname[0]
+            self.dlg_design_results.design_file.setText(text)
     
     def browse_files_sensitivity_results_sobol(self):
         """Method to select the file for sensitivity analysis graph between the local files for Sobol"""
@@ -5025,27 +5074,35 @@ class qvfsmod:
         self.df_results_design.insert(0,"Rainfall (mm)",[x[0] for x in self.combinations_design])
 
         #Add results to a csv
-        self.df_results_design.to_csv(self.dlg_base.working_directory_vfsmod.text()+f"\\output\\{self.dlg_base.name_design_csv.text()}.csv", index=False, float_format='%.5f')
+        self.df_results_design.to_csv(self.obtain_direction_vfsmod(self.dlg_base.name_design_csv.text()), index=False, float_format='%.5f')
         
         #Close progress bar
         self.progress_metod(close = True)
         
+        #Add csv vile to the lineedit to finally put the results in the table
+        self.dlg_design_results.design_file.setText(self.dlg_base.name_design_csv.text())
+        
+        #Update resutls
+        self.update_design_results()
+        
         #Warning message
         self.warning_message("Design completed succesfully!")
     
-    def show_design_results(self):
+    def update_design_results(self):
         """Method to show the diaog and add outputs to table after the design execution"""
         #Add results to table
-        self.dlg_design_results.tableWidget.setRowCount(len(self.df_results_design))
-        self.dlg_design_results.tableWidget.setColumnCount(len(self.df_results_design.columns))
-        self.dlg_design_results.tableWidget.setHorizontalHeaderLabels(self.df_results_design.columns)
-        for fila in range(len(self.df_results_design)):
-            for columna in range(len(self.df_results_design.columns)):
-                item = QTableWidgetItem(str(self.df_results_design.iloc[fila,columna]))
-                self.dlg_design_results.tableWidget.setItem(fila, columna, item)
-                item.setTextAlignment(Qt.AlignCenter)
-        #Show dialog
-        self.dlg_design_results.show()
+        #Obtain data
+        path = self.obtain_direction_vfsmod(self.dlg_design_results.design_file.text())
+        if os.path.exists(path):
+            df = pd.read_csv(path)
+            self.dlg_design_results.tableWidget.setRowCount(len(df))
+            self.dlg_design_results.tableWidget.setColumnCount(len(df.columns))
+            self.dlg_design_results.tableWidget.setHorizontalHeaderLabels(df.columns)
+            for fila in range(len(df)):
+                for columna in range(len(df.columns)):
+                    item = QTableWidgetItem(str(df.iloc[fila,columna]))
+                    self.dlg_design_results.tableWidget.setItem(fila, columna, item)
+                    item.setTextAlignment(Qt.AlignCenter)
     
     def save_outputs_design(self):
         """Method to save outputs in the design process"""
@@ -6964,15 +7021,35 @@ class qvfsmod:
     def update_design_graph(self):
         """Method to update the graph of the design"""
         #Clear graph before drawing
+        #Obtain data
+        table = self.dlg_design_results.tableWidget
+        rows = table.rowCount()
+        columns = table.columnCount()
+        # Obtain name of columns
+        column_headers = []
+        for column in range(columns):
+            column_headers.append(table.horizontalHeaderItem(column).text())
+        #Save data
+        data = []
+        for row in range(rows):
+            row_data = []
+            for column in range(columns):
+                item = table.item(row, column)
+                row_data.append(float(item.text()) if item is not None else None)
+            data.append(row_data)
+
+        # Convertir la lista a un DataFrame
+        df = pd.DataFrame(data, columns=column_headers)
+        #Create graph
         self.ax.clear()
         column_y = [self.dlg_design_results_graph.column.itemText(i) for i in range(self.dlg_design_results_graph.column.count())][self.dlg_design_results_graph.column.currentIndex()]
-        column_x = self.df_results_design.columns[1]
-        x = self.df_results_design[column_x]
-        y = self.df_results_design[column_y]
-        values_per_storm = len(self.df_results_design)/len(np.unique(self.df_results_design["Rainfall (mm)"]))
-        list_range = list(range(0,len(self.df_results_design)+int(values_per_storm),int(values_per_storm)))
+        column_x = df.columns[1]
+        x = df[column_x]
+        y = df[column_y]
+        values_per_storm = len(df)/len(np.unique(df["Rainfall (mm)"]))
+        list_range = list(range(0,len(df)+int(values_per_storm),int(values_per_storm)))
         for i in range(len(list_range)-1):
-            self.ax.plot(x[list_range[i]:list_range[i+1]],y[list_range[i]:list_range[i+1]], linewidth=2, marker='o', markersize=4,label = f"{self.df_results_design['Rainfall (mm)'][list_range[i]]} mm")
+            self.ax.plot(x[list_range[i]:list_range[i+1]],y[list_range[i]:list_range[i+1]], linewidth=2, marker='o', markersize=4,label = f"{df['Rainfall (mm)'][list_range[i]]} mm")
 
         #Limits
         #self.ax.set_ylim([0, 1])
@@ -6997,6 +7074,42 @@ class qvfsmod:
             self.line = self.ax.axhline(y=value, color='r', linestyle='--', linewidth=2, zorder=1)
         except ValueError:
             value = 0
+        
+        #Add crossing point between threshold and lines and put it in a table
+        self.dlg_design_results_graph.tableWidget.setRowCount(1)
+        self.dlg_design_results_graph.tableWidget.setColumnCount(len(list_range)-1)
+        self.dlg_design_results_graph.tableWidget.setHorizontalHeaderLabels([f"{df['Rainfall (mm)'][list_range[i]]} mm" for i in range(len(list_range)-1)])
+        for i in range(len(list_range)-1):
+            try:
+                x_values = x[list_range[i]:list_range[i+1]]
+                y_values = y[list_range[i]:list_range[i+1]]
+                f = interp1d(y_values, x_values)
+                x_interpolado = str(round(f(value).item(),2))
+            except ValueError:
+                if column_x == "VFS Length (m)":
+                    if value>list(y_values)[0] and column_y!="Total Infiltration in Filter":
+                        x_interpolado = str(list(x_values)[0])
+                    elif value<list(y_values)[0] and column_y=="Total Infiltration in Filter":
+                        x_interpolado = str(list(x_values)[0])
+                    else:
+                        x_interpolado = "x"
+                elif column_x == "Vegetation Spacing (cm)":
+                    if value>list(y_values)[0] and column_y!="Total Infiltration in Filter":
+                        x_interpolado = str(list(x_values)[-1])
+                    elif value<list(y_values)[0] and column_y=="Total Infiltration in Filter":
+                        x_interpolado = str(list(x_values)[-1])
+                    else:
+                        x_interpolado = "x"
+                        
+            item = QTableWidgetItem(x_interpolado)
+            self.dlg_design_results_graph.tableWidget.setItem(0, i, item)
+            item.setTextAlignment(Qt.AlignCenter)
+            
+        #Change name of row
+        if column_x == "VFS Length (m)":
+            self.dlg_design_results_graph.tableWidget.setVerticalHeaderLabels(["VFS Length (m)"])
+        elif column_x == "Vegetation Spacing (cm)":
+            self.dlg_design_results_graph.tableWidget.setVerticalHeaderLabels(["Vegetation Spacing (cm)"])
         
        # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
         self.canvas_design_graph.figure.subplots_adjust(left=0.2, bottom=0.2)

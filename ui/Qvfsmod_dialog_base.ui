@@ -1845,7 +1845,7 @@ QTableCornerButton::section {
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>0</y>
+               <y>-313</y>
                <width>573</width>
                <height>966</height>
               </rect>
@@ -4193,7 +4193,7 @@ typical 0.01-0.07</string>
                  <item row="1" column="1">
                   <widget class="QLineEdit" name="name_design_csv">
                    <property name="text">
-                    <string>design_results</string>
+                    <string>output\design_results.csv</string>
                    </property>
                   </widget>
                  </item>
@@ -6958,7 +6958,7 @@ Solution Parameters</string>
                <x>0</x>
                <y>0</y>
                <width>1002</width>
-               <height>636</height>
+               <height>529</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_43">
@@ -7269,7 +7269,7 @@ Solution Parameters</string>
                <x>0</x>
                <y>0</y>
                <width>1124</width>
-               <height>634</height>
+               <height>453</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_40">
@@ -7554,7 +7554,7 @@ Solution Parameters</string>
                <x>0</x>
                <y>0</y>
                <width>897</width>
-               <height>634</height>
+               <height>620</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_89">
@@ -7924,7 +7924,7 @@ Solution Parameters</string>
                       <x>0</x>
                       <y>0</y>
                       <width>290</width>
-                      <height>214</height>
+                      <height>28</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_86">
