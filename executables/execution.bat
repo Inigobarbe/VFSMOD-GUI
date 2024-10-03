@@ -1,3 +1,3 @@
-cd "C:/borrar\" 
-"C:\qvfsmod\executables\uh" proyecto.lis 
+cd "C:/borrar\uncertainity\" 
+"C:\qvfsmod\executables\vfsm" uncertainity.prj 
 Pause 

@@ -52,6 +52,8 @@ from ui.og2_results import og2_results
 from ui.og1_results import og1_results
 from ui.irn_results import irn_results
 from ui.iro_results import iro_results
+from ui.owq_graph import owq_graph
+from ui.owq_graph_balance import owq_graph_balance
 
 #Local libraries
 from libraries.SALib.sample import saltelli
@@ -153,6 +155,8 @@ class qvfsmod:
         self.dlg_og1_results = og1_results()
         self.dlg_iro_results = iro_results()
         self.dlg_irn_results = irn_results()
+        self.dlg_owq_graph = owq_graph()
+        self.dlg_owq_graph_balance = owq_graph_balance()
         
         
         #Stacked widget
@@ -341,6 +345,9 @@ class qvfsmod:
         self.dlg_base.output_flow.clicked.connect(self.show_og2_results)
         self.dlg_base.output_sediment.clicked.connect(self.show_og1_results)
         
+        #Show owq results graph
+        self.dlg_owq_results.graph.clicked.connect(self.show_owq_graph)
+        self.dlg_owq_results.balance_graph.clicked.connect(self.show_owq_graph_balance)
         
         #Disable combobox of water quality and add condition to set enable it. Same with the rest of the widgets
         self.dlg_base.combo_water.setVisible(False)
@@ -563,12 +570,12 @@ class qvfsmod:
         self.sensitivity_parameters = {"Rainfall (mm)":["inp",0,0,"uh"],"Storm duration (h)":["inp",0,4,"uh"],"Curve number":["inp",0,1,"uh"],
                 "Source Area Length along the slope (m)":["inp",0,5,"uh"], "Source Area Slope as a fraction":["inp",0,6,"uh"],"Source Area (ha)":["inp",0,2,"uh"],
                 "Soil erodibility (K)":["inp",3,0,"uh"],"Percent organic matter":["inp",5,0,"uh"],"Crop factor":["inp",3,1,"uh"],"Particle Class Diameter":["inp",3,3,"uh"],"Practice Factor":["inp",3,2,"uh"],
-                "Buffer length (m)":["ikw",2,0,"vfs"],"Width of the Strip (m)":["ikw",1,0,"vfs"],"Filter Manning n (RNA, s/m^1/3)":["ikw","nan","nan","vfs"],"Average Filter Slope":["ikw","nan","nan","vfs"],
+                "Buffer length (m)":["ikw",2,0,"vfs"],"Width of the Strip (m)":["ikw",1,0,"vfs"],"Filter Manning n (RNA s/m^1/3)":["ikw","nan","nan","vfs"],"Average Filter Slope":["ikw","nan","nan","vfs"],
                 "Number of Nodes":["ikw",2,1,"vfs"],"Time Weight Factor":["ikw",2,2,"vfs"],"Number of Elemental Nodal Points":["ikw",2,5,"vfs"],"Courant Number":["ikw",2,3,"vfs"],"Maximum Iterations":["ikw",2,4,"vfs"],
                 "Vertical Saturated K":["iso",0,0,"vfs"],"Average Suction at the Wetting Front":["iso",0,1,"vfs"],"Initial Water Content":["iso",0,3,"vfs"],"Saturated Water Content":["iso",0,2,"vfs"],"Maximum Surface Storage":["iso",0,4,"vfs"],"Fraction of the filter where ponding is checked":["iso",0,5,"vfs"],
                 "Spacing for grass stems (cm)":["igr",0,0,"vfs"],"Roughness-Grass Mannings n VN":["igr",0,1,"vfs"],"Height of grass (cm)":["igr",0,2,"vfs"],"Roughness-Bare surface Mannings n (Vn2)":["igr",0,3,"vfs"],
-                "Incoming flow sediment concentration (g/cm^3)":["isd",0,2,"vfs"],"Sediment particle size, diameter d50 (cm)":["isd",1,0,"vfs"],"Porosity of deposited sediment as a fraction":["isd",0,3,"vfs"],"Portion of Particles from incoming sediment \nwith diameter >0.0037 cm":["isd",0,1,"vfs"],"Sediment particle density (g/cm^3)":["isd",1,1,"vfs"],
-                "Linear sorption coefficient (L/Kg)":["iwq",1,1,"vfs"],"Adsorption coefficient (L/Kg)":["iwq",1,1,"vfs"],"Organic Carbon (%)":["iwq",1,2,"vfs"],"Clay in incoming sediment (%)":["iwq",2,0,"vfs"],"Pesticide half-life (days)":["iwq",4,1,"vfs"],"Topsoil field capacity (m3/m3)":["iwq",4,2,"vfs"],"Total pesticide mass per unit area source field (mg/m2)":["iwq",4,3,"vfs"],"Surface mixing layer thickness (cm)":["iwq",4,4,"vfs"],"Sabbagh a":["iwq",0,1,"vfs"],"Sabbagh b":["iwq",0,2,"vfs"],"Sabbagh c":["iwq",0,3,"vfs"],"Sabbagh d":["iwq",0,4,"vfs"],"Sabbagh e":["iwq",0,5,"vfs"],"Dispersion length of chemical (m)":["iwq",4,5,"vfs"],"Runoff remobilized VFS residue \nfrom last event (mg/m2)":["iwq",4,6,"vfs"]}
+                "Incoming flow sediment concentration (g/cm^3)":["isd",0,2,"vfs"],"Sediment particle size diameter d50 (cm)":["isd",1,0,"vfs"],"Porosity of deposited sediment as a fraction":["isd",0,3,"vfs"],"Portion of Particles from incoming sediment \nwith diameter >0.0037 cm":["isd",0,1,"vfs"],"Sediment particle density (g/cm^3)":["isd",1,1,"vfs"],
+                "Linear sorption coefficient (L/Kg)":["iwq",1,1,"vfs"],"Adsorption coefficient (L/Kg)":["iwq",1,1,"vfs"],"Organic Carbon (%)":["iwq",1,2,"vfs"],"Clay in incoming sediment (%)":["iwq",2,0,"vfs"],"Pesticide half-life (days)":["iwq",4,1,"vfs"],"Topsoil field capacity (m3/m3)":["iwq",4,2,"vfs"],"Total pesticide mass per unit area source field (mg/m2)":["iwq",4,3,"vfs"],"Surface mixing layer thickness (cm)":["iwq",4,4,"vfs"],"Dispersion length of chemical (m)":["iwq",4,5,"vfs"],"Runoff remobilized VFS residue \nfrom last event (mg/m2)":["iwq",4,6,"vfs"]}
         for i in buttons:
             i.clicked.connect(lambda _, b = i:self.show_buttons_sensitivity_dialog(b))
         
@@ -633,8 +640,7 @@ class qvfsmod:
             self.dlg_base.infiltration_filter_m3_4,self.dlg_base.sediment_input_4,
             self.dlg_base.concentration_sediment_4,self.dlg_base.sediment_output_4,
             self.dlg_base.sediment_runoff_exit_4,self.dlg_base.sediment_delivery_4,
-            self.dlg_base.runoff_delivery_4,
-            self.dlg_base.input_uncertainity,self.dlg_base.output_uncertainity,self.dlg_base.input_uncertainity_cumulative,self.dlg_base.output_uncertainity_cumulative]
+            self.dlg_base.runoff_delivery_4]
         for i in check_boxes:
             i.toggled.connect(lambda checked, rb=i: self.update_graph_uncertainity() if checked else None)
         
@@ -653,10 +659,6 @@ class qvfsmod:
         self.dlg_base.vfs_file_sensitivity.textChanged.connect(self.add_base_value_dialog_oat)
         self.dlg_base.parameter_name.textChanged.connect(self.add_base_value_dialog_oat)
         
-        #Same for uncertainity
-        self.dlg_base.uh_file_uncertainity.textChanged.connect(self.add_base_value_dialog_uncertainity)
-        self.dlg_base.vfs_file_uncertainity.textChanged.connect(self.add_base_value_dialog_uncertainity)
-        self.dlg_base.parameter_name_uncertainity.textChanged.connect(self.add_base_value_dialog_uncertainity)
         
         #Disable the ability to modify the timestep of the user defined storm and center items
         self.set_timestep_non_editable()
@@ -686,8 +688,8 @@ class qvfsmod:
         #Add inputs to OAT results dialog
         self.dlg_base.csv_results_oat.textChanged.connect(self.add_inputs_oat_results)
         
-        #Add inputs to uncertainity results dialog
-        self.dlg_base.csv_results_uncertainity.textChanged.connect(self.add_inputs_uncertainity_results)
+        #Update uncertainity graph
+        self.dlg_base.csv_results_uncertainity.textChanged.connect(self.update_graph_uncertainity)
     
     def change_rows_water_quality(self):
         """Method to add/delete rows from the water quality dialog"""
@@ -749,47 +751,6 @@ class qvfsmod:
             except:
                 pass
     
-    def add_inputs_uncertainity_results(self):
-        """Method to add inputs into uncertainity sensitivity results"""
-        #First delete previous layout if it exits
-        if self.dlg_base.inputs_uncertainity.layout() is not None:
-            for i in reversed(range(self.dlg_base.inputs_uncertainity.layout().count())): 
-                widget = self.dlg_base.inputs_uncertainity.layout().itemAt(i).widget()
-                if widget is not None: 
-                    widget.deleteLater()  # Eliminar el widget
-            self.dlg_base.inputs_uncertainity.layout().deleteLater()
-        #Then create
-        if os.path.exists(self.obtain_direction_vfsmod(self.dlg_base.csv_results_uncertainity.text())):
-            try:
-                layout = QVBoxLayout()
-                # Crear un QLabel con el texto que quieras
-                label = QLabel("Inputs")
-
-                # Añadir el QLabel al layout
-                layout.addWidget(label)
-                
-                #Name of inputs
-                with open(self.obtain_direction_vfsmod(self.dlg_base.csv_results_uncertainity.text()), mode='r', encoding='utf-8') as file:
-                    lines = file.read().splitlines()
-                inputs = lines[1].split(":")[-1].split(",")
-                
-                self.dictionary_radio_inputs_uncertainity = {}
-                # Crear y añadir varios QRadioButton
-                for opcion in inputs:
-                    radio_button = QRadioButton(opcion)
-                    #Connect funciton but only one time
-                    radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_graph_uncertainity() if checked else None)
-                    self.dictionary_radio_inputs_uncertainity[radio_button] = opcion
-                    layout.addWidget(radio_button)
-                
-                #add spacer
-                spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-                layout.addItem(spacer)
-
-                # Establecer el layout en el frame `self.dlg_base.inputs_uncertainity`
-                self.dlg_base.inputs_uncertainity.setLayout(layout)
-            except:
-                pass
     
     def show_graph_sensitivity_oat(self):   
         """Method to add OAT sensitivity analysis graph"""
@@ -991,11 +952,7 @@ class qvfsmod:
     
     
     def update_graph_uncertainity(self):
-        if len(self.dictionary_radio_inputs_uncertainity)>1:
-            for i in self.dictionary_radio_inputs_uncertainity:
-                if i.isChecked():
-                    input_parameter = self.dictionary_radio_inputs_uncertainity[i]
-                    break
+        """Mehtod to update uncertainity graph"""
         #Warning messages
         ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_uncertainity.text())
         if os.path.exists(ruta):
@@ -1012,19 +969,15 @@ class qvfsmod:
             self.ax_uncertainity = self.canvas_uncertainity_graph.figure.subplots()
             
             #Obtain data 
-            with open(self.obtain_direction_vfsmod(self.dlg_base.csv_results_uncertainity.text()), mode='r', encoding='utf-8') as file:
-                lines = file.read().splitlines()
+            with open(ruta, "r") as archivo:
+                 lines = archivo.readlines()
             # Ignorar la primera línea ("Uncertainity analysis results")
-            lines = lines[1:]
-            for i in range(len(lines)):
-                if lines[i] == f"{input_parameter} results":
-                    columns = lines[i+1].split(",")
-                    rows = []
-                    for k in range(i+2,len(lines)):
-                        if lines[k][:2]=="--":
-                            break
-                        rows.append(lines[k].split(","))
-                    break
+            parameters = lines[1].split(":")[1].split(",")
+            columns = [x.replace('\n', '') for x in lines[2].split(",")]
+            rows = []
+            for i in range(3,len(lines)):
+                rows.append([float(x) for x in lines[i].split(",")])
+
             df = pd.DataFrame(rows, columns=columns)
             
             #Get output
@@ -1040,117 +993,36 @@ class qvfsmod:
             elif self.dlg_base.sediment_delivery_4.isChecked():output_column = "Sediment Delivery Ratio"
             elif self.dlg_base.runoff_delivery_4.isChecked():output_column = "Runoff Delivery Ratio"
             
-            x = [float(x) for x in df[input_parameter]]
             y = [float(x) for x in df[output_column]]
             
+            bins = 30
+            self.ax_uncertainity.hist(y, bins=bins, edgecolor='black')
+            #Separador de miles
+            def formato_con_separador(valor, pos):
+                if max(list(y))>10:
+                    return "{:,.0f}".format(valor)
+                else:
+                    return "{:,.2f}".format(valor)
+            self.ax_uncertainity.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+            #Labels
+            self.ax_uncertainity.set_xlabel(output_column,size = 14,family="arial",weight = "bold",color = "black")
+            self.ax_uncertainity.set_ylabel("Frequency",size = 14,family="arial",weight = "bold",color = "black")
             
-            #Input frquency graph
-            if self.dlg_base.input_uncertainity.isChecked():
-                #Create graph
-                if len(x)<10:bins = 3
-                elif len(x)<20:bins = 5
-                elif len(x)<50: bins = 10
-                elif len(x)<100: bins = 15
-                else: bins = 20
-                self.ax_uncertainity.hist(x, bins=bins, color='blue', edgecolor='black')
-                #Separador de miles
-                def formato_con_separador(valor, pos):
-                    if max(list(x))>10:
-                        return "{:,.0f}".format(valor)
-                    else:
-                        return "{:,.2f}".format(valor)
-                self.ax_uncertainity.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
-                #Labels
-                self.ax_uncertainity.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
-                self.ax_uncertainity.set_ylabel("Frequency",size = 14,family="arial",weight = "bold",color = "black")
-                # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-                self.canvas_uncertainity_graph.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
-                self.canvas_uncertainity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
-                #Draw canvas
-                self.canvas_uncertainity_graph.draw()
-            
-            #Input frquency graph cumulative
-            if self.dlg_base.input_uncertainity_cumulative.isChecked():
-                #Create graph
-                if len(x)<10:bins = 3
-                elif len(x)<20:bins = 5
-                elif len(x)<50: bins = 10
-                elif len(x)<100: bins = 15
-                else: bins = 20
-                x_sorted = np.sort(x)
-                # Calcular la frecuencia acumulativa
-                y = np.arange(1, len(x_sorted) + 1) / len(x_sorted)
-                # Graficar la frecuencia acumulativa con líneas
-                self.ax_uncertainity.plot(x_sorted, y, color='blue', linestyle='-', marker='')
-                #Separador de miles
-                def formato_con_separador(valor, pos):
-                    if max(list(x))>10:
-                        return "{:,.0f}".format(valor)
-                    else:
-                        return "{:,.2f}".format(valor)
-                self.ax_uncertainity.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
-                #Labels
-                self.ax_uncertainity.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
-                self.ax_uncertainity.set_ylabel("Frequency",size = 14,family="arial",weight = "bold",color = "black")
-                # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-                self.canvas_uncertainity_graph.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
-                self.canvas_uncertainity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
-                #Draw canvas
-                self.canvas_uncertainity_graph.draw()
-            
-            #Output frequency graph
-            elif self.dlg_base.output_uncertainity.isChecked():
-                #Create graph
-                if len(x)<10:bins = 3
-                elif len(x)<20:bins = 5
-                elif len(x)<50: bins = 10
-                elif len(x)<100: bins = 15
-                else: bins = 20
-                self.ax_uncertainity.hist(y, bins=bins, color='blue', edgecolor='black')
-                #Separador de miles
-                def formato_con_separador(valor, pos):
-                    if max(list(y))>10:
-                        return "{:,.0f}".format(valor)
-                    else:
-                        return "{:,.2f}".format(valor)
-                self.ax_uncertainity.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
-                #Labels
-                self.ax_uncertainity.set_xlabel(output_column,size = 14,family="arial",weight = "bold",color = "black")
-                self.ax_uncertainity.set_ylabel("Frequency",size = 14,family="arial",weight = "bold",color = "black")
-                # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-                self.canvas_uncertainity_graph.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
-                self.canvas_uncertainity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
-                #Draw canvas
-                self.canvas_uncertainity_graph.draw()
-            
-            #Output frequency graph cumulative
-            elif self.dlg_base.output_uncertainity_cumulative.isChecked():
-                #Create graph
-                if len(x)<10:bins = 3
-                elif len(x)<20:bins = 5
-                elif len(x)<50: bins = 10
-                elif len(x)<100: bins = 15
-                else: bins = 20
-                x_sorted = np.sort(y)
-                # Calcular la frecuencia acumulativa
-                y = np.arange(1, len(x_sorted) + 1) / len(x_sorted)
-                # Graficar la frecuencia acumulativa con líneas
-                self.ax_uncertainity.plot(x_sorted, y, color='blue', linestyle='-', marker='')
-                #Separador de miles
-                def formato_con_separador(valor, pos):
-                    if max(list(x_sorted))>10:
-                        return "{:,.0f}".format(valor)
-                    else:
-                        return "{:,.2f}".format(valor)
-                self.ax_uncertainity.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
-                #Labels
-                self.ax_uncertainity.set_xlabel(output_column,size = 14,family="arial",weight = "bold",color = "black")
-                self.ax_uncertainity.set_ylabel("Frequency",size = 14,family="arial",weight = "bold",color = "black")
-                # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-                self.canvas_uncertainity_graph.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
-                self.canvas_uncertainity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
-                #Draw canvas
-                self.canvas_uncertainity_graph.draw()
+            ax2 = self.ax_uncertainity.twinx()
+            x_sorted = np.sort(y)
+            # Calcular la frecuencia acumulativa
+            y = np.arange(1, len(x_sorted) + 1) / len(x_sorted)
+            # Graficar la frecuencia acumulativa con líneas
+            ax2.plot(x_sorted, y, linestyle='-', marker='',color = "black")
+            ax2.set_ylabel("Cumulative Frequency",size = 14,family="arial",weight = "bold",color = "black")
+            #Put ax2 in the front
+            self.ax_uncertainity.set_zorder(1)  # Eje principal con un zorder bajo
+            ax2.set_zorder(2)
+            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+            self.canvas_uncertainity_graph.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
+            self.canvas_uncertainity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
+            #Draw canvas
+            self.canvas_uncertainity_graph.draw()
     
     def add_base_value_dialog_oat(self):
         """Method to add the base value to the dialog of sensitivity when using OAT"""
@@ -1181,12 +1053,12 @@ class qvfsmod:
                 if os.path.exists(path_input):  
                     with open(path_input, 'r') as file:
                         lineas = file.readlines()
-                    if parameter == "Filter Manning n (RNA, s/m^1/3)" or parameter == "Average Filter Slope":
+                    if parameter == "Filter Manning n (RNA s/m^1/3)" or parameter == "Average Filter Slope":
                         number_segments = int(lineas[3])
                         df = pd.DataFrame(data = {"Distance":[list(map(float, lineas[x].split()))[0] for x in range(4,4+number_segments)],
                                                  "Roughness":[list(map(float, lineas[x].split()))[1] for x in range(4,4+number_segments)],
                                                  "Slope":[list(map(float, lineas[x].split()))[2] for x in range(4,4+number_segments)]})
-                        if parameter == "Filter Manning n (RNA, s/m^1/3)":
+                        if parameter == "Filter Manning n (RNA s/m^1/3)":
                             value = sum(df["Roughness"])/len(df)
                         elif parameter == "Average Filter Slope":
                             value = round(sum(df["Slope"])/len(df),4)
@@ -1194,49 +1066,7 @@ class qvfsmod:
                         value = self.add_values_dialog(lineas,row,column,self.dlg_base.rainfall,retrieve = True)
                         
                     self.dlg_base.first.setText(str(value))
-    
-    def add_base_value_dialog_uncertainity(self):
-        """Method to add the base value to the dialog of uncertainity"""
-        if self.dlg_base.parameter_name_uncertainity.text()!="":
-            parameter = self.dlg_base.parameter_name_uncertainity.text()
-            extension = self.sensitivity_parameters[parameter][0]
-            row = self.sensitivity_parameters[parameter][1]
-            column = self.sensitivity_parameters[parameter][2]
-            process = self.sensitivity_parameters[parameter][3]
-            
-            if extension == "inp":
-                path = self.obtain_direction_vfsmod(self.dlg_base.uh_file_uncertainity.text())
-            else:
-                path = self.obtain_direction_vfsmod(self.dlg_base.vfs_file_uncertainity.text())
-            
-            if os.path.exists(path) and os.path.isfile(path):
-                #First we open the file and obtain the direction of the copying file
-                with open(path, "r") as archivo:
-                    lineas = archivo.readlines()
-                for i in lineas:
-                    if i[:3]==extension:
-                        path_input = i.split("=")[-1]
-                if not os.path.isabs(path_input): #relative path
-                    path_input = os.path.join(os.path.dirname(path), path_input)
-                path_input = path_input.replace("\n", "") #take out the line jumps
-                
-                
-                if os.path.exists(path_input):  
-                    with open(path_input, 'r') as file:
-                        lineas = file.readlines()
-                    if parameter == "Filter Manning n (RNA, s/m^1/3)" or parameter == "Average Filter Slope":
-                        number_segments = int(lineas[3])
-                        df = pd.DataFrame(data = {"Distance":[list(map(float, lineas[x].split()))[0] for x in range(4,4+number_segments)],
-                                                 "Roughness":[list(map(float, lineas[x].split()))[1] for x in range(4,4+number_segments)],
-                                                 "Slope":[list(map(float, lineas[x].split()))[2] for x in range(4,4+number_segments)]})
-                        if parameter == "Filter Manning n (RNA, s/m^1/3)":
-                            value = sum(df["Roughness"])/len(df)
-                        elif parameter == "Average Filter Slope":
-                            value = round(sum(df["Slope"])/len(df),4)
-                    else:
-                        value = self.add_values_dialog(lineas,row,column,self.dlg_base.rainfall,retrieve = True)
-                        
-                    self.dlg_base.base_uncertainity.setText(str(value))
+
                     
                     
                 
@@ -1707,6 +1537,208 @@ class qvfsmod:
         
         #Show dialog
         self.dlg_owq_results.show()
+    
+    def show_owq_graph_balance(self):
+        """Method to show the dialog with water quality balance graph"""
+        #Obtain results
+        ruta = self.obtain_direction_vfsmod(self.dlg_base.line_quality.text())
+        if os.path.exists(ruta):
+            #Obtain values
+            with open(ruta, "r") as archivo:
+                lineas = archivo.readlines()
+            for i in range(len(lineas)):
+                if lineas[i] == " Pesticide mass balance, degradation & remobilization\n":
+                    fila = i
+            #Function to obtain infomation of owq file
+            def obtain_information(text):
+                for i in range(fila,len(lineas)):
+                    if lineas[i].split("=")[-1]==text+"\n":
+                        return float(lineas[i].split("=")[0].split("m")[0])
+            
+            pesticide_input = obtain_information(" Pesticide input (mi)")
+            pesticide_output = obtain_information(" Pesticide output (mo)")
+            pesticide_outflow_solid = obtain_information(" Pesticide outflow in solid phase (mop)")
+            pesticide_outflow_liquid = obtain_information(" Pesticide outflow in liquid phase (mod)")
+            pesticide_trapped_vfs = obtain_information(" Pesticide trapped in VFS (mf)")
+            pesticide_trapped_sediment = obtain_information(" Pesticide trapped with sediment (mfsed)")
+            pesticide_trapped_mixing_layer = obtain_information(" Pesticide trapped in mixing layer (mfml)")
+            pesticide_mixing_layer_last_event = obtain_information(" Pesticide in mixing layer from last event (mfml0)")
+            total_surface_residue = obtain_information("mfml+mfsed+mfml0)")
+            total_surface_residue_after_degradation = obtain_information(" Total surface residue after degradation (  3 days)")
+            dissolved_surface_residue_after_degradation = obtain_information(" Dissolved surface residue after degradation (  3 days)")
+            sorbed_surface_residue_after_degradation = obtain_information(" Sorbed surface residue after degradation (  3 days)")
+            next_event_residue_remobilization = obtain_information("1)")
+   
+            name_variables = ["Pesticide input","Pesticide trapped in VFS","Pesticide trapped with sediment","Pesticide trapped in mixing layer",
+                "Pesticide in mixing layer from last event","Total surface residue","Pesticide output","Pesticide outflow in solid phase",
+                "Pesticide outflow in liquid phase","Total surface residue after degradation","Dissolved surface residue after degradation",
+                "Sorbed surface residue after degradation","Next event residue remobilization"]
+            value_variables = [pesticide_input,pesticide_trapped_vfs,pesticide_trapped_sediment,pesticide_trapped_mixing_layer,
+                pesticide_mixing_layer_last_event,total_surface_residue,pesticide_output,pesticide_outflow_solid,
+                pesticide_outflow_liquid,total_surface_residue_after_degradation,dissolved_surface_residue_after_degradation,
+                sorbed_surface_residue_after_degradation,next_event_residue_remobilization]
+            
+            #Create graph
+            #Add layout
+            #If canvas exist then clear. If not then create it. 
+            if not hasattr(self, 'canvas_owq_graph_balance'):
+                # Si no existe, crear el canvas y añadirlo al layout
+                self.canvas_owq_graph_balance = FigureCanvas(plt.Figure(figsize=(15, 6)))
+                
+                # Asignar un layout al QFrame si no tiene uno
+                layout = QVBoxLayout(self.dlg_owq_graph_balance.frame)
+                self.dlg_owq_graph_balance.frame.setLayout(layout)
+                
+                # Añadir el canvas al layout
+                layout.addWidget(self.canvas_owq_graph_balance)
+                
+            else:
+                # Si ya existe, simplemente limpiar el canvas
+                self.canvas_owq_graph_balance.figure.clear()
+        
+            self.ax_owq_graph_balance= self.canvas_owq_graph_balance.figure.subplots()
+        
+            # Clear canvas
+            self.ax_owq_graph_balance.clear()
+            x = np.arange(len(name_variables))
+            bars = self.ax_owq_graph_balance.bar(x, value_variables)
+            
+            #Add values to the top of the bars
+            for bar in bars:
+                yval = bar.get_height()
+                self.ax_owq_graph_balance.text(bar.get_x() + bar.get_width()/2, yval, round(yval, 2),
+                                           ha='center', va='bottom', fontsize=9, color='black',weight ="bold")
+
+            # Rotar las etiquetas del eje x a 45 grados
+            self.ax_owq_graph_balance.set_xticklabels(name_variables, rotation=45, ha='right')
+
+            #Axis
+            self.ax_owq_graph_balance.set_ylabel("Amount of pesticide (mg)",size = 10,family="arial",weight = "bold",color = "black")
+
+            #X ticks
+            self.ax_owq_graph_balance.set_xticklabels(name_variables)
+            self.ax_owq_graph_balance.tick_params(axis = "both",colors = "black",labelsize = 9)
+            
+            #Red line
+            self.ax_owq_graph_balance.axvline(x=9.5, color='red', linestyle='--', linewidth=1.5) 
+
+            #Thousand separator
+            def xfunc(x,pos):
+                s = '{:0,d}'.format(int(x))
+                return s
+            x_format = tkr.FuncFormatter(xfunc)
+            self.ax_owq_graph_balance.yaxis.set_major_formatter(x_format)
+            
+            # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
+            self.canvas_owq_graph_balance.figure.subplots_adjust(left=0.2, bottom=0.2)
+
+            # Redraw the canvas
+            self.canvas_owq_graph_balance.draw()
+            
+            #Show dialog
+            self.dlg_owq_graph_balance.show()
+            
+            
+    def show_owq_graph(self):
+        """Method to show the dialog with water quality graph"""
+        #Obtain results
+        ruta = self.obtain_direction_vfsmod(self.dlg_base.line_quality.text())
+        if os.path.exists(ruta):
+            #Obtain values
+            with open(ruta, "r") as archivo:
+                lineas = archivo.readlines()
+            valores = []
+            for i in range(len(lineas)):
+                if lineas[i] == "      Z(m)      C(mg/L)      S(mg/mg)\n":
+                    for k in range(i+2,len(lineas)):
+                        if len(lineas[k].split())==0 or (float(lineas[k].split()[1])==float(0)) and (float(lineas[k].split()[2])==float(0)):
+                            break
+                        else:
+                            valores.append([float(x) for x in lineas[k].split()])
+
+            df = pd.DataFrame(valores, columns=["z","c","s"])
+            
+            #Create graph
+            #Add layout
+            #If canvas exist then clear. If not then create it. 
+            if not hasattr(self, 'canvas_owq_graph'):
+                # Si no existe, crear el canvas y añadirlo al layout
+                self.canvas_owq_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
+                
+                # Asignar un layout al QFrame si no tiene uno
+                layout = QVBoxLayout(self.dlg_owq_graph.frame)
+                self.dlg_owq_graph.frame.setLayout(layout)
+                
+                # Añadir el canvas al layout
+                layout.addWidget(self.canvas_owq_graph)
+                
+            else:
+                # Si ya existe, simplemente limpiar el canvas
+                self.canvas_owq_graph.figure.clear()
+        
+            self.ax_owq_graph= self.canvas_owq_graph.figure.subplots(1,2)
+        
+            # Clear canvas
+            self.ax_owq_graph[0].clear()
+            self.ax_owq_graph[1].clear()
+            
+            #Create graph
+
+            # Crear el gráfico de barras
+            profundidad = df["z"]
+            concentracion = df["c"]
+            ratio = df["s"]
+            # Invertir el eje y para que 0 esté arriba y aumentar hacia abajo
+            self.ax_owq_graph[0].invert_yaxis()
+            self.ax_owq_graph[1].invert_yaxis()
+
+            # Graficar concentración vs. profundidad
+            self.ax_owq_graph[0].plot(concentracion, profundidad, marker='o', color='b')
+            self.ax_owq_graph[1].plot(ratio, profundidad, marker='o', color='b')
+
+            # Etiquetas de los ejes
+            self.ax_owq_graph[0].set_xlabel('Pore water concentration (mg/L)', color='black')
+            self.ax_owq_graph[1].set_xlabel('Solid phase/liquid phase (mg/mg)', color='black')
+            self.ax_owq_graph[0].set_ylabel('Depth (m)', color='black')
+
+            # Colorear el área entre profundidad 0 y 0.06
+            self.ax_owq_graph[0].axhspan(0, 0.02, facecolor='gray', alpha=0.3)  # Opacidad del rectángulo
+            self.ax_owq_graph[1].axhspan(0, 0.02, facecolor='gray', alpha=0.3)  # Opacidad del rectángulo
+
+            # Añadir texto "mixing layer" dentro del rectángulo con flechas más a la derecha
+            self.ax_owq_graph[0].text(max(concentracion)*0.85, 0.01, 'Mixing Layer', fontsize=10, ha='center', va='center')
+            self.ax_owq_graph[1].text(max(ratio)*0.85, 0.01, 'Mixing Layer', fontsize=10, ha='center', va='center')
+
+            # Colorear los ejes en negro
+            self.ax_owq_graph[0].spines['bottom'].set_color('black')
+            self.ax_owq_graph[1].spines['bottom'].set_color('black')
+            self.ax_owq_graph[0].spines['top'].set_color('black')
+            self.ax_owq_graph[1].spines['top'].set_color('black')
+            self.ax_owq_graph[0].spines['left'].set_color('black')
+            self.ax_owq_graph[1].spines['left'].set_color('black')
+            self.ax_owq_graph[0].spines['right'].set_color('black')
+            self.ax_owq_graph[1].spines['right'].set_color('black')
+            
+            #Add line with value 1 
+            self.ax_owq_graph[1].axvline(x=1, color='red', linestyle='--')
+            ticks1 = self.ax_owq_graph[1].get_xticks()
+            self.ax_owq_graph[1].set_xticklabels([f'{tick}' if tick != 1 else '1' for tick in ticks1])
+            for tick in self.ax_owq_graph[1].get_xticklabels():
+                if tick.get_text() == '1':
+                    tick.set_color('red')
+
+            #Title
+            self.ax_owq_graph[0].set_title("Pore water concentration (mg/L)")
+            self.ax_owq_graph[1].set_title("Solid phase/liquid phase (mg/mg)")
+            
+            # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
+            self.canvas_owq_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
+
+            # Redraw the canvas
+            self.canvas_owq_graph.draw()
+            
+            #Show dialog
+            self.dlg_owq_graph.show()
     
     def show_runoff_results(self):
         """Method to show the dialog with runoff graph"""
@@ -2336,7 +2368,9 @@ class qvfsmod:
             else: #absolute path
                 text = fname[0]
             self.dlg_base.csv_results_uncertainity.setText(text)
-    
+            #Update graph
+            self.update_graph_uncertainity()
+        
     def browse_files_sensitivity_results(self):
         """Method to select the file for sensitivity analysis graph between the local files for Morris"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
@@ -2628,12 +2662,18 @@ class qvfsmod:
             self.problem = {'num_vars': len(self.dic_data),'names': list(self.dic_data.keys()),'bounds': [x[1] for x in self.dic_data.values()],"dists":[x[0] for x in self.dic_data.values()]}
         #Create samples
         if self.dlg_base.sobol.isChecked():
+            if int(self.dlg_base.trajectories.text())<256:
+                self.warning_message("Number of samples must be 256 or higher when executing Sobol")
+                return
             self.param_values = saltelli.sample(self.problem, int(self.dlg_base.trajectories.text()))
         elif self.dlg_base.morris.isChecked():
+            if int(self.dlg_base.trajectories.text())<8:
+                self.warning_message("N value must be 8 or higher when executing Morris")
+                return
             self.param_values = sample_morris(self.problem, int(self.dlg_base.trajectories.text()))
         elif self.dlg_base.fast.isChecked():
-            if int(self.dlg_base.trajectories.text())<=4:
-                self.warning_message("N value must be higher than 4 when executing FAST")
+            if int(self.dlg_base.trajectories.text())<256:
+                self.warning_message("N value must be 256 or higher when executing FAST")
                 return
             self.param_values = sample_fast(self.problem, int(self.dlg_base.trajectories.text()), M = 1)
         elif self.dlg_base.oat.isChecked():
@@ -2687,69 +2727,73 @@ class qvfsmod:
             
         #Save results in CSV
         path = self.obtain_direction_vfsmod(self.dlg_base.file_save.text())
-        if self.dlg_base.sobol.isChecked():
-            with open(path, 'w') as f:
-                #Add first row
-                f.write("Sobol sensitivity indexes" + '\n')
-                #Add sensitivity indexes for each output
-                for i in self.results_sensitivity.columns[-number_outputs:]:
+        try:
+            if self.dlg_base.sobol.isChecked():
+                with open(path, 'w') as f:
+                    #Add first row
+                    f.write("Sobol sensitivity indexes" + '\n')
+                    #Add sensitivity indexes for each output
+                    for i in self.results_sensitivity.columns[-number_outputs:]:
+                        f.write("----------------------------------------------------------------------" + '\n')
+                        f.write(f"{i}" + '\n')
+                        si = sobol.analyze(self.problem, np.array(self.results_sensitivity[i]))
+                        for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()): 
+                            f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}_{si['S2'][input_parameter_k]}_{si['S2_conf'][input_parameter_k]}" + '\n')
                     f.write("----------------------------------------------------------------------" + '\n')
-                    f.write(f"{i}" + '\n')
-                    si = sobol.analyze(self.problem, np.array(self.results_sensitivity[i]))
-                    for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()): 
-                        f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}_{si['S2'][input_parameter_k]}_{si['S2_conf'][input_parameter_k]}" + '\n')
-                f.write("----------------------------------------------------------------------" + '\n')
-                
-        elif self.dlg_base.morris.isChecked():
-            with open(path, 'w') as f:
-                #Add first row
-                f.write("Morris sensitivity indexes" + '\n')
-                #Add sensitivity indexes for each output
-                for i in self.results_sensitivity.columns[-number_outputs:]:
+                    
+            elif self.dlg_base.morris.isChecked():
+                with open(path, 'w') as f:
+                    #Add first row
+                    f.write("Morris sensitivity indexes" + '\n')
+                    #Add sensitivity indexes for each output
+                    for i in self.results_sensitivity.columns[-number_outputs:]:
+                        f.write("----------------------------------------------------------------------" + '\n')
+                        f.write(f"{i}" + '\n')
+                        si = analyze_morris(self.problem,np.array(self.param_values),np.array(self.results_sensitivity[i]))
+                        for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
+                            f.write(f"{input_parameter}:{si['mu_star'][input_parameter_k]}_{si['sigma'][input_parameter_k]}" + '\n')
                     f.write("----------------------------------------------------------------------" + '\n')
-                    f.write(f"{i}" + '\n')
-                    si = analyze_morris(self.problem,np.array(self.param_values),np.array(self.results_sensitivity[i]))
-                    for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
-                        f.write(f"{input_parameter}:{si['mu_star'][input_parameter_k]}_{si['sigma'][input_parameter_k]}" + '\n')
-                f.write("----------------------------------------------------------------------" + '\n')
-        
-        elif self.dlg_base.fast.isChecked():
-            with open(path, 'w') as f:
-                #Add first row
-                f.write("FAST sensitivity indexes" + '\n')
-                #Add sensitivity indexes for each output
-                for i in self.results_sensitivity.columns[-number_outputs:]:
+            
+            elif self.dlg_base.fast.isChecked():
+                with open(path, 'w') as f:
+                    #Add first row
+                    f.write("FAST sensitivity indexes" + '\n')
+                    #Add sensitivity indexes for each output
+                    for i in self.results_sensitivity.columns[-number_outputs:]:
+                        f.write("----------------------------------------------------------------------" + '\n')
+                        f.write(f"{i}" + '\n')
+                        si = analyze_fast(self.problem,np.array(self.results_sensitivity[i]))
+                        for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
+                            f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}" + '\n')
                     f.write("----------------------------------------------------------------------" + '\n')
-                    f.write(f"{i}" + '\n')
-                    si = analyze_fast(self.problem,np.array(self.results_sensitivity[i]))
-                    for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
-                        f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}" + '\n')
-                f.write("----------------------------------------------------------------------" + '\n')
-        
-        elif self.dlg_base.oat.isChecked():
-            with open(path, 'w') as f:
-                f.write("OAT sensitivity results" + '\n')
-                string = f"Studied parameters:"
-                for i in range(len(self.dic_data)):
-                    string += list(self.dic_data.keys())[i]
-                    if i!= len(self.dic_data)-1:
-                        string +=","
-                    else:
-                        string += "\n"
-                f.write(string)
-                start = [0,0]
-                f.write("----------------------------------------------------------------------" + '\n')
-                for i in self.dic_data.keys():
-                    f.write(i + " results" + '\n')
-                    a = len(self.dic_data[i])
-                    start[1] += start[0]+a
-                    data = self.results_sensitivity.iloc[start[0]:start[1],:]
-                    #Put dataframe
-                    f.write(','.join(data.columns) + '\n')
-                    for index, row in data.iterrows():
-                        f.write(','.join(map(str, row.values)) + '\n')
-                    start[0]=start[0]+a
+            
+            elif self.dlg_base.oat.isChecked():
+                with open(path, 'w') as f:
+                    f.write("OAT sensitivity results" + '\n')
+                    string = f"Studied parameters:"
+                    for i in range(len(self.dic_data)):
+                        string += list(self.dic_data.keys())[i]
+                        if i!= len(self.dic_data)-1:
+                            string +=","
+                        else:
+                            string += "\n"
+                    f.write(string)
+                    start = [0,0]
                     f.write("----------------------------------------------------------------------" + '\n')
+                    for i in self.dic_data.keys():
+                        f.write(i + " results" + '\n')
+                        a = len(self.dic_data[i])
+                        start[1] += start[0]+a
+                        data = self.results_sensitivity.iloc[start[0]:start[1],:]
+                        #Put dataframe
+                        f.write(','.join(data.columns) + '\n')
+                        for index, row in data.iterrows():
+                            f.write(','.join(map(str, row.values)) + '\n')
+                        start[0]=start[0]+a
+                        f.write("----------------------------------------------------------------------" + '\n')
+        except PermissionError:
+            self.warning_message(f"{path} file is opened and Sensitivity Analysis data could not be saved")
+            return
         
         #Append results
         if not self.dlg_base.oat.isChecked():
@@ -2765,37 +2809,20 @@ class qvfsmod:
         self.dic_data = self.create_dictionary_uncertainity_analysis()
         
         #Warning
-        if int(self.dlg_base.samples_uncertainity.text())<=4:
-            self.warning_message("N value must be higher than 4 when executing FAST")
+        if int(self.dlg_base.samples_uncertainity.text())<256:
+            self.warning_message("N value must be higher than 256 when executing Uncertainity Analysis")
             return
         
         #We will use the fast sample to obtain randomized samples for each input
         values = []
         for parameter in self.dic_data.keys():
             #Create problem variable
-            self.problem = {'num_vars': 1,'names': [parameter],'bounds': [self.dic_data[parameter][1][1:]],"dists":[self.dic_data[parameter][0]]}
+            self.problem = {'num_vars': 1,'names': [parameter],'bounds': [self.dic_data[parameter][1]],"dists":[self.dic_data[parameter][0]]}
             #Create samples
             samples = sample_fast(self.problem, int(self.dlg_base.samples_uncertainity.text()), M = 1)
-            base_value = self.dic_data[parameter][1][0]
-            values.append([base_value] + [samples[x,0] for x in range(len(samples))])
-
+            values.append(samples)
         
-        #If more than one parameter is selected then modify one parameter and remain the rest with base value
-        lista_de_listas = []
-        for k,i in enumerate(values):
-            lista_de_listas.append([i,k])
-        lista_general = []
-        for k, lista in enumerate(lista_de_listas):
-            for m in lista[0][1:]:
-                sub = []
-                for h in range(len(lista_de_listas)):
-                    if lista_de_listas[h][1]==k:
-                        sub.append(m)
-                    else:
-                        sub.append(lista_de_listas[h][0][0])
-                lista_general.append(sub)
-        self.param_values = np.array(lista_general)
-
+        self.param_values = np.column_stack(values)
 
         #We start obtaining the results
         #Create folders of uncertainity analysis
@@ -2830,29 +2857,21 @@ class qvfsmod:
             
         #Save results in CSV
         path = self.obtain_direction_vfsmod(self.dlg_base.file_save_uncertainity.text())
-        with open(path, 'w') as f:
-            f.write("Uncertainity analysis results" + '\n')
-            string = f"Studied parameters:"
-            for i in range(len(self.dic_data)):
-                string += list(self.dic_data.keys())[i]
-                if i!= len(self.dic_data)-1:
-                    string +=","
-                else:
-                    string += "\n"
-            f.write(string)
-            start = [0,0]
-            f.write("----------------------------------------------------------------------" + '\n')
-            for k,i in enumerate(self.dic_data.keys()):
-                f.write(i + " results" + '\n')
-                a = len(values[k])-1
-                start[1] += start[0]+a
-                data = self.results_sensitivity.iloc[start[0]:start[1],:]
-                #Put dataframe
-                f.write(','.join(data.columns) + '\n')
-                for index, row in data.iterrows():
-                    f.write(','.join(map(str, row.values)) + '\n')
-                start[0]=start[0]+a
-                f.write("----------------------------------------------------------------------" + '\n')
+        try:
+            with open(path, 'w') as f:
+                f.write("Uncertainity analysis results" + '\n')
+                string = f"Studied parameters:"
+                for i in range(len(self.dic_data)):
+                    string += list(self.dic_data.keys())[i]
+                    if i!= len(self.dic_data)-1:
+                        string +=","
+                    else:
+                        string += "\n"
+                f.write(string)
+        except PermissionError:
+            self.warning_message(f"{path} file is opened and Uncertainity Analysis data could not be saved")
+            return
+        self.results_sensitivity.to_csv(path, mode='a',index=False, float_format='%.5f')
         
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)
@@ -3415,7 +3434,7 @@ class qvfsmod:
                 information_parameter = self.sensitivity_parameters[i]
                 self.modify_inputs_sensitivity(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3])
                 self.change_buffer_length_sensitivity(value_change)
-            elif i == "Filter Manning n (RNA, s/m^1/3)":
+            elif i == "Filter Manning n (RNA s/m^1/3)":
                 self.change_filter_manning_sensitivity(value_change,1)
             elif i == "Average Filter Slope":
                 self.change_filter_manning_sensitivity(value_change,2)
@@ -3471,7 +3490,7 @@ class qvfsmod:
                 information_parameter = self.sensitivity_parameters[i]
                 self.modify_inputs_uncertainity(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3])
                 self.change_buffer_length_uncertainity(value_change)
-            elif i == "Filter Manning n (RNA, s/m^1/3)":
+            elif i == "Filter Manning n (RNA s/m^1/3)":
                 self.change_filter_manning_uncertainity(value_change,1)
             elif i == "Average Filter Slope":
                 self.change_filter_manning_uncertainity(value_change,2)
@@ -3971,13 +3990,13 @@ class qvfsmod:
         distribution = [self.dlg_base.distributions_uncertainity.itemText(i) for i in range(self.dlg_base.distributions_uncertainity.count())][self.dlg_base.distributions_uncertainity.currentIndex()]
         add_element(1,distribution)
         if distribution=="Uniform" or distribution=="Logaritmic uniform":
-            add_element(2,f"base:{self.dlg_base.base_uncertainity.text()},min:{self.dlg_base.first_2.text()},max:{self.dlg_base.second_2.text()}")
+            add_element(2,f"min:{self.dlg_base.first_2.text()},max:{self.dlg_base.second_2.text()}")
         elif distribution == "Triangular":
-            add_element(2,f"base:{self.dlg_base.base_uncertainity.text()},min:{self.dlg_base.first_2.text()},max:{self.dlg_base.second_2.text()},peak:{self.dlg_base.third_2.text()}")
+            add_element(2,f"min:{self.dlg_base.first_2.text()},max:{self.dlg_base.second_2.text()},peak:{self.dlg_base.third_2.text()}")
         elif distribution == "Normal" or distribution == "Lognormal":
-            add_element(2,f"base:{self.dlg_base.base_uncertainity.text()},mean:{self.dlg_base.first_2.text()},stdv:{self.dlg_base.second_2.text()}")
+            add_element(2,f"mean:{self.dlg_base.first_2.text()},stdv:{self.dlg_base.second_2.text()}")
         elif distribution == "Normal truncated":
-            add_element(2,f"base:{self.dlg_base.base_uncertainity.text()},min:{self.dlg_base.first_2.text()},max:{self.dlg_base.second_2.text()},mean:{self.dlg_base.third_2.text()},stdv:{self.dlg_base.fourth_2.text()}")
+            add_element(2,f"min:{self.dlg_base.first_2.text()},max:{self.dlg_base.second_2.text()},mean:{self.dlg_base.third_2.text()},stdv:{self.dlg_base.fourth_2.text()}")
             
     
     def change_sensitivity_method(self):
@@ -4122,7 +4141,7 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
                 
         if button == self.dlg_base.buffer_dimensions:
-            parameters = ["Buffer length (m)","Width of the Strip (m)","Filter Manning n (RNA, s/m^1/3)","Average Filter Slope"]
+            parameters = ["Buffer length (m)","Width of the Strip (m)","Filter Manning n (RNA s/m^1/3)","Average Filter Slope"]
             for nombre in parameters:
                 boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
@@ -4162,7 +4181,7 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
                 
         if button == self.dlg_base.incoming_sediment:
-            parameters = ["Incoming flow sediment concentration (g/cm^3)","Sediment particle size, diameter d50 (cm)","Porosity of deposited sediment as a fraction","Portion of Particles from incoming sediment \nwith diameter >0.0037 cm","Sediment particle density (g/cm^3)"]
+            parameters = ["Incoming flow sediment concentration (g/cm^3)","Sediment particle size diameter d50 (cm)","Porosity of deposited sediment as a fraction","Portion of Particles from incoming sediment \nwith diameter >0.0037 cm","Sediment particle density (g/cm^3)"]
             for nombre in parameters:
                 boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
@@ -4172,7 +4191,7 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
         
         if button == self.dlg_base.water_quality_button:
-            parameters = ["Sabbagh a","Sabbagh b","Sabbagh c","Sabbagh d","Sabbagh e","Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Organic Carbon (%)","Clay in incoming sediment (%)","Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)","Dispersion length of chemical (m)","Runoff remobilized VFS residue \nfrom last event (mg/m2)"]
+            parameters = ["Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Organic Carbon (%)","Clay in incoming sediment (%)","Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)","Dispersion length of chemical (m)","Runoff remobilized VFS residue \nfrom last event (mg/m2)"]
             for nombre in parameters:
                 boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
@@ -4228,7 +4247,7 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
                 
         if button == self.dlg_base.buffer_dimensions_2:
-            parameters = ["Buffer length (m)","Width of the Strip (m)","Filter Manning n (RNA, s/m^1/3)","Average Filter Slope"]
+            parameters = ["Buffer length (m)","Width of the Strip (m)","Filter Manning n (RNA s/m^1/3)","Average Filter Slope"]
             for nombre in parameters:
                 boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
                 boton.setObjectName(nombre)
@@ -4268,7 +4287,7 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
                 
         if button == self.dlg_base.incoming_sediment_2:
-            parameters = ["Incoming flow sediment concentration (g/cm^3)","Sediment particle size, diameter d50 (cm)","Porosity of deposited sediment as a fraction","Portion of Particles from incoming sediment \nwith diameter >0.0037 cm","Sediment particle density (g/cm^3)"]
+            parameters = ["Incoming flow sediment concentration (g/cm^3)","Sediment particle size diameter d50 (cm)","Porosity of deposited sediment as a fraction","Portion of Particles from incoming sediment \nwith diameter >0.0037 cm","Sediment particle density (g/cm^3)"]
             for nombre in parameters:
                 boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
                 boton.setObjectName(nombre)
@@ -4278,7 +4297,7 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
         
         if button == self.dlg_base.water_quality_button_2:
-            parameters = ["Sabbagh a","Sabbagh b","Sabbagh c","Sabbagh d","Sabbagh e","Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Organic Carbon (%)","Clay in incoming sediment (%)","Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)","Dispersion length of chemical (m)","Runoff remobilized VFS residue \nfrom last event (mg/m2)"]
+            parameters = ["Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Organic Carbon (%)","Clay in incoming sediment (%)","Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)","Dispersion length of chemical (m)","Runoff remobilized VFS residue \nfrom last event (mg/m2)"]
             for nombre in parameters:
                 boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
                 boton.setObjectName(nombre)
@@ -5074,8 +5093,11 @@ class qvfsmod:
         self.df_results_design.insert(0,"Rainfall (mm)",[x[0] for x in self.combinations_design])
 
         #Add results to a csv
-        self.df_results_design.to_csv(self.obtain_direction_vfsmod(self.dlg_base.name_design_csv.text()), index=False, float_format='%.5f')
-        
+        try:
+            self.df_results_design.to_csv(self.obtain_direction_vfsmod(self.dlg_base.name_design_csv.text()), index=False, float_format='%.5f')
+        except PermissionError:
+            self.warning_message(f"{self.obtain_direction_vfsmod(self.dlg_base.name_design_csv.text())} file is opened and Design Analysis data could not be saved")
+            return
         #Close progress bar
         self.progress_metod(close = True)
         
