@@ -5,7 +5,7 @@
                               -------------------
         begin                : 2024-08-09
         git sha              : $Format:%H$
-        copyright            : (C) 2024 by Iñigo Barberena
+        copyright            : (C) 2024 by Iñigo Barberena Ruiz
         email                : inigo.barberena@unavarra.es
 
  ***************************************************************************/
@@ -72,6 +72,7 @@ import shutil
 import numpy as np
 import re
 from scipy.interpolate import interp1d
+from scipy import stats
 from itertools import product
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -966,7 +967,7 @@ class qvfsmod:
             #Clear graph before drawing
             #Create and clear axis before drawing
             self.canvas_uncertainity_graph.figure.clear()
-            self.ax_uncertainity = self.canvas_uncertainity_graph.figure.subplots()
+            self.ax_uncertainity = self.canvas_uncertainity_graph.figure.subplots(1,2)
             
             #Obtain data 
             with open(ruta, "r") as archivo:
@@ -979,6 +980,9 @@ class qvfsmod:
                 rows.append([float(x) for x in lines[i].split(",")])
 
             df = pd.DataFrame(rows, columns=columns)
+            
+            #Delete rows with error
+            df = df[df.Error==0]
             
             #Get output
             if self.dlg_base.runoff_source_mm_4.isChecked():output_column = "Total Runoff from source (mm)"
@@ -996,31 +1000,53 @@ class qvfsmod:
             y = [float(x) for x in df[output_column]]
             
             bins = 30
-            self.ax_uncertainity.hist(y, bins=bins, edgecolor='black')
+            self.ax_uncertainity[0].hist(y, bins=bins, edgecolor='black')
             #Separador de miles
             def formato_con_separador(valor, pos):
                 if max(list(y))>10:
                     return "{:,.0f}".format(valor)
                 else:
                     return "{:,.2f}".format(valor)
-            self.ax_uncertainity.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
+            self.ax_uncertainity[0].xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
             #Labels
-            self.ax_uncertainity.set_xlabel(output_column,size = 14,family="arial",weight = "bold",color = "black")
-            self.ax_uncertainity.set_ylabel("Frequency",size = 14,family="arial",weight = "bold",color = "black")
+            self.ax_uncertainity[0].set_xlabel(output_column,size = 12,family="arial",weight = "bold",color = "black")
+            self.ax_uncertainity[0].set_ylabel("Frequency",size = 12,family="arial",weight = "bold",color = "black")
             
-            ax2 = self.ax_uncertainity.twinx()
+            ax2 = self.ax_uncertainity[0].twinx()
             x_sorted = np.sort(y)
             # Calcular la frecuencia acumulativa
             y = np.arange(1, len(x_sorted) + 1) / len(x_sorted)
             # Graficar la frecuencia acumulativa con líneas
             ax2.plot(x_sorted, y, linestyle='-', marker='',color = "black")
-            ax2.set_ylabel("Cumulative Frequency",size = 14,family="arial",weight = "bold",color = "black")
+            ax2.set_ylabel("Cumulative Frequency",size = 12,family="arial",weight = "bold",color = "black")
             #Put ax2 in the front
-            self.ax_uncertainity.set_zorder(1)  # Eje principal con un zorder bajo
+            self.ax_uncertainity[0].set_zorder(1)
             ax2.set_zorder(2)
+            
+            #Box plot
+            self.ax_uncertainity[1].boxplot([float(x) for x in df[output_column]])
+            self.ax_uncertainity[1].set_xticks([])
+            # Añadir título y etiquetas
+            self.ax_uncertainity[1].set_ylabel(output_column,size = 12,family="arial",weight = "bold",color = "black")
+            
+            
+            #Add table
+            table = self.dlg_base.tableWidget
+            table.setRowCount(1)
+            table.setColumnCount(6)
+            table.setHorizontalHeaderLabels(["25th percentile","50th percentile","75th percentile","Average","Kurtosis","Skewness"])
+            #Add values
+            data = [float(x) for x in df[output_column]]
+            values = [np.percentile(data, 25),np.percentile(data, 50),np.percentile(data, 75),
+                np.mean(data),stats.kurtosis(data),stats.skew(data)]
+            for k,i in enumerate(values):
+                item = QTableWidgetItem(str(round(i,2)))
+                table.setItem(0,k,item)
+                item.setTextAlignment(Qt.AlignCenter)
+            
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-            self.canvas_uncertainity_graph.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
-            self.canvas_uncertainity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
+            self.canvas_uncertainity_graph.figure.subplots_adjust(wspace=0.7) #spacing beteween two graphs
+            self.canvas_uncertainity_graph.figure.subplots_adjust(left=0.1, bottom=0.2)
             #Draw canvas
             self.canvas_uncertainity_graph.draw()
     
@@ -2667,9 +2693,14 @@ class qvfsmod:
                 return
             self.param_values = saltelli.sample(self.problem, int(self.dlg_base.trajectories.text()))
         elif self.dlg_base.morris.isChecked():
+            #Warnings
             if int(self.dlg_base.trajectories.text())<8:
                 self.warning_message("N value must be 8 or higher when executing Morris")
                 return
+            if self.dlg_base.table.rowCount()<2:
+                self.warning_message("Select at least 2 parameters for Morris sensitivity analysis")
+                return
+                
             self.param_values = sample_morris(self.problem, int(self.dlg_base.trajectories.text()))
         elif self.dlg_base.fast.isChecked():
             if int(self.dlg_base.trajectories.text())<256:
@@ -2701,26 +2732,27 @@ class qvfsmod:
         self.move_files_sensitivity_analysis()
         
         #Create dataframe to save the results
-        self.results_sensitivity = pd.DataFrame(columns=["Total Runoff from source (mm)","Total Runoff from Source (m3)",
+        self.results_sensitivity = pd.DataFrame(columns=["Error","Total Runoff from source (mm)","Total Runoff from Source (m3)",
             "Total Runoff out from Filter (mm)","Total Runoff out from Filter (m3)","Total Infiltration in Filter (m3)",
             "Mass Sediment Input to Filter (kg)","Concentration Sediment in Runoff from source Area (g/L)",
             "Mass Sediment Output from Filter (kg)","Concentration Sediment in Runoff exiting the Filter (g/L)",
-            "Sediment Delivery Ratio","Runoff Delivery Ratio"])
-        number_outputs = len(self.results_sensitivity.columns)
+            "Sediment Delivery Ratio","Runoff Delivery Ratio","Water Front Depth (m)"])
+        #Add water quality parameters if present
+        if self.water_quality:
+            self.results_sensitivity.insert(len(self.results_sensitivity.columns),"Leachate depth (m)",None)
+        
+        number_outputs = len(self.results_sensitivity.columns)-len(self.dic_data)
         #Add the parameters names 
         for i in self.dic_data.keys():
             self.results_sensitivity.insert(0,i,None)
         
         self.number_execution_sensitivity = 0
-        self.sensitivity_error = False
         #Results are obtained
         #Start with the progress bar
         self.progress_metod(start = True)
         for k in self.param_values:
+            self.sensitivity_error = False
             self.execution_sensitivity_analysis()
-            if self.sensitivity_error:
-                self.progress_metod(close = True)
-                return
             #Save results
             self.save_results_sensitivity_analysis()
             self.number_execution_sensitivity+=1
@@ -2809,7 +2841,7 @@ class qvfsmod:
         self.dic_data = self.create_dictionary_uncertainity_analysis()
         
         #Warning
-        if int(self.dlg_base.samples_uncertainity.text())<256:
+        if int(self.dlg_base.samples_uncertainity.text())<2:
             self.warning_message("N value must be higher than 256 when executing Uncertainity Analysis")
             return
         
@@ -2831,26 +2863,28 @@ class qvfsmod:
         self.move_files_uncertainity_analysis()
         
         #Create dataframe to save the results
-        self.results_sensitivity = pd.DataFrame(columns=["Total Runoff from source (mm)","Total Runoff from Source (m3)",
+        self.results_sensitivity = pd.DataFrame(columns=["Error","Total Runoff from source (mm)","Total Runoff from Source (m3)",
             "Total Runoff out from Filter (mm)","Total Runoff out from Filter (m3)","Total Infiltration in Filter (m3)",
             "Mass Sediment Input to Filter (kg)","Concentration Sediment in Runoff from source Area (g/L)",
             "Mass Sediment Output from Filter (kg)","Concentration Sediment in Runoff exiting the Filter (g/L)",
-            "Sediment Delivery Ratio","Runoff Delivery Ratio"])
-        number_outputs = len(self.results_sensitivity.columns)
+            "Sediment Delivery Ratio","Runoff Delivery Ratio","Water Front Depth (m)"])
+        
+        #Add water quality parameters if present
+        if self.water_quality:
+            self.results_sensitivity.insert(len(self.results_sensitivity.columns),"Leachate depth (m)",None)
+        
+        number_outputs = len(self.results_sensitivity.columns)-len(self.dic_data)
         #Add the parameters names 
         for i in self.dic_data.keys():
             self.results_sensitivity.insert(0,i,None)
         
         self.number_execution_sensitivity = 0
-        self.sensitivity_error = False
         #Results are obtained
         #Start with the progress bar
         self.progress_metod(start = True)
         for k in self.param_values:
+            self.sensitivity_error = False
             self.execution_uncertainity_analysis()
-            if self.sensitivity_error:
-                self.progress_metod(close = True)
-                return
             #Save results
             self.save_results_uncertainity_analysis()
             self.number_execution_sensitivity+=1
@@ -2880,43 +2914,78 @@ class qvfsmod:
     def save_results_sensitivity_analysis(self):
         """Method to save sensitivity results"""
         #Obtain the values
-        ruta = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\output\\sensitivity.osp"
-        with open(ruta, "r") as archivo:
-            lineas = archivo.readlines()
-        #Function to obtain specific results form .osp file
-        def obtain_result(string):
-            for i in lineas:
-                if i.split("=")[-1]==string:
-                    for k in i.split("=")[0].split(" "):
-                        try:
-                            output = float(k)
-                            break
-                        except:
-                            pass
-            return output
+        if self.sensitivity_error:
+            #Dataframe to concatenate to the sensitivity results
+            df_conc = pd.DataFrame(data = {"Error":[1],"Total Runoff from source (mm)":[-1.0],
+                "Total Runoff from Source (m3)":[-1.0],"Total Runoff out from Filter (mm)":[-1.0],
+                "Total Runoff out from Filter (m3)":[-1.0],"Total Infiltration in Filter (m3)":[-1.0],
+                "Mass Sediment Input to Filter (kg)":[-1.0],"Concentration Sediment in Runoff from source Area (g/L)":[-1.0],
+                "Mass Sediment Output from Filter (kg)":[-1.0],"Concentration Sediment in Runoff exiting the Filter (g/L)":[-1.0],
+                "Sediment Delivery Ratio":[-1.0],"Runoff Delivery Ratio":[-1.0],"Water Front Depth (m)":[-1.0]})
+            #Add water quality parameters if present
+            if self.water_quality:
+                df_conc["Leachate depth (m)"]=-1.0
+
+        else:
+            ruta = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\output\\sensitivity.osp"
+            with open(ruta, "r") as archivo:
+                lineas = archivo.readlines()
+            #Function to obtain specific results form .osp file
+            def obtain_result(string):
+                for i in lineas:
+                    if i.split("=")[-1]==string:
+                        for k in i.split("=")[0].split(" "):
+                            try:
+                                output = float(k)
+                                break
+                            except:
+                                pass
+                return output
+            
+            #Obtain results osp
+            runoff_from_source_mm = obtain_result(" Total Runoff from Source (mm depth over Source Area)\n")
+            runoff_from_source_m3 = obtain_result(" Total Runoff from Source\n")
+            runoff_out_filter_mm = obtain_result(" Total Runoff out from Filter (mm depth over Source+Filter)\n")
+            runoff_out_filter_m3 = obtain_result(" Total Runoff out from Filter\n")
+            infiltration_filter = obtain_result(" Total Infiltration in Filter\n")
+            mass_sediment_input_filter = obtain_result(" Mass Sediment Input to Filter\n")
+            concentration_sediment_source = obtain_result(" Concentration Sediment in Runoff from source Area\n")
+            sediment_out_filter = obtain_result(" Mass Sediment Output from Filter\n")
+            concentration_sediment_filter = obtain_result(" Concentration Sediment in Runoff exiting the Filter\n")
+            sdr = obtain_result(" Sediment Delivery Ratio\n")
+            rdr = obtain_result(" Runoff Delivery Ratio\n")
+            
+            #Obtain results ohy
+            ruta = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\output\\sensitivity.ohy"
+            with open(ruta, "r") as archivo:
+                lineas_ohy = archivo.readlines()
+            water_front_depth =float(lineas_ohy[-1].split()[-2])
+            
+
+            
+            #Dataframe to concatenate results
+            df_conc = pd.DataFrame(data = {"Error":[0],"Total Runoff from source (mm)":[runoff_from_source_mm],
+                "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm)":[runoff_out_filter_mm],
+                "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter (m3)":[infiltration_filter],
+                "Mass Sediment Input to Filter (kg)":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area (g/L)":[concentration_sediment_source],
+                "Mass Sediment Output from Filter (kg)":[sediment_out_filter],"Concentration Sediment in Runoff exiting the Filter (g/L)":[concentration_sediment_filter],
+                "Sediment Delivery Ratio":[sdr],"Runoff Delivery Ratio":[rdr],"Water Front Depth (m)":[water_front_depth]})
+            #Add water quality parameters if present
+            if self.water_quality:
+                #Obtain results water quality
+                with open(self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\output\\sensitivity.owq", "r") as archivo:
+                    lineas_owq = archivo.readlines()
+                valores = []
+                for i in range(len(lineas_owq)):
+                    if lineas_owq[i] == "      Z(m)      C(mg/L)      S(mg/mg)\n":
+                        for k in range(i+2,len(lineas_owq)):
+                            if len(lineas_owq[k].split())==0 or (float(lineas_owq[k].split()[1])==float(0)) and (float(lineas_owq[k].split()[2])==float(0)):
+                                profundidad_lixiviado = float(lineas_owq[k].split()[0])
+                                break
+                            
+                df_conc["Leachate depth (m)"]=profundidad_lixiviado
         
-        #Obtain results
-        runoff_from_source_mm = obtain_result(" Total Runoff from Source (mm depth over Source Area)\n")
-        runoff_from_source_m3 = obtain_result(" Total Runoff from Source\n")
-        runoff_out_filter_mm = obtain_result(" Total Runoff out from Filter (mm depth over Source+Filter)\n")
-        runoff_out_filter_m3 = obtain_result(" Total Runoff out from Filter\n")
-        infiltration_filter = obtain_result(" Total Infiltration in Filter\n")
-        mass_sediment_input_filter = obtain_result(" Mass Sediment Input to Filter\n")
-        concentration_sediment_source = obtain_result(" Concentration Sediment in Runoff from source Area\n")
-        sediment_out_filter = obtain_result(" Mass Sediment Output from Filter\n")
-        concentration_sediment_filter = obtain_result(" Concentration Sediment in Runoff exiting the Filter\n")
-        sdr = obtain_result(" Sediment Delivery Ratio\n")
-        rdr = obtain_result(" Runoff Delivery Ratio\n")
-        
-        #Dataframe to concatenate results
-        df_conc = pd.DataFrame(data = {"Total Runoff from source (mm)":[runoff_from_source_mm],
-            "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm)":[runoff_out_filter_mm],
-            "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter (m3)":[infiltration_filter],
-            "Mass Sediment Input to Filter (kg)":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area (g/L)":[concentration_sediment_source],
-            "Mass Sediment Output from Filter (kg)":[sediment_out_filter],"Concentration Sediment in Runoff exiting the Filter (g/L)":[concentration_sediment_filter],
-            "Sediment Delivery Ratio":[sdr],"Runoff Delivery Ratio":[rdr]})
-        
-        #Add the parameters names
+        #Add the values of inputs 
         for k,i in enumerate(self.dic_data.keys()):
             df_conc.insert(0,i,[self.param_values[self.number_execution_sensitivity][k]])
             
@@ -2925,43 +2994,76 @@ class qvfsmod:
     def save_results_uncertainity_analysis(self):
         """Method to save uncertainity results"""
         #Obtain the values
-        ruta = self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\output\\uncertainity.osp"
-        with open(ruta, "r") as archivo:
-            lineas = archivo.readlines()
-        #Function to obtain specific results form .osp file
-        def obtain_result(string):
-            for i in lineas:
-                if i.split("=")[-1]==string:
-                    for k in i.split("=")[0].split(" "):
-                        try:
-                            output = float(k)
-                            break
-                        except:
-                            pass
-            return output
+        if self.sensitivity_error:
+            #Dataframe to concatenate to the uncertainity results
+            df_conc = pd.DataFrame(data = {"Error":[1],"Total Runoff from source (mm)":[-1],
+                "Total Runoff from Source (m3)":[-1],"Total Runoff out from Filter (mm)":[-1],
+                "Total Runoff out from Filter (m3)":[-1],"Total Infiltration in Filter (m3)":[-1],
+                "Mass Sediment Input to Filter (kg)":[-1],"Concentration Sediment in Runoff from source Area (g/L)":[-1],
+                "Mass Sediment Output from Filter (kg)":[-1],"Concentration Sediment in Runoff exiting the Filter (g/L)":[-1],
+                "Sediment Delivery Ratio":[-1],"Runoff Delivery Ratio":[-1]})
+            #Add water quality parameters if present
+            if self.water_quality:
+                df_conc["Leachate depth (m)"]=-1.0
+        else:
+            ruta = self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\output\\uncertainity.osp"
+            with open(ruta, "r") as archivo:
+                lineas = archivo.readlines()
+            #Function to obtain specific results form .osp file
+            def obtain_result(string):
+                for i in lineas:
+                    if i.split("=")[-1]==string:
+                        for k in i.split("=")[0].split(" "):
+                            try:
+                                output = float(k)
+                                break
+                            except:
+                                pass
+                return output
+            
+            #Obtain results
+            runoff_from_source_mm = obtain_result(" Total Runoff from Source (mm depth over Source Area)\n")
+            runoff_from_source_m3 = obtain_result(" Total Runoff from Source\n")
+            runoff_out_filter_mm = obtain_result(" Total Runoff out from Filter (mm depth over Source+Filter)\n")
+            runoff_out_filter_m3 = obtain_result(" Total Runoff out from Filter\n")
+            infiltration_filter = obtain_result(" Total Infiltration in Filter\n")
+            mass_sediment_input_filter = obtain_result(" Mass Sediment Input to Filter\n")
+            concentration_sediment_source = obtain_result(" Concentration Sediment in Runoff from source Area\n")
+            sediment_out_filter = obtain_result(" Mass Sediment Output from Filter\n")
+            concentration_sediment_filter = obtain_result(" Concentration Sediment in Runoff exiting the Filter\n")
+            sdr = obtain_result(" Sediment Delivery Ratio\n")
+            rdr = obtain_result(" Runoff Delivery Ratio\n")
+            
+            #Obtain results ohy
+            ruta = self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\output\\uncertainity.ohy"
+            with open(ruta, "r") as archivo:
+                lineas_ohy = archivo.readlines()
+            water_front_depth =float(lineas_ohy[-1].split()[-2])
+            
+
+            
+            #Dataframe to concatenate results
+            df_conc = pd.DataFrame(data = {"Error":[0],"Total Runoff from source (mm)":[runoff_from_source_mm],
+                "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm)":[runoff_out_filter_mm],
+                "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter (m3)":[infiltration_filter],
+                "Mass Sediment Input to Filter (kg)":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area (g/L)":[concentration_sediment_source],
+                "Mass Sediment Output from Filter (kg)":[sediment_out_filter],"Concentration Sediment in Runoff exiting the Filter (g/L)":[concentration_sediment_filter],
+                "Sediment Delivery Ratio":[sdr],"Runoff Delivery Ratio":[rdr],"Water Front Depth (m)":[water_front_depth]})
+            #Add water quality parameters if present
+            if self.water_quality:
+                #Obtain results water quality
+                with open(self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\output\\uncertainity.owq", "r") as archivo:
+                    lineas_owq = archivo.readlines()
+                valores = []
+                for i in range(len(lineas_owq)):
+                    if lineas_owq[i] == "      Z(m)      C(mg/L)      S(mg/mg)\n":
+                        for k in range(i+2,len(lineas_owq)):
+                            if len(lineas_owq[k].split())==0 or (float(lineas_owq[k].split()[1])==float(0)) and (float(lineas_owq[k].split()[2])==float(0)):
+                                profundidad_lixiviado = float(lineas_owq[k].split()[0])
+                                break
+                df_conc["Leachate depth (m)"]=profundidad_lixiviado
         
-        #Obtain results
-        runoff_from_source_mm = obtain_result(" Total Runoff from Source (mm depth over Source Area)\n")
-        runoff_from_source_m3 = obtain_result(" Total Runoff from Source\n")
-        runoff_out_filter_mm = obtain_result(" Total Runoff out from Filter (mm depth over Source+Filter)\n")
-        runoff_out_filter_m3 = obtain_result(" Total Runoff out from Filter\n")
-        infiltration_filter = obtain_result(" Total Infiltration in Filter\n")
-        mass_sediment_input_filter = obtain_result(" Mass Sediment Input to Filter\n")
-        concentration_sediment_source = obtain_result(" Concentration Sediment in Runoff from source Area\n")
-        sediment_out_filter = obtain_result(" Mass Sediment Output from Filter\n")
-        concentration_sediment_filter = obtain_result(" Concentration Sediment in Runoff exiting the Filter\n")
-        sdr = obtain_result(" Sediment Delivery Ratio\n")
-        rdr = obtain_result(" Runoff Delivery Ratio\n")
-        
-        #Dataframe to concatenate results
-        df_conc = pd.DataFrame(data = {"Total Runoff from source (mm)":[runoff_from_source_mm],
-            "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm)":[runoff_out_filter_mm],
-            "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter (m3)":[infiltration_filter],
-            "Mass Sediment Input to Filter (kg)":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area (g/L)":[concentration_sediment_source],
-            "Mass Sediment Output from Filter (kg)":[sediment_out_filter],"Concentration Sediment in Runoff exiting the Filter (g/L)":[concentration_sediment_filter],
-            "Sediment Delivery Ratio":[sdr],"Runoff Delivery Ratio":[rdr]})
-        
-        #Add the parameters names
+        #Add the values of inputs 
         for k,i in enumerate(self.dic_data.keys()):
             df_conc.insert(0,i,[self.param_values[self.number_execution_sensitivity][k]])
             
@@ -3456,7 +3558,6 @@ class qvfsmod:
                 shell=True)
             #Put warning
             if not "...FINISHED..." in resultado.stdout:
-                self.warning_message(str(resultado.stdout))
                 self.sensitivity_error = True
                 return
                 
@@ -3472,7 +3573,6 @@ class qvfsmod:
         
         #Put warning
         if not "...FINISHED..." in resultado.stdout:
-            self.warning_message(str(resultado.stdout))
             self.sensitivity_error = True
             return
     
@@ -3512,7 +3612,6 @@ class qvfsmod:
                 shell=True)
             #Put warning
             if not "...FINISHED..." in resultado.stdout:
-                self.warning_message(str(resultado.stdout))
                 self.sensitivity_error = True
                 return
                 
@@ -3528,7 +3627,6 @@ class qvfsmod:
         
         #Put warning
         if not "...FINISHED..." in resultado.stdout:
-            self.warning_message(str(resultado.stdout))
             self.sensitivity_error = True
             return
     
