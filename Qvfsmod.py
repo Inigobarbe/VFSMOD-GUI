@@ -63,6 +63,9 @@ from libraries.SALib.analyze.morris import analyze as analyze_morris
 
 from libraries.SALib.sample.fast_sampler import sample as sample_fast
 from libraries.SALib.analyze.fast import analyze as analyze_fast
+
+from multiprocessing import Pool
+import psutil
 import time
 import concurrent.futures
 from pathlib import Path
@@ -2761,27 +2764,71 @@ class qvfsmod:
         
         self.number_execution_sensitivity = 0
         #Results are obtained
-        #Start with the progress bar
+        #Progress dialog is started
         self.progress_metod(start = True)
+        r'''
+        resultados = []
+        for i in range(len(self.param_values)):
+            a = sensitivity_paralelization(i, i % self.number_cores,
+                self.param_values,self.dic_data,self.sensitivity_parameters,self.working_directory,
+                self.obtain_direction_vfsmod(self.vfs_sensitivity_file))
+            resultados.append(a)
+        print(resultados)
+        return'''
         
         
+        r'''
         #Execute and save results
-        with concurrent.futures.ProcessPoolExecutor() as executor:
+        with concurrent.futures.ThreadPoolExecutor() as executor:
             future_to_param = {executor.submit(sensitivity_paralelization,i, i % self.number_cores,
                 self.param_values,self.dic_data,self.sensitivity_parameters,self.working_directory,
                 self.obtain_direction_vfsmod(self.vfs_sensitivity_file)): i for i in range(len(self.param_values))}
             results = []
+            contador = 0
             for future in concurrent.futures.as_completed(future_to_param):
                 i = future_to_param[future]
+                contador +=1
                 try:
                     result = future.result()
-                    results.append((i, result)) 
+                    results.append(result) 
                 except Exception as exc:
                     print(f'Exception occurred: {exc}')
+                    #executor.shutdown(wait=False, cancel_futures=True)
+                    #print("contador",contador)
                     break
+        
+        print(results)
+        return'''
+        
+        
+        args_list = [(i, i % (self.number_cores*2), 
+              self.param_values, self.dic_data, 
+              self.sensitivity_parameters, self.working_directory, 
+              self.obtain_direction_vfsmod(self.vfs_sensitivity_file)) for i in range(len(self.param_values))]
+
+        results = []
+        #try:
+        with Pool(processes=psutil.cpu_count(logical=False)) as pool:
+            async_results = [pool.apply_async(wrapper_sensitivity_paralelization, args=(args,)) for args in args_list]
+            pool.close()
+            pool.join()  # Espera a que todos los procesos terminen 
+            for i in async_results:
+                results.append(i.get())
+                    
+        r'''except Exception as e:
+            print(f'Exception occurred: {e}')
+            pool.terminate()
+            pool.join()'''
+        
+        #Create DataFrame or results
+        self.results_sensitivity = self.create_df_sensitivity(results)
+        
         
         #Delete all files created for paralelization of sensitivity analysis
         self.delete_files_sensitivity()
+        
+        self.results_sensitivity.to_csv(r'C:\borrar\sensitivity\output.csv', index=False, header=True, sep=',')
+        return
         
         #Save results in CSV
         path = self.obtain_direction_vfsmod(self.dlg_base.file_save.text())
@@ -2800,7 +2847,7 @@ class qvfsmod:
                     f.write("----------------------------------------------------------------------" + '\n')
                     
             elif self.dlg_base.morris.isChecked():
-                print(self.results_sensitivity)
+                print("results",results)
                 with open(path, 'w') as f:
                     #Add first row
                     f.write("Morris sensitivity indexes" + '\n')
@@ -2861,6 +2908,26 @@ class qvfsmod:
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)
         self.warning_message("Sensitivity analysis completed succesfully!")
+    
+    def create_df_sensitivity(self,results):
+        """Method to create the dataframe of sensitivity after parallelization"""
+        #First create dataframe
+        
+        df = pd.DataFrame(columns=list(results[0].columns))
+        for i in results:
+            df = pd.concat([df,i], ignore_index=True)
+        #Put in the same order as the input values
+        new_df = pd.DataFrame(columns=list(results[0].columns))
+        input_parameters = list(self.dic_data.keys())
+        for i in self.param_values:
+            df_concat = df.copy()
+            for k in range(len(i)): 
+                df_concat = df_concat[df_concat[input_parameters[k]]==i[k]]
+            df_concat = df_concat.iloc[[0]]
+            new_df = pd.concat([new_df,df_concat], ignore_index=True)
+        
+        return new_df      
+            
     
     def run_uncertainity_analysis(self):
         """Method to run whole uncertainity analysis"""
@@ -3105,10 +3172,10 @@ class qvfsmod:
             copy_paste("VFS","iwq")
         
         #NOW WE REPLICATE THE FILES AS MUCH AS CORES ARE IN THE COMPUTER
-        self.number_cores = os.cpu_count()
+        self.number_cores = psutil.cpu_count(logical=False)
         
         #Replicate prj as much as cores are
-        for core in range(self.number_cores):
+        for core in range(self.number_cores*2):#we do *2 because if not there can be problems of overlapping:processes executing files that are already executing
             with open(prj_file, 'r') as file:
                 lineas = file.readlines()
             lineas = [linea.replace("sensitivity",f"sensitivity_{core}") for linea in lineas]
@@ -3117,7 +3184,7 @@ class qvfsmod:
                 for i in lineas:
                     archivo.write(i)
         #Replicate lis as much as cores are
-        for core in range(self.number_cores):
+        for core in range(self.number_cores*2):
             with open(lis_file, 'r') as file:
                 lineas = file.readlines()
             lineas = [linea.replace("sensitivity",f"sensitivity_{core}") for linea in lineas]
@@ -3129,12 +3196,12 @@ class qvfsmod:
         carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity"
         folder_path = Path(carpeta+"\\inputs")
         files = [f.name for f in folder_path.iterdir() if f.is_file()]
-        for i in range(self.number_cores):
+        for i in range(self.number_cores*2):
             for k in files:
                 shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("sensitivity",f"sensitivity_{i}"))
         #Replicate executables
         carpeta_bat = self.plugin_directory+"\\executables"
-        for core in range(self.number_cores):
+        for core in range(self.number_cores*2):
             #Execution UH
             shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_uh_{core}.bat")
             f = open(carpeta_bat+"\\"+f"execution_uh_{core}.bat","w+")
@@ -3159,11 +3226,10 @@ class qvfsmod:
     def delete_files_sensitivity(self):
         """Method to delete files of sensitivity analysis after parallelization"""
         
-        files_delete = [self.working_directory+"\\"+x for x in os.listdir(self.working_directory) if "sensitivity" in x and "_" in x]
-        files_delete += [self.working_directory+"\\inputs\\"+x for x in os.listdir(self.working_directory+"\\inputs") if "sensitivity" in x and "_" in x]
-        files_delete += [self.working_directory+"\\output\\"+x for x in os.listdir(self.working_directory+"\\output") if "sensitivity" in x and "_" in x]
+        files_delete = [self.working_directory+"\\sensitivity\\"+x for x in os.listdir(self.working_directory+"\\sensitivity") if "sensitivity" in x and "_" in x]
+        files_delete += [self.working_directory+"\\sensitivity\\inputs\\"+x for x in os.listdir(self.working_directory+"\\sensitivity"+"\\inputs") if "sensitivity" in x and "_" in x]
+        files_delete += [self.working_directory+"\\sensitivity\\output\\"+x for x in os.listdir(self.working_directory+"\\sensitivity"+"\\output") if "sensitivity" in x and "_" in x]
         files_delete += [self.plugin_directory+"\\executables\\"+x for x in os.listdir(self.plugin_directory+"\\executables") if "execution" in x and "_" in x]
-        print(files_delete)
         for i in files_delete:
             os.remove(i)
     
@@ -7348,18 +7414,24 @@ class qvfsmod:
         self.dlg_output_hyetograph.show()
 
 
+def wrapper_sensitivity_paralelization(args):
+    # Esta función envuelve la función original para manejar múltiples argumentos
+    i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file = args
+    return sensitivity_paralelization(i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file)
+
+
 def sensitivity_paralelization(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file):
     '''Function to run in paralell sensitivity analysis'''
     #dialog.sensitivity_error = False CUIDADO
-    execution_sensitivity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file)
+    execution_sensitivity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file,progress_dialog)
     #Save results
-    save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values)
+    return save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values)
 
 
-def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file):
+def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file,progress_dialog):
     """Method for the each execution of the sensitivity analysis"""
     #Progress bar update
-    #self.progress_metod(start = False,execution = number_execution+1,number_combinations = len(param_values)) CUIDADO
+    #progress_metod(start = False,execution = number_execution+1,number_combinations = len(param_values),dialog = progress_dialog) CUIDADO
     #We change the values of the inputs
     execute_uh = False
     for k,i in enumerate(dic_data.keys()):
@@ -7392,8 +7464,15 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
         #Put warning
         if not "...FINISHED..." in resultado.stdout:
             #self.sensitivity_error = True CUIDADO
-            return
             
+            with open(r"C:\borrar\sensitivity\error_uh.txt", "a") as f:
+                f.write(resultado.stdout)
+                f.write(f"Actual values: {param_values[number_execution]}\n")
+                f.write(f"----------------\n")
+            
+            return
+    
+    
     #Correct hietograph file
     correct_irn_file(working_directory+f"\\sensitivity\\inputs\\sensitivity_{core}.irn") 
     
@@ -7406,6 +7485,12 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
     #Put warning
     if not "...FINISHED..." in resultado.stdout:
         #self.sensitivity_error = True CUIDADO
+        
+        with open(r"C:\borrar\sensitivity\error_vfs.txt", "a") as f:
+                f.write(resultado.stdout)
+                f.write(f"Actual values: {param_values[number_execution]}\n")
+                f.write(f"----------------\n")
+                
         return
 
 def modify_inputs_sensitivity(extension, row, column, new_value, process,core,working_directory):
@@ -7670,6 +7755,8 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
         df_conc.insert(0,i,[param_values[number_execution][k]])
         
     #self.results_sensitivity = pd.concat([self.results_sensitivity,df_conc], ignore_index=True) CUIDADO
+    
+    return df_conc
 
 
 if __name__ == "__main__":
