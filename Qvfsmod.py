@@ -601,7 +601,7 @@ class qvfsmod:
         self.dlg_base.search_uncertainity.textChanged.connect(self.search_uncertainity_parameter)
         
         #Run sensitivity analysis
-        self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis)
+        self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis_part_one)
         
         #Run uncertainity analysis
         self.dlg_base.run_uncertainity.clicked.connect(self.run_uncertainity_analysis)
@@ -2689,8 +2689,38 @@ class qvfsmod:
             self.dlg_base.file_save.setText(text)
     
     
+    def start_analysis(self):
+        """Method to execute the class to paralelization of sensitivity analysis. A class like that 
+        has to be used because we need QTrhead to add progress bar"""
+        self.number_execution = 0
+        self.results = []
+        args_list = [(i, i % (self.number_cores*2), 
+          self.param_values, self.dic_data, 
+          self.sensitivity_parameters, self.working_directory, 
+          self.obtain_direction_vfsmod(self.vfs_sensitivity_file),self.water_quality) for i in range(len(self.param_values))]
+        self.progress_dialog = QProgressDialog("Starting sensitivity analysis...", "Cancelar", 0, len(args_list))
+        self.progress_dialog.setWindowModality(Qt.WindowModal)
+        self.progress_dialog.setWindowTitle("Progress")
+        self.progress_dialog.show()
+        
+        self.sensitivity_thread = SensitivityAnalysisThread(args_list)
+        self.sensitivity_thread.update_progress.connect(self.update_progress_dialog)
+        self.sensitivity_thread.start()
 
-    def run_sensitivity_analysis(self):
+    def update_progress_dialog(self,data):
+        """Method to update progress bar in sensitivity paralelization"""
+        self.number_execution +=1
+        self.results.append(data[1])
+        text = f"Execution {self.number_execution}/{len(self.param_values)}\n"
+        self.progress_dialog.setLabelText(text)
+        self.progress_dialog.setValue(int(self.progress_dialog.maximum()*((self.number_execution / len(self.param_values)))))
+        QCoreApplication.processEvents()  # Permitir que la interfaz gráfica responda
+        
+        if self.number_execution == len(self.param_values):
+            self.run_sensitivity_analysis_part_two()
+    
+    
+    def run_sensitivity_analysis_part_one(self):
         """Method to run whole sensitivity analysis"""
         #Create the dictionary for the sensitivity analysis
         self.dic_data = self.create_dictionary_sensitivity_analysis()
@@ -2702,7 +2732,7 @@ class qvfsmod:
             self.problem = {'num_vars': len(self.dic_data),'names': list(self.dic_data.keys()),'bounds': [x[1] for x in self.dic_data.values()],"dists":[x[0] for x in self.dic_data.values()]}
         #Create samples
         if self.dlg_base.sobol.isChecked():
-            if int(self.dlg_base.trajectories.text())<256:
+            if int(self.dlg_base.trajectories.text())<2:
                 self.warning_message("Number of samples must be 256 or higher when executing Sobol")
                 return
             self.param_values = saltelli.sample(self.problem, int(self.dlg_base.trajectories.text()))
@@ -2717,7 +2747,7 @@ class qvfsmod:
                 
             self.param_values = sample_morris(self.problem, int(self.dlg_base.trajectories.text()))
         elif self.dlg_base.fast.isChecked():
-            if int(self.dlg_base.trajectories.text())<256:
+            if int(self.dlg_base.trajectories.text())<2:
                 self.warning_message("N value must be 256 or higher when executing FAST")
                 return
             self.param_values = sample_fast(self.problem, int(self.dlg_base.trajectories.text()), M = 1)
@@ -2757,78 +2787,26 @@ class qvfsmod:
         if self.water_quality:
             self.results_sensitivity.insert(len(self.results_sensitivity.columns),"Leachate depth (m)",None)
         
-        number_outputs = len(self.results_sensitivity.columns)-len(self.dic_data)
+        self.number_outputs = len(self.results_sensitivity.columns)-1
         #Add the parameters names 
         for i in self.dic_data.keys():
             self.results_sensitivity.insert(0,i,None)
         
-        self.number_execution_sensitivity = 0
-        #Results are obtained
-        #Progress dialog is started
-        self.progress_metod(start = True)
-        r'''
-        resultados = []
-        for i in range(len(self.param_values)):
-            a = sensitivity_paralelization(i, i % self.number_cores,
-                self.param_values,self.dic_data,self.sensitivity_parameters,self.working_directory,
-                self.obtain_direction_vfsmod(self.vfs_sensitivity_file))
-            resultados.append(a)
-        print(resultados)
-        return'''
-        
-        
-        r'''
-        #Execute and save results
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future_to_param = {executor.submit(sensitivity_paralelization,i, i % self.number_cores,
-                self.param_values,self.dic_data,self.sensitivity_parameters,self.working_directory,
-                self.obtain_direction_vfsmod(self.vfs_sensitivity_file)): i for i in range(len(self.param_values))}
-            results = []
-            contador = 0
-            for future in concurrent.futures.as_completed(future_to_param):
-                i = future_to_param[future]
-                contador +=1
-                try:
-                    result = future.result()
-                    results.append(result) 
-                except Exception as exc:
-                    print(f'Exception occurred: {exc}')
-                    #executor.shutdown(wait=False, cancel_futures=True)
-                    #print("contador",contador)
-                    break
-        
-        print(results)
-        return'''
-        
-        
-        args_list = [(i, i % (self.number_cores*2), 
-              self.param_values, self.dic_data, 
-              self.sensitivity_parameters, self.working_directory, 
-              self.obtain_direction_vfsmod(self.vfs_sensitivity_file)) for i in range(len(self.param_values))]
+        #Method were the paralelization is achieved
+        self.start_analysis()
 
-        results = []
-        #try:
-        with Pool(processes=psutil.cpu_count(logical=False)) as pool:
-            async_results = [pool.apply_async(wrapper_sensitivity_paralelization, args=(args,)) for args in args_list]
-            pool.close()
-            pool.join()  # Espera a que todos los procesos terminen 
-            for i in async_results:
-                results.append(i.get())
-                    
-        r'''except Exception as e:
-            print(f'Exception occurred: {e}')
-            pool.terminate()
-            pool.join()'''
+        
+        
+    def run_sensitivity_analysis_part_two(self):
+        """Second part of sensitivity analysis to analyze the results. I have splitted sensitivity running
+        in two because we use Thread method and we need to stop till the thread finishes, if not we get an error"""
         
         #Create DataFrame or results
-        self.results_sensitivity = self.create_df_sensitivity(results)
-        
+        self.results_sensitivity = self.create_df_sensitivity(self.results)
         
         #Delete all files created for paralelization of sensitivity analysis
         self.delete_files_sensitivity()
         
-        self.results_sensitivity.to_csv(r'C:\borrar\sensitivity\output.csv', index=False, header=True, sep=',')
-        return
         
         #Save results in CSV
         path = self.obtain_direction_vfsmod(self.dlg_base.file_save.text())
@@ -2838,7 +2816,7 @@ class qvfsmod:
                     #Add first row
                     f.write("Sobol sensitivity indexes" + '\n')
                     #Add sensitivity indexes for each output
-                    for i in self.results_sensitivity.columns[-number_outputs:]:
+                    for i in self.results_sensitivity.columns[-self.number_outputs:]:
                         f.write("----------------------------------------------------------------------" + '\n')
                         f.write(f"{i}" + '\n')
                         si = sobol.analyze(self.problem, np.array(self.results_sensitivity[i]))
@@ -2847,12 +2825,11 @@ class qvfsmod:
                     f.write("----------------------------------------------------------------------" + '\n')
                     
             elif self.dlg_base.morris.isChecked():
-                print("results",results)
                 with open(path, 'w') as f:
                     #Add first row
                     f.write("Morris sensitivity indexes" + '\n')
                     #Add sensitivity indexes for each output
-                    for i in self.results_sensitivity.columns[-number_outputs:]:
+                    for i in self.results_sensitivity.columns[-self.number_outputs:]:
                         f.write("----------------------------------------------------------------------" + '\n')
                         f.write(f"{i}" + '\n')
                         si = analyze_morris(self.problem,np.array(self.param_values),np.array(self.results_sensitivity[i]))
@@ -2865,7 +2842,7 @@ class qvfsmod:
                     #Add first row
                     f.write("FAST sensitivity indexes" + '\n')
                     #Add sensitivity indexes for each output
-                    for i in self.results_sensitivity.columns[-number_outputs:]:
+                    for i in self.results_sensitivity.columns[-self.number_outputs:]:
                         f.write("----------------------------------------------------------------------" + '\n')
                         f.write(f"{i}" + '\n')
                         si = analyze_fast(self.problem,np.array(self.results_sensitivity[i]))
@@ -2925,7 +2902,6 @@ class qvfsmod:
                 df_concat = df_concat[df_concat[input_parameters[k]]==i[k]]
             df_concat = df_concat.iloc[[0]]
             new_df = pd.concat([new_df,df_concat], ignore_index=True)
-        
         return new_df      
             
     
@@ -2935,7 +2911,7 @@ class qvfsmod:
         self.dic_data = self.create_dictionary_uncertainity_analysis()
         
         #Warning
-        if int(self.dlg_base.samples_uncertainity.text())<2:
+        if int(self.dlg_base.samples_uncertainity.text())<256:
             self.warning_message("N value must be higher than 256 when executing Uncertainity Analysis")
             return
         
@@ -2967,7 +2943,7 @@ class qvfsmod:
         if self.water_quality:
             self.results_sensitivity.insert(len(self.results_sensitivity.columns),"Leachate depth (m)",None)
         
-        number_outputs = len(self.results_sensitivity.columns)-len(self.dic_data)
+        number_outputs = len(self.results_sensitivity.columns)-1
         #Add the parameters names 
         for i in self.dic_data.keys():
             self.results_sensitivity.insert(0,i,None)
@@ -3195,7 +3171,7 @@ class qvfsmod:
         #Move replicated input files 
         carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity"
         folder_path = Path(carpeta+"\\inputs")
-        files = [f.name for f in folder_path.iterdir() if f.is_file()]
+        files = [f.name for f in folder_path.iterdir() if f.is_file() and "_" not in f.name]
         for i in range(self.number_cores*2):
             for k in files:
                 shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("sensitivity",f"sensitivity_{i}"))
@@ -3228,7 +3204,7 @@ class qvfsmod:
         
         files_delete = [self.working_directory+"\\sensitivity\\"+x for x in os.listdir(self.working_directory+"\\sensitivity") if "sensitivity" in x and "_" in x]
         files_delete += [self.working_directory+"\\sensitivity\\inputs\\"+x for x in os.listdir(self.working_directory+"\\sensitivity"+"\\inputs") if "sensitivity" in x and "_" in x]
-        files_delete += [self.working_directory+"\\sensitivity\\output\\"+x for x in os.listdir(self.working_directory+"\\sensitivity"+"\\output") if "sensitivity" in x and "_" in x]
+        files_delete += [self.working_directory+"\\sensitivity\\output\\"+x for x in os.listdir(self.working_directory+"\\sensitivity"+"\\output") if "sensitivity" in x and "_" in x and x[-3:]!="csv"]
         files_delete += [self.plugin_directory+"\\executables\\"+x for x in os.listdir(self.plugin_directory+"\\executables") if "execution" in x and "_" in x]
         for i in files_delete:
             os.remove(i)
@@ -7416,22 +7392,23 @@ class qvfsmod:
 
 def wrapper_sensitivity_paralelization(args):
     # Esta función envuelve la función original para manejar múltiples argumentos
-    i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file = args
-    return sensitivity_paralelization(i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file)
+    i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality = args
+    return sensitivity_paralelization(i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality)
 
 
-def sensitivity_paralelization(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file):
+def sensitivity_paralelization(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file,water_quality):
     '''Function to run in paralell sensitivity analysis'''
-    #dialog.sensitivity_error = False CUIDADO
-    execution_sensitivity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file,progress_dialog)
+    execution = execution_sensitivity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file)
     #Save results
-    return save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values)
+    if execution == "error":
+        return save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = True)
+    else:
+        return save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = False)
 
 
-def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file,progress_dialog):
-    """Method for the each execution of the sensitivity analysis"""
+def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file):
+    """Function for the each execution of the sensitivity analysis"""
     #Progress bar update
-    #progress_metod(start = False,execution = number_execution+1,number_combinations = len(param_values),dialog = progress_dialog) CUIDADO
     #We change the values of the inputs
     execute_uh = False
     for k,i in enumerate(dic_data.keys()):
@@ -7462,15 +7439,8 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
             text=True, 
             shell=True)
         #Put warning
-        if not "...FINISHED..." in resultado.stdout:
-            #self.sensitivity_error = True CUIDADO
-            
-            with open(r"C:\borrar\sensitivity\error_uh.txt", "a") as f:
-                f.write(resultado.stdout)
-                f.write(f"Actual values: {param_values[number_execution]}\n")
-                f.write(f"----------------\n")
-            
-            return
+        if not "...FINISHED..." in resultado.stdout:            
+            return "error"
     
     
     #Correct hietograph file
@@ -7484,17 +7454,10 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
     
     #Put warning
     if not "...FINISHED..." in resultado.stdout:
-        #self.sensitivity_error = True CUIDADO
-        
-        with open(r"C:\borrar\sensitivity\error_vfs.txt", "a") as f:
-                f.write(resultado.stdout)
-                f.write(f"Actual values: {param_values[number_execution]}\n")
-                f.write(f"----------------\n")
-                
-        return
+        return "error"
 
 def modify_inputs_sensitivity(extension, row, column, new_value, process,core,working_directory):
-    """Method to modfiy inputs in sensitivity analysis"""
+    """Function to modfiy inputs in sensitivity analysis"""
     if process == "uh":
         ruta = os.path.normpath(working_directory+f"\sensitivity\sensitivity_{core}.lis")
     else:
@@ -7524,7 +7487,7 @@ def modify_inputs_sensitivity(extension, row, column, new_value, process,core,wo
 
     
 def change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file):
-    """Method to modifi length of buffer in sensitivity analysis"""
+    """Function to modifi length of buffer in sensitivity analysis"""
     #First we save the .ikw file path
     ruta = vfs_sensitivity_file
     ikw = working_directory+f"\\sensitivity\\inputs\\sensitivity_{core}.ikw"
@@ -7595,7 +7558,7 @@ def change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file):
         archivo.write(contenido)
     
 def change_filter_manning_sensitivity(value_change,column,core):
-    """Method to change the manning and slope value of the buffer in sensitivity analysis"""
+    """Function to change the manning and slope value of the buffer in sensitivity analysis"""
     #We obtain information of ikw file
     ikw = working_directory+f"\\sensitivity\\inputs\\sensitivity_{core}.ikw"
     
@@ -7619,7 +7582,7 @@ def change_filter_manning_sensitivity(value_change,column,core):
 
 
 def correct_irn_file(path):
-    """Method to correct the .irn file (the number of steps)"""
+    """Function to correct the .irn file (the number of steps)"""
     #Open file
     with open(path, "r") as archivo:
         lineas = archivo.readlines()
@@ -7650,10 +7613,10 @@ def correct_irn_file(path):
         archivo.write(contenido)
 
 
-def save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values):
-    """Method to save sensitivity results"""
+def save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality,error):
+    """Function to save sensitivity results"""
     #Obtain the values
-    r'''if #self.sensitivity_error: CUIDADO
+    if error:
         #Dataframe to concatenate to the sensitivity results
         df_conc = pd.DataFrame(data = {"Error":[1],"Total Runoff from source (mm)":[-1.0],
             "Total Runoff from Source (m3)":[-1.0],"Total Runoff out from Filter (mm)":[-1.0],
@@ -7662,102 +7625,104 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
             "Mass Sediment Output from Filter (kg)":[-1.0],"Concentration Sediment in Runoff exiting the Filter (g/L)":[-1.0],
             "Sediment Delivery Ratio":[-1.0],"Runoff Delivery Ratio":[-1.0],"Water Front Depth (m)":[-1.0]})
         #Add water quality parameters if present
-        if self.water_quality:
-            df_conc["Leachate depth (m)"]=-1.0'''
+        if water_quality:
+            df_conc["Leachate depth (m)"]=-1.0
 
-    #else:CUIDADO
-    ruta = working_directory+f"\\sensitivity\\output\\sensitivity_{core}.osp"
-    
-    
-    
+    else:
+        ruta = working_directory+f"\\sensitivity\\output\\sensitivity_{core}.osp"
+        with open(ruta, "r") as archivo:
+            lineas = archivo.readlines()
+            
+        #Function to obtain specific results form .osp file
+        def obtain_result(string):
+            try:
+                for i in lineas:
+                    if i.split("=")[-1]==string:
+                        for k in i.split("=")[0].split(" "):
+                            try:
+                                output = float(k)
+                                break
+                            except:
+                                pass
+                return output
+                
+            except UnboundLocalError:
+                return -1.0
+                
         
-        
-    with open(ruta, "r") as archivo:
-        lineas = archivo.readlines()
-    
-    
-        
-    #Function to obtain specific results form .osp file
-    def obtain_result(string):
-        for i in lineas:
-            if i.split("=")[-1]==string:
-                for k in i.split("=")[0].split(" "):
-                    try:
-                        output = float(k)
-                        break
-                    except:
-                        pass
-        return output
-    
-    #Obtain results osp
-    try:
-        runoff_from_source_mm = obtain_result(" Total Runoff from Source (mm depth over Source Area)\n")
-    except:
-        #borrar CUIDADO
-        with open(r"C:\borrar\sensitivity\error.txt", 'w') as f:
-            for linea in lineas:
-                f.write(linea)
-            f.close()
-        with open(r"C:\borrar\sensitivity\log.txt", "a") as f:
-            f.write(f"Running sensitivity analysis for execution {number_execution} on core {core}\n")
-            f.write(f"Actual values: {param_values[number_execution]}\n")
-            f.write(f"Working directory: {working_directory}\n")
-            f.write(f"Ruta: {ruta}\n")
-            f.write(f"lineas:{lineas}\n")
-            f.write(f"-------------------------\n")
+        #Obtain results osp
+        runoff_from_source_mm = obtain_result(" Total Runoff from Source (mm depth over Source Area)\n")  
+        runoff_from_source_m3 = obtain_result(" Total Runoff from Source\n")
+        runoff_out_filter_mm = obtain_result(" Total Runoff out from Filter (mm depth over Source+Filter)\n")
+        runoff_out_filter_m3 = obtain_result(" Total Runoff out from Filter\n")
+        infiltration_filter = obtain_result(" Total Infiltration in Filter\n")
+        mass_sediment_input_filter = obtain_result(" Mass Sediment Input to Filter\n")
+        concentration_sediment_source = obtain_result(" Concentration Sediment in Runoff from source Area\n")
+        sediment_out_filter = obtain_result(" Mass Sediment Output from Filter\n")
+        concentration_sediment_filter = obtain_result(" Concentration Sediment in Runoff exiting the Filter\n")
+        sdr = obtain_result(" Sediment Delivery Ratio\n")
+        rdr = obtain_result(" Runoff Delivery Ratio\n")
+
             
         
-            
+        #Obtain results ohy
+        ruta = working_directory+f"\\sensitivity\\output\\sensitivity_{core}.ohy"
+        with open(ruta, "r") as archivo:
+            lineas_ohy = archivo.readlines()
+        water_front_depth =float(lineas_ohy[-1].split()[-2])
         
-    runoff_from_source_m3 = obtain_result(" Total Runoff from Source\n")
-    runoff_out_filter_mm = obtain_result(" Total Runoff out from Filter (mm depth over Source+Filter)\n")
-    runoff_out_filter_m3 = obtain_result(" Total Runoff out from Filter\n")
-    infiltration_filter = obtain_result(" Total Infiltration in Filter\n")
-    mass_sediment_input_filter = obtain_result(" Mass Sediment Input to Filter\n")
-    concentration_sediment_source = obtain_result(" Concentration Sediment in Runoff from source Area\n")
-    sediment_out_filter = obtain_result(" Mass Sediment Output from Filter\n")
-    concentration_sediment_filter = obtain_result(" Concentration Sediment in Runoff exiting the Filter\n")
-    sdr = obtain_result(" Sediment Delivery Ratio\n")
-    rdr = obtain_result(" Runoff Delivery Ratio\n")
-    
-    #Obtain results ohy
-    ruta = working_directory+f"\\sensitivity\\output\\sensitivity_{core}.ohy"
-    with open(ruta, "r") as archivo:
-        lineas_ohy = archivo.readlines()
-    water_front_depth =float(lineas_ohy[-1].split()[-2])
-    
 
-    
-    #Dataframe to concatenate results
-    df_conc = pd.DataFrame(data = {"Error":[0],"Total Runoff from source (mm)":[runoff_from_source_mm],
-        "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm)":[runoff_out_filter_mm],
-        "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter (m3)":[infiltration_filter],
-        "Mass Sediment Input to Filter (kg)":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area (g/L)":[concentration_sediment_source],
-        "Mass Sediment Output from Filter (kg)":[sediment_out_filter],"Concentration Sediment in Runoff exiting the Filter (g/L)":[concentration_sediment_filter],
-        "Sediment Delivery Ratio":[sdr],"Runoff Delivery Ratio":[rdr],"Water Front Depth (m)":[water_front_depth]})
-    #Add water quality parameters if present
-    r'''if self.water_quality: CUIDADO
-        #Obtain results water quality
-        with open(self.working_directory+f"\\sensitivity\\output\\sensitivity_{core}.owq", "r") as archivo:
-            lineas_owq = archivo.readlines()
-        valores = []
-        for i in range(len(lineas_owq)):
-            if lineas_owq[i] == "      Z(m)      C(mg/L)      S(mg/mg)\n":
-                for k in range(i+2,len(lineas_owq)):
-                    if len(lineas_owq[k].split())==0 or (float(lineas_owq[k].split()[1])==float(0)) and (float(lineas_owq[k].split()[2])==float(0)):
-                        profundidad_lixiviado = float(lineas_owq[k].split()[0])
-                        break
-                    
-        df_conc["Leachate depth (m)"]=profundidad_lixiviado'''
-    
+        
+        #Dataframe to concatenate results
+        df_conc = pd.DataFrame(data = {"Error":[0],"Total Runoff from source (mm)":[runoff_from_source_mm],
+            "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm)":[runoff_out_filter_mm],
+            "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter (m3)":[infiltration_filter],
+            "Mass Sediment Input to Filter (kg)":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area (g/L)":[concentration_sediment_source],
+            "Mass Sediment Output from Filter (kg)":[sediment_out_filter],"Concentration Sediment in Runoff exiting the Filter (g/L)":[concentration_sediment_filter],
+            "Sediment Delivery Ratio":[sdr],"Runoff Delivery Ratio":[rdr],"Water Front Depth (m)":[water_front_depth]})
+        #Add water quality parameters if present
+        if water_quality:
+            #Obtain results water quality
+            with open(working_directory+f"\\sensitivity\\output\\sensitivity_{core}.owq", "r") as archivo:
+                lineas_owq = archivo.readlines()
+            valores = []
+            for i in range(len(lineas_owq)):
+                if lineas_owq[i] == "      Z(m)      C(mg/L)      S(mg/mg)\n":
+                    for k in range(i+2,len(lineas_owq)):
+                        if len(lineas_owq[k].split())==0 or (float(lineas_owq[k].split()[1])==float(0)) and (float(lineas_owq[k].split()[2])==float(0)):
+                            profundidad_lixiviado = float(lineas_owq[k].split()[0])
+                            break
+                        
+            df_conc["Leachate depth (m)"]=profundidad_lixiviado
+        
     #Add the values of inputs 
     for k,i in enumerate(dic_data.keys()):
         df_conc.insert(0,i,[param_values[number_execution][k]])
-        
-    #self.results_sensitivity = pd.concat([self.results_sensitivity,df_conc], ignore_index=True) CUIDADO
     
     return df_conc
 
+class SensitivityAnalysisThread(QThread):
+    """Class to run parallelization of sensitivity analysis with QThread so we can se the progress bar"""
+    update_progress = pyqtSignal(list)
+    def __init__(self, args_list):
+        super().__init__()
+        self.args_list = args_list
+    def run(self):
+        with Pool(processes=psutil.cpu_count(logical=False)) as pool:
+            async_results = [
+                pool.apply_async(
+                    wrapper_sensitivity_paralelization,
+                    args=(args,),
+                    callback=lambda result, idx=i: self.callback(idx, result)  # Cambiado aquí
+                ) for i, args in enumerate(self.args_list)
+            ]
+            pool.close()
+            pool.join()  # Espera a que todos los procesos terminen
+
+        
+
+    def callback(self, execution_num,result):  # Cambiado para recibir solo execution_num
+        self.update_progress.emit([execution_num,result])
 
 if __name__ == "__main__":
     
