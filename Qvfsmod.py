@@ -429,7 +429,7 @@ class qvfsmod:
         self.dlg_design_results_graph.threshold.textChanged.connect(self.update_design_graph)
         
         #Run design
-        self.dlg_base.design_run.clicked.connect(self.run_design)
+        self.dlg_base.design_run.clicked.connect(self.run_design_part_one)
         
         #Update values of .ikw file
         self.dlg_overland_flow.save_continue.clicked.connect(self.create_ikw_file)
@@ -604,7 +604,7 @@ class qvfsmod:
         self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis_part_one)
         
         #Run uncertainity analysis
-        self.dlg_base.run_uncertainity.clicked.connect(self.run_uncertainity_analysis)
+        self.dlg_base.run_uncertainity.clicked.connect(self.run_uncertainity_analysis_part_one)
         
         #Show sensitivity results
         self.dlg_base.sobol_results.clicked.connect(self.show_graph_sensitivity_global)
@@ -1204,7 +1204,8 @@ class qvfsmod:
             "isd":self.dlg_base.line_incoming,"irn":self.dlg_base.line_storm,"iro":self.dlg_base.line_source,"iwq":self.dlg_base.line_water,
             "og1":self.dlg_base.line_sediment,"og2":self.dlg_base.line_flow,"ohy":self.dlg_base.line_hydrograph_2,
             "osm":self.dlg_base.line_waterland,"osp":self.dlg_base.line_overall,"owq":self.dlg_base.line_quality}
-
+        #Add text
+        water_quality = False
         if os.path.exists(path):  
             try:
                 with open(path, 'r') as file:
@@ -1217,8 +1218,16 @@ class qvfsmod:
                         ikw = ikw.replace("\n", "") #take out the line jumps
                         text = os.path.relpath(ikw, self.dlg_base.working_directory_vfsmod.text())
                         dictionary[i[:3]].setText(text)
+                    if i[:3] == "iwq":
+                        water_quality = True
+                        
             except:
                 pass
+                
+        #Check water quality
+        if water_quality:
+            self.dlg_base.water_quality.setChecked(True)
+            
         
     def add_values_uh_outputs_dialog(self):
         """Method to add .lis output paths and inp to the dialog"""
@@ -1442,7 +1451,7 @@ class qvfsmod:
             with open(path, 'r') as file:
                 lineas = file.readlines()
             #Direct input
-            direct = self.add_values_dialog(lineas,1,0,self.dlg_water_quality.line_kd, True)
+            direct = int(self.add_values_dialog(lineas,1,0,self.dlg_water_quality.line_kd, True))
             if direct == 1: self.dlg_water_quality.check_direct.setChecked(False)
             else: self.dlg_water_quality.check_direct.setChecked(True)
             #Kd
@@ -2688,8 +2697,37 @@ class qvfsmod:
         else:
             self.dlg_base.file_save.setText(text)
     
+    def start_analysis_design(self):
+        """Method to execute the class to paralelization of design analysis. A class like that 
+        has to be used because we need QTrhead to add progress bar"""
+        self.number_execution = 0
+        self.results = []
+        args_list = [(i, i % (self.number_cores*2), 
+          self.combinations_design,self.working_directory,
+          self.dlg_base.design_length.isChecked(),self.dlg_base.design_spacing.isChecked(),
+          self.obtain_direction_vfsmod(self.dlg_base.design_vfs_file.text())) for i in range(len(self.combinations_design))]
+        self.progress_dialog = QProgressDialog("Starting design...", "Cancel", 0, len(args_list))
+        self.progress_dialog.setWindowModality(Qt.WindowModal)
+        self.progress_dialog.setWindowTitle("Progress")
+        self.progress_dialog.show()
+        
+        self.sensitivity_thread = DesignAnalysisThread(args_list)
+        self.sensitivity_thread.update_progress.connect(self.update_progress_dialog_design)
+        self.sensitivity_thread.start()
+
+    def update_progress_dialog_design(self,data):
+        """Method to update progress bar in design paralelization"""
+        self.number_execution +=1
+        self.results.append(data[1])
+        text = f"Execution {self.number_execution}/{len(self.combinations_design)}\n"
+        self.progress_dialog.setLabelText(text)
+        self.progress_dialog.setValue(int(self.progress_dialog.maximum()*((self.number_execution / len(self.combinations_design)))))
+        QCoreApplication.processEvents()  # Permitir que la interfaz gráfica responda
+        
+        if self.number_execution == len(self.combinations_design):
+            self.run_design_part_two()
     
-    def start_analysis(self):
+    def start_analysis_sensitivity(self):
         """Method to execute the class to paralelization of sensitivity analysis. A class like that 
         has to be used because we need QTrhead to add progress bar"""
         self.number_execution = 0
@@ -2698,16 +2736,16 @@ class qvfsmod:
           self.param_values, self.dic_data, 
           self.sensitivity_parameters, self.working_directory, 
           self.obtain_direction_vfsmod(self.vfs_sensitivity_file),self.water_quality) for i in range(len(self.param_values))]
-        self.progress_dialog = QProgressDialog("Starting sensitivity analysis...", "Cancelar", 0, len(args_list))
+        self.progress_dialog = QProgressDialog("Starting sensitivity analysis...", "Cancel", 0, len(args_list))
         self.progress_dialog.setWindowModality(Qt.WindowModal)
         self.progress_dialog.setWindowTitle("Progress")
         self.progress_dialog.show()
         
         self.sensitivity_thread = SensitivityAnalysisThread(args_list)
-        self.sensitivity_thread.update_progress.connect(self.update_progress_dialog)
+        self.sensitivity_thread.update_progress.connect(self.update_progress_dialog_sensitivity)
         self.sensitivity_thread.start()
 
-    def update_progress_dialog(self,data):
+    def update_progress_dialog_sensitivity(self,data):
         """Method to update progress bar in sensitivity paralelization"""
         self.number_execution +=1
         self.results.append(data[1])
@@ -2718,6 +2756,36 @@ class qvfsmod:
         
         if self.number_execution == len(self.param_values):
             self.run_sensitivity_analysis_part_two()
+    
+    def start_analysis_uncertainity(self):
+        """Method to execute the class to paralelization of uncertainity analysis. A class like that 
+        has to be used because we need QTrhead to add progress bar"""
+        self.number_execution = 0
+        self.results = []
+        args_list = [(i, i % (self.number_cores*2), 
+          self.param_values, self.dic_data, 
+          self.sensitivity_parameters, self.working_directory, 
+          self.obtain_direction_vfsmod(self.vfs_uncertainity_file),self.water_quality) for i in range(len(self.combinations_design))]
+        self.progress_dialog = QProgressDialog("Starting uncertainity analysis...", "Cancel", 0, len(args_list))
+        self.progress_dialog.setWindowModality(Qt.WindowModal)
+        self.progress_dialog.setWindowTitle("Progress")
+        self.progress_dialog.show()
+        
+        self.sensitivity_thread = UncertainityAnalysisThread(args_list)
+        self.sensitivity_thread.update_progress.connect(self.update_progress_dialog_uncertainity)
+        self.sensitivity_thread.start()
+
+    def update_progress_dialog_uncertainity(self,data):
+        """Method to update progress bar in uncertainity paralelization"""
+        self.number_execution +=1
+        self.results.append(data[1])
+        text = f"Execution {self.number_execution}/{len(self.param_values)}\n"
+        self.progress_dialog.setLabelText(text)
+        self.progress_dialog.setValue(int(self.progress_dialog.maximum()*((self.number_execution / len(self.param_values)))))
+        QCoreApplication.processEvents()  # Permitir que la interfaz gráfica responda
+        
+        if self.number_execution == len(self.param_values):
+            self.run_uncertainity_analysis_part_two()
     
     
     def run_sensitivity_analysis_part_one(self):
@@ -2732,7 +2800,7 @@ class qvfsmod:
             self.problem = {'num_vars': len(self.dic_data),'names': list(self.dic_data.keys()),'bounds': [x[1] for x in self.dic_data.values()],"dists":[x[0] for x in self.dic_data.values()]}
         #Create samples
         if self.dlg_base.sobol.isChecked():
-            if int(self.dlg_base.trajectories.text())<2:
+            if int(self.dlg_base.trajectories.text())<256:
                 self.warning_message("Number of samples must be 256 or higher when executing Sobol")
                 return
             self.param_values = saltelli.sample(self.problem, int(self.dlg_base.trajectories.text()))
@@ -2747,7 +2815,7 @@ class qvfsmod:
                 
             self.param_values = sample_morris(self.problem, int(self.dlg_base.trajectories.text()))
         elif self.dlg_base.fast.isChecked():
-            if int(self.dlg_base.trajectories.text())<2:
+            if int(self.dlg_base.trajectories.text())<256:
                 self.warning_message("N value must be 256 or higher when executing FAST")
                 return
             self.param_values = sample_fast(self.problem, int(self.dlg_base.trajectories.text()), M = 1)
@@ -2793,7 +2861,7 @@ class qvfsmod:
             self.results_sensitivity.insert(0,i,None)
         
         #Method were the paralelization is achieved
-        self.start_analysis()
+        self.start_analysis_sensitivity()
 
         
         
@@ -2886,10 +2954,31 @@ class qvfsmod:
         self.progress_metod(close = True)
         self.warning_message("Sensitivity analysis completed succesfully!")
     
+    def create_df_design(self,results):
+        """Method to create the dataframe of design after parallelization"""
+        #First create dataframe
+        df = pd.DataFrame(columns=list(results[0].columns))
+        for i in results:
+            df = pd.concat([df,i], ignore_index=True)
+        #Put in the same order as the input values
+        new_df = pd.DataFrame(columns=list(results[0].columns))
+        input_parameters = ["Rainfall (mm)"]
+        if self.dlg_base.design_length.isChecked():
+            input_parameters += "VFS Length (m)"
+        if self.dlg_base.design_spacing.isChecked():
+            input_parameters += "Vegetation Spacing (cm)"
+        
+        for i in self.combinations_design:
+            df_concat = df.copy()
+            for k in range(len(i)): 
+                df_concat = df_concat[df_concat[input_parameters[k]]==i[k]]
+            df_concat = df_concat.iloc[[0]]
+            new_df = pd.concat([new_df,df_concat], ignore_index=True)
+        return new_df
+    
     def create_df_sensitivity(self,results):
         """Method to create the dataframe of sensitivity after parallelization"""
         #First create dataframe
-        
         df = pd.DataFrame(columns=list(results[0].columns))
         for i in results:
             df = pd.concat([df,i], ignore_index=True)
@@ -2902,16 +2991,25 @@ class qvfsmod:
                 df_concat = df_concat[df_concat[input_parameters[k]]==i[k]]
             df_concat = df_concat.iloc[[0]]
             new_df = pd.concat([new_df,df_concat], ignore_index=True)
-        return new_df      
+        return new_df
+    
+    def create_df_uncertainity(self,results):
+        """Method to create the dataframe of uncertainity after parallelization"""
+        #First create dataframe
+        df = pd.DataFrame(columns=list(results[0].columns))
+        for i in results:
+            df = pd.concat([df,i], ignore_index=True)
+        return df     
             
     
-    def run_uncertainity_analysis(self):
-        """Method to run whole uncertainity analysis"""
+    def run_uncertainity_analysis_part_one(self):
+        """Method to run parallel processing of uncertainity analysis"""
         #Create the dictionary for the sensitivity analysis
         self.dic_data = self.create_dictionary_uncertainity_analysis()
+        self.vfs_uncertainity_file = self.dlg_base.vfs_file_uncertainity.text()
         
         #Warning
-        if int(self.dlg_base.samples_uncertainity.text())<256:
+        if int(self.dlg_base.samples_uncertainity.text())<2:
             self.warning_message("N value must be higher than 256 when executing Uncertainity Analysis")
             return
         
@@ -2929,6 +3027,7 @@ class qvfsmod:
         #We start obtaining the results
         #Create folders of uncertainity analysis
         self.create_folder_uncertainity_analysis()
+        
         #Move files to uncertainity analysis folder
         self.move_files_uncertainity_analysis()
         
@@ -2947,17 +3046,19 @@ class qvfsmod:
         #Add the parameters names 
         for i in self.dic_data.keys():
             self.results_sensitivity.insert(0,i,None)
+        #Method were the paralelization is achieved
+        self.start_analysis_uncertainity()
         
-        self.number_execution_sensitivity = 0
-        #Results are obtained
-        #Start with the progress bar
-        self.progress_metod(start = True)
-        for k in self.param_values:
-            self.sensitivity_error = False
-            self.execution_uncertainity_analysis()
-            #Save results
-            self.save_results_uncertainity_analysis()
-            self.number_execution_sensitivity+=1
+        
+    def run_uncertainity_analysis_part_two(self):
+        """Second part of uncertainity analysis to analyze the results. I have splitted uncertainity running
+        in two because we use Thread method and we need to stop till the thread finishes, if not we get an error"""
+
+        #Create DataFrame or results
+        self.results_sensitivity = self.create_df_uncertainity(self.results)
+        
+        #Delete all files created for paralelization of sensitivity analysis
+        self.delete_files_uncertainity()
             
         #Save results in CSV
         path = self.obtain_direction_vfsmod(self.dlg_base.file_save_uncertainity.text())
@@ -2980,88 +3081,143 @@ class qvfsmod:
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)
         self.warning_message("Uncertainity analysis completed succesfully!")
-        
     
     
-    def save_results_uncertainity_analysis(self):
-        """Method to save uncertainity results"""
-        #Obtain the values
-        if self.sensitivity_error:
-            #Dataframe to concatenate to the uncertainity results
-            df_conc = pd.DataFrame(data = {"Error":[1],"Total Runoff from source (mm)":[-1],
-                "Total Runoff from Source (m3)":[-1],"Total Runoff out from Filter (mm)":[-1],
-                "Total Runoff out from Filter (m3)":[-1],"Total Infiltration in Filter (m3)":[-1],
-                "Mass Sediment Input to Filter (kg)":[-1],"Concentration Sediment in Runoff from source Area (g/L)":[-1],
-                "Mass Sediment Output from Filter (kg)":[-1],"Concentration Sediment in Runoff exiting the Filter (g/L)":[-1],
-                "Sediment Delivery Ratio":[-1],"Runoff Delivery Ratio":[-1]})
-            #Add water quality parameters if present
+    def move_files_design_analysis(self):
+        """Method to move files to the corresponding folders for sensitiviy analysis"""
+        #FIRST WE MOVE THE FILES TO THE FOLDER OF DESIGN ANALYSIS
+        #Prj
+        prj_file = self.dlg_base.working_directory_vfsmod.text()+"\\design\\design.prj"
+        #Check if water quality is simulated
+        with open(self.obtain_direction_vfsmod(self.dlg_base.design_vfs_file.text()), "r") as archivo:
+            lineas = archivo.readlines()
+        self.water_quality = False
+        for i in lineas:
+            if i[:3]=="iwq":
+                self.water_quality = True
+            
+        #Create file
+        with open(prj_file, 'w') as archivo:
+            archivo.write(f"ikw=inputs\\design.ikw  \n")
+            archivo.write(f"iso=inputs\\design.iso  \n")
+            archivo.write(f"igr=inputs\\design.igr  \n")
+            archivo.write(f"isd=inputs\\design.isd  \n")
+            archivo.write(f"irn=inputs\\design.irn  \n")
+            archivo.write(f"iro=inputs\\design.iro  \n")
             if self.water_quality:
-                df_conc["Leachate depth (m)"]=-1.0
-        else:
-            ruta = self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\output\\uncertainity.osp"
-            with open(ruta, "r") as archivo:
-                lineas = archivo.readlines()
-            #Function to obtain specific results form .osp file
-            def obtain_result(string):
+                archivo.write(f"iwq=inputs\\design.iwq  \n")
+            archivo.write(f"og1=output\\design.og1  \n")
+            archivo.write(f"og2=output\\design.og2  \n")
+            archivo.write(f"ohy=output\\design.ohy  \n")
+            archivo.write(f"osm=output\\design.osm  \n")
+            archivo.write(f"osp=output\\design.osp  \n")
+            if self.water_quality:
+                archivo.write(f"owq=output\\design.owq  \n")
+        
+        #UH
+        lis_file = self.dlg_base.working_directory_vfsmod.text()+"\\design\\design.lis"
+        #Create file
+        with open(lis_file, 'w') as archivo:
+            archivo.write(f"inp=inputs\\design.inp  \n")
+            archivo.write(f"iro=inputs\\design.iro  \n")
+            archivo.write(f"irn=inputs\\design.irn  \n")
+            archivo.write(f"isd=inputs\\design.isd  \n")
+            archivo.write(f"out=inputs\\design.out  \n")
+            archivo.write(f"hyt=inputs\\design.hyt  \n")
+        
+        #REST OF THE FILES
+        #Function to copy and paste the inputs to create the files to use in the design analysis
+        def copy_paste(process,type_input):
+            ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\design\\inputs\\design.{type_input}" 
+            if process == "UH":
+                ruta = self.obtain_direction_vfsmod(self.dlg_base.design_uh_file.text())
+            elif process == "VFS":
+                ruta = self.obtain_direction_vfsmod(self.dlg_base.design_vfs_file.text())
+            if os.path.exists(ruta) and os.path.isfile(ruta):
+                #First we open .prj and obtain the direction of the copying file
+                with open(ruta, "r") as archivo:
+                    lineas = archivo.readlines()
                 for i in lineas:
-                    if i.split("=")[-1]==string:
-                        for k in i.split("=")[0].split(" "):
-                            try:
-                                output = float(k)
-                                break
-                            except:
-                                pass
-                return output
-            
-            #Obtain results
-            runoff_from_source_mm = obtain_result(" Total Runoff from Source (mm depth over Source Area)\n")
-            runoff_from_source_m3 = obtain_result(" Total Runoff from Source\n")
-            runoff_out_filter_mm = obtain_result(" Total Runoff out from Filter (mm depth over Source+Filter)\n")
-            runoff_out_filter_m3 = obtain_result(" Total Runoff out from Filter\n")
-            infiltration_filter = obtain_result(" Total Infiltration in Filter\n")
-            mass_sediment_input_filter = obtain_result(" Mass Sediment Input to Filter\n")
-            concentration_sediment_source = obtain_result(" Concentration Sediment in Runoff from source Area\n")
-            sediment_out_filter = obtain_result(" Mass Sediment Output from Filter\n")
-            concentration_sediment_filter = obtain_result(" Concentration Sediment in Runoff exiting the Filter\n")
-            sdr = obtain_result(" Sediment Delivery Ratio\n")
-            rdr = obtain_result(" Runoff Delivery Ratio\n")
-            
-            #Obtain results ohy
-            ruta = self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\output\\uncertainity.ohy"
-            with open(ruta, "r") as archivo:
-                lineas_ohy = archivo.readlines()
-            water_front_depth =float(lineas_ohy[-1].split()[-2])
-            
-
-            
-            #Dataframe to concatenate results
-            df_conc = pd.DataFrame(data = {"Error":[0],"Total Runoff from source (mm)":[runoff_from_source_mm],
-                "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm)":[runoff_out_filter_mm],
-                "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter (m3)":[infiltration_filter],
-                "Mass Sediment Input to Filter (kg)":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area (g/L)":[concentration_sediment_source],
-                "Mass Sediment Output from Filter (kg)":[sediment_out_filter],"Concentration Sediment in Runoff exiting the Filter (g/L)":[concentration_sediment_filter],
-                "Sediment Delivery Ratio":[sdr],"Runoff Delivery Ratio":[rdr],"Water Front Depth (m)":[water_front_depth]})
-            #Add water quality parameters if present
-            if self.water_quality:
-                #Obtain results water quality
-                with open(self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\output\\uncertainity.owq", "r") as archivo:
-                    lineas_owq = archivo.readlines()
-                valores = []
-                for i in range(len(lineas_owq)):
-                    if lineas_owq[i] == "      Z(m)      C(mg/L)      S(mg/mg)\n":
-                        for k in range(i+2,len(lineas_owq)):
-                            if len(lineas_owq[k].split())==0 or (float(lineas_owq[k].split()[1])==float(0)) and (float(lineas_owq[k].split()[2])==float(0)):
-                                profundidad_lixiviado = float(lineas_owq[k].split()[0])
-                                break
-                df_conc["Leachate depth (m)"]=profundidad_lixiviado
+                    if i[:3]==type_input:
+                        ikw = i.split("=")[-1]
+                if not os.path.isabs(ikw): #relative path
+                    ikw = os.path.join(os.path.dirname(ruta), ikw)
+                ikw = ikw.replace("\n", "") #take out the line jumps
+                shutil.copyfile(ikw, ruta_pegar)
+        #INP
+        copy_paste("UH","inp")
+        #OUT
+        copy_paste("UH","out")
+        #HYT
+        copy_paste("UH","hyt")
         
-        #Add the values of inputs 
-        for k,i in enumerate(self.dic_data.keys()):
-            df_conc.insert(0,i,[self.param_values[self.number_execution_sensitivity][k]])
-            
-        self.results_sensitivity = pd.concat([self.results_sensitivity,df_conc], ignore_index=True)
+        #IKW
+        copy_paste("VFS","ikw")
+        #ISO
+        copy_paste("VFS","iso")
+        #IGR
+        copy_paste("VFS","igr")
+        #ISD
+        copy_paste("VFS","isd")
+        #IRN
+        copy_paste("VFS","irn")
+        #IRO
+        copy_paste("VFS","iro")
+        #IWQ
+        if self.water_quality:
+            copy_paste("VFS","iwq")
         
+        #NOW WE REPLICATE THE FILES AS MUCH AS CORES ARE IN THE COMPUTER
+        self.number_cores = psutil.cpu_count(logical=False)
         
+        #Replicate prj as much as cores are
+        for core in range(self.number_cores*2):#we do *2 because if not there can be problems of overlapping:processes executing files that are already executing
+            with open(prj_file, 'r') as file:
+                lineas = file.readlines()
+            lineas = [linea.replace("design",f"design_{core}") for linea in lineas]
+            new_filepath = prj_file.replace("design.prj",f"design_{core}.prj")
+            with open(new_filepath, 'w') as archivo:
+                for i in lineas:
+                    archivo.write(i)
+        #Replicate lis as much as cores are
+        for core in range(self.number_cores*2):
+            with open(lis_file, 'r') as file:
+                lineas = file.readlines()
+            lineas = [linea.replace("design",f"design_{core}") for linea in lineas]
+            new_filepath = lis_file.replace("design.lis",f"design_{core}.lis")
+            with open(new_filepath, 'w') as archivo:
+                for i in lineas:
+                    archivo.write(i)
+        #Move replicated input files 
+        carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\design"
+        folder_path = Path(carpeta+"\\inputs")
+        files = [f.name for f in folder_path.iterdir() if f.is_file() and "_" not in f.name]
+        for i in range(self.number_cores*2):
+            for k in files:
+                shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("design",f"design_{i}"))
+        #Replicate executables
+        carpeta_bat = self.plugin_directory+"\\executables"
+        for core in range(self.number_cores*2):
+            #Execution UH
+            shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_uh_{core}.bat")
+            f = open(carpeta_bat+"\\"+f"execution_uh_{core}.bat","w+")
+            linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\design\\"')
+            linea_dos = f'"{self.plugin_directory}\\executables\\uh" design_{core}.lis'
+            linea_tres = "Pause"
+            f.write("{} \n".format(linea_uno))
+            f.write("{} \n".format(linea_dos))
+            f.write("{} \n".format(linea_tres))
+            f.close()
+            #Execution VFS
+            shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_vfs_{core}.bat")
+            f = open(carpeta_bat+"\\"+f"execution_vfs_{core}.bat","w+")
+            linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\design\\"')
+            linea_dos = f'"{self.plugin_directory}\\executables\\vfsm" design_{core}.prj'
+            linea_tres = "Pause"
+            f.write("{} \n".format(linea_uno))
+            f.write("{} \n".format(linea_dos))
+            f.write("{} \n".format(linea_tres))
+            f.close()
     
     def move_files_sensitivity_analysis(self):
         """Method to move files to the corresponding folders for sensitiviy analysis"""
@@ -3199,12 +3355,29 @@ class qvfsmod:
             f.write("{} \n".format(linea_tres))
             f.close()
     
+    def delete_files_design(self):
+        """Method to delete files of design analysis after parallelization"""
+        files_delete = [self.working_directory+"\\design\\"+x for x in os.listdir(self.working_directory+"\\design") if "design" in x and "_" in x]
+        files_delete += [self.working_directory+"\\design\\inputs\\"+x for x in os.listdir(self.working_directory+"\\design"+"\\inputs") if "design" in x and "_" in x]
+        files_delete += [self.working_directory+"\\design\\output\\"+x for x in os.listdir(self.working_directory+"\\design"+"\\output") if "design" in x and "_" in x and x[-3:]!="csv"]
+        files_delete += [self.plugin_directory+"\\executables\\"+x for x in os.listdir(self.plugin_directory+"\\executables") if "execution" in x and "_" in x]
+        for i in files_delete:
+            os.remove(i)
+    
     def delete_files_sensitivity(self):
         """Method to delete files of sensitivity analysis after parallelization"""
-        
         files_delete = [self.working_directory+"\\sensitivity\\"+x for x in os.listdir(self.working_directory+"\\sensitivity") if "sensitivity" in x and "_" in x]
         files_delete += [self.working_directory+"\\sensitivity\\inputs\\"+x for x in os.listdir(self.working_directory+"\\sensitivity"+"\\inputs") if "sensitivity" in x and "_" in x]
         files_delete += [self.working_directory+"\\sensitivity\\output\\"+x for x in os.listdir(self.working_directory+"\\sensitivity"+"\\output") if "sensitivity" in x and "_" in x and x[-3:]!="csv"]
+        files_delete += [self.plugin_directory+"\\executables\\"+x for x in os.listdir(self.plugin_directory+"\\executables") if "execution" in x and "_" in x]
+        for i in files_delete:
+            os.remove(i)
+    
+    def delete_files_uncertainity(self):
+        """Method to delete files of uncertainity analysis after parallelization"""
+        files_delete = [self.working_directory+"\\uncertainity\\"+x for x in os.listdir(self.working_directory+"\\uncertainity") if "uncertainity" in x and "_" in x]
+        files_delete += [self.working_directory+"\\uncertainity\\inputs\\"+x for x in os.listdir(self.working_directory+"\\uncertainity"+"\\inputs") if "uncertainity" in x and "_" in x]
+        files_delete += [self.working_directory+"\\uncertainity\\output\\"+x for x in os.listdir(self.working_directory+"\\uncertainity"+"\\output") if "uncertainity" in x and "_" in x and x[-3:]!="csv"]
         files_delete += [self.plugin_directory+"\\executables\\"+x for x in os.listdir(self.plugin_directory+"\\executables") if "execution" in x and "_" in x]
         for i in files_delete:
             os.remove(i)
@@ -3291,6 +3464,58 @@ class qvfsmod:
         #IWQ
         if self.water_quality:
             copy_paste("VFS","iwq")
+        
+        #NOW WE REPLICATE THE FILES AS MUCH AS CORES ARE IN THE COMPUTER
+        self.number_cores = psutil.cpu_count(logical=False)
+        
+        #Replicate prj as much as cores are
+        for core in range(self.number_cores*2):#we do *2 because if not there can be problems of overlapping:processes executing files that are already executing
+            with open(prj_file, 'r') as file:
+                lineas = file.readlines()
+            lineas = [linea.replace("uncertainity",f"uncertainity_{core}") for linea in lineas]
+            new_filepath = prj_file.replace("uncertainity.prj",f"uncertainity_{core}.prj")
+            with open(new_filepath, 'w') as archivo:
+                for i in lineas:
+                    archivo.write(i)
+        #Replicate lis as much as cores are
+        for core in range(self.number_cores*2):
+            with open(lis_file, 'r') as file:
+                lineas = file.readlines()
+            lineas = [linea.replace("uncertainity",f"uncertainity_{core}") for linea in lineas]
+            new_filepath = lis_file.replace("uncertainity.lis",f"uncertainity_{core}.lis")
+            with open(new_filepath, 'w') as archivo:
+                for i in lineas:
+                    archivo.write(i)
+        #Move replicated input files 
+        carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity"
+        folder_path = Path(carpeta+"\\inputs")
+        files = [f.name for f in folder_path.iterdir() if f.is_file() and "_" not in f.name]
+        for i in range(self.number_cores*2):
+            for k in files:
+                shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("uncertainity",f"uncertainity_{i}"))
+        #Replicate executables
+        carpeta_bat = self.plugin_directory+"\\executables"
+        for core in range(self.number_cores*2):
+            #Execution UH
+            shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_uh_{core}.bat")
+            f = open(carpeta_bat+"\\"+f"execution_uh_{core}.bat","w+")
+            linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\uncertainity\\"')
+            linea_dos = f'"{self.plugin_directory}\\executables\\uh" uncertainity_{core}.lis'
+            linea_tres = "Pause"
+            f.write("{} \n".format(linea_uno))
+            f.write("{} \n".format(linea_dos))
+            f.write("{} \n".format(linea_tres))
+            f.close()
+            #Execution VFS
+            shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_vfs_{core}.bat")
+            f = open(carpeta_bat+"\\"+f"execution_vfs_{core}.bat","w+")
+            linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\uncertainity\\"')
+            linea_dos = f'"{self.plugin_directory}\\executables\\vfsm" uncertainity_{core}.prj'
+            linea_tres = "Pause"
+            f.write("{} \n".format(linea_uno))
+            f.write("{} \n".format(linea_dos))
+            f.write("{} \n".format(linea_tres))
+            f.close()
             
     
     def create_folder_sensitivity_analysis(self):
@@ -3328,191 +3553,6 @@ class qvfsmod:
             create_folder("uncertainity\inputs")
         if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+r"\uncertainity\output"):
             create_folder("uncertainity\output")
-    
-    
-    
-    def modify_inputs_uncertainity(self,extension, row, column, new_value, process):
-        """Method to modfiy inputs in uncertainity analysis"""
-        if process == "uh":
-            ruta = os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+r"\uncertainity\uncertainity.lis"
-        else:
-            ruta = os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+r"\uncertainity\uncertainity.prj"
-        with open(ruta, "r") as archivo:
-            lineas_prj = archivo.readlines()
-        for i in lineas_prj:
-            if i.split(".")[-1].replace("\n", "").replace(" ","") == extension:
-                filepath = i.split("=")[-1]
-                break
-        if not os.path.isabs(filepath): #relative path
-            filepath = os.path.join(os.path.dirname(ruta), filepath)
-        filepath = filepath.replace("\n", "")
-
-        with open(filepath, 'r') as file:
-            lineas = file.readlines()
-        numbers_str = lineas[row]
-        # Use regex to find all numbers in the string
-        matches = re.findall(r'\S+', numbers_str)
-        # Replace the specific number at the given index
-        matches[column] = str(new_value)
-        # Rebuild the string by replacing only the specific number
-        lineas[row] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
-        with open(filepath, 'w') as archivo:
-            for i in lineas:
-                archivo.write(i)
-            
-    
-    
-    
-    def change_buffer_length_uncertainity(self,value_change):
-        """Method to modifi length of buffer in uncertainity analysis"""
-        #First we save the .ikw file path
-        ruta = self.obtain_direction_vfsmod(self.dlg_base.vfs_file_uncertainity.text())
-        ikw = self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\inputs\\uncertainity.ikw"
-        #We substitute value of length
-        with open(ikw, "r") as archivo:
-            lineas = archivo.readlines()
-        
-        #Then we update the segments
-        number_segments = int(lineas[3])
-        length = list(map(float, lineas[2].split()))[0]
-        new_interval = length/number_segments
-
-        #Data frame, but we take it from the original, not from the last execution
-        #We import dataframe of segments from the original file
-        with open(ruta, "r") as archivo:
-            lineas_prj = archivo.readlines()
-        ikw = lineas_prj[0].split("=")[-1]
-        if not os.path.isabs(ikw): #relative path
-            ikw = os.path.join(os.path.dirname(ruta), ikw)
-        ikw = ikw.replace("\n", "")
-        with open(ikw, "r") as archivo:
-            lineas_ikw_original = archivo.readlines()
-            
-        df = pd.DataFrame(data = {"Distance":[list(map(float, lineas_ikw_original[x].split()))[0] for x in range(4,4+number_segments)],
-                             "Manning":[list(map(float, lineas_ikw_original[x].split()))[1] for x in range(4,4+number_segments)],
-                             "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
-        
-        #We update the dataframe
-        new_distances = np.linspace(new_interval, new_interval * number_segments, number_segments)
-        def weighted_average(df, new_distances, new_interval, column):
-            averages = []
-            for dist in new_distances:
-                start, end = dist - new_interval, dist
-                
-                # Calcular el solapamiento entre los intervalos originales y el nuevo intervalo
-                overlap = np.minimum(df["Distance"], end) - np.maximum(df["Distance"].shift(fill_value=0), start)
-                
-                # Asegurarse de que el solapamiento sea positivo o al menos cero
-                overlap = np.clip(overlap, 0, new_interval)
-                
-                # Calcular los pesos basados en el solapamiento
-                weights = overlap / new_interval
-                
-                # Verificar si la suma de los pesos es mayor que cero para evitar NaN
-                total_weight = np.sum(weights)
-                if total_weight > 0:
-                    avg = np.sum(weights * df[column]) / total_weight
-                    averages.append(round(avg, 6))
-                else:
-                    # Si no hay pesos válidos, usar el valor del intervalo anterior o un valor predeterminado
-                    averages.append(df[column].iloc[0])  # o cualquier otro valor predeterminado
-            return averages
-
-        new_df = pd.DataFrame({
-            "Distance": new_distances,
-            "Manning": weighted_average(df, new_distances, new_interval, "Manning"),
-            "Slope": weighted_average(df, new_distances, new_interval, "Slope")
-        })
-        #Add to the file information
-        contenido = ""
-        for i in lineas[:4]:    
-            contenido+=f"{i}"
-        for i in range(len(new_df)):
-            contenido +=f" {new_df.iloc[i,0]}   {new_df.iloc[i,1]}   {new_df.iloc[i,2]}\n"
-        for i in lineas[-8:]:    
-            contenido+=f"{i}"
-        with open(self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\inputs\\uncertainity.ikw", 'w') as archivo:
-            archivo.write(contenido)
-    
-    
-    def change_filter_manning_uncertainity(self,value_change,column):
-        """Method to change the manning and slope value of the buffer in uncertainity analysis"""
-        #We obtain information of ikw file
-        ikw = self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\inputs\\uncertainity.ikw"
-        
-        with open(ikw, "r") as archivo:
-            lineas = archivo.readlines()
-        
-        for row in range(4,len(lineas)):
-            numbers_str = lineas[row]
-            # Use regex to find all numbers in the string
-            matches = re.findall(r'\S+', numbers_str)
-            # Replace the specific number at the given index
-            if len(matches)==1:
-                break
-            matches[column] = str(value_change)
-            # Rebuild the string by replacing only the specific number
-            lineas[row] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
-            
-            with open(ikw, 'w') as archivo:
-                for i in lineas:
-                    archivo.write(i)
-        
-    
-    
-    def execution_uncertainity_analysis(self):
-        """Method for the each execution of the uncertainity analysis"""
-        #Progress bar update
-        self.progress_metod(start = False,execution = self.number_execution_sensitivity+1,number_combinations = len(self.param_values))
-        #We change the values of the inputs
-        execute_uh = False
-        for k,i in enumerate(self.dic_data.keys()):
-            #Change inputs
-            value_change = self.param_values[self.number_execution_sensitivity][k]
-            #If buffer length, rougheness or slope is selected then change in another way
-            if i == "Buffer length (m)":
-                information_parameter = self.sensitivity_parameters[i]
-                self.modify_inputs_uncertainity(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3])
-                self.change_buffer_length_uncertainity(value_change)
-            elif i == "Filter Manning n (RNA s/m^1/3)":
-                self.change_filter_manning_uncertainity(value_change,1)
-            elif i == "Average Filter Slope":
-                self.change_filter_manning_uncertainity(value_change,2)
-            else:
-                information_parameter = self.sensitivity_parameters[i]
-                self.modify_inputs_uncertainity(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3])
-            #Check if there is the need to execute UH
-            if information_parameter[3]=="uh":
-                execute_uh = True
-               
-        
-        #We execute
-        #Only execute UH if there are parameters that need to be executed in UH
-        if execute_uh:
-            self.update_bat_uh_uncertainity()
-            resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
-                capture_output=True, 
-                text=True, 
-                shell=True)
-            #Put warning
-            if not "...FINISHED..." in resultado.stdout:
-                self.sensitivity_error = True
-                return
-                
-        #Correct hietograph file
-        self.correct_irn_file(self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\inputs\\uncertainity.irn") 
-        
-        #VFS
-        self.update_bat_vfs_uncertainity()
-        resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
-                capture_output=True, 
-                text=True, 
-                shell=True)
-        
-        #Put warning
-        if not "...FINISHED..." in resultado.stdout:
-            self.sensitivity_error = True
-            return
     
     
     def update_bat_uh_sensitivity(self):
@@ -4991,7 +5031,7 @@ class qvfsmod:
     
                 
     
-    def run_design(self):
+    def run_design_part_one(self):
         """Method to run the design"""
         #Variable to end the execution in the design
         self.error_design = False
@@ -5006,10 +5046,8 @@ class qvfsmod:
         #First we create the folders in case they don't exist
         self.create_folder_for_design()
         
-        #Create the files
-        self.create_prj_file_design() #prj
-        self.create_lis_file_design() #lis
-        self.create_input_files_design() #rest of the input files
+        #Move files to design folder
+        self.move_files_design_analysis()
         
         #If storm duration or buffer length or spacing (this last too without any combination) are changed in the dialog then add to the files
         self.modify_inp_file_design(duration = self.dlg_base.design_storm_duration.text())
@@ -5025,55 +5063,19 @@ class qvfsmod:
             "Mass Sediment Output from Filter","Concentration Sediment in Runoff exiting the Filter",
             "Sediment Delivery Ratio","Runoff Delivery Ratio"])
         
-        #Start with the progress bar
-        self.progress_metod(start = True)
-        for k,comb in enumerate(self.combinations_design):
-            #Progress bar update
-            self.progress_metod(start = False,execution = k,number_combinations = len(self.combinations_design))
-            #We change the values
-            self.modify_inp_file_design(rainfall = comb[0])
-            if self.dlg_base.design_length.isChecked():
-                self.modify_ikw_file_design(comb[1])
-            if self.dlg_base.design_spacing.isChecked():
-                self.modify_igr_file_design(comb[2])
-                
-            #Update the bat for UH execution and execute
-            self.update_bat_uh_design()
-            #Execute bat
-            resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
-                capture_output=True, 
-                text=True, 
-                shell=True)
-            #Put warning
-            if not "...FINISHED..." in resultado.stdout:
-                self.warning_message(str(resultado.stdout))
-                return
-            
-            #Correct the hietograph file
-            self.correct_irn_file(self.dlg_base.working_directory_vfsmod.text()+"\\inputs\\design.irn")
-            
-            #Update the bat for VFS execution and execute
-            self.update_bat_vfsmod_design()
-            #Execute bat
-            resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
-                capture_output=True, 
-                text=True, 
-                shell=True)
-            #Put warning
-            if not "...FINISHED..." in resultado.stdout:
-                self.warning_message(str(resultado.stdout))
-                return
-            
-            #Save outputs
-            self.save_outputs_design()
         
-        #Add columns of the inputs
-        if self.dlg_base.design_length.isChecked():
-            self.df_results_design.insert(0,"VFS Length (m)",[x[1] for x in self.combinations_design])
-        if self.dlg_base.design_spacing.isChecked():
-            self.df_results_design.insert(0,"Vegetation Spacing (cm)",[x[2] for x in self.combinations_design])
-        self.df_results_design.insert(0,"Rainfall (mm)",[x[0] for x in self.combinations_design])
-
+        #Method were the paralelization is achieved
+        self.start_analysis_design()
+    
+    def run_design_part_two()
+         """Second part of design analysis to analyze the results. I have splitted sensitivity running
+        in two because we use Thread method and we need to stop till the thread finishes, if not we get an error"""
+        #Create DataFrame or results
+        self.df_results_design = self.create_df_design(self.results)
+        
+        #Delete all files created for paralelization of design analysis
+        self.delete_files_design()
+        
         #Add results to a csv
         try:
             self.df_results_design.to_csv(self.obtain_direction_vfsmod(self.dlg_base.name_design_csv.text()), index=False, float_format='%.5f')
@@ -5108,47 +5110,6 @@ class qvfsmod:
                     self.dlg_design_results.tableWidget.setItem(fila, columna, item)
                     item.setTextAlignment(Qt.AlignCenter)
     
-    def save_outputs_design(self):
-        """Method to save outputs in the design process"""
-        #Obtain the values
-        ruta = self.dlg_base.working_directory_vfsmod.text()+"\\output\\design.osp"
-        with open(ruta, "r") as archivo:
-            lineas = archivo.readlines()
-        #Function to obtain specific results form .osp file
-        def obtain_result(string):
-            for i in lineas:
-                if i.split("=")[-1]==string:
-                    for k in i.split("=")[0].split(" "):
-                        try:
-                            output = float(k)
-                            break
-                        except:
-                            pass
-            return output
-        
-        #Obtain results
-        runoff_from_source_mm = obtain_result(" Total Runoff from Source (mm depth over Source Area)\n")
-        runoff_from_source_m3 = obtain_result(" Total Runoff from Source\n")
-        runoff_out_filter_mm = obtain_result(" Total Runoff out from Filter (mm depth over Source+Filter)\n")
-        runoff_out_filter_m3 = obtain_result(" Total Runoff out from Filter\n")
-        infiltration_filter = obtain_result(" Total Infiltration in Filter\n")
-        mass_sediment_input_filter = obtain_result(" Mass Sediment Input to Filter\n")
-        concentration_sediment_source = obtain_result(" Concentration Sediment in Runoff from source Area\n")
-        sediment_out_filter = obtain_result(" Mass Sediment Output from Filter\n")
-        concentration_sediment_filter = obtain_result(" Concentration Sediment in Runoff exiting the Filter\n")
-        sdr = obtain_result(" Sediment Delivery Ratio\n")
-        rdr = obtain_result(" Runoff Delivery Ratio\n")
-        
-        #Dataframe to concatenate results
-        df_conc = pd.DataFrame(data = {"Total Runoff from source (mm)":[runoff_from_source_mm],
-            "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm)":[runoff_out_filter_mm],
-            "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter":[infiltration_filter],
-            "Mass Sediment Input to Filter":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area":[concentration_sediment_source],
-            "Mass Sediment Output from Filter":[sediment_out_filter],"Concentration Sediment in Runoff exiting the Filter":[concentration_sediment_filter],
-            "Sediment Delivery Ratio":[sdr],"Runoff Delivery Ratio":[rdr]})
-        
-        self.df_results_design = pd.concat([self.df_results_design,df_conc], ignore_index=True)
-
             
             
     def update_bat_uh_design(self):
@@ -5173,89 +5134,6 @@ class qvfsmod:
         f.write("{} \n".format(linea_tres))
         f.close()
     
-    def create_input_files_design(self):
-        """Method to create the input files for the design process. They will be files with the same data as the file chosen in the design dialog"""
-        #Function to copy and paste the inputs to create the files to use in the design
-        def copy_paste(process,type_input):
-            ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\inputs\\design.{type_input}" 
-            if process == "UH":
-                ruta = self.obtain_direction_vfsmod(self.dlg_base.design_uh_file.text())
-            elif process == "VFS":
-                ruta = self.obtain_direction_vfsmod(self.dlg_base.design_vfs_file.text())
-            if os.path.exists(ruta) and os.path.isfile(ruta):
-                #First we open .prj and obtain the direction of the copying file
-                with open(ruta, "r") as archivo:
-                    lineas = archivo.readlines()
-                for i in lineas:
-                    if i[:3]==type_input:
-                        ikw = i.split("=")[-1]
-                if not os.path.isabs(ikw): #relative path
-                    ikw = os.path.join(os.path.dirname(ruta), ikw)
-                ikw = ikw.replace("\n", "") #take out the line jumps
-                shutil.copyfile(ikw, ruta_pegar)
-        #INP
-        copy_paste("UH","inp")
-        #OUT
-        copy_paste("UH","out")
-        #HYT
-        copy_paste("UH","hyt")
-        
-        #IKW
-        copy_paste("VFS","ikw")
-        #ISO
-        copy_paste("VFS","iso")
-        #IGR
-        copy_paste("VFS","igr")
-        #ISD
-        copy_paste("VFS","isd")
-        #IRN
-        copy_paste("VFS","irn")
-        #IRO
-        copy_paste("VFS","iro")
-        #IWQ
-        if self.water_quality:
-            copy_paste("VFS","iwq")
-    
-    def create_prj_file_design(self):
-        """Method to create .prj file for design execution"""
-        prj_file = self.dlg_base.working_directory_vfsmod.text()+"\\design.prj"
-        #Check if water quality is simulated
-        with open(self.obtain_direction_vfsmod(self.dlg_base.design_vfs_file.text()), "r") as archivo:
-            lineas = archivo.readlines()
-        self.water_quality = False
-        for i in lineas:
-            if i[:3]=="iwq":
-                self.water_quality = True
-            
-        #Create file
-        with open(prj_file, 'w') as archivo:
-            archivo.write(f"ikw=inputs\\design.ikw  \n")
-            archivo.write(f"iso=inputs\\design.iso  \n")
-            archivo.write(f"igr=inputs\\design.igr  \n")
-            archivo.write(f"isd=inputs\\design.isd  \n")
-            archivo.write(f"irn=inputs\\design.irn  \n")
-            archivo.write(f"iro=inputs\\design.iro  \n")
-            if self.water_quality:
-                archivo.write(f"iwq=inputs\\design.iwq  \n")
-            archivo.write(f"og1=output\\design.og1  \n")
-            archivo.write(f"og2=output\\design.og2  \n")
-            archivo.write(f"ohy=output\\design.ohy  \n")
-            archivo.write(f"osm=output\\design.osm  \n")
-            archivo.write(f"osp=output\\design.osp  \n")
-            if self.water_quality:
-                archivo.write(f"owq=output\\design.owq  \n")
-    
-    def create_lis_file_design(self):
-        """Method to create .lis file for design execution"""
-        lis_file = self.dlg_base.working_directory_vfsmod.text()+"\\design.lis"
-        #Create file
-        with open(lis_file, 'w') as archivo:
-            archivo.write(f"inp=inputs\\design.inp  \n")
-            archivo.write(f"iro=inputs\\design.iro  \n")
-            archivo.write(f"irn=inputs\\design.irn  \n")
-            archivo.write(f"isd=inputs\\design.isd  \n")
-            archivo.write(f"out=inputs\\design.out  \n")
-            archivo.write(f"hyt=inputs\\design.hyt  \n")
         
         
     def create_folder_for_design(self):
@@ -5269,10 +5147,12 @@ class qvfsmod:
             except:
                 pass
             
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\inputs"):
-            create_folder("inputs")
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\output"):
-            create_folder("output")
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\design"):
+            create_folder("design")
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\design\inputs"):
+            create_folder("design\inputs")
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\design\output"):
+            create_folder("design\output")
         
     def create_combinations_design(self):
         """Method to create the combinations for the design"""
@@ -5332,66 +5212,6 @@ class qvfsmod:
         combinations = list(product(rainfall, length, spacing))
         
         return combinations
-    
-    
-    def progress_metod(self,number_combinations = None,start=False,execution=None, close = False):
-        #Metod to add and update de progress bar
-        if start == True:
-            #Start of the progress bar
-            self.progress_dialog = QProgressDialog("Starting sensitivity analysis...", "Cancelar", 0, 101)
-            self.progress_dialog.setWindowModality(Qt.WindowModal)
-            self.progress_dialog.setWindowTitle("Progress")
-            self.progress_dialog.show()
-            QCoreApplication.processEvents()# Permitir que la interfaz gráfica responda
-        elif not close:
-            #Updates of progress bar
-            #Creation of text
-            text = f"Execution {execution}/{number_combinations}\n"
-            #Add updates
-            self.progress_dialog.setLabelText(text)
-            self.progress_dialog.setValue(int(100*(execution/number_combinations)))
-            QCoreApplication.processEvents()# Permitir que la interfaz gráfica responda
-        #Close progress bar
-        if close:
-            self.progress_dialog.close()
-    
-    def modify_inp_file_design(self,duration=None,rainfall = None):
-        """Metod to modify the .inp file for the design execution"""
-        #First we save the .inp file path
-        ruta = self.dlg_base.working_directory_vfsmod.text()+"\\design.lis"   
-        if os.path.exists(ruta) and os.path.isfile(ruta):
-            #First we open .lis
-            with open(ruta, "r") as archivo:
-                lineas = archivo.readlines()
-            #Then we open .inp
-            inp = lineas[0].split("=")[-1]
-            if not os.path.isabs(inp): #relative path
-                inp = os.path.join(os.path.dirname(ruta), inp)
-            inp = inp.replace("\n", "") #take out the line jumps
-        #We substitute value
-        with open(inp, "r") as archivo:
-            lineas = archivo.readlines()
-        splits = lineas[0].split(" ")
-        counter = 0
-        for k,i in enumerate(splits):
-            try:
-                float(i)
-                if rainfall is not None and counter ==0:
-                    splits[k] = str(rainfall)
-                    break
-                if duration is not None and counter ==4:
-                    splits[k] = str(duration)
-                    break
-                counter +=1
-            except:
-                pass
-            
-        lineas[0] = " ".join(splits)
-        contenido = ""
-        for i in lineas:    
-            contenido+=f"{i}"
-        with open(inp, 'w') as archivo:
-            archivo.write(contenido)
     
     def modify_ikw_file_design(self,value_change=None):
         """Metod to create the .ikw file for the design execution"""
@@ -5474,6 +5294,30 @@ class qvfsmod:
                 contenido+=f"{i}"
             with open(self.dlg_base.working_directory_vfsmod.text()+"\\inputs\\design.ikw", 'w') as archivo:
                 archivo.write(contenido)
+    
+    
+    def progress_metod(self,number_combinations = None,start=False,execution=None, close = False):
+        #Metod to add and update de progress bar
+        if start == True:
+            #Start of the progress bar
+            self.progress_dialog = QProgressDialog("Starting sensitivity analysis...", "Cancel", 0, 101)
+            self.progress_dialog.setWindowModality(Qt.WindowModal)
+            self.progress_dialog.setWindowTitle("Progress")
+            self.progress_dialog.show()
+            QCoreApplication.processEvents()# Permitir que la interfaz gráfica responda
+        elif not close:
+            #Updates of progress bar
+            #Creation of text
+            text = f"Execution {execution}/{number_combinations}\n"
+            #Add updates
+            self.progress_dialog.setLabelText(text)
+            self.progress_dialog.setValue(int(100*(execution/number_combinations)))
+            QCoreApplication.processEvents()# Permitir que la interfaz gráfica responda
+        #Close progress bar
+        if close:
+            self.progress_dialog.close()
+    
+   
     
     def modify_igr_file_design(self,value_change = None):
         """Metod to create the .igr file for the design execution"""
@@ -7390,8 +7234,518 @@ class qvfsmod:
         self.dlg_output_hyetograph.show()
 
 
+
+#PARALELIZATION OF DESIGN
+def wrapper_design_paralelization(args):
+    """Esta función envuelve la función original para manejar múltiples argumentos"""
+    i, core_id, param_values,working_directory,length_checked,spacing_checked, vfs_file_design= args
+    return design_paralelization(i, core_id, param_values,working_directory,length_checked,spacing_checked,vfs_file_design)
+
+def design_paralelization(number_execution,core,combinations_design,working_directory,length_checked,spacing_checked,vfs_file_design):
+    '''Function to run in paralell design analysis'''
+    error = False
+    #We change the values
+    modify_inp_file_design(combinations_design[number_execution][0],core,working_directory)
+    if length_checked:
+        modify_ikw_file_design(vfs_file_design,working_directory,combinations_design[number_execution][1],core)
+    if spacing_checked:
+        modify_igr_file_design(combinations_design[number_execution][2],core,working_directory)
+    
+    #Execution
+    resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_uh_{core}.bat"],
+        capture_output=True, 
+        text=True, 
+        shell=True)
+    #Put warning
+    if not "...FINISHED..." in resultado.stdout:            
+        error = True
+        
+    #Correct hietograph file
+    correct_irn_file(working_directory+f"\\design\\inputs\\design_{core}.irn") 
+    
+    #VFS
+    resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_vfs_{core}.bat"],
+            capture_output=True, 
+            text=True, 
+            shell=True)
+    
+    #Put warning
+    if not "...FINISHED..." in resultado.stdout:
+        error = True
+    
+    #Save outputs
+    return self.save_outputs_design(working_directory,error,length_checked,spacing_checked,number_execution,combinations_design)
+    
+
+
+def modify_inp_file_design(new_value, core,working_directory):
+    """Method to modfiy inputs in design analysis"""
+    filepath = working_directory+fr"\design\inputs\design_{core}.inp"
+    with open(filepath, 'r') as file:
+        lineas = file.readlines()
+    numbers_str = lineas[0]
+    # Use regex to find all numbers in the string
+    matches = re.findall(r'\S+', numbers_str)
+    # Replace the specific number at the given index
+    matches[0] = str(new_value)
+    # Rebuild the string by replacing only the specific number
+    lineas[0] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+    with open(filepath, 'w') as archivo:
+        for i in lineas:
+            archivo.write(i)
+
+def modify_igr_file_design(new_value, core,working_directory):
+    """Method to modfiy inputs in design analysis"""
+    filepath = working_directory+fr"\design\inputs\design_{core}.igr"
+    with open(filepath, 'r') as file:
+        lineas = file.readlines()
+    numbers_str = lineas[0]
+    # Use regex to find all numbers in the string
+    matches = re.findall(r'\S+', numbers_str)
+    # Replace the specific number at the given index
+    matches[0] = str(new_value)
+    # Rebuild the string by replacing only the specific number
+    lineas[0] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+    with open(filepath, 'w') as archivo:
+        for i in lineas:
+            archivo.write(i)
+
+
+
+def modify_ikw_file_design(vfs_file_design,working_directory,value_change,core):
+    """Metod to create the .ikw file for the design execution"""
+    #First we save the .ikw file path
+    ruta = vfs_file_design
+    if os.path.exists(ruta) and os.path.isfile(ruta):
+        ikw = working_directory+f"\\design\\inputs\\design_{core}.ikw"
+        #We substitute value of length
+        with open(ikw, "r") as archivo:
+            lineas = archivo.readlines()
+        def modify_number_in_string(numbers_str, index, new_value):
+            # Use regex to find all numbers in the string
+            matches = re.findall(r'\S+', numbers_str)
+            # Replace the specific number at the given index
+            matches[index] = str(new_value)
+            # Rebuild the string by replacing only the specific number
+            return re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+        lineas[2] = modify_number_in_string(lineas[2],0,value_change)
+        
+        #Then we update the segments
+        number_segments = int(lineas[3])
+        length = list(map(float, lineas[2].split()))[0]
+        new_interval = length/number_segments
+
+        #Data frame, but we take it from the original, not from the last execution
+        #We import dataframe of segments from the original file
+        with open(ruta, "r") as archivo:
+            lineas_prj = archivo.readlines()
+        ikw = lineas_prj[0].split("=")[-1]
+        if not os.path.isabs(ikw): #relative path
+            ikw = os.path.join(os.path.dirname(ruta), ikw)
+        ikw = ikw.replace("\n", "")
+        with open(ikw, "r") as archivo:
+            lineas_ikw_original = archivo.readlines()
+            
+        df = pd.DataFrame(data = {"Distance":[list(map(float, lineas_ikw_original[x].split()))[0] for x in range(4,4+number_segments)],
+                             "Manning":[list(map(float, lineas_ikw_original[x].split()))[1] for x in range(4,4+number_segments)],
+                             "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
+        
+        #We update the dataframe
+        new_distances = np.linspace(new_interval, new_interval * number_segments, number_segments)
+        def weighted_average(df, new_distances, new_interval, column):
+            averages = []
+            for dist in new_distances:
+                start, end = dist - new_interval, dist
+                
+                # Calcular el solapamiento entre los intervalos originales y el nuevo intervalo
+                overlap = np.minimum(df["Distance"], end) - np.maximum(df["Distance"].shift(fill_value=0), start)
+                
+                # Asegurarse de que el solapamiento sea positivo o al menos cero
+                overlap = np.clip(overlap, 0, new_interval)
+                
+                # Calcular los pesos basados en el solapamiento
+                weights = overlap / new_interval
+                
+                # Verificar si la suma de los pesos es mayor que cero para evitar NaN
+                total_weight = np.sum(weights)
+                if total_weight > 0:
+                    avg = np.sum(weights * df[column]) / total_weight
+                    averages.append(round(avg, 6))
+                else:
+                    # Si no hay pesos válidos, usar el valor del intervalo anterior o un valor predeterminado
+                    averages.append(df[column].iloc[0])  # o cualquier otro valor predeterminado
+            return averages
+
+        new_df = pd.DataFrame({
+            "Distance": new_distances,
+            "Manning": weighted_average(df, new_distances, new_interval, "Manning"),
+            "Slope": weighted_average(df, new_distances, new_interval, "Slope")
+        })
+        #Add to the file information
+        contenido = ""
+        for i in lineas[:4]:    
+            contenido+=f"{i}"
+        for i in range(len(new_df)):
+            contenido +=f" {new_df.iloc[i,0]}   {new_df.iloc[i,1]}   {new_df.iloc[i,2]}\n"
+        for i in lineas[-8:]:    
+            contenido+=f"{i}"
+        with open(working_directory+f"\\design\\inputs\\design_{core}.ikw", 'w') as archivo:
+            archivo.write(contenido)
+
+
+def save_outputs_design(working_directory,error,length_checked,spacing_checked,number_execution,combinations_design):
+    """Function to save outputs in the design process"""
+    #Obtain the values
+    if error:
+        df_conc = pd.DataFrame(data = {"Total Runoff from source (mm)":[np.nan],
+            "Total Runoff from Source (m3)":[np.nan],"Total Runoff out from Filter (mm)":[np.nan],
+            "Total Runoff out from Filter (m3)":[np.nan],"Total Infiltration in Filter":[np.nan],
+            "Mass Sediment Input to Filter":[np.nan],"Concentration Sediment in Runoff from source Area":[np.nan],
+            "Mass Sediment Output from Filter":[np.nan],"Concentration Sediment in Runoff exiting the Filter":[np.nan],
+            "Sediment Delivery Ratio":[np.nan],"Runoff Delivery Ratio":[np.nan]})
+        
+        if length_checked:
+            df_conc.insert(0,"VFS Length (m)",[combinations_design[number_execution][1]])
+        if spacing_checked:
+            df_conc.insert(0,"Vegetation Spacing (cm)",[combinations_design[number_execution][2]])
+        df_conc.insert(0,"Rainfall (mm)",[combinations_design[number_execution][0]])
+
+    
+    else:
+        ruta = working_directory+f"\\design\\output\\design_{core}.osp"
+        with open(ruta, "r") as archivo:
+            lineas = archivo.readlines()
+        #Function to obtain specific results form .osp file
+        def obtain_result(string):
+            try:
+                for i in lineas:
+                    if i.split("=")[-1]==string:
+                        for k in i.split("=")[0].split(" "):
+                            try:
+                                output = float(k)
+                                break
+                            except:
+                                pass
+                return output
+                
+            except UnboundLocalError:
+                return np.nan
+        
+        #Obtain results
+        runoff_from_source_mm = obtain_result(" Total Runoff from Source (mm depth over Source Area)\n")
+        runoff_from_source_m3 = obtain_result(" Total Runoff from Source\n")
+        runoff_out_filter_mm = obtain_result(" Total Runoff out from Filter (mm depth over Source+Filter)\n")
+        runoff_out_filter_m3 = obtain_result(" Total Runoff out from Filter\n")
+        infiltration_filter = obtain_result(" Total Infiltration in Filter\n")
+        mass_sediment_input_filter = obtain_result(" Mass Sediment Input to Filter\n")
+        concentration_sediment_source = obtain_result(" Concentration Sediment in Runoff from source Area\n")
+        sediment_out_filter = obtain_result(" Mass Sediment Output from Filter\n")
+        concentration_sediment_filter = obtain_result(" Concentration Sediment in Runoff exiting the Filter\n")
+        sdr = obtain_result(" Sediment Delivery Ratio\n")
+        rdr = obtain_result(" Runoff Delivery Ratio\n")
+        
+        #Dataframe to concatenate results
+        df_conc = pd.DataFrame(data = {"Total Runoff from source (mm)":[runoff_from_source_mm],
+            "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm)":[runoff_out_filter_mm],
+            "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter":[infiltration_filter],
+            "Mass Sediment Input to Filter":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area":[concentration_sediment_source],
+            "Mass Sediment Output from Filter":[sediment_out_filter],"Concentration Sediment in Runoff exiting the Filter":[concentration_sediment_filter],
+            "Sediment Delivery Ratio":[sdr],"Runoff Delivery Ratio":[rdr]})
+        
+        if length_checked:
+            df_conc.insert(0,"VFS Length (m)",[combinations_design[number_execution][1]])
+        if spacing_checked:
+            df_conc.insert(0,"Vegetation Spacing (cm)",[combinations_design[number_execution][2]])
+        df_conc.insert(0,"Rainfall (mm)",[combinations_design[number_execution][0]])
+        
+    return df_con
+
+
+
+
+#PARALELIZATION OF UNCERTAINITY
+def wrapper_uncertainity_paralelization(args):
+    """Esta función envuelve la función original para manejar múltiples argumentos"""
+    i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_uncertainity_file_file,water_quality = args
+    return uncertainity_paralelization(i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_uncertainity_file_file,water_quality)
+
+
+def uncertainity_paralelization(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_uncertainity_file_file,water_quality):
+    '''Function to run in paralell uncertainity analysis'''
+    execution = execution_uncertainity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_uncertainity_file_file)
+    #Save results
+    if execution == "error":
+        return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = True)
+    else:
+        return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = False)
+
+def execution_uncertainity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_uncertainity_file):
+    """Function for the each execution of the uncertainity analysis"""
+    #We change the values of the inputs
+    execute_uh = False
+    for k,i in enumerate(dic_data.keys()):
+        #Change inputs
+        value_change = param_values[number_execution][k]
+        #If buffer length, roughness or slope is selected then change in another way
+        if i == "Buffer length (m)":
+            information_parameter = sensitivity_parameters[i]
+            modify_inputs_uncertainity(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3],core,working_directory)
+            change_buffer_length_uncertainity(value_change,core,vfs_uncertainity_file,working_directory)
+        elif i == "Filter Manning n (RNA s/m^1/3)":
+            change_filter_manning_uncertainity(value_change,1,core,working_directory)
+        elif i == "Average Filter Slope":
+            change_filter_manning_uncertainity(value_change,2,core,working_directory)
+        else:
+            information_parameter = sensitivity_parameters[i]
+            modify_inputs_uncertainity(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3],core,working_directory)
+        #Check if there is the need to execute UH
+        if information_parameter[3]=="uh":
+            execute_uh = True
+           
+    #We execute
+    #Only execute UH if there are parameters that need to be executed in UH
+    if execute_uh:
+        resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_uh_{core}.bat"],
+            capture_output=True, 
+            text=True, 
+            shell=True)
+        #Put warning
+        if not "...FINISHED..." in resultado.stdout:            
+            return "error"
+            
+        #Correct hietograph file
+        correct_irn_file(working_directory+f"\\uncertainity\\inputs\\uncertainity_{core}.irn") 
+    
+    #VFS
+    resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_vfs_{core}.bat"],
+            capture_output=True, 
+            text=True, 
+            shell=True)
+    
+    #Put warning
+    if not "...FINISHED..." in resultado.stdout:
+        return "error"
+
+
+def modify_inputs_uncertainity(extension, row, column, new_value, process,core,working_directory):
+    """Method to modfiy inputs in uncertainity analysis"""
+    if process == "uh":
+        ruta = os.path.normpath(working_directory+fr"\uncertainity\uncertainity_{core}.lis")
+    else:
+        ruta = os.path.normpath(working_directory+fr"\uncertainity\uncertainity_{core}.prj")
+    with open(ruta, "r") as archivo:
+        lineas_prj = archivo.readlines()
+    for i in lineas_prj:
+        if i.split(".")[-1].replace("\n", "").replace(" ","") == extension:
+            filepath = i.split("=")[-1]
+            break
+    if not os.path.isabs(filepath): #relative path
+        filepath = os.path.join(os.path.dirname(ruta), filepath)
+    filepath = filepath.replace("\n", "")
+
+    with open(filepath, 'r') as file:
+        lineas = file.readlines()
+    numbers_str = lineas[row]
+    # Use regex to find all numbers in the string
+    matches = re.findall(r'\S+', numbers_str)
+    # Replace the specific number at the given index
+    matches[column] = str(new_value)
+    # Rebuild the string by replacing only the specific number
+    lineas[row] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+    with open(filepath, 'w') as archivo:
+        for i in lineas:
+            archivo.write(i)
+
+
+def change_buffer_length_uncertainity(value_change,core,vfs_uncertainity_file,working_directory):
+    """Method to modifi length of buffer in uncertainity analysis"""
+    #First we save the .ikw file path
+    ruta = vfs_uncertainity_file
+    ikw = working_directory+f"\\uncertainity\\inputs\\uncertainity_{core}.ikw"
+    #We substitute value of length
+    with open(ikw, "r") as archivo:
+        lineas = archivo.readlines()
+    
+    def modify_number_in_string(numbers_str, index, new_value):
+        # Use regex to find all numbers in the string
+        matches = re.findall(r'\S+', numbers_str)
+        # Replace the specific number at the given index
+        matches[index] = str(new_value)
+        # Rebuild the string by replacing only the specific number
+        return re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+    lineas[2] = modify_number_in_string(lineas[2],0,value_change)
+    
+    #Then we update the segments
+    number_segments = int(lineas[3])
+    length = list(map(float, lineas[2].split()))[0]
+    new_interval = length/number_segments
+
+    #Data frame, but we take it from the original, not from the last execution
+    #We import dataframe of segments from the original file
+    with open(ruta, "r") as archivo:
+        lineas_prj = archivo.readlines()
+    ikw = lineas_prj[0].split("=")[-1]
+    if not os.path.isabs(ikw): #relative path
+        ikw = os.path.join(os.path.dirname(ruta), ikw)
+    ikw = ikw.replace("\n", "")
+    with open(ikw, "r") as archivo:
+        lineas_ikw_original = archivo.readlines()
+        
+    df = pd.DataFrame(data = {"Distance":[list(map(float, lineas_ikw_original[x].split()))[0] for x in range(4,4+number_segments)],
+                         "Manning":[list(map(float, lineas_ikw_original[x].split()))[1] for x in range(4,4+number_segments)],
+                         "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
+    
+    #We update the dataframe
+    new_distances = np.linspace(new_interval, new_interval * number_segments, number_segments)
+    def weighted_average(df, new_distances, new_interval, column):
+        averages = []
+        for dist in new_distances:
+            start, end = dist - new_interval, dist
+            
+            # Calcular el solapamiento entre los intervalos originales y el nuevo intervalo
+            overlap = np.minimum(df["Distance"], end) - np.maximum(df["Distance"].shift(fill_value=0), start)
+            
+            # Asegurarse de que el solapamiento sea positivo o al menos cero
+            overlap = np.clip(overlap, 0, new_interval)
+            
+            # Calcular los pesos basados en el solapamiento
+            weights = overlap / new_interval
+            
+            # Verificar si la suma de los pesos es mayor que cero para evitar NaN
+            total_weight = np.sum(weights)
+            if total_weight > 0:
+                avg = np.sum(weights * df[column]) / total_weight
+                averages.append(round(avg, 6))
+            else:
+                # Si no hay pesos válidos, usar el valor del intervalo anterior o un valor predeterminado
+                averages.append(df[column].iloc[0])  # o cualquier otro valor predeterminado
+        return averages
+
+    new_df = pd.DataFrame({
+        "Distance": new_distances,
+        "Manning": weighted_average(df, new_distances, new_interval, "Manning"),
+        "Slope": weighted_average(df, new_distances, new_interval, "Slope")
+    })
+    #Add to the file information
+    contenido = ""
+    for i in lineas[:4]:    
+        contenido+=f"{i}"
+    for i in range(len(new_df)):
+        contenido +=f" {new_df.iloc[i,0]}   {new_df.iloc[i,1]}   {new_df.iloc[i,2]}\n"
+    for i in lineas[-8:]:    
+        contenido+=f"{i}"
+    with open(working_directory+f"\\uncertainity\\inputs\\uncertainity_{core}.ikw", 'w') as archivo:
+        archivo.write(contenido)
+
+def change_filter_manning_uncertainity(value_change,column,core,working_directory):
+    """Method to change the manning and slope value of the buffer in uncertainity analysis"""
+    #We obtain information of ikw file
+    ikw = working_directory+f"\\uncertainity\\inputs\\uncertainity_{core}.ikw"
+    
+    with open(ikw, "r") as archivo:
+        lineas = archivo.readlines()
+    
+    for row in range(4,len(lineas)):
+        numbers_str = lineas[row]
+        # Use regex to find all numbers in the string
+        matches = re.findall(r'\S+', numbers_str)
+        # Replace the specific number at the given index
+        if len(matches)==1:
+            break
+        matches[column] = str(value_change)
+        # Rebuild the string by replacing only the specific number
+        lineas[row] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+        
+        with open(ikw, 'w') as archivo:
+            for i in lineas:
+                archivo.write(i)
+
+
+def save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality,error):
+    """Method to save uncertainity results"""
+    #Obtain the values
+    if error:
+        #Dataframe to concatenate to the uncertainity results
+        df_conc = pd.DataFrame(data = {"Error":[1],"Total Runoff from source (mm)":[-1],
+            "Total Runoff from Source (m3)":[-1],"Total Runoff out from Filter (mm)":[-1],
+            "Total Runoff out from Filter (m3)":[-1],"Total Infiltration in Filter (m3)":[-1],
+            "Mass Sediment Input to Filter (kg)":[-1],"Concentration Sediment in Runoff from source Area (g/L)":[-1],
+            "Mass Sediment Output from Filter (kg)":[-1],"Concentration Sediment in Runoff exiting the Filter (g/L)":[-1],
+            "Sediment Delivery Ratio":[-1],"Runoff Delivery Ratio":[-1]})
+        #Add water quality parameters if present
+        if water_quality:
+            df_conc["Leachate depth (m)"]=-1.0
+    else:
+        ruta = working_directory+f"\\uncertainity\\output\\uncertainity_{core}.osp"
+        with open(ruta, "r") as archivo:
+            lineas = archivo.readlines()
+        #Function to obtain specific results form .osp file
+        def obtain_result(string):
+            try:
+                for i in lineas:
+                    if i.split("=")[-1]==string:
+                        for k in i.split("=")[0].split(" "):
+                            try:
+                                output = float(k)
+                                break
+                            except:
+                                pass
+                return output
+                
+            except UnboundLocalError:
+                return -1.0
+        
+        #Obtain results
+        runoff_from_source_mm = obtain_result(" Total Runoff from Source (mm depth over Source Area)\n")
+        runoff_from_source_m3 = obtain_result(" Total Runoff from Source\n")
+        runoff_out_filter_mm = obtain_result(" Total Runoff out from Filter (mm depth over Source+Filter)\n")
+        runoff_out_filter_m3 = obtain_result(" Total Runoff out from Filter\n")
+        infiltration_filter = obtain_result(" Total Infiltration in Filter\n")
+        mass_sediment_input_filter = obtain_result(" Mass Sediment Input to Filter\n")
+        concentration_sediment_source = obtain_result(" Concentration Sediment in Runoff from source Area\n")
+        sediment_out_filter = obtain_result(" Mass Sediment Output from Filter\n")
+        concentration_sediment_filter = obtain_result(" Concentration Sediment in Runoff exiting the Filter\n")
+        sdr = obtain_result(" Sediment Delivery Ratio\n")
+        rdr = obtain_result(" Runoff Delivery Ratio\n")
+        
+        #Obtain results ohy
+        ruta = working_directory+f"\\uncertainity\\output\\uncertainity_{core}.ohy"
+        with open(ruta, "r") as archivo:
+            lineas_ohy = archivo.readlines()
+        water_front_depth =float(lineas_ohy[-1].split()[-2])
+        
+        #Dataframe to concatenate results
+        df_conc = pd.DataFrame(data = {"Error":[0],"Total Runoff from source (mm)":[runoff_from_source_mm],
+            "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm)":[runoff_out_filter_mm],
+            "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter (m3)":[infiltration_filter],
+            "Mass Sediment Input to Filter (kg)":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area (g/L)":[concentration_sediment_source],
+            "Mass Sediment Output from Filter (kg)":[sediment_out_filter],"Concentration Sediment in Runoff exiting the Filter (g/L)":[concentration_sediment_filter],
+            "Sediment Delivery Ratio":[sdr],"Runoff Delivery Ratio":[rdr],"Water Front Depth (m)":[water_front_depth]})
+        #Add water quality parameters if present
+        if water_quality:
+            #Obtain results water quality
+            with open(working_directory+f"\\uncertainity\\output\\uncertainity_{core}.owq", "r") as archivo:
+                lineas_owq = archivo.readlines()
+            valores = []
+            for i in range(len(lineas_owq)):
+                if lineas_owq[i] == "      Z(m)      C(mg/L)      S(mg/mg)\n":
+                    for k in range(i+2,len(lineas_owq)):
+                        if len(lineas_owq[k].split())==0 or (float(lineas_owq[k].split()[1])==float(0)) and (float(lineas_owq[k].split()[2])==float(0)):
+                            profundidad_lixiviado = float(lineas_owq[k].split()[0])
+                            break
+            df_conc["Leachate depth (m)"]=profundidad_lixiviado
+    
+    #Add the values of inputs 
+    for k,i in enumerate(dic_data.keys()):
+        df_conc.insert(0,i,[param_values[number_execution][k]])
+        
+    return df_conc
+    
+
+
+#PARALELIZATION OF SENSITIVITY
 def wrapper_sensitivity_paralelization(args):
-    # Esta función envuelve la función original para manejar múltiples argumentos
+    """Esta función envuelve la función original para manejar múltiples argumentos"""
     i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality = args
     return sensitivity_paralelization(i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality)
 
@@ -7408,7 +7762,6 @@ def sensitivity_paralelization(number_execution,core,param_values,dic_data,sensi
 
 def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file):
     """Function for the each execution of the sensitivity analysis"""
-    #Progress bar update
     #We change the values of the inputs
     execute_uh = False
     for k,i in enumerate(dic_data.keys()):
@@ -7418,11 +7771,11 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
         if i == "Buffer length (m)":
             information_parameter = sensitivity_parameters[i]
             modify_inputs_sensitivity(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3],core,working_directory)
-            change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file)
+            change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file,working_directory)
         elif i == "Filter Manning n (RNA s/m^1/3)":
-            change_filter_manning_sensitivity(value_change,1,core)
+            change_filter_manning_sensitivity(value_change,1,core,working_directory)
         elif i == "Average Filter Slope":
-            change_filter_manning_sensitivity(value_change,2,core)
+            change_filter_manning_sensitivity(value_change,2,core,working_directory)
         else:
             information_parameter = sensitivity_parameters[i]
             modify_inputs_sensitivity(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3],core,working_directory)
@@ -7443,8 +7796,8 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
             return "error"
     
     
-    #Correct hietograph file
-    correct_irn_file(working_directory+f"\\sensitivity\\inputs\\sensitivity_{core}.irn") 
+        #Correct hietograph file
+        correct_irn_file(working_directory+f"\\sensitivity\\inputs\\sensitivity_{core}.irn") 
     
     #VFS
     resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_vfs_{core}.bat"],
@@ -7486,7 +7839,7 @@ def modify_inputs_sensitivity(extension, row, column, new_value, process,core,wo
             archivo.write(i)
 
     
-def change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file):
+def change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file,working_directory):
     """Function to modifi length of buffer in sensitivity analysis"""
     #First we save the .ikw file path
     ruta = vfs_sensitivity_file
@@ -7494,6 +7847,15 @@ def change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file):
     #We substitute value of length
     with open(ikw, "r") as archivo:
         lineas = archivo.readlines()
+    
+    def modify_number_in_string(numbers_str, index, new_value):
+        # Use regex to find all numbers in the string
+        matches = re.findall(r'\S+', numbers_str)
+        # Replace the specific number at the given index
+        matches[index] = str(new_value)
+        # Rebuild the string by replacing only the specific number
+        return re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+    lineas[2] = modify_number_in_string(lineas[2],0,value_change)
     
     #Then we update the segments
     number_segments = int(lineas[3])
@@ -7557,7 +7919,7 @@ def change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file):
     with open(working_directory+f"\\sensitivity\\inputs\\sensitivity_{core}.ikw", 'w') as archivo:
         archivo.write(contenido)
     
-def change_filter_manning_sensitivity(value_change,column,core):
+def change_filter_manning_sensitivity(value_change,column,core,working_directory):
     """Function to change the manning and slope value of the buffer in sensitivity analysis"""
     #We obtain information of ikw file
     ikw = working_directory+f"\\sensitivity\\inputs\\sensitivity_{core}.ikw"
@@ -7701,6 +8063,38 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
     
     return df_conc
 
+
+class DesignAnalysisThread(QThread):
+    """Class to run parallelization of design analysis with QThread so we can se the progress bar"""
+    update_progress = pyqtSignal(list)
+    def __init__(self, args_list):
+        super().__init__()
+        self.args_list = args_list
+    def run(self):
+        with Pool(processes=psutil.cpu_count(logical=False)) as pool:
+            async_results = [
+                pool.apply_async(
+                    wrapper_design_paralelization,
+                    args=(args,),
+                    callback=lambda result, idx=i: self.callback(idx, result)  # Cambiado aquí
+                ) for i, args in enumerate(self.args_list)
+            ]
+            pool.close()
+            pool.join()  # Espera a que todos los procesos terminen
+            
+            # Captura y maneja las excepciones
+            for i, async_result in enumerate(async_results):
+                try:
+                    async_result.get()  # Esto lanzará la excepción si ocurrió alguna
+                except Exception as e:
+                    print(f"Error en proceso {i}: {e}")
+            
+        
+
+    def callback(self, execution_num,result):  # Cambiado para recibir solo execution_num
+        self.update_progress.emit([execution_num,result])
+
+
 class SensitivityAnalysisThread(QThread):
     """Class to run parallelization of sensitivity analysis with QThread so we can se the progress bar"""
     update_progress = pyqtSignal(list)
@@ -7718,7 +8112,43 @@ class SensitivityAnalysisThread(QThread):
             ]
             pool.close()
             pool.join()  # Espera a que todos los procesos terminen
+        
+            # Captura y maneja las excepciones
+            for i, async_result in enumerate(async_results):
+                try:
+                    async_result.get()  # Esto lanzará la excepción si ocurrió alguna
+                except Exception as e:
+                    print(f"Error en proceso {i}: {e}")
+        
 
+    def callback(self, execution_num,result):  # Cambiado para recibir solo execution_num
+        self.update_progress.emit([execution_num,result])
+
+class UncertainityAnalysisThread(QThread):
+    """Class to run parallelization of uncertainity analysis with QThread so we can se the progress bar"""
+    update_progress = pyqtSignal(list)
+    def __init__(self, args_list):
+        super().__init__()
+        self.args_list = args_list
+    def run(self):
+        with Pool(processes=psutil.cpu_count(logical=False)) as pool:
+            async_results = [
+                pool.apply_async(
+                    wrapper_uncertainity_paralelization,
+                    args=(args,),
+                    callback=lambda result, idx=i: self.callback(idx, result)  # Cambiado aquí
+                ) for i, args in enumerate(self.args_list)
+            ]
+            pool.close()
+            pool.join()  # Espera a que todos los procesos terminen
+            
+            # Captura y maneja las excepciones
+            for i, async_result in enumerate(async_results):
+                try:
+                    async_result.get()  # Esto lanzará la excepción si ocurrió alguna
+                except Exception as e:
+                    print(f"Error en proceso {i}: {e}")
+            
         
 
     def callback(self, execution_num,result):  # Cambiado para recibir solo execution_num

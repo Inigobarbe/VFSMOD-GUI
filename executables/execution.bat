@@ -1,3 +1,3 @@
-cd "C:/borrar\sensitivity\" 
-"C:\qvfsmod\executables\uh" sensitivity_0.lis 
+cd "C:/borrar\" 
+"C:\qvfsmod\executables\vfsm" proyecto.prj 
 Pause 
