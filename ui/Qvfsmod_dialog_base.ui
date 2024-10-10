@@ -3902,6 +3902,9 @@ typical 0.01-0.07</string>
                        <height>0</height>
                       </size>
                      </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -8063,10 +8066,10 @@ Solution Parameters</string>
             <widget class="QWidget" name="scrollAreaWidgetContents_16">
              <property name="geometry">
               <rect>
-               <x>-112</x>
+               <x>0</x>
                <y>0</y>
                <width>1068</width>
-               <height>634</height>
+               <height>572</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_96">

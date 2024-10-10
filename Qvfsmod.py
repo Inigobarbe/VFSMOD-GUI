@@ -1111,8 +1111,8 @@ class qvfsmod:
         storms_time = [self.dlg_base.lineEdit_4,self.dlg_base.lineEdit_5,self.dlg_base.lineEdit_6,self.dlg_base.lineEdit_7,
                 self.dlg_base.lineEdit_8,self.dlg_base.lineEdit_9,self.dlg_base.lineEdit_10]
         storms_increment = [self.dlg_base.start,self.dlg_base.end,self.dlg_base.increment]
-        vfs = [self.dlg_base.lower_length,self.dlg_base.upper_length,self.dlg_base.increment_length,self.dlg_base.base_length]
-        spacing = [self.dlg_base.lower_spacing,self.dlg_base.upper_spacing,self.dlg_base.increment_spacing,self.dlg_base.base_spacing]
+        vfs = [self.dlg_base.lower_length,self.dlg_base.upper_length,self.dlg_base.increment_length]
+        spacing = [self.dlg_base.lower_spacing,self.dlg_base.upper_spacing,self.dlg_base.increment_spacing]
         #Storm
         if self.dlg_base.specific.isChecked():
             for i in storms_time:
@@ -2963,12 +2963,14 @@ class qvfsmod:
         #Put in the same order as the input values
         new_df = pd.DataFrame(columns=list(results[0].columns))
         input_parameters = ["Rainfall (mm)"]
+        combinations_design = [x[0] for x in self.combinations_design]
         if self.dlg_base.design_length.isChecked():
-            input_parameters += "VFS Length (m)"
+            input_parameters += ["VFS Length (m)"]
+            combinations_design = [[combinations_design[x],self.combinations_design[x][1]] for x in range(len(combinations_design))]
         if self.dlg_base.design_spacing.isChecked():
-            input_parameters += "Vegetation Spacing (cm)"
-        
-        for i in self.combinations_design:
+            input_parameters += ["Vegetation Spacing (cm)"]
+            combinations_design = [[combinations_design[x],self.combinations_design[x][2]] for x in range(len(combinations_design))]
+        for i in combinations_design:
             df_concat = df.copy()
             for k in range(len(i)): 
                 df_concat = df_concat[df_concat[input_parameters[k]]==i[k]]
@@ -3166,6 +3168,14 @@ class qvfsmod:
         #IWQ
         if self.water_quality:
             copy_paste("VFS","iwq")
+        
+        
+        #Put base values
+        self.modify_inp_file_design(duration = self.dlg_base.design_storm_duration.text())
+        if not self.dlg_base.design_length.isChecked():
+            self.modify_ikw_file_design()
+        if not self.dlg_base.design_spacing.isChecked():
+            self.modify_igr_file_design()
         
         #NOW WE REPLICATE THE FILES AS MUCH AS CORES ARE IN THE COMPUTER
         self.number_cores = psutil.cpu_count(logical=False)
@@ -5049,12 +5059,6 @@ class qvfsmod:
         #Move files to design folder
         self.move_files_design_analysis()
         
-        #If storm duration or buffer length or spacing (this last too without any combination) are changed in the dialog then add to the files
-        self.modify_inp_file_design(duration = self.dlg_base.design_storm_duration.text())
-        if not self.dlg_base.design_length.isChecked():
-            self.modify_ikw_file_design()
-        if not self.dlg_base.design_spacing.isChecked():
-            self.modify_igr_file_design()
         
         #We add the information of the loops to the files and we execute the file
         self.df_results_design = pd.DataFrame(columns=["Total Runoff from source (mm)","Total Runoff from Source (m3)",
@@ -5063,36 +5067,37 @@ class qvfsmod:
             "Mass Sediment Output from Filter","Concentration Sediment in Runoff exiting the Filter",
             "Sediment Delivery Ratio","Runoff Delivery Ratio"])
         
-        
+        print(1)
         #Method were the paralelization is achieved
         self.start_analysis_design()
+        print(11)
     
-    def run_design_part_two()
-         """Second part of design analysis to analyze the results. I have splitted sensitivity running
-        in two because we use Thread method and we need to stop till the thread finishes, if not we get an error"""
-        #Create DataFrame or results
-        self.df_results_design = self.create_df_design(self.results)
+    def run_design_part_two(self):
+         """Second part of design analysis to analyze the results. I have splitted sensitivity running in two because we use Thread method and we need to stop till the thread finishes, if not we get an error"""
         
-        #Delete all files created for paralelization of design analysis
-        self.delete_files_design()
-        
-        #Add results to a csv
-        try:
-            self.df_results_design.to_csv(self.obtain_direction_vfsmod(self.dlg_base.name_design_csv.text()), index=False, float_format='%.5f')
-        except PermissionError:
+         #Create DataFrame or results
+         self.df_results_design = self.create_df_design(self.results)
+
+         #Delete all files created for paralelization of design analysis
+         self.delete_files_design()
+
+         #Add results to a csv
+         try:
+             self.df_results_design.to_csv(self.obtain_direction_vfsmod(self.dlg_base.name_design_csv.text()), index=False, float_format='%.5f')
+         except PermissionError:
             self.warning_message(f"{self.obtain_direction_vfsmod(self.dlg_base.name_design_csv.text())} file is opened and Design Analysis data could not be saved")
             return
-        #Close progress bar
-        self.progress_metod(close = True)
-        
-        #Add csv vile to the lineedit to finally put the results in the table
-        self.dlg_design_results.design_file.setText(self.dlg_base.name_design_csv.text())
-        
-        #Update resutls
-        self.update_design_results()
-        
-        #Warning message
-        self.warning_message("Design completed succesfully!")
+         #Close progress bar
+         self.progress_metod(close = True)
+    
+         #Add csv vile to the lineedit to finally put the results in the table
+         self.dlg_design_results.design_file.setText(self.dlg_base.name_design_csv.text())
+    
+         #Update resutls
+         self.update_design_results()
+    
+         #Warning message
+         self.warning_message("Design completed succesfully!")
     
     def update_design_results(self):
         """Method to show the diaog and add outputs to table after the design execution"""
@@ -5218,7 +5223,7 @@ class qvfsmod:
         #First we save the .ikw file path
         ruta = self.obtain_direction_vfsmod(self.dlg_base.design_vfs_file.text())
         if os.path.exists(ruta) and os.path.isfile(ruta):
-            ikw = self.dlg_base.working_directory_vfsmod.text()+"\\inputs\\design.ikw"
+            ikw = self.dlg_base.working_directory_vfsmod.text()+"\\design\\inputs\\design.ikw"
             #We substitute value of length
             with open(ikw, "r") as archivo:
                 lineas = archivo.readlines()
@@ -5292,9 +5297,25 @@ class qvfsmod:
                 contenido +=f" {new_df.iloc[i,0]}   {new_df.iloc[i,1]}   {new_df.iloc[i,2]}\n"
             for i in lineas[-8:]:    
                 contenido+=f"{i}"
-            with open(self.dlg_base.working_directory_vfsmod.text()+"\\inputs\\design.ikw", 'w') as archivo:
+            with open(self.dlg_base.working_directory_vfsmod.text()+"\\design\\inputs\\design.ikw", 'w') as archivo:
                 archivo.write(contenido)
     
+    def modify_inp_file_design(self,duration=None,rainfall = None):
+        """Metod to change storm duration"""
+        #First we save the .inp file path
+        filepath = self.dlg_base.working_directory_vfsmod.text()+fr"\design\inputs\design.inp"
+        with open(filepath, 'r') as file:
+            lineas = file.readlines()
+        numbers_str = lineas[0]
+        # Use regex to find all numbers in the string
+        matches = re.findall(r'\S+', numbers_str)
+        # Replace the specific number at the given index
+        matches[4] = str(self.dlg_base.design_storm_duration.text())
+        # Rebuild the string by replacing only the specific number
+        lineas[0] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+        with open(filepath, 'w') as archivo:
+            for i in lineas:
+                archivo.write(i)
     
     def progress_metod(self,number_combinations = None,start=False,execution=None, close = False):
         #Metod to add and update de progress bar
@@ -5322,30 +5343,19 @@ class qvfsmod:
     def modify_igr_file_design(self,value_change = None):
         """Metod to create the .igr file for the design execution"""
         #First we save the .igr file path
-        ruta = self.obtain_direction_vfsmod(self.dlg_base.design_vfs_file.text())
-        if os.path.exists(ruta) and os.path.isfile(ruta):
-            igr = self.dlg_base.working_directory_vfsmod.text()+"\\inputs\\design.igr"
-            #We substitute value
-            with open(igr, "r") as archivo:
-                lineas = archivo.readlines()
-            if value_change is None:
-                value_change = self.dlg_base.base_spacing.text()
-            splits = lineas[0].split(" ")
-            for k,i in enumerate(splits):
-                try:
-                    float(i)
-                    splits[k] = str(value_change)
-                    break
-                except:
-                    pass
-                
-            lineas[0] = " ".join(splits)
-
-            contenido = ""
-            for i in lineas:    
-                contenido+=f"{i}"
-            with open(igr, 'w') as archivo:
-                archivo.write(contenido)
+        filepath = self.dlg_base.working_directory_vfsmod.text()+fr"\design\inputs\design.igr"
+        with open(filepath, 'r') as file:
+            lineas = file.readlines()
+        numbers_str = lineas[0]
+        # Use regex to find all numbers in the string
+        matches = re.findall(r'\S+', numbers_str)
+        # Replace the specific number at the given index
+        matches[0] = str(self.dlg_base.base_spacing.text())
+        # Rebuild the string by replacing only the specific number
+        lineas[0] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+        with open(filepath, 'w') as archivo:
+            for i in lineas:
+                archivo.write(i)
         
     def add_storm_duration_to_design(self):
         """Method to add the storm duration to the design"""
@@ -7274,12 +7284,12 @@ def design_paralelization(number_execution,core,combinations_design,working_dire
         error = True
     
     #Save outputs
-    return self.save_outputs_design(working_directory,error,length_checked,spacing_checked,number_execution,combinations_design)
+    return save_outputs_design(working_directory,error,length_checked,spacing_checked,number_execution,combinations_design,core)
     
 
 
 def modify_inp_file_design(new_value, core,working_directory):
-    """Method to modfiy inputs in design analysis"""
+    """Method to modfiy rainfall"""
     filepath = working_directory+fr"\design\inputs\design_{core}.inp"
     with open(filepath, 'r') as file:
         lineas = file.readlines()
@@ -7393,7 +7403,7 @@ def modify_ikw_file_design(vfs_file_design,working_directory,value_change,core):
             archivo.write(contenido)
 
 
-def save_outputs_design(working_directory,error,length_checked,spacing_checked,number_execution,combinations_design):
+def save_outputs_design(working_directory,error,length_checked,spacing_checked,number_execution,combinations_design,core):
     """Function to save outputs in the design process"""
     #Obtain the values
     if error:
@@ -7458,7 +7468,7 @@ def save_outputs_design(working_directory,error,length_checked,spacing_checked,n
             df_conc.insert(0,"Vegetation Spacing (cm)",[combinations_design[number_execution][2]])
         df_conc.insert(0,"Rainfall (mm)",[combinations_design[number_execution][0]])
         
-    return df_con
+    return df_conc
 
 
 
@@ -8070,6 +8080,7 @@ class DesignAnalysisThread(QThread):
     def __init__(self, args_list):
         super().__init__()
         self.args_list = args_list
+        print(3)
     def run(self):
         with Pool(processes=psutil.cpu_count(logical=False)) as pool:
             async_results = [

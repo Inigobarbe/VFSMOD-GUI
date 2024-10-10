@@ -1,3 +1,3 @@
 cd "C:/borrar\" 
-"C:\qvfsmod\executables\vfsm" proyecto.prj 
+"C:\qvfsmod\executables\uh" proyecto.lis 
 Pause 
