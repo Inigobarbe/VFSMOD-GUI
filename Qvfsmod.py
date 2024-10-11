@@ -166,6 +166,9 @@ class qvfsmod:
         #Set working directory
         self.dlg_base.working_directory_vfsmod.textChanged.connect(self.set_working_directory)
         
+        #If the storm type is user defined, then emerges a dialog to add the data
+        self.dlg_base.storm_type.currentIndexChanged.connect(self.user_defined_storm_type)
+        
         #Stacked widget
         self.dlg_base.pushButton_6.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_folder))
         self.dlg_base.pushButton_7.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_uh))
@@ -269,8 +272,6 @@ class qvfsmod:
         #Execution button
         self.dlg_base.execute.clicked.connect(self.uh_execution)
         
-        #If the storm type is user defined, then emerges a dialog to add the data
-        self.dlg_base.storm_type.currentIndexChanged.connect(self.user_defined_storm_type)
         
         #Images in the interface
         self.add_images()
@@ -431,6 +432,7 @@ class qvfsmod:
         #Run design
         self.dlg_base.design_run.clicked.connect(self.run_design_part_one)
         
+        
         #Update values of .ikw file
         self.dlg_overland_flow.save_continue.clicked.connect(self.create_ikw_file)
         self.dlg_overland_flow.save_close.clicked.connect(lambda _, b = True:self.create_ikw_file(b))
@@ -457,8 +459,6 @@ class qvfsmod:
         self.dlg_vfsmod_hyetograph.close_dialog.clicked.connect(self.dlg_vfsmod_hyetograph.close)
         
         #Update values of segment of buffer
-        self.dlg_buffer_segment.save_continue.clicked.connect(self.update_buffer_segment)
-        self.dlg_buffer_segment.save_close.clicked.connect(lambda _, b = True:self.update_buffer_segment(b))
         self.dlg_buffer_segment.close_dialog.clicked.connect(self.dlg_buffer_segment.close)
         
         #Update values of .iro file
@@ -680,6 +680,11 @@ class qvfsmod:
         #Default values
         self.default_values()
         
+        
+        
+        #Change table of buffer segments when buffer length is changed
+        self.dlg_overland_flow.length.textChanged.connect(self.update_buffer_length_table)
+        
         #Update buffer segment graph when table is changed
         self.dlg_buffer_segment.tableWidget.itemChanged.connect(self.update_buffer_segment_graph)
         #Same for vfsmod hyetograph and hydrograph
@@ -697,6 +702,46 @@ class qvfsmod:
         
         #Update uncertainity graph
         self.dlg_base.csv_results_uncertainity.textChanged.connect(self.update_graph_uncertainity)
+    
+    
+    def update_buffer_length_table(self):
+        """Method to update the buffer segment table when buffer length is changed"""
+        #We obtain information of ikw file
+        ikw = self.obtain_direction_vfsmod(self.dlg_base.line_overland.text())
+        if os.path.exists(ikw):
+            with open(ikw, "r") as archivo:
+                lineas = archivo.readlines()
+            
+            number_segments = int(lineas[3])
+            df = pd.DataFrame(data = {"Distance":[list(map(float, lineas[x].split()))[0] for x in range(4,4+number_segments)],
+                                 "Manning":[list(map(float, lineas[x].split()))[1] for x in range(4,4+number_segments)],
+                                 "Slope":[list(map(float, lineas[x].split()))[2] for x in range(4,4+number_segments)]})
+        else:
+            df = self.original_buffer_segments
+            
+        actual_length = max(df["Distance"])
+        length_to_change = float(self.dlg_overland_flow.length.text())
+        if length_to_change <= actual_length:
+            df = df[df["Distance"]<=length_to_change]
+            df.loc[df.index[-1], "Distance"] = length_to_change
+        else:
+            df.loc[df.index[-1], "Distance"] = length_to_change
+        
+        #Add the information to the table
+        self.dlg_buffer_segment.tableWidget.itemChanged.disconnect(self.update_buffer_segment_graph) #disconnect. if not each time there is a row update it will be connected
+        self.dlg_buffer_segment.tableWidget.setRowCount(0)
+        self.dlg_buffer_segment.tableWidget.setRowCount(len(df))
+        for fila in range(len(df)):
+            for columna in range(len(df.columns)):
+                item = QTableWidgetItem(str(df.iloc[fila,columna]))
+                self.dlg_buffer_segment.tableWidget.setItem(fila, columna, item)
+                item.setTextAlignment(Qt.AlignCenter)
+        
+        #Connect again
+        self.dlg_buffer_segment.tableWidget.itemChanged.connect(self.update_buffer_segment_graph)
+        #Update graph
+        if hasattr(self, 'ax_buffer_segment'):
+            self.update_buffer_segment_graph()
     
     def set_working_directory(self):
         """Method to set the directory of the project"""
@@ -1253,7 +1298,8 @@ class qvfsmod:
     def add_values_inp_dialog(self):
         """Method to add values of the inp to the dialog"""
         path = self.obtain_direction_vfsmod(self.dlg_base.uh_input.text())
-        
+        #Disconnect storm type
+        self.dlg_base.storm_type.currentIndexChanged.disconnect(self.user_defined_storm_type)
         if os.path.exists(path):  
             try:
                 with open(path, 'r') as file:
@@ -1296,13 +1342,14 @@ class qvfsmod:
             
             except:
                 pass
+        #Connect storm type
+        self.dlg_base.storm_type.currentIndexChanged.connect(self.user_defined_storm_type)
     
     def dlg_overland_flow_show(self):
         """Method to add values of the ikw to the dialog"""
         path = self.obtain_direction_vfsmod(self.dlg_base.line_overland.text())
         if os.path.exists(path):
             try:
-                self.dlg_buffer_segment.tableWidget.itemChanged.disconnect(self.update_buffer_segment_graph)
                 with open(path, 'r') as file:
                     lineas = file.readlines()
                 #Simulation title
@@ -1331,7 +1378,8 @@ class qvfsmod:
                 df = pd.DataFrame(data = {"Distance":[list(map(float, lineas[x].split()))[0] for x in range(4,4+number_segments)],
                                      "Roughness":[list(map(float, lineas[x].split()))[1] for x in range(4,4+number_segments)],
                                      "Slope":[list(map(float, lineas[x].split()))[2] for x in range(4,4+number_segments)]})
-
+                
+                self.dlg_buffer_segment.tableWidget.itemChanged.disconnect(self.update_buffer_segment_graph)
                 self.dlg_buffer_segment.tableWidget.setRowCount(len(df))
                 for fila in range(len(df)):
                     for columna in range(len(df.columns)):
@@ -1340,6 +1388,7 @@ class qvfsmod:
                         item.setTextAlignment(Qt.AlignCenter)
                 
                 self.dlg_buffer_segment.tableWidget.itemChanged.connect(self.update_buffer_segment_graph)
+                self.update_buffer_segment_graph()
                 
             except:
                 pass
@@ -1994,31 +2043,6 @@ class qvfsmod:
         #Show dialog
         self.dlg_osp_results.show()
     
-    def update_buffer_segment(self,close = False):
-        """"Method to update the buffer segment"""
-        #Table data
-        table = self.dlg_buffer_segment.tableWidget
-        rows = table.rowCount()
-        data = pd.DataFrame(data = {"Distance":[table.item(row, 0).text() for row in range(rows)],
-            "Roughness":[table.item(row, 1).text() for row in range(rows)],
-            "Slope":[table.item(row, 2).text() for row in range(rows)]})
-        #Change values
-        filepath = self.obtain_direction_vfsmod(self.dlg_base.line_overland.text())
-        with open(filepath, 'r') as file:
-            lineas = file.readlines()
-        lineas[3] = f" {rows}\n"
-            
-        contenido = ""
-        for i in lineas[:4]:    
-            contenido+=f"{i}"
-        for i in range(len(data)):
-            contenido +=f" {data.iloc[i,0]}   {data.iloc[i,1]}   {data.iloc[i,2]}\n"
-        for i in lineas[-8:]:    
-            contenido+=f"{i}"
-        with open(filepath, 'w') as archivo:
-            archivo.write(contenido)
-        if close:
-            self.dlg_buffer_segment.close()
     
     def show_hydrograph_vfsmod_graph(self):
         """Method to show hydrograph graph in vfsmod"""
@@ -2187,7 +2211,6 @@ class qvfsmod:
         distances = []
         roughnesses = []
         slopes = []
-
         for row in range(row_count):
             distance_item = self.dlg_buffer_segment.tableWidget.item(row, 0)
             roughness_item = self.dlg_buffer_segment.tableWidget.item(row, 1)
@@ -2260,6 +2283,13 @@ class qvfsmod:
 
         # Redraw the canvas
         self.canvas_buffer_segment.draw()
+        
+        #Update buffer length in dialog
+        try:
+            if float(distances[-1]) != float(self.dlg_overland_flow.length.text()):
+                self.dlg_overland_flow.length.setText(str(distances[-1]))
+        except:
+            pass
 
             
     def show_sedimentograph_results(self):
@@ -4836,43 +4866,24 @@ class qvfsmod:
                              "Manning":[list(map(float, lineas[x].split()))[1] for x in range(4,4+number_segments)],
                              "Slope":[list(map(float, lineas[x].split()))[2] for x in range(4,4+number_segments)]})
         
-        #We update the dataframe
-        new_distances = np.linspace(new_interval, new_interval * number_segments, number_segments)
-        def weighted_average(df, new_distances, new_interval, column):
-            averages = []
-            for dist in new_distances:
-                start, end = dist - new_interval, dist
-                
-                # Calcular el solapamiento entre los intervalos originales y el nuevo intervalo
-                overlap = np.minimum(df["Distance"], end) - np.maximum(df["Distance"].shift(fill_value=0), start)
-                
-                # Asegurarse de que el solapamiento sea positivo o al menos cero
-                overlap = np.clip(overlap, 0, new_interval)
-                
-                # Calcular los pesos basados en el solapamiento
-                weights = overlap / new_interval
-                
-                # Verificar si la suma de los pesos es mayor que cero para evitar NaN
-                total_weight = np.sum(weights)
-                if total_weight > 0:
-                    avg = np.sum(weights * df[column]) / total_weight
-                    averages.append(round(avg, 6))
-                else:
-                    # Si no hay pesos válidos, usar el valor del intervalo anterior o un valor predeterminado
-                    averages.append(df[column].iloc[0])  # o cualquier otro valor predeterminado
-            return averages
-
-        new_df = pd.DataFrame({
-            "Distance": new_distances,
-            "Manning": weighted_average(df, new_distances, new_interval, "Manning"),
-            "Slope": weighted_average(df, new_distances, new_interval, "Slope")
-        })
+        actual_length = max(df["Distance"])
+        length_to_change = value_change
+        if length_to_change <= actual_length:
+            df = df[df["Distance"]<=length_to_change]
+            df.loc[df.index[-1], "Distance"] = length_to_change
+        else:
+            df.loc[df.index[-1], "Distance"] = length_to_change
+        
+        
+        #Add to the file information 
+        lineas[3] = modify_number_in_string(lineas[3],0,len(df)) #change number of segments
+    
         #Add to the file information
         contenido = ""
         for i in lineas[:4]:    
             contenido+=f"{i}"
-        for i in range(len(new_df)):
-            contenido +=f" {new_df.iloc[i,0]}   {new_df.iloc[i,1]}   {new_df.iloc[i,2]}\n"
+        for i in range(len(df)):
+            contenido +=f" {df.iloc[i,0]}   {df.iloc[i,1]}   {df.iloc[i,2]}\n"
         for i in lineas[-8:]:    
             contenido+=f"{i}"
         with open(ikw, 'w') as archivo:
@@ -5067,10 +5078,8 @@ class qvfsmod:
             "Mass Sediment Output from Filter","Concentration Sediment in Runoff exiting the Filter",
             "Sediment Delivery Ratio","Runoff Delivery Ratio"])
         
-        print(1)
         #Method were the paralelization is achieved
         self.start_analysis_design()
-        print(11)
     
     def run_design_part_two(self):
          """Second part of design analysis to analyze the results. I have splitted sensitivity running in two because we use Thread method and we need to stop till the thread finishes, if not we get an error"""
@@ -5258,43 +5267,21 @@ class qvfsmod:
                                  "Manning":[list(map(float, lineas_ikw_original[x].split()))[1] for x in range(4,4+number_segments)],
                                  "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
             
-            #We update the dataframe
-            new_distances = np.linspace(new_interval, new_interval * number_segments, number_segments)
-            def weighted_average(df, new_distances, new_interval, column):
-                averages = []
-                for dist in new_distances:
-                    start, end = dist - new_interval, dist
-                    
-                    # Calcular el solapamiento entre los intervalos originales y el nuevo intervalo
-                    overlap = np.minimum(df["Distance"], end) - np.maximum(df["Distance"].shift(fill_value=0), start)
-                    
-                    # Asegurarse de que el solapamiento sea positivo o al menos cero
-                    overlap = np.clip(overlap, 0, new_interval)
-                    
-                    # Calcular los pesos basados en el solapamiento
-                    weights = overlap / new_interval
-                    
-                    # Verificar si la suma de los pesos es mayor que cero para evitar NaN
-                    total_weight = np.sum(weights)
-                    if total_weight > 0:
-                        avg = np.sum(weights * df[column]) / total_weight
-                        averages.append(round(avg, 6))
-                    else:
-                        # Si no hay pesos válidos, usar el valor del intervalo anterior o un valor predeterminado
-                        averages.append(df[column].iloc[0])  # o cualquier otro valor predeterminado
-                return averages
-
-            new_df = pd.DataFrame({
-                "Distance": new_distances,
-                "Manning": weighted_average(df, new_distances, new_interval, "Manning"),
-                "Slope": weighted_average(df, new_distances, new_interval, "Slope")
-            })
+            actual_length = max(df["Distance"])
+            length_to_change = float(value_change)
+            if length_to_change <= actual_length:
+                df = df[df["Distance"]<=length_to_change]
+                df.loc[df.index[-1], "Distance"] = length_to_change
+            else:
+                df.loc[df.index[-1], "Distance"] = length_to_change
+            
             #Add to the file information
+            lineas[3] = modify_number_in_string(lineas[3],0,len(df)) #change number of segments
             contenido = ""
             for i in lineas[:4]:    
                 contenido+=f"{i}"
-            for i in range(len(new_df)):
-                contenido +=f" {new_df.iloc[i,0]}   {new_df.iloc[i,1]}   {new_df.iloc[i,2]}\n"
+            for i in range(len(df)):
+                contenido +=f" {df.iloc[i,0]}   {df.iloc[i,1]}   {df.iloc[i,2]}\n"
             for i in lineas[-8:]:    
                 contenido+=f"{i}"
             with open(self.dlg_base.working_directory_vfsmod.text()+"\\design\\inputs\\design.ikw", 'w') as archivo:
@@ -5767,6 +5754,7 @@ class qvfsmod:
             item = QTableWidgetItem()
             item.setTextAlignment(Qt.AlignCenter)
             table.setItem(row_position, column, item)
+
     
     def remove_row(self,numero_table_input):
         """Method to add rows in the buffer segment table"""
@@ -6268,7 +6256,17 @@ class qvfsmod:
         soil_type = [self.dlg_base.soil_type.itemText(i) for i in range(self.dlg_base.soil_type.count())][self.dlg_base.soil_type.currentIndex()]
         storm_type = int(self.dlg_base.storm_type.currentIndex())+1
         
+        try:
+            time_to_half = float(self.dlg_user_storm.half.text())
+        except:
+            self.warning_message("Please select correct time to the middle time in the storm (P/P24=0.5)")
         
+        table = self.dlg_user_storm.tableWidget
+        rows = table.rowCount()
+        user_defined_storm = pd.DataFrame(data = {"Time":[table.item(row, 0).text() for row in range(rows)],
+            "Cumulated":[table.item(row, 1).text() for row in range(rows)]})
+        
+        #Create file
         inp_file = self.obtain_direction_vfsmod(self.dlg_base.uh_input.text())
         with open(inp_file, 'w') as archivo:
             linea_uno = f" {rainfall_amount}  {curve_number}  {area}  {storm_type}  {storm_duration}  {length}  {slope}       'P,CN,A,storm type,D,L,Y"
@@ -6283,6 +6281,10 @@ class qvfsmod:
             archivo.write(f"{linea_cuatro}\n")
             archivo.write(f"{linea_cinco}\n")
             archivo.write(f"{linea_seis}\n")
+            if storm_type == 5:
+                archivo.write(f"{time_to_half} 'tmid (h) Time for mid storm point P/P24=0.5\n")
+                for i in range(len(user_defined_storm)):
+                    archivo.write(f"{user_defined_storm.iloc[i,0]}	{user_defined_storm.iloc[i,1]}\n")
             archivo.write("\n")
         
         
@@ -6692,6 +6694,7 @@ class qvfsmod:
         buffer_segment = pd.DataFrame(data ={"Distance":[0.6182,1.2364,1.8546,2.4729,3.0911,3.7093,4.3275,4.9457,5.5639,6.1821,6.8004,7.4186,8.0368,8.655],
             "Roughness":[0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4],
             "Slope":[0.052778,0.032639,0.071528,0.075,0.031944,0.019444,0.029885,0.028947,0.041667,0.134028,0.079167,0.074306,0.040972,0.062346]})
+        self.original_buffer_segments = buffer_segment
         self.dlg_buffer_segment.tableWidget.setRowCount(len(buffer_segment))
         for fila in range(len(buffer_segment)):
             for columna in range(len(buffer_segment.columns)):
@@ -7360,6 +7363,26 @@ def modify_ikw_file_design(vfs_file_design,working_directory,value_change,core):
                              "Manning":[list(map(float, lineas_ikw_original[x].split()))[1] for x in range(4,4+number_segments)],
                              "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
         
+        
+        
+       
+        #We update the dataframe
+        df_a = df.copy()
+        actual_length = max(df["Distance"])
+        length_to_change = value_change
+        if length_to_change <= actual_length:
+            df_a = df[df["Distance"]<=length_to_change]
+            df_a.loc[df.index[-1], "Distance"] = length_to_change
+        else:
+            df_a.loc[df.index[-1], "Distance"] = length_to_change
+        
+        
+        #Add to the file information 
+        lineas[3] = modify_number_in_string(lineas[3],0,len(df_a)) #change number of segments
+        
+        
+        
+        #THIS PART OF THE EXECUTION APPARENTLY DOESNT DO NOTHING BUT IF I DELETE I HAVE ERROR IN THE LAS EXECUTION OF THE PARALELIZATION
         #We update the dataframe
         new_distances = np.linspace(new_interval, new_interval * number_segments, number_segments)
         def weighted_average(df, new_distances, new_interval, column):
@@ -7391,14 +7414,18 @@ def modify_ikw_file_design(vfs_file_design,working_directory,value_change,core):
             "Manning": weighted_average(df, new_distances, new_interval, "Manning"),
             "Slope": weighted_average(df, new_distances, new_interval, "Slope")
         })
-        #Add to the file information
+        
+        
+        
+        
         contenido = ""
         for i in lineas[:4]:    
             contenido+=f"{i}"
-        for i in range(len(new_df)):
-            contenido +=f" {new_df.iloc[i,0]}   {new_df.iloc[i,1]}   {new_df.iloc[i,2]}\n"
+        for i in range(len(df_a)):
+            contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
         for i in lineas[-8:]:    
             contenido+=f"{i}"
+
         with open(working_directory+f"\\design\\inputs\\design_{core}.ikw", 'w') as archivo:
             archivo.write(contenido)
 
@@ -7606,6 +7633,23 @@ def change_buffer_length_uncertainity(value_change,core,vfs_uncertainity_file,wo
                          "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
     
     #We update the dataframe
+    df_a = df.copy()
+    actual_length = max(df["Distance"])
+    length_to_change = value_change
+    if length_to_change <= actual_length:
+        df_a = df[df["Distance"]<=length_to_change]
+        df_a.loc[df.index[-1], "Distance"] = length_to_change
+    else:
+        df_a.loc[df.index[-1], "Distance"] = length_to_change
+    
+    
+    #Add to the file information 
+    lineas[3] = modify_number_in_string(lineas[3],0,len(df_a)) #change number of segments
+    
+    
+    
+    #THIS PART OF THE EXECUTION APPARENTLY DOESNT DO NOTHING BUT IF I DELETE I HAVE ERROR IN THE LAS EXECUTION OF THE PARALELIZATION
+    #We update the dataframe
     new_distances = np.linspace(new_interval, new_interval * number_segments, number_segments)
     def weighted_average(df, new_distances, new_interval, column):
         averages = []
@@ -7636,12 +7680,17 @@ def change_buffer_length_uncertainity(value_change,core,vfs_uncertainity_file,wo
         "Manning": weighted_average(df, new_distances, new_interval, "Manning"),
         "Slope": weighted_average(df, new_distances, new_interval, "Slope")
     })
-    #Add to the file information
+    
+    
+    
+    
+    
+    
     contenido = ""
     for i in lineas[:4]:    
         contenido+=f"{i}"
-    for i in range(len(new_df)):
-        contenido +=f" {new_df.iloc[i,0]}   {new_df.iloc[i,1]}   {new_df.iloc[i,2]}\n"
+    for i in range(len(df_a)):
+        contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
     for i in lineas[-8:]:    
         contenido+=f"{i}"
     with open(working_directory+f"\\uncertainity\\inputs\\uncertainity_{core}.ikw", 'w') as archivo:
@@ -7888,6 +7937,23 @@ def change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file,work
                          "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
     
     #We update the dataframe
+    df_a = df.copy()
+    actual_length = max(df["Distance"])
+    length_to_change = value_change
+    if length_to_change <= actual_length:
+        df_a = df[df["Distance"]<=length_to_change]
+        df_a.loc[df.index[-1], "Distance"] = length_to_change
+    else:
+        df_a.loc[df.index[-1], "Distance"] = length_to_change
+    
+    
+    #Add to the file information 
+    lineas[3] = modify_number_in_string(lineas[3],0,len(df_a)) #change number of segments
+    
+    
+    
+    #THIS PART OF THE EXECUTION APPARENTLY DOESNT DO NOTHING BUT IF I DELETE I HAVE ERROR IN THE LAS EXECUTION OF THE PARALELIZATION
+    #We update the dataframe
     new_distances = np.linspace(new_interval, new_interval * number_segments, number_segments)
     def weighted_average(df, new_distances, new_interval, column):
         averages = []
@@ -7918,12 +7984,17 @@ def change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file,work
         "Manning": weighted_average(df, new_distances, new_interval, "Manning"),
         "Slope": weighted_average(df, new_distances, new_interval, "Slope")
     })
-    #Add to the file information
+    
+    
+    
+    
+    
+    
     contenido = ""
     for i in lineas[:4]:    
         contenido+=f"{i}"
-    for i in range(len(new_df)):
-        contenido +=f" {new_df.iloc[i,0]}   {new_df.iloc[i,1]}   {new_df.iloc[i,2]}\n"
+    for i in range(len(df_a)):
+        contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
     for i in lineas[-8:]:    
         contenido+=f"{i}"
     with open(working_directory+f"\\sensitivity\\inputs\\sensitivity_{core}.ikw", 'w') as archivo:
@@ -8080,7 +8151,6 @@ class DesignAnalysisThread(QThread):
     def __init__(self, args_list):
         super().__init__()
         self.args_list = args_list
-        print(3)
     def run(self):
         with Pool(processes=psutil.cpu_count(logical=False)) as pool:
             async_results = [
@@ -8095,10 +8165,10 @@ class DesignAnalysisThread(QThread):
             
             # Captura y maneja las excepciones
             for i, async_result in enumerate(async_results):
-                try:
-                    async_result.get()  # Esto lanzará la excepción si ocurrió alguna
-                except Exception as e:
-                    print(f"Error en proceso {i}: {e}")
+                #try:
+                async_result.get()  # Esto lanzará la excepción si ocurrió alguna
+                r'''except Exception as e:
+                    print(f"Error en proceso {i}: {e}")'''
             
         
 
