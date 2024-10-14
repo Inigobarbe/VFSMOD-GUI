@@ -1,3 +1,3 @@
 cd "C:/borrar\inverse\" 
-C:\qvfsmod\executables\start_inv.exe 
+"C:\qvfsmod\executables\vfsm" inverse.prj 
 Pause 
