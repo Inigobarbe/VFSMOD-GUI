@@ -1,3 +1,3 @@
-cd "C:/borrar\" 
-"C:\qvfsmod\executables\uh" proyecto.lis 
+cd "C:/borrar\inverse\" 
+C:\qvfsmod\executables\start_inv.exe 
 Pause 

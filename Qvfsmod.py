@@ -13,8 +13,7 @@
 
 
 
-
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets,QtGui
 from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QThread,pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QAction, QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy
@@ -54,6 +53,9 @@ from ui.irn_results import irn_results
 from ui.iro_results import iro_results
 from ui.owq_graph import owq_graph
 from ui.owq_graph_balance import owq_graph_balance
+from ui.calibration_progress import calibration_progress
+from ui.calibration_results_sedimentograph import calibration_results_sedimentograph
+from ui.calibration_results_hydrograph import calibration_results_hydrograph
 
 #Local libraries
 from libraries.SALib.sample import saltelli
@@ -162,12 +164,19 @@ class qvfsmod:
         self.dlg_irn_results = irn_results()
         self.dlg_owq_graph = owq_graph()
         self.dlg_owq_graph_balance = owq_graph_balance()
+        self.dlg_calibration_progress = calibration_progress()
+        self.dlg_calibration_results_sedimentograph = calibration_results_sedimentograph()
+        self.dlg_calibration_results_hydrograph = calibration_results_hydrograph()
         
         #Set working directory
         self.dlg_base.working_directory_vfsmod.textChanged.connect(self.set_working_directory)
         
         #If the storm type is user defined, then emerges a dialog to add the data
         self.dlg_base.storm_type.currentIndexChanged.connect(self.user_defined_storm_type)
+        
+        #Calibration results
+        self.dlg_base.calibration_result_hydrograph.clicked.connect(self.dlg_calibration_results_hydrograph.show)
+        self.dlg_base.calibration_result_sedimentograph.clicked.connect(self.dlg_calibration_results_sedimentograph.show)
         
         #Stacked widget
         self.dlg_base.pushButton_6.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_folder))
@@ -4410,20 +4419,32 @@ class qvfsmod:
         #execute bat
         #first we create the thread class to be able to use the dialog when executing
         class ejecutor(QThread):
-            resultado_signal = pyqtSignal(list)
+            resultado_final = pyqtSignal(list)
+            resultado_progress = pyqtSignal(str)
             def __init__(self, plugin_directory):
                 super().__init__()
                 self.plugin_directory = plugin_directory
             def run(self):
-                resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
-                    capture_output=True, 
-                    text=True, 
-                    shell=True)
-                self.resultado_signal.emit([resultado.stdout,resultado.stderr])
+                process = subprocess.Popen([self.plugin_directory + "\\executables\\execution.bat"],
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   text=True,
+                                   shell=True)
+
+                # Lee la salida línea por línea
+                for line in iter(process.stdout.readline, ''):
+                    self.resultado_progress.emit(line)  #Emits line in real time
+                process.stdout.close()
+                process.wait()  #Wait processs ends
+                
+                self.resultado_final.emit([process.stdout,process.stderr])
                 
         self.worker = ejecutor(self.plugin_directory)
         self.worker.start()
-        self.worker.resultado_signal.connect(self.calibration_execution_result)
+        self.calibration_progress_text = "" #text of progress
+        self.dlg_calibration_progress.show()#show progress dialog
+        self.worker.resultado_progress.connect(self.calibration_execution_progress)
+        self.worker.resultado_final.connect(self.calibration_execution_result)
     
     def create_inverse_file_sedimentograph(self):
         """Method to create the inverse file for hydrograph calibration"""
@@ -4602,28 +4623,48 @@ class qvfsmod:
         #execute bat
         #first we create the thread class to be able to use the dialog when executing
         class ejecutor(QThread):
-            resultado_signal = pyqtSignal(list)
+            resultado_final = pyqtSignal(list)
+            resultado_progress = pyqtSignal(str)
             def __init__(self, plugin_directory):
                 super().__init__()
                 self.plugin_directory = plugin_directory
             def run(self):
-                resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
-                    capture_output=True, 
-                    text=True, 
-                    shell=True)
-                self.resultado_signal.emit([resultado.stdout,resultado.stderr])
+                process = subprocess.Popen([self.plugin_directory + "\\executables\\execution.bat"],
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   text=True,
+                                   shell=True)
+
+                # Lee la salida línea por línea
+                for line in iter(process.stdout.readline, ''):
+                    self.resultado_progress.emit(line)  #Emits line in real time
+                process.stdout.close()
+                process.wait()  #Wait processs ends
+                
+                self.resultado_final.emit([process.stdout,process.stderr])
                 
         self.worker = ejecutor(self.plugin_directory)
         self.worker.start()
-        self.worker.resultado_signal.connect(self.calibration_execution_result)
+        self.calibration_progress_text = "" #text of progress
+        self.dlg_calibration_progress.show()#show progress dialog
+        self.worker.resultado_progress.connect(self.calibration_execution_progress)
+        self.worker.resultado_final.connect(self.calibration_execution_result)
                   
-        
+    
+    
+    def calibration_execution_progress(self,text):
+        """Method to show the progress of calibration"""
+        self.calibration_progress_text+=f"{text}\n"
+        self.dlg_calibration_progress.textEdit.setPlainText(self.calibration_progress_text)
+        self.dlg_calibration_progress.textEdit.moveCursor(QtGui.QTextCursor.End) #move to end the text to see it
+    
     def calibration_execution_result(self,resultado):
         """Method to show the final result of calibration execution"""
-        if "Calculate Jacobian matrix" in str(resultado[0]):
+        self.dlg_calibration_progress.close()#close progress dialog
+        if "Calculate Jacobian matrix" in self.calibration_progress_text:
             self.warning_message("Calibration executed succesfully!")
         else:
-            self.warning_message(str(resultado[1]))  
+            self.warning_message(self.calibration_progress_text)  
     
     def update_bat_calibration(self):
         """Method to update the bat of the hydrograph"""
@@ -8165,10 +8206,10 @@ class DesignAnalysisThread(QThread):
             
             # Captura y maneja las excepciones
             for i, async_result in enumerate(async_results):
-                #try:
-                async_result.get()  # Esto lanzará la excepción si ocurrió alguna
-                r'''except Exception as e:
-                    print(f"Error en proceso {i}: {e}")'''
+                try:
+                    async_result.get()  # Esto lanzará la excepción si ocurrió alguna
+                except Exception as e:
+                    print(f"Error en proceso {i}: {e}")
             
         
 

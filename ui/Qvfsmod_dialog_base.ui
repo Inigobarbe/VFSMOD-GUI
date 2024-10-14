@@ -4255,8 +4255,8 @@ typical 0.01-0.07</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>98</width>
-               <height>28</height>
+               <width>886</width>
+               <height>651</height>
               </rect>
              </property>
             </widget>
@@ -4282,8 +4282,8 @@ typical 0.01-0.07</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>841</width>
-               <height>634</height>
+               <width>888</width>
+               <height>653</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_30">
@@ -4858,7 +4858,7 @@ Data File</string>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="calibration_2">
+                 <widget class="QPushButton" name="calibration_result_hydrograph">
                   <property name="text">
                    <string>Calibration Results</string>
                   </property>
@@ -5358,7 +5358,7 @@ Data File</string>
                <x>0</x>
                <y>0</y>
                <width>893</width>
-               <height>562</height>
+               <height>636</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_71">
@@ -5789,7 +5789,7 @@ Data File</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="calibration_4">
+                    <widget class="QPushButton" name="calibration_result_sedimentograph">
                      <property name="text">
                       <string>Calibration Results</string>
                      </property>
