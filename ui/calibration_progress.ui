@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>723</width>
+    <width>787</width>
     <height>369</height>
    </rect>
   </property>
@@ -138,13 +138,20 @@ QTextEdit {
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>705</width>
+        <width>769</width>
         <height>351</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0">
-        <widget class="QTextEdit" name="textEdit"/>
+        <widget class="QTextEdit" name="textEdit">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+        </widget>
        </item>
        <item row="0" column="1">
         <widget class="QFrame" name="frame">

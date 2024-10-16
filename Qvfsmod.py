@@ -66,7 +66,7 @@ from libraries.SALib.analyze.morris import analyze as analyze_morris
 from libraries.SALib.sample.fast_sampler import sample as sample_fast
 from libraries.SALib.analyze.fast import analyze as analyze_fast
 
-import random
+from scipy.optimize import differential_evolution, minimize
 from multiprocessing import Pool
 import psutil
 import time
@@ -4612,8 +4612,7 @@ class qvfsmod:
         #Obtain dataframe of hydrograph
         self.hydrograph_calibration_df = self.obtain_df_hydrograph_calibration()
         #First, put the progress
-        self.calibration_execution_number = 0 #counter of executions
-        self.calibration_execution_progress("Starting calibration...")
+        self.calibration_execution_progress([0,])
         
         #If "inverse" folder does not exist, then create it
         self.create_folder_calibration()
@@ -4626,48 +4625,41 @@ class qvfsmod:
         
         
             
-        self.calibration_progress_text = "" #text of progress
         #first we create the thread class to be able to use the dialog when executing
         class ejecutor(QThread):
-            resultado_progress = pyqtSignal(str)
-            def __init__(self, plugin_directory, method_execution):
+            resultado_progress = pyqtSignal(list)
+            def __init__(self, plugin_directory, method_execution,dictionary):
                 super().__init__()
                 self.plugin_directory = plugin_directory
                 self.execution_calibration_hydrograph = method_execution
+                self.dictionary = dictionary
+            
             def run(self):
-                #Change inputs
-                self.resultado_progress.emit("hola")
-                for _ in range(10):
-                    execution = self.execution_calibration_hydrograph()
-                    #Error handling
-                    if execution == "error":
-                        return
-                        
-                    self.resultado_progress.emit("hola")
-                r'''
+                #Method to update progress in the optimization
+                self.ejecuciones = 0 
+                def objetivo(x):
+                    result = self.execution_calibration_hydrograph(x)
+                    # Emitir la señal con el número de ejecuciones y el resultado
+                    self.ejecuciones += 1
+                    self.resultado_progress.emit([self.ejecuciones, float(result)])
+                    return result   
+                #Limits to the calibration
+                limites = list(self.dictionary.values())
+                #Global calibration
+                resultado_global = differential_evolution(objetivo, bounds=limites, strategy='best1bin', 
+                    maxiter=30)
+                #Message end global calibration
+                self.resultado_progress.emit(["Warning","Global calibration ended \n Beginning of local calibration...\n"])
+                #Local calibration
+                #We take last result
+                x0 = resultado_global.x
+                resultado_local = minimize(self.execution_calibration_hydrograph, x0, method='Nelder-Mead')
+                #Message end local calibration 
+                self.resultado_progress.emit(["Warning","Local calibration ended \n Calibration ended\n"])
                 
-                
-                
-                process = subprocess.Popen([self.plugin_directory + "\\executables\\execution.bat"],
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE,
-                                   text=True,
-                                   shell=True)
-
-                # Lee la salida línea por línea
-                for line in iter(process.stdout.readline, ''):
-                    self.resultado_progress.emit(line)  #Emits line in real time
-                process.stdout.close()
-                process.wait()  #Wait processs ends
-                
-                self.resultado_final.emit([process.stdout,process.stderr])'''
-                
-        self.worker = ejecutor(self.plugin_directory, self.execution_calibration_hydrograph)
+        self.worker = ejecutor(self.plugin_directory, self.execution_calibration_hydrograph,self.calibration_dictionary)
         self.worker.start()
         self.worker.resultado_progress.connect(self.calibration_execution_progress)
-        r'''
-        self.worker.resultado_progress.connect(self.calibration_execution_progress)
-        self.worker.resultado_final.connect(self.calibration_execution_result)'''
     
     
     def obtain_df_hydrograph_calibration(self):
@@ -4683,98 +4675,122 @@ class qvfsmod:
         df = pd.DataFrame(data = {"Time":times,"Discharge":discharge})
         return df
 
-
     
-    def execution_calibration_hydrograph(self):
+    def execution_calibration_hydrograph(self, input_parameters):
         """Method to change inputs of calibration and execute"""
-        #Update execution number
-        self.calibration_execution_number +=1
-        #Modificar inputs
-        for i in self.calibration_dictionary.keys():
+        #First we translate the inputs of that method to a way so can it can be used
+        dic_inputs = {}
+        for k,i in enumerate(self.calibration_dictionary.keys()):
+            dic_inputs[i]= input_parameters[k]
+        #Modify inputs
+        for i in dic_inputs.keys():
             #vertical
             if i=="vertical":
-                self.modify_inputs_calibration("iso",0,0,random.uniform(self.calibration_dictionary[i][0],self.calibration_dictionary[i][1]))
+                self.modify_inputs_calibration("iso",0,0,dic_inputs[i])
+                print(dic_inputs[i])
             #average
             elif i=="average":
-                self.modify_inputs_calibration("iso",0,1,random.uniform(self.calibration_dictionary[i][0],self.calibration_dictionary[i][1]))
+                self.modify_inputs_calibration("iso",0,1,dic_inputs[i])
             #saturated
             elif i=="saturated":
-                self.modify_inputs_calibration("iso",0,2,random.uniform(self.calibration_dictionary[i][0],self.calibration_dictionary[i][1]))
+                self.modify_inputs_calibration("iso",0,2,dic_inputs[i])
             #initial
             elif i=="initial":
-                self.modify_inputs_calibration("iso",0,3,random.uniform(self.calibration_dictionary[i][0],self.calibration_dictionary[i][1]))
+                self.modify_inputs_calibration("iso",0,3,dic_inputs[i])
             #maximum
             elif i=="maximum":
-                self.modify_inputs_calibration("iso",0,4,random.uniform(self.calibration_dictionary[i][0],self.calibration_dictionary[i][1]))
+                self.modify_inputs_calibration("iso",0,4,dic_inputs[i])
             #fraction
             elif i=="fraction":
-                self.modify_inputs_calibration("iso",0,5,random.uniform(self.calibration_dictionary[i][0],self.calibration_dictionary[i][1]))
+                self.modify_inputs_calibration("iso",0,5,dic_inputs[i])
             #width
             elif i=="width":
-                self.modify_inputs_calibration("ikw",1,0,random.uniform(self.calibration_dictionary[i][0],self.calibration_dictionary[i][1]))
+                self.modify_inputs_calibration("ikw",1,0,dic_inputs[i])
             #length
             elif i=="length":
-                self.modify_ikw_file_calibration(random.uniform(self.calibration_dictionary[i][0],self.calibration_dictionary[i][1]))
+                self.modify_ikw_file_calibration(dic_inputs[i])
             #manning
             elif i=="manning":
-                self.modify_mannign_slope_hydrograph_calibration(1,random.uniform(self.calibration_dictionary[i][0],self.calibration_dictionary[i][1]))
+                self.modify_mannign_slope_hydrograph_calibration(1,dic_inputs[i])
             #slope
             elif i=="slope":
-                self.modify_mannign_slope_hydrograph_calibration(2,random.uniform(self.calibration_dictionary[i][0],self.calibration_dictionary[i][1]))
-            
+                self.modify_mannign_slope_hydrograph_calibration(2,dic_inputs[i])
         #Update bat for calibration
         self.update_bat_calibration()
-        
         #Execute
         resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
             capture_output=True, 
             text=True, 
             shell=True)
-        
         #Put warning
         if not "...FINISHED..." in resultado.stdout:
             self.warning_message(str(resultado.stdout))
             return "error"
-        
         #Read output
-        ruta = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\output\\inverse.og2"
+        ruta = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\output\\inverse.ohy"
         with open(ruta, "r") as archivo:
             lineas = archivo.readlines()
         discharge = []
         times = []
-        for i in range(5,len(lineas)):
-            height = float(lineas[i].split()[-2])
-            dis = float(lineas[i].split()[-1])
-            times.append(float(lineas[i].split()[0]))
-            discharge.append(height*dis/1000000)
-
+        for i in range(len(lineas)):
+            if lineas[i]=="     TIME     OUTFLOW    CUM.FLOW     ie =r-f     INFLOW    CUM.INFLOW       f          z        ITER\n":
+                for k in range(i+3,len(lineas)):
+                    times.append(float(lineas[k].split()[0]))
+                    discharge.append(float(lineas[k].split()[1]))
         self.calibration_df_progress = pd.DataFrame(data = {"Time":times,"Discharge":discharge})
         
-        #self.calibration_execution_progress("poner valor función aquí")
+        
+        #Obtain interpolated dataframe
+        calibration_df_progress = self.calibration_df_progress.copy()
+        calibration_df_progress.set_index('Time', inplace=True)
+        hydrograph_calibration_df = self.hydrograph_calibration_df.copy()
+        hydrograph_calibration_df.set_index('Time', inplace=True)
+        hydrograph_calibration_df_interpolated = hydrograph_calibration_df.reindex(calibration_df_progress.index).interpolate(method='index')
+        
+        #Calculate differences
+        diferencias = calibration_df_progress['Discharge'] - hydrograph_calibration_df_interpolated['Discharge']
+
+        #Calculate squared differenes
+        cuadrados_diferencias = diferencias ** 2
+        resultado_total = cuadrados_diferencias.sum()
+        
+        return resultado_total
+
             
-    def calibration_execution_progress(self,text):
+    def calibration_execution_progress(self,information):
         """Method to show the progress of calibration"""
         #Progress befores we start with the executions
-        if self.calibration_execution_number == 0:
+        if information[0]=="Warning":
+            #Put the text
+            self.calibration_progress_text+=information[1]
+            self.dlg_calibration_progress.textEdit.setPlainText(self.calibration_progress_text)
+            self.dlg_calibration_progress.textEdit.moveCursor(QtGui.QTextCursor.End) #move to end the text to see it
+            
+        elif information[0] == 0:
             #Show dialog
             self.dlg_calibration_progress.show()
             #Put the text
-            self.dlg_calibration_progress.textEdit.setPlainText(text)
+            self.calibration_progress_text = ""
+            self.calibration_progress_text+="Starting calibration...\n"
+            self.dlg_calibration_progress.textEdit.setPlainText(self.calibration_progress_text)
             self.dlg_calibration_progress.textEdit.moveCursor(QtGui.QTextCursor.End) #move to end the text to see it
             
-            #Create the canvas of the graph
-            # Si no existe, crear el canvas y añadirlo al layout
-            self.canvas_calibration_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
             
-            # Asignar un layout al QFrame si no tiene uno
-            layout = QVBoxLayout(self.dlg_calibration_progress.frame)
-            self.dlg_calibration_progress.frame.setLayout(layout)
-            
-            #Add canvas to layout
-            layout.addWidget(self.canvas_calibration_graph)
+            if not hasattr(self, 'canvas_calibration_graph'):
+                #Create the canvas of the graph
+                # Si no existe, crear el canvas y añadirlo al layout
+                self.canvas_calibration_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
+                
+                # Asignar un layout al QFrame si no tiene uno
+                layout = QVBoxLayout(self.dlg_calibration_progress.frame)
+                self.dlg_calibration_progress.frame.setLayout(layout)
+                
+                #Add canvas to layout
+                layout.addWidget(self.canvas_calibration_graph)
             
             #Add graph
             self.ax_calibration_progress = self.canvas_calibration_graph.figure.subplots()
+            self.canvas_calibration_graph.figure.clear()
             
             self.ax_calibration_progress.plot(self.hydrograph_calibration_df.Time, self.hydrograph_calibration_df.Discharge)
             
@@ -4786,7 +4802,7 @@ class qvfsmod:
             
         else:
             #First, put the text
-            self.calibration_progress_text+=f"{self.calibration_execution_number}: {text}\n"
+            self.calibration_progress_text+=f"{information[0]}:OF = "+"{:.2e}".format(information[1])+"\n"
             self.dlg_calibration_progress.textEdit.setPlainText(self.calibration_progress_text)
             self.dlg_calibration_progress.textEdit.moveCursor(QtGui.QTextCursor.End) #move to end the text to see it
             
@@ -4794,8 +4810,18 @@ class qvfsmod:
             self.canvas_calibration_graph.figure.clear()
             self.ax_calibration_progress = self.canvas_calibration_graph.figure.subplots()
             
-            self.ax_calibration_progress.plot(self.hydrograph_calibration_df.Time, self.hydrograph_calibration_df.Discharge,label = "Measured")
-            self.ax_calibration_progress.plot(self.calibration_df_progress.Time, self.calibration_df_progress.Discharge,label = "Simulated")
+            #Add lines
+            self.ax_calibration_progress.plot(self.hydrograph_calibration_df.Time,self.hydrograph_calibration_df.Discharge,label = "Measured",marker='o')
+            self.ax_calibration_progress.plot(self.calibration_df_progress.Time,self.calibration_df_progress.Discharge,label = "Simulated",marker='o')
+            
+            #Limits
+            #Labels
+            self.ax_calibration_progress.set_xlabel("Time (s)",size = 10,family="arial",weight = "bold",color = "black")
+            self.ax_calibration_progress.set_ylabel("Dishcarge (m3/s)",size = 10,family="arial",weight = "bold",color = "black")
+            #X ticks
+            self.ax_calibration_progress.tick_params(axis = "both",colors = "black",labelsize = 9)
+            # Add legend
+            self.ax_calibration_progress.legend()
             
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
             self.canvas_calibration_graph.figure.subplots_adjust(wspace=0.7) #spacing beteween two graphs
@@ -5060,14 +5086,28 @@ class qvfsmod:
         number_segments = int(lineas[3])
         length = list(map(float, lineas[2].split()))[0]
         new_interval = length/number_segments
-
+        
+        #Data frame, but we take it from the original, not from the last execution
+        #We import dataframe of segments from the original file
+        ruta = self.obtain_direction_vfsmod(self.dlg_base.vfs_project.text())
+        with open(ruta, "r") as archivo:
+            lineas_prj = archivo.readlines()
+        ikw_original = lineas_prj[0].split("=")[-1]
+        if not os.path.isabs(ikw_original): #relative path
+            ikw_original = os.path.join(os.path.dirname(ruta), ikw_original)
+        ikw_original = ikw_original.replace("\n", "")
+        with open(ikw_original, "r") as archivo:
+            lineas_ikw_original = archivo.readlines()
+        
         #Data frame    
-        df = pd.DataFrame(data = {"Distance":[list(map(float, lineas[x].split()))[0] for x in range(4,4+number_segments)],
-                             "Manning":[list(map(float, lineas[x].split()))[1] for x in range(4,4+number_segments)],
-                             "Slope":[list(map(float, lineas[x].split()))[2] for x in range(4,4+number_segments)]})
+        df = pd.DataFrame(data = {"Distance":[list(map(float, lineas_ikw_original[x].split()))[0] for x in range(4,4+number_segments)],
+                             "Manning":[list(map(float, lineas_ikw_original[x].split()))[1] for x in range(4,4+number_segments)],
+                             "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
+        
         
         actual_length = max(df["Distance"])
         length_to_change = float(value_change)
+        print(length_to_change)
         if length_to_change <= actual_length:
             df = df[df["Distance"]<=length_to_change]
             df.loc[df.index[-1], "Distance"] = length_to_change
