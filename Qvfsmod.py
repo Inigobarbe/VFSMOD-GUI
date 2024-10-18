@@ -180,6 +180,8 @@ class qvfsmod:
         self.dlg_base.calibration_result_sedimentograph.clicked.connect(self.dlg_calibration_results_sedimentograph.show)
         self.dlg_calibration_results_hydrograph.results.textChanged.connect(self.update_graph_calibration_hydrograph)
         self.dlg_calibration_results_hydrograph.one_one.toggled.connect(self.update_graph_calibration_hydrograph)
+        self.dlg_calibration_results_sedimentograph.results.textChanged.connect(self.update_graph_calibration_sedimentograph)
+        self.dlg_calibration_results_sedimentograph.one_one.toggled.connect(self.update_graph_calibration_sedimentograph)
         
         #Stacked widget
         self.dlg_base.pushButton_6.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_folder))
@@ -633,6 +635,7 @@ class qvfsmod:
         
         #Browse calibration results
         self.dlg_calibration_results_hydrograph.browse.clicked.connect(self.browse_files_calibration_hydrograph)
+        self.dlg_calibration_results_sedimentograph.browse.clicked.connect(self.browse_files_calibration_sedimentograph)
         
         #Update sensitivity graph for Sobol
         self.dlg_base.csv_results_2.textChanged.connect(self.update_sensitivity_graph_global)
@@ -2446,6 +2449,18 @@ class qvfsmod:
             else: #absolute path
                 text = fname[0]
             self.dlg_calibration_results_hydrograph.results.setText(text)
+    
+    def browse_files_calibration_sedimentograph(self):
+        """Method to select the file for calibration results"""
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        fname = QFileDialog.getOpenFileName(self.dlg_calibration_results_sedimentograph, "Select Calibration Results File",working_directory+"\\inverse" , "CSV files (*.csv)")
+        if fname[0]!="":
+            #Put the relative path if the file is inside the folder
+            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
+                text = os.path.relpath(fname[0], working_directory)
+            else: #absolute path
+                text = fname[0]
+            self.dlg_calibration_results_sedimentograph.results.setText(text)
     
     def browse_csv_oat(self):
         """Method to add csv of oat results"""
@@ -4423,123 +4438,201 @@ class qvfsmod:
     
     def run_calibration_sedimentograph(self):
         """Method to run the calibration for sedimentograph"""
+        self.calibration_sedimentograph = True
+        #Obtain dataframe of sedimentograph
+        self.sedimentograph_calibration_df = self.obtain_df_sedimentograph_calibration()
+        
+        #First, put the progress
+        self.calibration_execution_progress_sedimentograph([0,])
+        
         #If "inverse" folder does not exist, then create it
         self.create_folder_calibration()
         
         #Move prj to the inverse folder and in inverse/inputs put the inputs
         self.move_files_calibration_sedimentograph()
         
-        #Create file for sedimentograph calibration and change inputs if "Change" is selected
-        self.create_inverse_file_sedimentograph()
+        #Create the dictionary to know the bounds of the input parameters
+        self.calibration_dictionary = self.create_dictionary_calibration_sedimentograph()
         
-        #Update bat for calibration and execute
-        self.update_bat_calibration()
-        #execute bat
         #first we create the thread class to be able to use the dialog when executing
         class ejecutor(QThread):
-            resultado_final = pyqtSignal(list)
-            resultado_progress = pyqtSignal(str)
-            def __init__(self, plugin_directory):
+            resultado_progress = pyqtSignal(list)
+            def __init__(self, plugin_directory, method_execution,dictionary,max_iterations,tolerance,save_results_calibration):
                 super().__init__()
                 self.plugin_directory = plugin_directory
+                self.execution_calibration_sedimentograph = method_execution
+                self.dictionary = dictionary
+                self.best_result = {"x":None,"result":None} #save results of calibration iteration
+                self.list_of_inputs = []
+                self.list_of_results = []
+                self.max_iterations = int(max_iterations)
+                self.tolerance = float(tolerance)
+                self.save_results_calibration = save_results_calibration
+                
             def run(self):
-                process = subprocess.Popen([self.plugin_directory + "\\executables\\execution.bat"],
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE,
-                                   text=True,
-                                   shell=True)
-
-                # Lee la salida línea por línea
-                for line in iter(process.stdout.readline, ''):
-                    self.resultado_progress.emit(line)  #Emits line in real time
-                process.stdout.close()
-                process.wait()  #Wait processs ends
+                #Method to update progress in the optimization
+                self.ejecuciones = 0 
+                def objetivo(x):
+                    result = self.execution_calibration_sedimentograph(x)
+                    # Emitir la señal con el número de ejecuciones y el resultado
+                    self.ejecuciones += 1
+                    self.resultado_progress.emit([self.ejecuciones, float(result)])
+                    #Save the best result if it is the first run or if it improves on the current best result
+                    if self.best_result["result"] is None or result < self.best_result["result"]:
+                        self.best_result["x"] = x
+                        self.best_result["result"] = result
+                        
+                    if self.ejecuciones == self.max_iterations or result == "error": #condition of maximum number of iterations to stop the code
+                        1/0
+                    #Save inputs and results
+                    self.list_of_inputs.append(x)
+                    self.list_of_results.append(result)
+                    
+                    
+                    return result   
+                    
+                #Limits to the calibration
+                limites = list(self.dictionary.values())
+                #Global calibration
+                try:
+                    resultado_global = differential_evolution(objetivo, bounds=limites, strategy='best1bin',tol=self.tolerance)
+                except ZeroDivisionError: #maximum iterations achieved
+                    self.resultado_progress.emit(["Warning","Maximum iterations achieved \n Adding best result...\n"])
+                    objetivo(self.best_result["x"]) #execute best just so that users can see it
+                    self.list_of_inputs[:-1] #eilminate last one
+                    self.list_of_results[:-1]
+                    
+                #Message end global calibration
+                self.resultado_progress.emit(["Warning","Calibration ended"])
                 
-                self.resultado_final.emit([process.stdout,process.stderr])
+                #Save results
+                self.save_results_calibration(self.list_of_inputs,self.list_of_results)
                 
-        self.worker = ejecutor(self.plugin_directory)
+        self.worker = ejecutor(self.plugin_directory, self.execution_calibration_sedimentograph,self.calibration_dictionary,
+            self.dlg_calibration_advanced_settings.max_iterations.text(),self.dlg_calibration_advanced_settings.tolerance.text(),
+            self.save_results_calibration)
         self.worker.start()
-        self.calibration_progress_text = "" #text of progress
-        self.dlg_calibration_progress.show()#show progress dialog
-        self.worker.resultado_progress.connect(self.calibration_execution_progress)
-        self.worker.resultado_final.connect(self.calibration_execution_result)
+        self.worker.resultado_progress.connect(self.calibration_execution_progress_sedimentograph)
     
     
-    def change_inputs_calibration_sedimentograph(self,inputs):
+    def change_base_inputs_calibration_sedimentograph(self,inputs):
         """Method to change the inputs in the calibration of sedimentograph if change is selected"""
-        #Function to modify inputs
-        def modify_inputs(extension, row, column, new_value):
-            prj = self.obtain_direction_vfsmod(self.dlg_base.vfs_project.text())
-            with open(prj, "r") as archivo:
-                lineas_prj = archivo.readlines()
-            for i in lineas_prj:
-                if i.split(".")[-1].replace("\n", "").replace(" ","") == extension:
-                    filepath = i.split("=")[-1]
-                    break
-            if not os.path.isabs(filepath): #relative path
-                filepath = os.path.join(os.path.dirname(prj), filepath)
-            filepath = filepath.replace("\n", "")
-
-            with open(filepath, 'r') as file:
-                lineas = file.readlines()
-            
-            numbers_str = lineas[row]
-            # Use regex to find all numbers in the string
-            matches = re.findall(r'\S+', numbers_str)
-            # Replace the specific number at the given index
-            matches[column] = str(new_value)
-            # Rebuild the string by replacing only the specific number
-            lineas[row] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
-            with open(filepath, 'w') as archivo:
-                for i in lineas:
-                    archivo.write(i)
-        
         #spacing
-        if inputs[0]==2:
-            modify_inputs("igr",0,0,self.dlg_base.new_spacing.text())
+        if inputs[0]=="change":
+            self.modify_inputs_calibration("igr",0,0,self.dlg_base.new_spacing.text())
         #roughness grass
-        if inputs[1]==2:
-            modify_inputs("igr",0,1,self.dlg_base.new_roughness.text())
+        if inputs[1]=="change":
+            self.modify_inputs_calibration("igr",0,1,self.dlg_base.new_roughness.text())
         #height
-        if inputs[2]==2:
-            modify_inputs("igr",0,2,self.dlg_base.new_height.text())
+        if inputs[2]=="change":
+            self.modify_inputs_calibration("igr",0,2,self.dlg_base.new_height.text())
         #roughness bare
-        if inputs[3]==2:
-            modify_inputs("igr",0,3,self.dlg_base.new_bare.text())
+        if inputs[3]=="change":
+            self.modify_inputs_calibration("igr",0,3,self.dlg_base.new_bare.text())
         #coarse
-        if inputs[4]==2:
-            modify_inputs("isd",0,1,self.dlg_base.new_coarse.text())
+        if inputs[4]=="change":
+            self.modify_inputs_calibration("isd",0,1,self.dlg_base.new_coarse.text())
         #incoming
-        if inputs[5]==2:
-            modify_inputs("isd",0,2,self.dlg_base.new_incoming.text())
+        if inputs[5]=="change":
+            self.modify_inputs_calibration("isd",0,2,self.dlg_base.new_incoming.text())
         #porosity
-        if inputs[6]==2:
-            modify_inputs("isd",0,3,self.dlg_base.new_porosity.text())
+        if inputs[6]=="change":
+            self.modify_inputs_calibration("isd",0,3,self.dlg_base.new_porosity.text())
         #sediment_class
-        if inputs[7]==2:
-            modify_inputs("isd",1,0,self.dlg_base.new_class.text())
+        if inputs[7]=="change":
+            self.modify_inputs_calibration("isd",1,0,self.dlg_base.new_class.text())
         #sediment_density
-        if inputs[8]==2:
-            modify_inputs("isd",1,1,self.dlg_base.new_density.text())
+        if inputs[8]=="change":
+            self.modify_inputs_calibration("isd",1,1,self.dlg_base.new_density.text())
         
     
     def move_files_calibration_sedimentograph(self):
         """Method to move files to the corresponding folders for calibration"""
-        #Move prj to inverse
-        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_base.vfs_file.text()), self.dlg_base.working_directory_vfsmod.text()+os.path.basename(self.dlg_base.vfs_file.text()))
         #Move sedimentograph
-        shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_base.sedimentograph_file.text()),self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_base.sedimentograph_file.text())}")
-        #Move executables of UH and VFS to main directory
-        shutil.copyfile(self.plugin_directory+"\\executables\\uh.exe",self.dlg_base.working_directory_vfsmod.text()+"\\uh.exe")
-        shutil.copyfile(self.plugin_directory+"\\executables\\vfsm.exe",self.dlg_base.working_directory_vfsmod.text()+"\\vfsm.exe")
-    
+        try:
+            shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_base.sedimentograph_file.text()),self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_base.sedimentograph_file.text())}")
+        except SameFileError:
+            pass
+            
+        #Prj
+        prj_file = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.prj"
+        #Check if water quality is simulated
+        with open(self.obtain_direction_vfsmod(self.dlg_base.vfs_file.text()), "r") as archivo:
+            lineas = archivo.readlines()
+        self.water_quality = False
+        for i in lineas:
+            if i[:3]=="iwq":
+                self.water_quality = True
+            
+        #Create file
+        with open(prj_file, 'w') as archivo:
+            archivo.write(f"ikw=inputs\\inverse.ikw  \n")
+            archivo.write(f"iso=inputs\\inverse.iso  \n")
+            archivo.write(f"igr=inputs\\inverse.igr  \n")
+            archivo.write(f"isd=inputs\\inverse.isd  \n")
+            archivo.write(f"irn=inputs\\inverse.irn  \n")
+            archivo.write(f"iro=inputs\\inverse.iro  \n")
+            if self.water_quality:
+                archivo.write(f"iwq=inputs\\inverse.iwq  \n")
+            archivo.write(f"og1=output\\inverse.og1  \n")
+            archivo.write(f"og2=output\\inverse.og2  \n")
+            archivo.write(f"ohy=output\\inverse.ohy  \n")
+            archivo.write(f"osm=output\\inverse.osm  \n")
+            archivo.write(f"osp=output\\inverse.osp  \n")
+            if self.water_quality:
+                archivo.write(f"owq=output\\inverse.owq  \n")
+        
+        #UH
+        lis_file = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.lis"
+        #Create file
+        with open(lis_file, 'w') as archivo:
+            archivo.write(f"inp=inputs\\inverse.inp  \n")
+            archivo.write(f"iro=inputs\\inverse.iro  \n")
+            archivo.write(f"irn=inputs\\inverse.irn  \n")
+            archivo.write(f"isd=inputs\\inverse.isd  \n")
+            archivo.write(f"out=inputs\\inverse.out  \n")
+            archivo.write(f"hyt=inputs\\inverse.hyt  \n")
+        
+        #REST OF THE FILES
+        #Function to copy and paste the inputs to create the files to use in the design analysis
+        def copy_paste(type_input):
+            ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.{type_input}" 
+            ruta = self.obtain_direction_vfsmod(self.dlg_base.vfs_file.text())
+            if os.path.exists(ruta) and os.path.isfile(ruta):
+                #First we open .prj and obtain the direction of the copying file
+                with open(ruta, "r") as archivo:
+                    lineas = archivo.readlines()
+                for i in lineas:
+                    if i[:3]==type_input:
+                        ikw = i.split("=")[-1]
+                if not os.path.isabs(ikw): #relative path
+                    ikw = os.path.join(os.path.dirname(ruta), ikw)
+                ikw = ikw.replace("\n", "") #take out the line jumps
+                shutil.copyfile(ikw, ruta_pegar)
+        
+        #IKW
+        copy_paste("ikw")
+        #ISO
+        copy_paste("iso")
+        #IGR
+        copy_paste("igr")
+        #ISD
+        copy_paste("isd")
+        #IRN
+        copy_paste("irn")
+        #IRO
+        copy_paste("iro")
+        #IWQ
+        if self.water_quality:
+            copy_paste("iwq")
     
     def run_calibration_hydrograph(self):
         """Method to run the calibration for hydrograph"""
+        self.calibration_hydrograph = True
         #Obtain dataframe of hydrograph
         self.hydrograph_calibration_df = self.obtain_df_hydrograph_calibration()
         #First, put the progress
-        self.calibration_execution_progress([0,])
+        self.calibration_execution_progress_hydrograph([0,])
         
         #If "inverse" folder does not exist, then create it
         self.create_folder_calibration()
@@ -4548,7 +4641,7 @@ class qvfsmod:
         self.move_files_calibration_hydrograph()
         
         #Create the dictionary to know the bounds of the input parameters
-        self.calibration_dictionary = self.create_dictionary_calibration()
+        self.calibration_dictionary = self.create_dictionary_calibration_hydrograph()
         
             
         #first we create the thread class to be able to use the dialog when executing
@@ -4579,7 +4672,7 @@ class qvfsmod:
                         self.best_result["x"] = x
                         self.best_result["result"] = result
                         
-                    if self.ejecuciones == self.max_iterations: #condition of maximum number of iterations to stop the code
+                    if self.ejecuciones == self.max_iterations or results == "error": #condition of maximum number of iterations to stop the code
                         1/0
                     #Save inputs and results
                     self.list_of_inputs.append(x)
@@ -4609,11 +4702,11 @@ class qvfsmod:
             self.dlg_calibration_advanced_settings.max_iterations.text(),self.dlg_calibration_advanced_settings.tolerance.text(),
             self.save_results_calibration)
         self.worker.start()
-        self.worker.resultado_progress.connect(self.calibration_execution_progress)
+        self.worker.resultado_progress.connect(self.calibration_execution_progress_hydrograph)
     
     
     def obtain_df_hydrograph_calibration(self):
-        """Method to obtain the dataframe of th ehydrograph to be used in the calibration"""
+        """Method to obtain the dataframe of the hydrograph to be used in the calibration"""
         ruta = self.obtain_direction_vfsmod(self.dlg_base.hydrograph_file.text())
         with open(ruta, "r") as archivo:
             lineas = archivo.readlines()
@@ -4623,6 +4716,19 @@ class qvfsmod:
             discharge.append(float(i.split()[1]))
             times.append(float(i.split()[0]))
         df = pd.DataFrame(data = {"Time":times,"Discharge":discharge})
+        return df
+    
+    def obtain_df_sedimentograph_calibration(self):
+        """Method to obtain the dataframe of the sedimentograph to be used in the calibration"""
+        ruta = self.obtain_direction_vfsmod(self.dlg_base.sedimentograph_file.text())
+        with open(ruta, "r") as archivo:
+            lineas = archivo.readlines()
+        sediment = []
+        times = []
+        for i in lineas:
+            sediment.append(float(i.split()[1]))
+            times.append(float(i.split()[0]))
+        df = pd.DataFrame(data = {"Time":times,"Sediment":sediment})
         return df
 
     
@@ -4722,11 +4828,6 @@ class qvfsmod:
                 else:
                     # Si no hay índices cercanos, dejar como NaN
                     data_aligned.loc[idx, 'Discharge'] = float('nan')
-               
-        calibration_df_progress.to_csv(r"C:\borrar\progress.csv",index=True, float_format='%.5f')
-        hydrograph_calibration_df.to_csv(r"C:\borrar\calibration.csv", index=True, float_format='%.5f')
-        data_aligned.to_csv(r"C:\borrar\interpolated.csv", index=True, float_format='%.5f')
-        hydrograph_calibration_df.to_csv(r"C:\borrar\hydrograph.csv", index=True, float_format='%.5f') #borrar
         
         
         #Save dataframe for the results
@@ -4764,9 +4865,159 @@ class qvfsmod:
             nash_sutcliffe_efficiency = 1 - (suma_cuadrados_diferencias / suma_cuadrados_diferencias_observados)
             nnse = 1/(2-nash_sutcliffe_efficiency)
             return -nnse #the calibration function minimizes values, thats why -
+    
+    def execution_calibration_sedimentograph(self, input_parameters):
+        """Method to change inputs of calibration and execute"""
+        #First we translate the inputs of that method to a way so can it can be used
+        dic_inputs = {}
+        for k,i in enumerate(self.calibration_dictionary.keys()):
+            dic_inputs[i]= input_parameters[k]
+        #Modify inputs
+        for i in dic_inputs.keys():
+            #spacing
+            if i=="spacing":
+                self.modify_inputs_calibration("igr",0,0,dic_inputs[i])
+            #roughness grass
+            elif i=="rougheness_grass":
+                self.modify_inputs_calibration("igr",0,1,dic_inputs[i])
+            #height
+            elif i=="height":
+                self.modify_inputs_calibration("igr",0,2,dic_inputs[i])
+            #roughness bare
+            elif i=="roughness_bare":
+                self.modify_inputs_calibration("igr",0,3,dic_inputs[i])
+            #coarse
+            elif i=="coarse_sediment":
+                self.modify_inputs_calibration("isd",0,1,dic_inputs[i])
+            #incoming
+            elif i=="incoming_flow":
+                self.modify_inputs_calibration("isd",0,2,dic_inputs[i])
+            #porosity
+            elif i=="porosity":
+                self.modify_inputs_calibration("isd",0,3,dic_inputs[i])
+            #sediment_class
+            elif i=="particle_class":
+                self.modify_inputs_calibration("isd",1,0,dic_inputs[i])
+            #sediment_density
+            elif i=="particle_densitiy":
+                self.modify_inputs_calibration("isd",1,1,dic_inputs[i]) 
+
+        #Update bat for calibration
+        self.update_bat_calibration()
+        #Execute
+        resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
+            capture_output=True, 
+            text=True, 
+            shell=True)
+        #Put warning
+        if not "...FINISHED..." in resultado.stdout:
+            self.warning_message(str(resultado.stdout))
+            return "error"
+        
+        #Read output
+        #First obtain the gso data in (g/cm.s)
+        ruta = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\output\\inverse.og1"
+        with open(ruta, "r") as archivo:
+            lineas = archivo.readlines()
+        sediment = []
+        times = []
+        for i in range(len(lineas)):
+            if lineas[i]=="  Time      Y(t)     X1(t)     X2(t)      L(t)      Se       gsi       gsI       gs2       gso     Cum.gsi Wedge_mass Lower_mass  Cum.gso     f        frac      DEP      CDEP       Tt\n":
+                for k in range(i+3,len(lineas)):
+                    times.append(float(lineas[k].split()[0]))
+                    sediment.append(float(lineas[k].split()[9]))
+        self.calibration_df_progress = pd.DataFrame(data = {"Time":times,"Sediment":sediment})
+        #Then obtain the width of the filter
+        with open(self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\output\\inverse.osp", "r") as archivo:
+            lineas = archivo.readlines()
+        try:
+            for i in lineas:
+                if i.split("=")[-1]==" Filter Strip Width (input)\n":
+                    for k in i.split("=")[0].split(" "):
+                        try:
+                            width = float(k)
+                            break
+                        except:
+                            pass
+            self.calibration_df_progress["Sediment"] = self.calibration_df_progress["Sediment"]*width*100
+        except UnboundLocalError:
+            self.warning_message("Error in execution")
+            return "error"
+                
+        
+        #Obtain interpolated dataframe
+        calibration_df_progress = self.calibration_df_progress.copy()
+        calibration_df_progress.set_index('Time', inplace=True)
+        sedimentograph_calibration_df = self.sedimentograph_calibration_df.copy()
+        sedimentograph_calibration_df.set_index('Time', inplace=True)
+        
+        #Do the interpolation
+        # Crear un nuevo DataFrame para los resultados
+        data_aligned = pd.DataFrame(index=calibration_df_progress.index)
         
         
-    def calibration_execution_progress(self,information):
+        # Rellenar b_aligned con los valores de b o interpolados
+        for idx in calibration_df_progress.index:
+            if idx in sedimentograph_calibration_df.index:
+                data_aligned.loc[idx, 'Sediment'] = sedimentograph_calibration_df.loc[idx, 'Sediment']
+            else:
+                lower_index = sedimentograph_calibration_df.index[sedimentograph_calibration_df.index < idx]
+                upper_index = sedimentograph_calibration_df.index[sedimentograph_calibration_df.index > idx]
+                
+                if len(lower_index) > 0 and len(upper_index) > 0:
+                    # Hay índices válidos para interpolar
+                    lower_idx = lower_index[-1]  # Último índice inferior
+                    upper_idx = upper_index[0]    # Primer índice superior
+                    
+                    # Interpolación lineal
+                    lower_value = sedimentograph_calibration_df.loc[lower_idx, 'Sediment']
+                    upper_value = sedimentograph_calibration_df.loc[upper_idx, 'Sediment']
+                    # Calcular el valor interpolado
+                    interpolated_value = lower_value + (upper_value - lower_value) * ((idx - lower_idx) / (upper_idx - lower_idx))
+                    data_aligned.loc[idx, 'Sediment'] = interpolated_value
+                else:
+                    # Si no hay índices cercanos, dejar como NaN
+                    data_aligned.loc[idx, 'Sediment'] = float('nan')
+        
+        
+        #Save dataframe for the results
+        self.data_aligned = data_aligned
+        
+        #Calculate objective function
+        self.objective_function = [self.dlg_calibration_advanced_settings.objective_function.itemText(i) for i in range(self.dlg_calibration_advanced_settings.objective_function.count())][self.dlg_calibration_advanced_settings.objective_function.currentIndex()]
+        if  self.objective_function== "RMSE":
+            #Calculate RMSE
+            diferencias = calibration_df_progress['Sediment'] - data_aligned['Sediment']
+            #Calculate squared differenes
+            cuadrados_diferencias = diferencias ** 2
+            resultado_total = cuadrados_diferencias.sum()
+            return resultado_total
+        
+        elif self.objective_function == "NSE":
+            diferencias = calibration_df_progress['Sediment'] - data_aligned['Sediment']
+            cuadrados_diferencias = diferencias ** 2
+            suma_cuadrados_diferencias = cuadrados_diferencias.sum()
+            media_observados = data_aligned['Sediment'].mean()
+            diferencias_media_observados = data_aligned['Sediment'] - media_observados
+            cuadrados_diferencias_observados = diferencias_media_observados ** 2
+            suma_cuadrados_diferencias_observados = cuadrados_diferencias_observados.sum()
+            nash_sutcliffe_efficiency = 1 - (suma_cuadrados_diferencias / suma_cuadrados_diferencias_observados)
+            return -nash_sutcliffe_efficiency #the calibration function minimizes values, thats why -
+
+        elif self.objective_function == "NNSE":
+            diferencias = calibration_df_progress['Sediment'] - data_aligned['Sediment']
+            cuadrados_diferencias = diferencias ** 2
+            suma_cuadrados_diferencias = cuadrados_diferencias.sum()
+            media_observados = data_aligned['Sediment'].mean()
+            diferencias_media_observados = data_aligned['Sediment'] - media_observados
+            cuadrados_diferencias_observados = diferencias_media_observados ** 2
+            suma_cuadrados_diferencias_observados = cuadrados_diferencias_observados.sum()
+            nash_sutcliffe_efficiency = 1 - (suma_cuadrados_diferencias / suma_cuadrados_diferencias_observados)
+            nnse = 1/(2-nash_sutcliffe_efficiency)
+            return -nnse #the calibration function minimizes values, thats why -
+        
+        
+    def calibration_execution_progress_hydrograph(self,information):
         """Method to show the progress of calibration"""
         #Progress befores we start with the executions
         if information[0]=="Warning":
@@ -4798,10 +5049,11 @@ class qvfsmod:
                 layout.addWidget(self.canvas_calibration_graph)
             
             #Add graph
-            self.ax_calibration_progress = self.canvas_calibration_graph.figure.subplots()
             self.canvas_calibration_graph.figure.clear()
+            self.ax_calibration_progress = self.canvas_calibration_graph.figure.subplots()
             
-            self.ax_calibration_progress.plot(self.hydrograph_calibration_df.Time, self.hydrograph_calibration_df.Discharge)
+            
+            self.ax_calibration_progress.plot(self.hydrograph_calibration_df.Time, self.hydrograph_calibration_df.Discharge,marker='o')
             #Labels
             self.ax_calibration_progress.set_xlabel("Time (s)",size = 12,family="arial",weight = "bold",color = "black")
             self.ax_calibration_progress.set_ylabel("Discharge (m3/s)",size = 12,family="arial",weight = "bold",color = "black")
@@ -4846,35 +5098,118 @@ class qvfsmod:
             #Draw canvas
             self.canvas_calibration_graph.draw()
     
+    def calibration_execution_progress_sedimentograph(self,information):
+        """Method to show the progress of calibration"""
+        #Progress befores we start with the executions
+        if information[0]=="Warning":
+            #Put the text
+            self.calibration_progress_text+=information[1]
+            self.dlg_calibration_progress.textEdit.setPlainText(self.calibration_progress_text)
+            self.dlg_calibration_progress.textEdit.moveCursor(QtGui.QTextCursor.End) #move to end the text to see it
+            
+        elif information[0] == 0:
+            #Show dialog
+            self.dlg_calibration_progress.show()
+            #Put the text
+            self.calibration_progress_text = ""
+            self.calibration_progress_text+="Starting calibration...\n"
+            self.dlg_calibration_progress.textEdit.setPlainText(self.calibration_progress_text)
+            self.dlg_calibration_progress.textEdit.moveCursor(QtGui.QTextCursor.End) #move to end the text to see it
+            
+            
+            if not hasattr(self, 'canvas_calibration_graph'):
+                #Create the canvas of the graph
+                # Si no existe, crear el canvas y añadirlo al layout
+                self.canvas_calibration_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
+                
+                # Asignar un layout al QFrame si no tiene uno
+                layout = QVBoxLayout(self.dlg_calibration_progress.frame)
+                self.dlg_calibration_progress.frame.setLayout(layout)
+                
+                #Add canvas to layout
+                layout.addWidget(self.canvas_calibration_graph)
+            
+            #Add graph
+            self.canvas_calibration_graph.figure.clear()
+            self.ax_calibration_progress = self.canvas_calibration_graph.figure.subplots()
+            
+            
+            self.ax_calibration_progress.plot(self.sedimentograph_calibration_df.Time, self.sedimentograph_calibration_df.Sediment,marker='o')
+            #Labels
+            self.ax_calibration_progress.set_xlabel("Time (s)",size = 12,family="arial",weight = "bold",color = "black")
+            self.ax_calibration_progress.set_ylabel("Sediment (g/s)",size = 12,family="arial",weight = "bold",color = "black")
+            #X ticks
+            self.ax_calibration_progress.tick_params(axis = "both",colors = "black",labelsize = 9)
+            
+            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+            self.canvas_calibration_graph.figure.subplots_adjust(wspace=0.7) #spacing beteween two graphs
+            self.canvas_calibration_graph.figure.subplots_adjust(left=0.3, bottom=0.2)
+            #Draw canvas
+            self.canvas_calibration_graph.draw()
+            
+        else:
+            #First, put the text
+            if self.objective_function == "RMSE":
+                self.calibration_progress_text+=f"{information[0]}:OF = "+"{:.2e}".format(information[1])+"\n"
+            else: #in NSE and NNSE we put negative in the execution function because its a minimization calibration method
+                self.calibration_progress_text+=f"{information[0]}:OF = "+"{:.2e}".format(-information[1])+"\n"
+            self.dlg_calibration_progress.textEdit.setPlainText(self.calibration_progress_text)
+            self.dlg_calibration_progress.textEdit.moveCursor(QtGui.QTextCursor.End) #move to end the text to see it
+            
+            #Then add the graph
+            self.canvas_calibration_graph.figure.clear()
+            self.ax_calibration_progress = self.canvas_calibration_graph.figure.subplots()
+            
+            #Add lines
+            self.ax_calibration_progress.plot(self.sedimentograph_calibration_df.Time,self.sedimentograph_calibration_df.Sediment,label = "Measured",marker='o')
+            self.ax_calibration_progress.plot(self.calibration_df_progress.Time,self.calibration_df_progress.Sediment,label = "Simulated",marker='o')
+            
+            #Limits
+            #Labels
+            self.ax_calibration_progress.set_xlabel("Time (s)",size = 12,family="arial",weight = "bold",color = "black")
+            self.ax_calibration_progress.set_ylabel("Sediment (g/s)",size = 12,family="arial",weight = "bold",color = "black")
+            #X ticks
+            self.ax_calibration_progress.tick_params(axis = "both",colors = "black",labelsize = 9)
+            # Add legend
+            self.ax_calibration_progress.legend()
+            
+            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+            self.canvas_calibration_graph.figure.subplots_adjust(wspace=0.7) #spacing beteween two graphs
+            self.canvas_calibration_graph.figure.subplots_adjust(left=0.25, bottom=0.2)
+            #Draw canvas
+            self.canvas_calibration_graph.draw()
+    
+    
+    
     def save_results_calibration(self,inputs, results):
         """Method to save results in calibration execution"""
         #Calculate goodness of fit values
         #Ceff (Nash Sutcliffe)
         calibration_df_progress = self.calibration_df_progress.copy()
         calibration_df_progress.set_index('Time', inplace=True)
-        diferencias = calibration_df_progress['Discharge'] - self.data_aligned['Discharge']
+        diferencias = calibration_df_progress.iloc[:,0] - self.data_aligned.iloc[:,0]
         cuadrados_diferencias = diferencias ** 2
         suma_cuadrados_diferencias = cuadrados_diferencias.sum()
-        media_observados = self.data_aligned['Discharge'].mean()
-        diferencias_media_observados = self.data_aligned['Discharge'] - media_observados
+        media_observados = self.data_aligned.iloc[:,0].mean()
+        diferencias_media_observados = self.data_aligned.iloc[:,0] - media_observados
         cuadrados_diferencias_observados = diferencias_media_observados ** 2
         suma_cuadrados_diferencias_observados = cuadrados_diferencias_observados.sum()
         nash_sutcliffe_efficiency = 1 - (suma_cuadrados_diferencias / suma_cuadrados_diferencias_observados)
         #RMSE
-        diferencias = calibration_df_progress['Discharge'] - self.data_aligned['Discharge']
+        diferencias = calibration_df_progress.iloc[:,0] - self.data_aligned.iloc[:,0]
         cuadrados_diferencias = diferencias ** 2
         rmse = cuadrados_diferencias.sum()
         #IOA
-        observed = self.data_aligned['Discharge']
-        simulated = calibration_df_progress['Discharge']
+        observed = self.data_aligned.iloc[:,0]
+        simulated = calibration_df_progress.iloc[:,0]
         mean_observed = observed.mean()
         squared_differences = (simulated - observed) ** 2
         numerator = squared_differences.sum()
         denominator = ((abs(simulated - mean_observed) + abs(observed - mean_observed)) ** 2).sum()
         ioa = 1 - (numerator / denominator)
         #IOA_m
-        observed = self.data_aligned['Discharge']
-        simulated = calibration_df_progress['Discharge']
+        observed = self.data_aligned.iloc[:,0]
+        simulated = calibration_df_progress.iloc[:,0]
         mean_observed = observed.mean()
         squared_differences = (simulated - observed) ** 2
         numerator = squared_differences.sum()
@@ -4890,13 +5225,17 @@ class qvfsmod:
         mean_observed = observed.mean()
         Ceff_m = 1 - (cuadrados_diferencias.sum() / ((observed - mean_observed) ** 2).sum())
         #Ceff_r
-        Ceff_r = 1 - (cuadrados_diferencias.sum() / (calibration_df_progress['Discharge'] ** 2).sum())
+        Ceff_r = 1 - (cuadrados_diferencias.sum() / (calibration_df_progress.iloc[:,0] ** 2).sum())
         
         #Create csv with results
         path = self.obtain_direction_vfsmod(self.dlg_calibration_advanced_settings.exit_file.text())
         try:
             with open(path, 'w') as f:
                 #Add results of calibration
+                if self.calibration_sedimentograph:
+                    f.write(f"Sedimentograph calibration" + '\n')
+                elif self.calibration_hydrograph:
+                    f.write(f"Hydrograph calibration" + '\n')
                 f.write(f"Number of iterations: {len(inputs)}" + '\n')
                 if self.objective_function == "RMSE":
                     final_of = min(results)
@@ -4922,11 +5261,19 @@ class qvfsmod:
             self.warning_message(f"{path} file is opened. Please close it to save results")
         
         #Then add the observed and simulated data
-        df = pd.DataFrame(data = {"Time":self.data_aligned.index,"Observed":self.data_aligned["Discharge"],"Simulated":calibration_df_progress['Discharge']})
+        df = pd.DataFrame(data = {"Time":self.data_aligned.index,"Observed":self.data_aligned.iloc[:,0],"Simulated":calibration_df_progress.iloc[:,0]})
         df.to_csv(path, mode='a',index=False, float_format='%.5f')
         
         #Put filepath in the results dialog
-        self.dlg_calibration_results_hydrograph.results.setText(self.dlg_calibration_advanced_settings.exit_file.text())
+        if self.calibration_sedimentograph:
+            self.dlg_calibration_results_sedimentograph.results.setText(self.dlg_calibration_advanced_settings.exit_file.text())
+        elif elf.calibration_hydrograph:
+            self.dlg_calibration_results_hydrograph.results.setText(self.dlg_calibration_advanced_settings.exit_file.text())
+        
+        #Set to false calibrations
+        self.calibration_sedimentograph = False
+        self.calibration_hydrograph = False
+    
     
     def update_graph_calibration_hydrograph(self):
         """Method to update the graph of calibration"""
@@ -4942,9 +5289,18 @@ class qvfsmod:
             for k,i in enumerate(lineas):
                 if i[:4]=="Time":
                     for m in range(k+1,len(lineas)):
-                        times.append(float(lineas[m].split(",")[0]))
-                        observed.append(float(lineas[m].split(",")[1]))
-                        simulated.append(float(lineas[m].split(",")[2]))
+                        try:
+                            times.append(float(lineas[m].split(",")[0]))
+                        except:
+                            times.append(0)
+                        try:
+                            observed.append(float(lineas[m].split(",")[1]))
+                        except:
+                            observed.append(0)
+                        try:
+                            simulated.append(float(lineas[m].split(",")[2]))
+                        except:
+                            simulated.append(0)
                     break
                 contenido += i
             self.dlg_calibration_results_hydrograph.textEdit.setPlainText(contenido)
@@ -4989,6 +5345,77 @@ class qvfsmod:
             self.canvas_calibration_graph_hydrograph.figure.subplots_adjust(left=0.2, bottom=0.2)
             #Draw canvas
             self.canvas_calibration_graph_hydrograph.draw()
+    
+    def update_graph_calibration_sedimentograph(self):
+        """Method to update the graph of calibration"""
+        path = self.obtain_direction_vfsmod(self.dlg_calibration_results_sedimentograph.results.text())
+        if os.path.exists(path):    
+            #First add the text
+            with open(path, "r") as archivo:
+                lineas = archivo.readlines()
+            contenido = ""
+            times = []
+            observed = []
+            simulated = []
+            for k,i in enumerate(lineas):
+                if i[:4]=="Time":
+                    for m in range(k+1,len(lineas)):
+                        try:
+                            times.append(float(lineas[m].split(",")[0]))
+                        except:
+                            times.append(0)
+                        try:
+                            observed.append(float(lineas[m].split(",")[1]))
+                        except:
+                            observed.append(0)
+                        try:
+                            simulated.append(float(lineas[m].split(",")[2]))
+                        except:
+                            simulated.append(0)
+                    break
+                contenido += i
+            self.dlg_calibration_results_sedimentograph.textEdit.setPlainText(contenido)
+            
+            #Add the graph
+            if not hasattr(self, 'canvas_calibration_graph_sedimentograph'):
+                #Create the canvas of the graph
+                # Si no existe, crear el canvas y añadirlo al layout
+                self.canvas_calibration_graph_sedimentograph = FigureCanvas(plt.Figure(figsize=(15, 6)))
+                # Asignar un layout al QFrame si no tiene uno
+                layout = QVBoxLayout(self.dlg_calibration_results_sedimentograph.frame)
+                self.dlg_calibration_results_sedimentograph.frame.setLayout(layout)
+                #Add canvas to layout
+                layout.addWidget(self.canvas_calibration_graph_sedimentograph)
+            
+            #Add graph
+            self.canvas_calibration_graph_sedimentograph.figure.clear()
+            self.ax_calibration_graph_sedimentograph = self.canvas_calibration_graph_sedimentograph.figure.subplots()
+            
+            if self.dlg_calibration_results_sedimentograph.one_one.isChecked():
+                self.ax_calibration_graph_sedimentograph.scatter(simulated, observed,color = "blue")
+                #1:1 line
+                max_val = max(simulated + observed)
+                self.ax_calibration_graph_sedimentograph.plot([0, max_val], [0, max_val], linestyle='--', color='black')
+                self.ax_calibration_graph_sedimentograph.set_xlabel("Simulated",size = 12,family="arial",weight = "bold",color = "black")
+                self.ax_calibration_graph_sedimentograph.set_ylabel("Observed",size = 12,family="arial",weight = "bold",color = "black")
+                self.ax_calibration_graph_sedimentograph.tick_params(axis = "both",colors = "black",labelsize = 9)
+
+                
+            elif self.dlg_calibration_results_sedimentograph.graph_fit.isChecked():
+                self.ax_calibration_graph_sedimentograph.plot(times, observed,
+                    color = "blue", label = "Observed",marker = "o")
+                self.ax_calibration_graph_sedimentograph.plot(times, simulated,color = "red", 
+                    label = "Simulated",marker = "o")
+                self.ax_calibration_graph_sedimentograph.legend()
+                self.ax_calibration_graph_sedimentograph.set_xlabel("Time (s)",size = 12,family="arial",weight = "bold",color = "black")
+                self.ax_calibration_graph_sedimentograph.set_ylabel("Sediment (g/s)",size = 12,family="arial",weight = "bold",color = "black")
+                self.ax_calibration_graph_sedimentograph.tick_params(axis = "both",colors = "black",labelsize = 9)
+            
+            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+            self.canvas_calibration_graph_sedimentograph.figure.subplots_adjust(wspace=0.7) #spacing beteween two graphs
+            self.canvas_calibration_graph_sedimentograph.figure.subplots_adjust(left=0.2, bottom=0.2)
+            #Draw canvas
+            self.canvas_calibration_graph_sedimentograph.draw()
             
             
             
@@ -5084,8 +5511,8 @@ class qvfsmod:
             copy_paste("iwq")
         
         
-    def create_dictionary_calibration(self):
-        """Method to create the dictionary of bounds of the input parameters for the calibration"""
+    def create_dictionary_calibration_hydrograph(self):
+        """Method to create the dictionary of bounds of the input parameters for the calibration of hydrograph"""
         #Inputs
         dictionary = {}
         #Function to return the value needed for the inverse calibration file
@@ -5142,6 +5569,64 @@ class qvfsmod:
         
         if slope == "calibrate":
             dictionary["slope"] = [float(self.dlg_base.min_slope.text()),float(self.dlg_base.max_slope.text())]
+        
+        return dictionary
+    
+    def create_dictionary_calibration_sedimentograph(self):
+        """Method to create the dictionary of bounds of the input parameters for the calibration of sedimentograph"""
+        #Inputs
+        dictionary = {}
+        #Function to return the value needed for the inverse calibration file
+        def calibration(radio_button_one,radio_button_two):
+            if radio_button_one.isChecked():
+                return "change"
+            elif radio_button_two.isChecked():
+                return "calibrate"
+            else:
+                return -1
+        
+        
+        spacing = calibration(self.dlg_base.change_spacing,self.dlg_base.calibrate_spacing)
+        rougheness_grass = calibration(self.dlg_base.change_roughness,self.dlg_base.calibrate_roughness)
+        height = calibration(self.dlg_base.change_height,self.dlg_base.calibrate_height)
+        roughness_bare = calibration(self.dlg_base.change_bare,self.dlg_base.calibrate_bare)
+        coarse_sediment = calibration(self.dlg_base.change_coarse,self.dlg_base.calibrate_coarse)
+        incoming_flow = calibration(self.dlg_base.change_incoming,self.dlg_base.calibrate_incoming)
+        porosity = calibration(self.dlg_base.change_porosity,self.dlg_base.calibrate_porosity)
+        particle_class = calibration(self.dlg_base.change_class,self.dlg_base.calibrate_class)
+        particle_densitiy = calibration(self.dlg_base.change_density,self.dlg_base.calibrate_density)
+        
+
+        #Change inputs if "Change" has selected
+        self.change_base_inputs_calibration_sedimentograph([spacing,rougheness_grass,height,roughness_bare,coarse_sediment,incoming_flow,porosity,particle_class,particle_densitiy])
+        
+        #Create dictionary
+        if spacing == "calibrate":
+            dictionary["spacing"] = [float(self.dlg_base.min_spacing.text()),float(self.dlg_base.max_spacing.text())]
+            
+        if rougheness_grass == "calibrate":
+            dictionary["rougheness_grass"] = [float(self.dlg_base.min_roughness.text()),float(self.dlg_base.max_roughness.text())]
+        
+        if height == "calibrate":
+            dictionary["height"] = [float(self.dlg_base.min_height.text()),float(self.dlg_base.max_height.text())]
+        
+        if roughness_bare == "calibrate":
+            dictionary["roughness_bare"] = [float(self.dlg_base.min_bare.text()),float(self.dlg_base.max_bare.text())]
+        
+        if coarse_sediment == "calibrate":
+            dictionary["coarse_sediment"] = [float(self.dlg_base.min_coarse.text()),float(self.dlg_base.max_coarse.text())]
+        
+        if incoming_flow == "calibrate":
+            dictionary["incoming_flow"] = [float(self.dlg_base.min_incoming.text()),float(self.dlg_base.max_incoming.text())]
+        
+        if porosity == "calibrate":
+            dictionary["porosity"] = [float(self.dlg_base.min_porosity.text()),float(self.dlg_base.max_porosity.text())]
+        
+        if particle_class == "calibrate":
+            dictionary["particle_class"] = [float(self.dlg_base.min_class.text()),float(self.dlg_base.max_class.text())]
+        
+        if particle_densitiy == "calibrate":
+            dictionary["particle_densitiy"] = [float(self.dlg_base.min_density.text()),float(self.dlg_base.max_density.text())]
         
         return dictionary
         
