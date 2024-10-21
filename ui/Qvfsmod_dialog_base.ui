@@ -5789,16 +5789,16 @@ Data File</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="calibration_result_sedimentograph">
+                    <widget class="QPushButton" name="advanced_sedimentograph">
                      <property name="text">
-                      <string>Calibration Results</string>
+                      <string>Advanced Settings</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="advanced_sedimentograph">
+                    <widget class="QPushButton" name="calibration_result_sedimentograph">
                      <property name="text">
-                      <string>Advanced Settings</string>
+                      <string>Calibration Results</string>
                      </property>
                     </widget>
                    </item>
@@ -6325,7 +6325,7 @@ Data File</string>
                <x>0</x>
                <y>0</y>
                <width>897</width>
-               <height>593</height>
+               <height>636</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_22">
@@ -6922,7 +6922,7 @@ Solution Parameters</string>
                       <x>0</x>
                       <y>0</y>
                       <width>290</width>
-                      <height>28</height>
+                      <height>216</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_79">
@@ -6961,7 +6961,7 @@ Solution Parameters</string>
                <x>0</x>
                <y>0</y>
                <width>1002</width>
-               <height>529</height>
+               <height>636</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_43">
@@ -7272,7 +7272,7 @@ Solution Parameters</string>
                <x>0</x>
                <y>0</y>
                <width>1124</width>
-               <height>453</height>
+               <height>634</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_40">
@@ -7917,7 +7917,7 @@ Solution Parameters</string>
                       <x>0</x>
                       <y>0</y>
                       <width>290</width>
-                      <height>28</height>
+                      <height>173</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_86">

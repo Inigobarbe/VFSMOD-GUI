@@ -66,6 +66,7 @@ from libraries.SALib.analyze.morris import analyze as analyze_morris
 from libraries.SALib.sample.fast_sampler import sample as sample_fast
 from libraries.SALib.analyze.fast import analyze as analyze_fast
 
+from sklearn.linear_model import LinearRegression
 from scipy.optimize import differential_evolution, minimize
 from multiprocessing import Pool
 import psutil
@@ -180,8 +181,10 @@ class qvfsmod:
         self.dlg_base.calibration_result_sedimentograph.clicked.connect(self.dlg_calibration_results_sedimentograph.show)
         self.dlg_calibration_results_hydrograph.results.textChanged.connect(self.update_graph_calibration_hydrograph)
         self.dlg_calibration_results_hydrograph.one_one.toggled.connect(self.update_graph_calibration_hydrograph)
+        self.dlg_base.calibration_result_hydrograph.clicked.connect(self.update_graph_calibration_hydrograph)
         self.dlg_calibration_results_sedimentograph.results.textChanged.connect(self.update_graph_calibration_sedimentograph)
         self.dlg_calibration_results_sedimentograph.one_one.toggled.connect(self.update_graph_calibration_sedimentograph)
+        self.dlg_base.calibration_result_sedimentograph.toggled.connect(self.update_graph_calibration_sedimentograph)
         
         #Stacked widget
         self.dlg_base.pushButton_6.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_folder))
@@ -299,6 +302,7 @@ class qvfsmod:
         self.dlg_water_quality.calculation.addItems(["No calculation","Degradation changes with temperature and moisture","Degradation only","Degradation changes with temperature","Degradation changes with moisture"])
         self.dlg_water_quality.trapping_equation.addItems(["Sabbagh","Refit Sabbagh","Mass balance","Chen"])
         self.dlg_calibration_advanced_settings.objective_function.addItems(["RMSE","NSE","NNSE"])
+        self.dlg_water_quality.imob.addItems(["Partial/porewater","100% residues remobilize","No remobilization"])
         
         self.dlg_water_quality.trapping_equation.currentIndexChanged.connect(self.update_pesticide_coefficients)
         self.dlg_water_quality.frame_2.hide()
@@ -785,45 +789,46 @@ class qvfsmod:
     
     def add_inputs_oat_results(self):
         """Method to add inputs into oat sensitivity results"""
-        #First delete previous layout if it exits
-        if self.dlg_base.inputs_oat.layout() is not None:
-            for i in reversed(range(self.dlg_base.inputs_oat.layout().count())): 
-                widget = self.dlg_base.inputs_oat.layout().itemAt(i).widget()
-                if widget is not None: 
-                    widget.deleteLater()  # Eliminar el widget
-            self.dlg_base.inputs_oat.layout().deleteLater()
-        #Then create
         if os.path.exists(self.obtain_direction_vfsmod(self.dlg_base.csv_results_oat.text())):
-            try:
-                layout = QVBoxLayout()
-                # Crear un QLabel con el texto que quieras
-                label = QLabel("Inputs")
+            with open(self.obtain_direction_vfsmod(self.dlg_base.csv_results_oat.text()), mode='r', encoding='utf-8') as file:
+                lines = file.read().splitlines()
+            if lines[0]=="OAT sensitivity results":
+                #First delete previous layout if it exits
+                if self.dlg_base.inputs_oat.layout() is not None:
+                    for i in reversed(range(self.dlg_base.inputs_oat.layout().count())): 
+                        widget = self.dlg_base.inputs_oat.layout().itemAt(i).widget()
+                        if widget is not None: 
+                            widget.deleteLater()  # Eliminar el widget
+                    self.dlg_base.inputs_oat.layout().deleteLater()
+                #Then create
+                try:
+                    layout = QVBoxLayout()
+                    # Crear un QLabel con el texto que quieras
+                    label = QLabel("Inputs")
 
-                # Añadir el QLabel al layout
-                layout.addWidget(label)
-                
-                #Name of inputs
-                with open(self.obtain_direction_vfsmod(self.dlg_base.csv_results_oat.text()), mode='r', encoding='utf-8') as file:
-                    lines = file.read().splitlines()
-                inputs = lines[1].split(":")[-1].split(",")
-                
-                self.dictionary_radio_inputs = {}
-                # Crear y añadir varios QRadioButton
-                for opcion in inputs:
-                    radio_button = QRadioButton(opcion)
-                    #Connect funciton but only one time
-                    radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_sensitity_graph_oat() if checked else None)
-                    self.dictionary_radio_inputs[radio_button] = opcion
-                    layout.addWidget(radio_button)
-                
-                #add spacer
-                spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-                layout.addItem(spacer)
+                    # Añadir el QLabel al layout
+                    layout.addWidget(label)
+                    
+                    #Name of inputs
+                    inputs = lines[1].split(":")[-1].split(",")
+                    
+                    self.dictionary_radio_inputs = {}
+                    # Crear y añadir varios QRadioButton
+                    for opcion in inputs:
+                        radio_button = QRadioButton(opcion)
+                        #Connect funciton but only one time
+                        radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_sensitity_graph_oat() if checked else None)
+                        self.dictionary_radio_inputs[radio_button] = opcion
+                        layout.addWidget(radio_button)
+                    
+                    #add spacer
+                    spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+                    layout.addItem(spacer)
 
-                # Establecer el layout en el frame `self.dlg_base.inputs_oat`
-                self.dlg_base.inputs_oat.setLayout(layout)
-            except:
-                pass
+                    # Establecer el layout en el frame `self.dlg_base.inputs_oat`
+                    self.dlg_base.inputs_oat.setLayout(layout)
+                except:
+                    pass
     
     
     def show_graph_sensitivity_oat(self):   
@@ -846,11 +851,7 @@ class qvfsmod:
         self.ax_oat = self.canvas_sensitivity_graph_oat.figure.subplots()
          
     def update_sensitity_graph_oat(self):
-        if len(self.dictionary_radio_inputs)>1:
-            for i in self.dictionary_radio_inputs:
-                if i.isChecked():
-                    input_parameter = self.dictionary_radio_inputs[i]
-                    break
+        """Method to update oat graph"""
         #Warning messages
         ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_oat.text())
         if os.path.exists(ruta):
@@ -860,6 +861,13 @@ class qvfsmod:
             if lineas[0]!="OAT sensitivity results" + '\n':
                 self.warning_message("Please select a csv file that contains OAT sensitivity analysis results")
                 return
+            
+            #Obtain input parameter
+            if len(self.dictionary_radio_inputs)>1:
+                for i in self.dictionary_radio_inputs:
+                    if i.isChecked():
+                        input_parameter = self.dictionary_radio_inputs[i]
+                        break
                 
             #Clear graph before drawing
             self.ax_oat.clear()
@@ -878,7 +886,11 @@ class qvfsmod:
                             break
                         rows.append(lines[k].split(","))
                     break
-            df = pd.DataFrame(rows, columns=columns)
+            df_original = pd.DataFrame(rows, columns=columns)
+            
+            
+            #Take only data that is not an error
+            df = df_original[df_original.Error == "0"]
             
             #Get output
             if self.dlg_base.runoff_source_mm_3.isChecked():output_column = "Total Runoff from source (mm)"
@@ -923,6 +935,7 @@ class qvfsmod:
                 #Labels
                 self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
                 self.ax_oat.set_ylabel(output_column,size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_oat.set_title("Input-output graph",size = 14,family="arial",weight = "bold",color = "black")
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
@@ -947,6 +960,7 @@ class qvfsmod:
                 #Labels
                 self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
                 self.ax_oat.set_ylabel(f"Absolute sensitivity\n{output_column}",size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_oat.set_title("Absolute sensitivity graph",size = 14,family="arial",weight = "bold",color = "black")
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
@@ -955,6 +969,10 @@ class qvfsmod:
             
             #Relative sensitivity graph respect to base
             elif self.dlg_base.relative_base.isChecked():
+                #If base value has error then give warning
+                if df_original["Error"].iloc[0] == "1":
+                    self.warning_message("Base value gave error. \nIndexes can not be calculated.")
+                    return
                 relative_sensitivity = []
                 for i in range(len(x_sorted)-1):
                     try:
@@ -974,6 +992,7 @@ class qvfsmod:
                 #Labels
                 self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
                 self.ax_oat.set_ylabel(f"Base relative sensitivity\n{output_column}",size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_oat.set_title("Relative sensitivity graph respect to base",size = 14,family="arial",weight = "bold",color = "black")
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
@@ -1002,6 +1021,7 @@ class qvfsmod:
                 #Labels
                 self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
                 self.ax_oat.set_ylabel(f"Relative sensitivity\n{output_column}",size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_oat.set_title("Relative sensitivity graph",size = 14,family="arial",weight = "bold",color = "black")
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
@@ -1101,7 +1121,8 @@ class qvfsmod:
             self.ax_uncertainity[1].set_xticks([])
             # Añadir título y etiquetas
             self.ax_uncertainity[1].set_ylabel(output_column,size = 12,family="arial",weight = "bold",color = "black")
-            
+            #Title to graph
+            self.canvas_uncertainity_graph.figure.suptitle(f"Uncertainity of {output_column}", size=16, family="arial", weight="bold", color="black")
             
             #Add table
             table = self.dlg_base.tableWidget
@@ -1546,6 +1567,13 @@ class qvfsmod:
                     self.add_values_dialog(lineas,4,3,self.dlg_water_quality.mass)
                     #Surface mixing
                     self.add_values_dialog(lineas,4,4,self.dlg_water_quality.thickness)
+                    #Dispersion length of chemical (m)
+                    self.add_values_dialog(lineas,4,5,self.dlg_water_quality.dispersion)
+                    #Runoff remobilized VFS residue \nfrom last event (mg/m2)
+                    self.add_values_dialog(lineas,4,6,self.dlg_water_quality.remobilised)
+                    #Flag for remobilization of residues
+                    imob = self.add_values_dialog(lineas,7,0,self.dlg_water_quality.imob,True)
+                    self.dlg_water_quality.imob.setCurrentIndex(int(imob)-1)
                     #Air temperature and water content
                     temperatures = re.findall(r"[-+]?\d*\.\d+|\d+", lineas[5].split("(")[0])
                     water_contents = re.findall(r"[-+]?\d*\.\d+|\d+", lineas[6].split("(")[0])
@@ -2583,7 +2611,7 @@ class qvfsmod:
                 #Labels
                 self.ax.set_xlabel("Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 14,family="arial",weight = "bold",color = "black")
                 self.ax.set_ylabel("Standard Deviation of Elementary Effects ($\sigma_{i}$)",size = 14,family="arial",weight = "bold",color = "black")
-                        
+                self.ax.set_title("Morris sensitivity analysis indexes", size=16, family="arial", weight="bold", color="black")
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_sensitivity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
                 #Draw canvas
@@ -2636,13 +2664,13 @@ class qvfsmod:
                 
                 #Total order 
                 self.ax_fast[0].bar(names_inputs, st, yerr=st_conf, capsize=5, color='b')
-                self.ax_fast[0].set_title('Total order index (ST)', fontsize=10)
+                self.ax_fast[0].set_title('FAST Total order index (ST)', fontsize=10)
                 self.ax_fast[0].set_ylabel('FAST index')
                 self.ax_fast[0].tick_params(axis='x', rotation=20,labelsize = 8)
                 
                 #First order 
                 self.ax_fast[1].bar(names_inputs, s1, yerr=s1_conf, capsize=5, color='b')
-                self.ax_fast[1].set_title('First order index (S1)', fontsize=10)
+                self.ax_fast[1].set_title('FAST First order index (S1)', fontsize=10)
                 self.ax_fast[1].tick_params(axis='x', rotation=20,labelsize = 8)
                 
                 
@@ -2699,13 +2727,13 @@ class qvfsmod:
                 
                 #Total order 
                 self.ax_sobol[0].bar(names_inputs, st, yerr=st_conf, capsize=5, color='b')
-                self.ax_sobol[0].set_title('Total order index (ST)', fontsize=10)
+                self.ax_sobol[0].set_title('Sobol Total order index (ST)', fontsize=10)
                 self.ax_sobol[0].set_ylabel('Sobol index')
                 self.ax_sobol[0].tick_params(axis='x', rotation=20,labelsize = 8)
                 
                 #First order 
                 self.ax_sobol[1].bar(names_inputs, s1, yerr=s1_conf, capsize=5, color='b')
-                self.ax_sobol[1].set_title('First order index (S1)', fontsize=10)
+                self.ax_sobol[1].set_title('Sobol First order index (S1)', fontsize=10)
                 self.ax_sobol[1].tick_params(axis='x', rotation=20,labelsize = 8)
                 
                 
@@ -2735,12 +2763,12 @@ class qvfsmod:
                 text = os.path.relpath(fname[0], working_directory)
             else: #absolute path
                 text = fname[0]
-        if information == "prj":
-            self.dlg_base.vfs_file_uncertainity.setText(text)
-        elif information == "lis":
-            self.dlg_base.uh_file_uncertainity.setText(text)
-        else:
-            self.dlg_base.file_save_uncertainity.setText(text)
+            if information == "prj":
+                self.dlg_base.vfs_file_uncertainity.setText(text)
+            elif information == "lis":
+                self.dlg_base.uh_file_uncertainity.setText(text)
+            else:
+                self.dlg_base.file_save_uncertainity.setText(text)
     
     
     def browse_files_sensitivity(self,information):
@@ -2812,7 +2840,6 @@ class qvfsmod:
         self.progress_dialog.setWindowModality(Qt.WindowModal)
         self.progress_dialog.setWindowTitle("Progress")
         self.progress_dialog.show()
-        
         self.sensitivity_thread = SensitivityAnalysisThread(args_list)
         self.sensitivity_thread.update_progress.connect(self.update_progress_dialog_sensitivity)
         self.sensitivity_thread.start()
@@ -2837,7 +2864,7 @@ class qvfsmod:
         args_list = [(i, i % (self.number_cores*2), 
           self.param_values, self.dic_data, 
           self.sensitivity_parameters, self.working_directory, 
-          self.obtain_direction_vfsmod(self.vfs_uncertainity_file),self.water_quality) for i in range(len(self.combinations_design))]
+          self.obtain_direction_vfsmod(self.vfs_uncertainity_file),self.water_quality) for i in range(len(self.param_values))]
         self.progress_dialog = QProgressDialog("Starting uncertainity analysis...", "Cancel", 0, len(args_list))
         self.progress_dialog.setWindowModality(Qt.WindowModal)
         self.progress_dialog.setWindowTitle("Progress")
@@ -2934,8 +2961,6 @@ class qvfsmod:
         
         #Method were the paralelization is achieved
         self.start_analysis_sensitivity()
-
-        
         
     def run_sensitivity_analysis_part_two(self):
         """Second part of sensitivity analysis to analyze the results. I have splitted sensitivity running
@@ -2946,7 +2971,6 @@ class qvfsmod:
         
         #Delete all files created for paralelization of sensitivity analysis
         self.delete_files_sensitivity()
-        
         
         #Save results in CSV
         path = self.obtain_direction_vfsmod(self.dlg_base.file_save.text())
@@ -3065,6 +3089,27 @@ class qvfsmod:
                 df_concat = df_concat[df_concat[input_parameters[k]]==i[k]]
             df_concat = df_concat.iloc[[0]]
             new_df = pd.concat([new_df,df_concat], ignore_index=True)
+        
+        #If there are errors then make a linear regression to add data
+        inputs = new_df[input_parameters]
+        output_columns = new_df.columns[-self.number_outputs:].tolist()
+        outputs = new_df[output_columns]
+        # Filtrar los datos completos (sin valores NaN en outputs)
+        mask = new_df['Error'] == 0
+        inputs_complete = inputs[mask]
+        outputs_complete = outputs[mask]
+        if len(inputs_complete)>0:
+            for output in output_columns:
+                #Create model of linear regression
+                model_output = LinearRegression()
+                #Train model with data that is not with error
+                model_output.fit(inputs_complete, outputs_complete[output])
+                #Predict values with error
+                inputs_nan = inputs[~mask]
+                pred_output = model_output.predict(inputs_nan)
+                #Put predicted values in column
+                new_df.loc[~mask, output] = pred_output
+        
         return new_df
     
     def create_df_uncertainity(self,results):
@@ -3127,7 +3172,6 @@ class qvfsmod:
     def run_uncertainity_analysis_part_two(self):
         """Second part of uncertainity analysis to analyze the results. I have splitted uncertainity running
         in two because we use Thread method and we need to stop till the thread finishes, if not we get an error"""
-
         #Create DataFrame or results
         self.results_sensitivity = self.create_df_uncertainity(self.results)
         
@@ -4439,6 +4483,7 @@ class qvfsmod:
     def run_calibration_sedimentograph(self):
         """Method to run the calibration for sedimentograph"""
         self.calibration_sedimentograph = True
+        self.calibration_hydrograph = False
         #Obtain dataframe of sedimentograph
         self.sedimentograph_calibration_df = self.obtain_df_sedimentograph_calibration()
         
@@ -4629,6 +4674,8 @@ class qvfsmod:
     def run_calibration_hydrograph(self):
         """Method to run the calibration for hydrograph"""
         self.calibration_hydrograph = True
+        self.calibration_sedimentograph = False
+        
         #Obtain dataframe of hydrograph
         self.hydrograph_calibration_df = self.obtain_df_hydrograph_calibration()
         #First, put the progress
@@ -4672,7 +4719,7 @@ class qvfsmod:
                         self.best_result["x"] = x
                         self.best_result["result"] = result
                         
-                    if self.ejecuciones == self.max_iterations or results == "error": #condition of maximum number of iterations to stop the code
+                    if self.ejecuciones == self.max_iterations or result == "error": #condition of maximum number of iterations to stop the code
                         1/0
                     #Save inputs and results
                     self.list_of_inputs.append(x)
@@ -5267,7 +5314,7 @@ class qvfsmod:
         #Put filepath in the results dialog
         if self.calibration_sedimentograph:
             self.dlg_calibration_results_sedimentograph.results.setText(self.dlg_calibration_advanced_settings.exit_file.text())
-        elif elf.calibration_hydrograph:
+        elif self.calibration_hydrograph:
             self.dlg_calibration_results_hydrograph.results.setText(self.dlg_calibration_advanced_settings.exit_file.text())
         
         #Set to false calibrations
@@ -5746,7 +5793,6 @@ class qvfsmod:
         
         actual_length = max(df["Distance"])
         length_to_change = float(value_change)
-        print(length_to_change)
         if length_to_change <= actual_length:
             df = df[df["Distance"]<=length_to_change]
             df.loc[df.index[-1], "Distance"] = length_to_change
@@ -6002,8 +6048,6 @@ class qvfsmod:
                     item = QTableWidgetItem(str(df.iloc[fila,columna]))
                     self.dlg_design_results.tableWidget.setItem(fila, columna, item)
                     item.setTextAlignment(Qt.AlignCenter)
-    
-            
             
     def update_bat_uh_design(self):
         """Method to update bat for the execution of UH"""
@@ -6016,8 +6060,6 @@ class qvfsmod:
         f.write("{} \n".format(linea_tres))
         f.close()
     
-        
-        
     def create_folder_for_design(self):
         """Method to create folders for the design if they don't exist"""
         def create_folder(name_folder): #function to create a folder
@@ -7321,7 +7363,7 @@ class qvfsmod:
         dgld = self.dlg_water_quality.dispersion.text()
         dgmres0 = self.dlg_water_quality.remobilised.text()
         idg = int(self.dlg_water_quality.calculation.currentIndex())
-        imob = self.dlg_water_quality.imob.text()
+        imob = self.dlg_water_quality.imob.currentIndex()+1
         
         #Create file
         iwq_file =self.obtain_direction_vfsmod(self.dlg_base.line_water.text())
@@ -7769,6 +7811,8 @@ class qvfsmod:
 
         # Convertir la lista a un DataFrame
         df = pd.DataFrame(data, columns=column_headers)
+        #Select only rows with no errors
+        df = df[df.Error == 0]
         #Create graph
         self.ax.clear()
         column_y = [self.dlg_design_results_graph.column.itemText(i) for i in range(self.dlg_design_results_graph.column.count())][self.dlg_design_results_graph.column.currentIndex()]
@@ -8683,9 +8727,12 @@ def sensitivity_paralelization(number_execution,core,param_values,dic_data,sensi
     #Save results
     if execution == "error":
         return save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = True)
+        
     else:
         return save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = False)
-
+        
+    
+    
 
 def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file):
     """Function for the each execution of the sensitivity analysis"""
