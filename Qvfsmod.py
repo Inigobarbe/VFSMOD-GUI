@@ -56,6 +56,8 @@ from ui.owq_graph_balance import owq_graph_balance
 from ui.calibration_progress import calibration_progress
 from ui.calibration_results_sedimentograph import calibration_results_sedimentograph
 from ui.calibration_results_hydrograph import calibration_results_hydrograph
+from ui.sediment_calibration import sediment_calibration
+from ui.hydrograph_calibration import hydrograph_calibration
 
 #Local libraries
 from libraries.SALib.sample import saltelli
@@ -77,6 +79,7 @@ import os.path
 import pandas as pd
 import subprocess
 import shutil
+from shutil import SameFileError
 import numpy as np
 import re
 from scipy.interpolate import interp1d
@@ -169,6 +172,8 @@ class qvfsmod:
         self.dlg_calibration_progress = calibration_progress()
         self.dlg_calibration_results_sedimentograph = calibration_results_sedimentograph()
         self.dlg_calibration_results_hydrograph = calibration_results_hydrograph()
+        self.dlg_sediment_calibration = sediment_calibration()
+        self.dlg_hydrograph_calibration = hydrograph_calibration()
         
         #Set working directory
         self.dlg_base.working_directory_vfsmod.textChanged.connect(self.set_working_directory)
@@ -176,15 +181,22 @@ class qvfsmod:
         #If the storm type is user defined, then emerges a dialog to add the data
         self.dlg_base.storm_type.currentIndexChanged.connect(self.user_defined_storm_type)
         
+        #Show calibration 
+        self.dlg_base.show_calibration_hydrograph.clicked.connect(self.dlg_hydrograph_calibration.show)
+        self.dlg_base.show_calibration_sedimentograph.clicked.connect(self.dlg_sediment_calibration.show)
+        
         #Calibration results
-        self.dlg_base.calibration_result_hydrograph.clicked.connect(self.dlg_calibration_results_hydrograph.show)
-        self.dlg_base.calibration_result_sedimentograph.clicked.connect(self.dlg_calibration_results_sedimentograph.show)
+        self.dlg_hydrograph_calibration.calibration_result_hydrograph.clicked.connect(self.dlg_calibration_results_hydrograph.show)
+        self.dlg_sediment_calibration.calibration_result_sedimentograph.clicked.connect(self.dlg_calibration_results_sedimentograph.show)
         self.dlg_calibration_results_hydrograph.results.textChanged.connect(self.update_graph_calibration_hydrograph)
         self.dlg_calibration_results_hydrograph.one_one.toggled.connect(self.update_graph_calibration_hydrograph)
-        self.dlg_base.calibration_result_hydrograph.clicked.connect(self.update_graph_calibration_hydrograph)
+        self.dlg_hydrograph_calibration.calibration_result_hydrograph.clicked.connect(self.update_graph_calibration_hydrograph)
         self.dlg_calibration_results_sedimentograph.results.textChanged.connect(self.update_graph_calibration_sedimentograph)
         self.dlg_calibration_results_sedimentograph.one_one.toggled.connect(self.update_graph_calibration_sedimentograph)
-        self.dlg_base.calibration_result_sedimentograph.toggled.connect(self.update_graph_calibration_sedimentograph)
+        self.dlg_sediment_calibration.calibration_result_sedimentograph.clicked.connect(self.update_graph_calibration_sedimentograph)
+        
+        #Add shallow water parameters if present
+        self.dlg_hydrograph_calibration.vfs_project.textChanged.connect(self.add_shallow_water_table_paramters_calibration)
         
         #Stacked widget
         self.dlg_base.pushButton_6.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_folder))
@@ -518,50 +530,50 @@ class qvfsmod:
         
         #In calibration enable/disable lineEdits depending on selection
         #First with the hidrograph
-        self.hydrology_checks = [[[self.dlg_base.no_vertical,self.dlg_base.change_vertical,self.dlg_base.calibrate_vertical],[self.dlg_base.new_vertical,self.dlg_base.min_vertical,self.dlg_base.max_vertical]],
-            [[self.dlg_base.no_average,self.dlg_base.change_average,self.dlg_base.calibrate_average],[self.dlg_base.new_average,self.dlg_base.min_average,self.dlg_base.max_average]],
-            [[self.dlg_base.no_saturated,self.dlg_base.change_saturated,self.dlg_base.calibrate_saturated],[self.dlg_base.new_saturated,self.dlg_base.min_saturated,self.dlg_base.max_saturated]],
-            [[self.dlg_base.no_initial,self.dlg_base.change_initial,self.dlg_base.calibrate_initial],[self.dlg_base.new_initial,self.dlg_base.min_initial,self.dlg_base.max_initial]],
-            [[self.dlg_base.no_maximum,self.dlg_base.change_maximum,self.dlg_base.calibrate_maximum],[self.dlg_base.new_maximum,self.dlg_base.min_maximum,self.dlg_base.max_maximum]],
-            [[self.dlg_base.no_fraction,self.dlg_base.change_fraction,self.dlg_base.calibrate_fraction],[self.dlg_base.new_fraction,self.dlg_base.min_fraction,self.dlg_base.max_fraction]],
-            [[self.dlg_base.no_width,self.dlg_base.change_width,self.dlg_base.calibrate_width],[self.dlg_base.new_width,self.dlg_base.min_width,self.dlg_base.max_width]],
-            [[self.dlg_base.no_length,self.dlg_base.change_length,self.dlg_base.calibrate_length],[self.dlg_base.new_length,self.dlg_base.min_length,self.dlg_base.max_length]],
-            [[self.dlg_base.no_manning,self.dlg_base.change_manning,self.dlg_base.calibrate_manning],[self.dlg_base.new_manning,self.dlg_base.min_manning,self.dlg_base.max_manning]],
-            [[self.dlg_base.no_slope,self.dlg_base.change_slope,self.dlg_base.calibrate_slope],[self.dlg_base.new_slope,self.dlg_base.min_slope,self.dlg_base.max_slope]]]
+        self.hydrology_checks = [[[self.dlg_hydrograph_calibration.no_vertical,self.dlg_hydrograph_calibration.change_vertical,self.dlg_hydrograph_calibration.calibrate_vertical],[self.dlg_hydrograph_calibration.new_vertical,self.dlg_hydrograph_calibration.min_vertical,self.dlg_hydrograph_calibration.max_vertical]],
+            [[self.dlg_hydrograph_calibration.no_average,self.dlg_hydrograph_calibration.change_average,self.dlg_hydrograph_calibration.calibrate_average],[self.dlg_hydrograph_calibration.new_average,self.dlg_hydrograph_calibration.min_average,self.dlg_hydrograph_calibration.max_average]],
+            [[self.dlg_hydrograph_calibration.no_saturated,self.dlg_hydrograph_calibration.change_saturated,self.dlg_hydrograph_calibration.calibrate_saturated],[self.dlg_hydrograph_calibration.new_saturated,self.dlg_hydrograph_calibration.min_saturated,self.dlg_hydrograph_calibration.max_saturated]],
+            [[self.dlg_hydrograph_calibration.no_initial,self.dlg_hydrograph_calibration.change_initial,self.dlg_hydrograph_calibration.calibrate_initial],[self.dlg_hydrograph_calibration.new_initial,self.dlg_hydrograph_calibration.min_initial,self.dlg_hydrograph_calibration.max_initial]],
+            [[self.dlg_hydrograph_calibration.no_maximum,self.dlg_hydrograph_calibration.change_maximum,self.dlg_hydrograph_calibration.calibrate_maximum],[self.dlg_hydrograph_calibration.new_maximum,self.dlg_hydrograph_calibration.min_maximum,self.dlg_hydrograph_calibration.max_maximum]],
+            [[self.dlg_hydrograph_calibration.no_fraction,self.dlg_hydrograph_calibration.change_fraction,self.dlg_hydrograph_calibration.calibrate_fraction],[self.dlg_hydrograph_calibration.new_fraction,self.dlg_hydrograph_calibration.min_fraction,self.dlg_hydrograph_calibration.max_fraction]],
+            [[self.dlg_hydrograph_calibration.no_width,self.dlg_hydrograph_calibration.change_width,self.dlg_hydrograph_calibration.calibrate_width],[self.dlg_hydrograph_calibration.new_width,self.dlg_hydrograph_calibration.min_width,self.dlg_hydrograph_calibration.max_width]],
+            [[self.dlg_hydrograph_calibration.no_length,self.dlg_hydrograph_calibration.change_length,self.dlg_hydrograph_calibration.calibrate_length],[self.dlg_hydrograph_calibration.new_length,self.dlg_hydrograph_calibration.min_length,self.dlg_hydrograph_calibration.max_length]],
+            [[self.dlg_hydrograph_calibration.no_manning,self.dlg_hydrograph_calibration.change_manning,self.dlg_hydrograph_calibration.calibrate_manning],[self.dlg_hydrograph_calibration.new_manning,self.dlg_hydrograph_calibration.min_manning,self.dlg_hydrograph_calibration.max_manning]],
+            [[self.dlg_hydrograph_calibration.no_slope,self.dlg_hydrograph_calibration.change_slope,self.dlg_hydrograph_calibration.calibrate_slope],[self.dlg_hydrograph_calibration.new_slope,self.dlg_hydrograph_calibration.min_slope,self.dlg_hydrograph_calibration.max_slope]]]
         for i in self.hydrology_checks:
             i[0][0].toggled.connect(self.draw_calibration_hydrology)
             i[0][1].toggled.connect(self.draw_calibration_hydrology)
             i[0][2].toggled.connect(self.draw_calibration_hydrology)
         
         #The same for sedimentograph
-        self.sedimentograph_checks = [[[self.dlg_base.no_spacing,self.dlg_base.change_spacing,self.dlg_base.calibrate_spacing],[self.dlg_base.new_spacing,self.dlg_base.min_spacing,self.dlg_base.max_spacing]],
-            [[self.dlg_base.no_roughness,self.dlg_base.change_roughness,self.dlg_base.calibrate_roughness],[self.dlg_base.new_roughness,self.dlg_base.min_roughness,self.dlg_base.max_roughness]],
-            [[self.dlg_base.no_height,self.dlg_base.change_height,self.dlg_base.calibrate_height],[self.dlg_base.new_height,self.dlg_base.min_height,self.dlg_base.max_height]],
-            [[self.dlg_base.no_bare,self.dlg_base.change_bare,self.dlg_base.calibrate_bare],[self.dlg_base.new_bare,self.dlg_base.min_bare,self.dlg_base.max_bare]],
-            [[self.dlg_base.no_coarse,self.dlg_base.change_coarse,self.dlg_base.calibrate_coarse],[self.dlg_base.new_coarse,self.dlg_base.min_coarse,self.dlg_base.max_coarse]],
-            [[self.dlg_base.no_incoming,self.dlg_base.change_incoming,self.dlg_base.calibrate_incoming],[self.dlg_base.new_incoming,self.dlg_base.min_incoming,self.dlg_base.max_incoming]],
-            [[self.dlg_base.no_porosity,self.dlg_base.change_porosity,self.dlg_base.calibrate_porosity],[self.dlg_base.new_porosity,self.dlg_base.min_porosity,self.dlg_base.max_porosity]],
-            [[self.dlg_base.no_class,self.dlg_base.change_class,self.dlg_base.calibrate_class],[self.dlg_base.new_class,self.dlg_base.min_class,self.dlg_base.max_class]],
-            [[self.dlg_base.no_density,self.dlg_base.change_density,self.dlg_base.calibrate_density],[self.dlg_base.new_density,self.dlg_base.min_density,self.dlg_base.max_density]]]
+        self.sedimentograph_checks = [[[self.dlg_sediment_calibration.no_spacing,self.dlg_sediment_calibration.change_spacing,self.dlg_sediment_calibration.calibrate_spacing],[self.dlg_sediment_calibration.new_spacing,self.dlg_sediment_calibration.min_spacing,self.dlg_sediment_calibration.max_spacing]],
+            [[self.dlg_sediment_calibration.no_roughness,self.dlg_sediment_calibration.change_roughness,self.dlg_sediment_calibration.calibrate_roughness],[self.dlg_sediment_calibration.new_roughness,self.dlg_sediment_calibration.min_roughness,self.dlg_sediment_calibration.max_roughness]],
+            [[self.dlg_sediment_calibration.no_height,self.dlg_sediment_calibration.change_height,self.dlg_sediment_calibration.calibrate_height],[self.dlg_sediment_calibration.new_height,self.dlg_sediment_calibration.min_height,self.dlg_sediment_calibration.max_height]],
+            [[self.dlg_sediment_calibration.no_bare,self.dlg_sediment_calibration.change_bare,self.dlg_sediment_calibration.calibrate_bare],[self.dlg_sediment_calibration.new_bare,self.dlg_sediment_calibration.min_bare,self.dlg_sediment_calibration.max_bare]],
+            [[self.dlg_sediment_calibration.no_coarse,self.dlg_sediment_calibration.change_coarse,self.dlg_sediment_calibration.calibrate_coarse],[self.dlg_sediment_calibration.new_coarse,self.dlg_sediment_calibration.min_coarse,self.dlg_sediment_calibration.max_coarse]],
+            [[self.dlg_sediment_calibration.no_incoming,self.dlg_sediment_calibration.change_incoming,self.dlg_sediment_calibration.calibrate_incoming],[self.dlg_sediment_calibration.new_incoming,self.dlg_sediment_calibration.min_incoming,self.dlg_sediment_calibration.max_incoming]],
+            [[self.dlg_sediment_calibration.no_porosity,self.dlg_sediment_calibration.change_porosity,self.dlg_sediment_calibration.calibrate_porosity],[self.dlg_sediment_calibration.new_porosity,self.dlg_sediment_calibration.min_porosity,self.dlg_sediment_calibration.max_porosity]],
+            [[self.dlg_sediment_calibration.no_class,self.dlg_sediment_calibration.change_class,self.dlg_sediment_calibration.calibrate_class],[self.dlg_sediment_calibration.new_class,self.dlg_sediment_calibration.min_class,self.dlg_sediment_calibration.max_class]],
+            [[self.dlg_sediment_calibration.no_density,self.dlg_sediment_calibration.change_density,self.dlg_sediment_calibration.calibrate_density],[self.dlg_sediment_calibration.new_density,self.dlg_sediment_calibration.min_density,self.dlg_sediment_calibration.max_density]]]
         for i in self.sedimentograph_checks:
             i[0][0].toggled.connect(self.draw_calibration_sedimentograph)
             i[0][1].toggled.connect(self.draw_calibration_sedimentograph)
             i[0][2].toggled.connect(self.draw_calibration_sedimentograph)
         
         #Show advances settings of calibration
-        self.dlg_base.advanced_hydrograph.clicked.connect(self.dlg_calibration_advanced_settings.show)
-        self.dlg_base.advanced_sedimentograph.clicked.connect(self.dlg_calibration_advanced_settings.show)
+        self.dlg_hydrograph_calibration.advanced_hydrograph.clicked.connect(self.dlg_calibration_advanced_settings.show)
+        self.dlg_sediment_calibration.advanced_sedimentograph.clicked.connect(self.dlg_calibration_advanced_settings.show)
         self.dlg_calibration_advanced_settings.close_dialog.clicked.connect(self.dlg_calibration_advanced_settings.close)
         
         #Browse files in calibration
-        self.dlg_base.browse_project.clicked.connect(lambda _, b = ["prj",self.dlg_base,self.dlg_base.vfs_project]:self.browse_files_calibration(b))
-        self.dlg_base.browse_hydrograph_calibration.clicked.connect(lambda _, b = ["txt",self.dlg_base,self.dlg_base.hydrograph_file]:self.browse_files_calibration(b))
-        self.dlg_base.browse_project_sedimentograph.clicked.connect(lambda _, b = ["prj",self.dlg_base,self.dlg_base.vfs_file]:self.browse_files_calibration(b))
-        self.dlg_base.browse_sedimentograph_calibration.clicked.connect(lambda _, b = ["txt",self.dlg_base,self.dlg_base.sedimentograph_file]:self.browse_files_calibration(b))
+        self.dlg_hydrograph_calibration.browse_project.clicked.connect(lambda _, b = ["prj",self.dlg_hydrograph_calibration,self.dlg_hydrograph_calibration.vfs_project]:self.browse_files_calibration(b))
+        self.dlg_hydrograph_calibration.browse_hydrograph_calibration.clicked.connect(lambda _, b = ["txt",self.dlg_hydrograph_calibration,self.dlg_hydrograph_calibration.hydrograph_file]:self.browse_files_calibration(b))
+        self.dlg_sediment_calibration.browse_project_sedimentograph.clicked.connect(lambda _, b = ["prj",self.dlg_sediment_calibration,self.dlg_sediment_calibration.vfs_file]:self.browse_files_calibration(b))
+        self.dlg_sediment_calibration.browse_sedimentograph_calibration.clicked.connect(lambda _, b = ["txt",self.dlg_sediment_calibration,self.dlg_sediment_calibration.sedimentograph_file]:self.browse_files_calibration(b))
         
         #Run calibration
-        self.dlg_base.run_hydrograph.clicked.connect(self.run_calibration_hydrograph)
-        self.dlg_base.run_sedimentograph.clicked.connect(self.run_calibration_sedimentograph)
+        self.dlg_hydrograph_calibration.run_hydrograph.clicked.connect(self.run_calibration_hydrograph)
+        self.dlg_sediment_calibration.run_sedimentograph.clicked.connect(self.run_calibration_sedimentograph)
         
         #Add distributions to combobox
         self.dlg_base.distributions.addItems(["Uniform","Logaritmic uniform","Triangular","Normal","Lognormal","Normal truncated"])
@@ -724,6 +736,28 @@ class qvfsmod:
         
         #Update uncertainity graph
         self.dlg_base.csv_results_uncertainity.textChanged.connect(self.update_graph_uncertainity)
+    
+    
+    def add_shallow_water_table_paramters_calibration(self):
+        """Method to add shallow water parameters to hydrograph calibration"""
+        prj_path = self.obtain_direction_vfsmod(self.dlg_hydrograph_calibration.vfs_project.text())
+        if os.path.exists(prj_path) and os.path.isfile(prj_path):
+            #Obtain iso path
+            with open(prj_path, "r") as archivo:
+                lineas = archivo.readlines()
+            for i in lineas:
+                if i[:3]=="iso":
+                    iso_path = i.split("=")[-1]
+                if not os.path.isabs(iso_path): #relative path
+                    iso_path = os.path.join(os.path.dirname(prj_path), iso_path)
+                iso_path = iso_path.replace("\n", "") #take out the line jumps
+            #Read inputs
+            if os.path.exists(iso_path) and os.path.isfile(iso_path):
+                with open(iso_path, "r") as archivo:
+                    lineas = archivo.readlines()
+                    float(lineas[1])
+        
+        eliminar también los que no se utilizan!!!
     
     
     def update_buffer_length_table(self):
@@ -4468,7 +4502,7 @@ class qvfsmod:
         if information[0]=="prj": 
             select = "Select VFS Project File"
             types = "PRJ files (*.prj)"
-        elif information[2]==self.dlg_base.hydrograph_file: select = "Select Hydrograph Measured Data File"
+        elif information[2]==self.dlg_hydrograph_calibration.hydrograph_file: select = "Select Hydrograph Measured Data File"
         else: select = "Select Sedimentograph Measured Data File"
         if information[0]=="txt": 
             types = "TXT files (*.txt)"
@@ -4500,6 +4534,7 @@ class qvfsmod:
         self.calibration_dictionary = self.create_dictionary_calibration_sedimentograph()
         
         #first we create the thread class to be able to use the dialog when executing
+        self.objective_function = [self.dlg_calibration_advanced_settings.objective_function.itemText(i) for i in range(self.dlg_calibration_advanced_settings.objective_function.count())][self.dlg_calibration_advanced_settings.objective_function.currentIndex()]
         class ejecutor(QThread):
             resultado_progress = pyqtSignal(list)
             def __init__(self, plugin_directory, method_execution,dictionary,max_iterations,tolerance,save_results_calibration):
@@ -4527,7 +4562,7 @@ class qvfsmod:
                         self.best_result["x"] = x
                         self.best_result["result"] = result
                         
-                    if self.ejecuciones == self.max_iterations or result == "error": #condition of maximum number of iterations to stop the code
+                    if self.ejecuciones == self.max_iterations: #condition of maximum number of iterations to stop the code
                         1/0
                     #Save inputs and results
                     self.list_of_inputs.append(x)
@@ -4564,45 +4599,45 @@ class qvfsmod:
         """Method to change the inputs in the calibration of sedimentograph if change is selected"""
         #spacing
         if inputs[0]=="change":
-            self.modify_inputs_calibration("igr",0,0,self.dlg_base.new_spacing.text())
+            self.modify_inputs_calibration("igr",0,0,self.dlg_sediment_calibration.new_spacing.text())
         #roughness grass
         if inputs[1]=="change":
-            self.modify_inputs_calibration("igr",0,1,self.dlg_base.new_roughness.text())
+            self.modify_inputs_calibration("igr",0,1,self.dlg_sediment_calibration.new_roughness.text())
         #height
         if inputs[2]=="change":
-            self.modify_inputs_calibration("igr",0,2,self.dlg_base.new_height.text())
+            self.modify_inputs_calibration("igr",0,2,self.dlg_sediment_calibration.new_height.text())
         #roughness bare
         if inputs[3]=="change":
-            self.modify_inputs_calibration("igr",0,3,self.dlg_base.new_bare.text())
+            self.modify_inputs_calibration("igr",0,3,self.dlg_sediment_calibration.new_bare.text())
         #coarse
         if inputs[4]=="change":
-            self.modify_inputs_calibration("isd",0,1,self.dlg_base.new_coarse.text())
+            self.modify_inputs_calibration("isd",0,1,self.dlg_sediment_calibration.new_coarse.text())
         #incoming
         if inputs[5]=="change":
-            self.modify_inputs_calibration("isd",0,2,self.dlg_base.new_incoming.text())
+            self.modify_inputs_calibration("isd",0,2,self.dlg_sediment_calibration.new_incoming.text())
         #porosity
         if inputs[6]=="change":
-            self.modify_inputs_calibration("isd",0,3,self.dlg_base.new_porosity.text())
+            self.modify_inputs_calibration("isd",0,3,self.dlg_sediment_calibration.new_porosity.text())
         #sediment_class
         if inputs[7]=="change":
-            self.modify_inputs_calibration("isd",1,0,self.dlg_base.new_class.text())
+            self.modify_inputs_calibration("isd",1,0,self.dlg_sediment_calibration.new_class.text())
         #sediment_density
         if inputs[8]=="change":
-            self.modify_inputs_calibration("isd",1,1,self.dlg_base.new_density.text())
+            self.modify_inputs_calibration("isd",1,1,self.dlg_sediment_calibration.new_density.text())
         
     
     def move_files_calibration_sedimentograph(self):
         """Method to move files to the corresponding folders for calibration"""
         #Move sedimentograph
         try:
-            shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_base.sedimentograph_file.text()),self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_base.sedimentograph_file.text())}")
+            shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_sediment_calibration.sedimentograph_file.text()),self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_sediment_calibration.sedimentograph_file.text())}")
         except SameFileError:
             pass
             
         #Prj
         prj_file = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.prj"
         #Check if water quality is simulated
-        with open(self.obtain_direction_vfsmod(self.dlg_base.vfs_file.text()), "r") as archivo:
+        with open(self.obtain_direction_vfsmod(self.dlg_sediment_calibration.vfs_file.text()), "r") as archivo:
             lineas = archivo.readlines()
         self.water_quality = False
         for i in lineas:
@@ -4642,7 +4677,7 @@ class qvfsmod:
         #Function to copy and paste the inputs to create the files to use in the design analysis
         def copy_paste(type_input):
             ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.{type_input}" 
-            ruta = self.obtain_direction_vfsmod(self.dlg_base.vfs_file.text())
+            ruta = self.obtain_direction_vfsmod(self.dlg_sediment_calibration.vfs_file.text())
             if os.path.exists(ruta) and os.path.isfile(ruta):
                 #First we open .prj and obtain the direction of the copying file
                 with open(ruta, "r") as archivo:
@@ -4690,7 +4725,8 @@ class qvfsmod:
         #Create the dictionary to know the bounds of the input parameters
         self.calibration_dictionary = self.create_dictionary_calibration_hydrograph()
         
-            
+        #Obtain information of objective function
+        self.objective_function = [self.dlg_calibration_advanced_settings.objective_function.itemText(i) for i in range(self.dlg_calibration_advanced_settings.objective_function.count())][self.dlg_calibration_advanced_settings.objective_function.currentIndex()]
         #first we create the thread class to be able to use the dialog when executing
         class ejecutor(QThread):
             resultado_progress = pyqtSignal(list)
@@ -4719,7 +4755,7 @@ class qvfsmod:
                         self.best_result["x"] = x
                         self.best_result["result"] = result
                         
-                    if self.ejecuciones == self.max_iterations or result == "error": #condition of maximum number of iterations to stop the code
+                    if self.ejecuciones == self.max_iterations: #condition of maximum number of iterations to stop the code
                         1/0
                     #Save inputs and results
                     self.list_of_inputs.append(x)
@@ -4754,7 +4790,7 @@ class qvfsmod:
     
     def obtain_df_hydrograph_calibration(self):
         """Method to obtain the dataframe of the hydrograph to be used in the calibration"""
-        ruta = self.obtain_direction_vfsmod(self.dlg_base.hydrograph_file.text())
+        ruta = self.obtain_direction_vfsmod(self.dlg_hydrograph_calibration.hydrograph_file.text())
         with open(ruta, "r") as archivo:
             lineas = archivo.readlines()
         discharge = []
@@ -4767,7 +4803,7 @@ class qvfsmod:
     
     def obtain_df_sedimentograph_calibration(self):
         """Method to obtain the dataframe of the sedimentograph to be used in the calibration"""
-        ruta = self.obtain_direction_vfsmod(self.dlg_base.sedimentograph_file.text())
+        ruta = self.obtain_direction_vfsmod(self.dlg_sediment_calibration.sedimentograph_file.text())
         with open(ruta, "r") as archivo:
             lineas = archivo.readlines()
         sediment = []
@@ -4826,8 +4862,9 @@ class qvfsmod:
             shell=True)
         #Put warning
         if not "...FINISHED..." in resultado.stdout:
-            self.warning_message(str(resultado.stdout))
-            return "error"
+            #Return a very bad result so the search avoid that space
+            self.calibration_df_progress = pd.DataFrame(data = {"Time":self.hydrograph_calibration_df.Time.tolist(),"Sediment":[np.nan] * len(self.hydrograph_calibration_df)})
+            return 1e20
         #Read output
         ruta = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\output\\inverse.ohy"
         with open(ruta, "r") as archivo:
@@ -4881,7 +4918,6 @@ class qvfsmod:
         self.data_aligned = data_aligned
         
         #Calculate objective function
-        self.objective_function = [self.dlg_calibration_advanced_settings.objective_function.itemText(i) for i in range(self.dlg_calibration_advanced_settings.objective_function.count())][self.dlg_calibration_advanced_settings.objective_function.currentIndex()]
         if  self.objective_function== "RMSE":
             #Calculate RMSE
             diferencias = calibration_df_progress['Discharge'] - data_aligned['Discharge']
@@ -4958,8 +4994,9 @@ class qvfsmod:
             shell=True)
         #Put warning
         if not "...FINISHED..." in resultado.stdout:
-            self.warning_message(str(resultado.stdout))
-            return "error"
+            #Return a very bad result so the search avoid that space
+            self.calibration_df_progress = pd.DataFrame(data = {"Time":self.sedimentograph_calibration_df.Time.tolist(),"Sediment":[np.nan] * len(self.sedimentograph_calibration_df)})
+            return 1e20
         
         #Read output
         #First obtain the gso data in (g/cm.s)
@@ -4988,8 +5025,9 @@ class qvfsmod:
                             pass
             self.calibration_df_progress["Sediment"] = self.calibration_df_progress["Sediment"]*width*100
         except UnboundLocalError:
-            self.warning_message("Error in execution")
-            return "error"
+            #Return a very bad result so the search avoid that space
+            self.calibration_df_progress = pd.DataFrame(data = {"Time":self.sedimentograph_calibration_df.Time.tolist(),"Sediment":[np.nan] * len(self.sedimentograph_calibration_df)})
+            return 1e20
                 
         
         #Obtain interpolated dataframe
@@ -5031,7 +5069,6 @@ class qvfsmod:
         self.data_aligned = data_aligned
         
         #Calculate objective function
-        self.objective_function = [self.dlg_calibration_advanced_settings.objective_function.itemText(i) for i in range(self.dlg_calibration_advanced_settings.objective_function.count())][self.dlg_calibration_advanced_settings.objective_function.currentIndex()]
         if  self.objective_function== "RMSE":
             #Calculate RMSE
             diferencias = calibration_df_progress['Sediment'] - data_aligned['Sediment']
@@ -5116,9 +5153,16 @@ class qvfsmod:
         else:
             #First, put the text
             if self.objective_function == "RMSE":
-                self.calibration_progress_text+=f"{information[0]}:OF = "+"{:.2e}".format(information[1])+"\n"
+                #If we had an error then put it 
+                if information[1] == 1e20:
+                    self.calibration_progress_text+=f"{information[0]}: Error in execution"+"\n"
+                else:
+                    self.calibration_progress_text+=f"{information[0]}:OF = "+"{:.2e}".format(information[1])+"\n"
             else: #in NSE and NNSE we put negative in the execution function because its a minimization calibration method
-                self.calibration_progress_text+=f"{information[0]}:OF = "+"{:.2e}".format(-information[1])+"\n"
+                if information[1] == 1e20:
+                    self.calibration_progress_text+=f"{information[0]}: Error in execution"+"\n"
+                else:
+                    self.calibration_progress_text+=f"{information[0]}:OF = "+"{:.2e}".format(-information[1])+"\n"
             self.dlg_calibration_progress.textEdit.setPlainText(self.calibration_progress_text)
             self.dlg_calibration_progress.textEdit.moveCursor(QtGui.QTextCursor.End) #move to end the text to see it
             
@@ -5197,9 +5241,16 @@ class qvfsmod:
         else:
             #First, put the text
             if self.objective_function == "RMSE":
-                self.calibration_progress_text+=f"{information[0]}:OF = "+"{:.2e}".format(information[1])+"\n"
+                #If we had an error then put it 
+                if information[1] == 1e20:
+                    self.calibration_progress_text+=f"{information[0]}: Error in execution"+"\n"
+                else:
+                    self.calibration_progress_text+=f"{information[0]}:OF = "+"{:.2e}".format(information[1])+"\n"
             else: #in NSE and NNSE we put negative in the execution function because its a minimization calibration method
-                self.calibration_progress_text+=f"{information[0]}:OF = "+"{:.2e}".format(-information[1])+"\n"
+                if information[1] == 1e20:
+                    self.calibration_progress_text+=f"{information[0]}: Error in execution"+"\n"
+                else:
+                    self.calibration_progress_text+=f"{information[0]}:OF = "+"{:.2e}".format(-information[1])+"\n"
             self.dlg_calibration_progress.textEdit.setPlainText(self.calibration_progress_text)
             self.dlg_calibration_progress.textEdit.moveCursor(QtGui.QTextCursor.End) #move to end the text to see it
             
@@ -5230,102 +5281,113 @@ class qvfsmod:
     
     def save_results_calibration(self,inputs, results):
         """Method to save results in calibration execution"""
-        #Calculate goodness of fit values
-        #Ceff (Nash Sutcliffe)
-        calibration_df_progress = self.calibration_df_progress.copy()
-        calibration_df_progress.set_index('Time', inplace=True)
-        diferencias = calibration_df_progress.iloc[:,0] - self.data_aligned.iloc[:,0]
-        cuadrados_diferencias = diferencias ** 2
-        suma_cuadrados_diferencias = cuadrados_diferencias.sum()
-        media_observados = self.data_aligned.iloc[:,0].mean()
-        diferencias_media_observados = self.data_aligned.iloc[:,0] - media_observados
-        cuadrados_diferencias_observados = diferencias_media_observados ** 2
-        suma_cuadrados_diferencias_observados = cuadrados_diferencias_observados.sum()
-        nash_sutcliffe_efficiency = 1 - (suma_cuadrados_diferencias / suma_cuadrados_diferencias_observados)
-        #RMSE
-        diferencias = calibration_df_progress.iloc[:,0] - self.data_aligned.iloc[:,0]
-        cuadrados_diferencias = diferencias ** 2
-        rmse = cuadrados_diferencias.sum()
-        #IOA
-        observed = self.data_aligned.iloc[:,0]
-        simulated = calibration_df_progress.iloc[:,0]
-        mean_observed = observed.mean()
-        squared_differences = (simulated - observed) ** 2
-        numerator = squared_differences.sum()
-        denominator = ((abs(simulated - mean_observed) + abs(observed - mean_observed)) ** 2).sum()
-        ioa = 1 - (numerator / denominator)
-        #IOA_m
-        observed = self.data_aligned.iloc[:,0]
-        simulated = calibration_df_progress.iloc[:,0]
-        mean_observed = observed.mean()
-        squared_differences = (simulated - observed) ** 2
-        numerator = squared_differences.sum()
-        denominator = ((abs(simulated - mean_observed) + abs(observed - mean_observed)) ** 2).sum()
-        ioa_m = 1 - (numerator / denominator)
-        #IOA_r
-        numerator_r = ((simulated - observed) ** 2).sum()
-        denominator_r = (observed ** 2).sum()
-        ioa_r = 1 - (numerator_r / denominator_r)
-        #MAE
-        mae = (abs(simulated - observed)).mean()
-        #Ceff_m 
-        mean_observed = observed.mean()
-        Ceff_m = 1 - (cuadrados_diferencias.sum() / ((observed - mean_observed) ** 2).sum())
-        #Ceff_r
-        Ceff_r = 1 - (cuadrados_diferencias.sum() / (calibration_df_progress.iloc[:,0] ** 2).sum())
-        
-        #Create csv with results
-        path = self.obtain_direction_vfsmod(self.dlg_calibration_advanced_settings.exit_file.text())
-        try:
-            with open(path, 'w') as f:
-                #Add results of calibration
-                if self.calibration_sedimentograph:
-                    f.write(f"Sedimentograph calibration" + '\n')
-                elif self.calibration_hydrograph:
-                    f.write(f"Hydrograph calibration" + '\n')
-                f.write(f"Number of iterations: {len(inputs)}" + '\n')
-                if self.objective_function == "RMSE":
-                    final_of = min(results)
-                else:
-                    final_of = max(results)
-                f.write(f"Final OF: {final_of}" + '\n')
-                f.write(f"Estimated parameter values: ")
-                for i in range(len(self.calibration_dictionary.keys())):
-                    if i != len(self.calibration_dictionary.keys())-1:
-                        f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]},")
+        #Save only if there has not been an error
+        if min(results) != 1e20:
+            #Calculate goodness of fit values
+            #Ceff (Nash Sutcliffe)
+            calibration_df_progress = self.calibration_df_progress.copy()
+            calibration_df_progress.set_index('Time', inplace=True)
+            diferencias = calibration_df_progress.iloc[:,0] - self.data_aligned.iloc[:,0]
+            cuadrados_diferencias = diferencias ** 2
+            suma_cuadrados_diferencias = cuadrados_diferencias.sum()
+            media_observados = self.data_aligned.iloc[:,0].mean()
+            diferencias_media_observados = self.data_aligned.iloc[:,0] - media_observados
+            cuadrados_diferencias_observados = diferencias_media_observados ** 2
+            suma_cuadrados_diferencias_observados = cuadrados_diferencias_observados.sum()
+            nash_sutcliffe_efficiency = 1 - (suma_cuadrados_diferencias / suma_cuadrados_diferencias_observados)
+            #RMSE
+            diferencias = calibration_df_progress.iloc[:,0] - self.data_aligned.iloc[:,0]
+            cuadrados_diferencias = diferencias ** 2
+            rmse = cuadrados_diferencias.sum()
+            #IOA
+            observed = self.data_aligned.iloc[:,0]
+            simulated = calibration_df_progress.iloc[:,0]
+            mean_observed = observed.mean()
+            squared_differences = (simulated - observed) ** 2
+            numerator = squared_differences.sum()
+            denominator = ((abs(simulated - mean_observed) + abs(observed - mean_observed)) ** 2).sum()
+            ioa = 1 - (numerator / denominator)
+            #IOA_m
+            observed = self.data_aligned.iloc[:,0]
+            simulated = calibration_df_progress.iloc[:,0]
+            mean_observed = observed.mean()
+            squared_differences = (simulated - observed) ** 2
+            numerator = squared_differences.sum()
+            denominator = ((abs(simulated - mean_observed) + abs(observed - mean_observed)) ** 2).sum()
+            ioa_m = 1 - (numerator / denominator)
+            #IOA_r
+            numerator_r = ((simulated - observed) ** 2).sum()
+            denominator_r = (observed ** 2).sum()
+            ioa_r = 1 - (numerator_r / denominator_r)
+            #MAE
+            mae = (abs(simulated - observed)).mean()
+            #Ceff_m 
+            mean_observed = observed.mean()
+            Ceff_m = 1 - (cuadrados_diferencias.sum() / ((observed - mean_observed) ** 2).sum())
+            #Ceff_r
+            Ceff_r = 1 - (cuadrados_diferencias.sum() / (calibration_df_progress.iloc[:,0] ** 2).sum())
+            
+            #Create csv with results
+            path = self.obtain_direction_vfsmod(self.dlg_calibration_advanced_settings.exit_file.text())
+            try:
+                with open(path, 'w') as f:
+                    #Add results of calibration
+                    if self.calibration_sedimentograph:
+                        f.write(f"Sedimentograph calibration" + '\n')
+                    elif self.calibration_hydrograph:
+                        f.write(f"Hydrograph calibration" + '\n')
+                    f.write(f"Number of iterations: {len(inputs)}" + '\n')
+                    if self.objective_function == "RMSE":
+                        final_of = min(results)
+                        f.write(f"Final OF: {final_of}" + '\n')
                     else:
-                        f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]}\n")
-                f.write(f"--------Goodness of fit--------\n")
-                f.write(f"Ceff = {nash_sutcliffe_efficiency}"+"\n")
-                f.write(f"Ceff_m = {Ceff_m}"+"\n")
-                f.write(f"Ceff_r = {Ceff_r}"+"\n")
-                f.write(f"RMSE = {rmse}"+"\n")
-                f.write(f"IoA = {ioa}"+"\n")
-                f.write(f"IoA_m = {ioa_m}"+"\n")
-                f.write(f"IoA_r = {ioa_r}"+"\n")
-                f.write(f"MAE = {mae}"+"\n")
-        except PermissionError:
-            self.warning_message(f"{path} file is opened. Please close it to save results")
-        
-        #Then add the observed and simulated data
-        df = pd.DataFrame(data = {"Time":self.data_aligned.index,"Observed":self.data_aligned.iloc[:,0],"Simulated":calibration_df_progress.iloc[:,0]})
-        df.to_csv(path, mode='a',index=False, float_format='%.5f')
-        
-        #Put filepath in the results dialog
-        if self.calibration_sedimentograph:
-            self.dlg_calibration_results_sedimentograph.results.setText(self.dlg_calibration_advanced_settings.exit_file.text())
-        elif self.calibration_hydrograph:
-            self.dlg_calibration_results_hydrograph.results.setText(self.dlg_calibration_advanced_settings.exit_file.text())
-        
-        #Set to false calibrations
-        self.calibration_sedimentograph = False
-        self.calibration_hydrograph = False
+                        final_of = min(results)
+                        f.write(f"Final OF: {-min(results)}" + '\n')
+                    f.write(f"Estimated parameter values: ")
+                    for i in range(len(self.calibration_dictionary.keys())):
+                        if i != len(self.calibration_dictionary.keys())-1:
+                            f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]},")
+                        else:
+                            f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]}\n")
+                    f.write(f"--------Goodness of fit--------\n")
+                    f.write(f"Ceff = {nash_sutcliffe_efficiency}"+"\n")
+                    f.write(f"Ceff_m = {Ceff_m}"+"\n")
+                    f.write(f"Ceff_r = {Ceff_r}"+"\n")
+                    f.write(f"RMSE = {rmse}"+"\n")
+                    f.write(f"IoA = {ioa}"+"\n")
+                    f.write(f"IoA_m = {ioa_m}"+"\n")
+                    f.write(f"IoA_r = {ioa_r}"+"\n")
+                    f.write(f"MAE = {mae}"+"\n")
+            except PermissionError:
+                self.warning_message(f"{path} file is opened. Please close it to save results")
+            
+            #Then add the observed and simulated data
+            df = pd.DataFrame(data = {"Time":self.data_aligned.index,"Observed":self.data_aligned.iloc[:,0],"Simulated":calibration_df_progress.iloc[:,0]})
+            df.to_csv(path, mode='a',index=False, float_format='%.5f')
+            
+            #Put filepath in the results dialog
+            if self.calibration_sedimentograph:
+                self.dlg_calibration_results_sedimentograph.results.setText(self.dlg_calibration_advanced_settings.exit_file.text())
+            elif self.calibration_hydrograph:
+                self.dlg_calibration_results_hydrograph.results.setText(self.dlg_calibration_advanced_settings.exit_file.text())
+            
+            #Set to false calibrations
+            self.calibration_sedimentograph = False
+            self.calibration_hydrograph = False
     
+        else:
+            path = self.obtain_direction_vfsmod(self.dlg_calibration_advanced_settings.exit_file.text())
+            try:
+                with open(path, 'w') as f:
+                    #Add results of calibration
+                    f.write(f"All calibration executions gave errors. Please check project file or the intervals added." + '\n')
+            except PermissionError:
+                self.warning_message(f"{path} file is opened. Please close it to save results")
     
     def update_graph_calibration_hydrograph(self):
         """Method to update the graph of calibration"""
         path = self.obtain_direction_vfsmod(self.dlg_calibration_results_hydrograph.results.text())
-        if os.path.exists(path):    
+        if os.path.exists(path) and os.path.isfile(path):    
             #First add the text
             with open(path, "r") as archivo:
                 lineas = archivo.readlines()
@@ -5396,7 +5458,7 @@ class qvfsmod:
     def update_graph_calibration_sedimentograph(self):
         """Method to update the graph of calibration"""
         path = self.obtain_direction_vfsmod(self.dlg_calibration_results_sedimentograph.results.text())
-        if os.path.exists(path):    
+        if os.path.exists(path) and os.path.isfile(path):    
             #First add the text
             with open(path, "r") as archivo:
                 lineas = archivo.readlines()
@@ -5481,14 +5543,14 @@ class qvfsmod:
         """Method to move files to the corresponding folders for calibration"""
         #Move hydrograph
         try:
-            shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_base.hydrograph_file.text()),self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_base.hydrograph_file.text())}")
+            shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_hydrograph_calibration.hydrograph_file.text()),self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_hydrograph_calibration.hydrograph_file.text())}")
         except SameFileError:
             pass
             
         #Prj
         prj_file = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.prj"
         #Check if water quality is simulated
-        with open(self.obtain_direction_vfsmod(self.dlg_base.vfs_project.text()), "r") as archivo:
+        with open(self.obtain_direction_vfsmod(self.dlg_hydrograph_calibration.vfs_project.text()), "r") as archivo:
             lineas = archivo.readlines()
         self.water_quality = False
         for i in lineas:
@@ -5528,7 +5590,7 @@ class qvfsmod:
         #Function to copy and paste the inputs to create the files to use in the design analysis
         def copy_paste(type_input):
             ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.{type_input}" 
-            ruta = self.obtain_direction_vfsmod(self.dlg_base.vfs_project.text())
+            ruta = self.obtain_direction_vfsmod(self.dlg_hydrograph_calibration.vfs_project.text())
             if os.path.exists(ruta) and os.path.isfile(ruta):
                 #First we open .prj and obtain the direction of the copying file
                 with open(ruta, "r") as archivo:
@@ -5572,50 +5634,50 @@ class qvfsmod:
                 return -1
         
         
-        vertical = calibration(self.dlg_base.change_vertical,self.dlg_base.calibrate_vertical)
-        average = calibration(self.dlg_base.change_average,self.dlg_base.calibrate_average)
-        saturated = calibration(self.dlg_base.change_saturated,self.dlg_base.calibrate_saturated)
-        initial = calibration(self.dlg_base.change_initial,self.dlg_base.calibrate_initial)
-        maximum = calibration(self.dlg_base.change_maximum,self.dlg_base.calibrate_maximum)
-        fraction = calibration(self.dlg_base.change_fraction,self.dlg_base.calibrate_fraction)
-        width = calibration(self.dlg_base.change_width,self.dlg_base.calibrate_width)
-        length = calibration(self.dlg_base.change_length,self.dlg_base.calibrate_length)
-        manning = calibration(self.dlg_base.change_manning,self.dlg_base.calibrate_manning)
-        slope = calibration(self.dlg_base.change_slope,self.dlg_base.calibrate_slope)
+        vertical = calibration(self.dlg_hydrograph_calibration.change_vertical,self.dlg_hydrograph_calibration.calibrate_vertical)
+        average = calibration(self.dlg_hydrograph_calibration.change_average,self.dlg_hydrograph_calibration.calibrate_average)
+        saturated = calibration(self.dlg_hydrograph_calibration.change_saturated,self.dlg_hydrograph_calibration.calibrate_saturated)
+        initial = calibration(self.dlg_hydrograph_calibration.change_initial,self.dlg_hydrograph_calibration.calibrate_initial)
+        maximum = calibration(self.dlg_hydrograph_calibration.change_maximum,self.dlg_hydrograph_calibration.calibrate_maximum)
+        fraction = calibration(self.dlg_hydrograph_calibration.change_fraction,self.dlg_hydrograph_calibration.calibrate_fraction)
+        width = calibration(self.dlg_hydrograph_calibration.change_width,self.dlg_hydrograph_calibration.calibrate_width)
+        length = calibration(self.dlg_hydrograph_calibration.change_length,self.dlg_hydrograph_calibration.calibrate_length)
+        manning = calibration(self.dlg_hydrograph_calibration.change_manning,self.dlg_hydrograph_calibration.calibrate_manning)
+        slope = calibration(self.dlg_hydrograph_calibration.change_slope,self.dlg_hydrograph_calibration.calibrate_slope)
         
         #Change inputs if "Change" has selected
         self.change_base_inputs_calibration_hydrograph([vertical,average,saturated,initial,maximum,fraction,width,length,manning,slope])
         
         #Create dictionary
         if vertical == "calibrate":
-            dictionary["vertical"] = [float(self.dlg_base.min_vertical.text()),float(self.dlg_base.max_vertical.text())]
+            dictionary["vertical"] = [float(self.dlg_hydrograph_calibration.min_vertical.text()),float(self.dlg_hydrograph_calibration.max_vertical.text())]
             
         if average == "calibrate":
-            dictionary["average"] = [float(self.dlg_base.min_average.text()),float(self.dlg_base.max_average.text())]
+            dictionary["average"] = [float(self.dlg_hydrograph_calibration.min_average.text()),float(self.dlg_hydrograph_calibration.max_average.text())]
         
         if saturated == "calibrate":
-            dictionary["saturated"] = [float(self.dlg_base.min_saturated.text()),float(self.dlg_base.max_saturated.text())]
+            dictionary["saturated"] = [float(self.dlg_hydrograph_calibration.min_saturated.text()),float(self.dlg_hydrograph_calibration.max_saturated.text())]
         
         if initial == "calibrate":
-            dictionary["initial"] = [float(self.dlg_base.min_initial.text()),float(self.dlg_base.max_initial.text())]
+            dictionary["initial"] = [float(self.dlg_hydrograph_calibration.min_initial.text()),float(self.dlg_hydrograph_calibration.max_initial.text())]
         
         if maximum == "calibrate":
-            dictionary["maximum"] = [float(self.dlg_base.min_maximum.text()),float(self.dlg_base.max_maximum.text())]
+            dictionary["maximum"] = [float(self.dlg_hydrograph_calibration.min_maximum.text()),float(self.dlg_hydrograph_calibration.max_maximum.text())]
         
         if fraction == "calibrate":
-            dictionary["fraction"] = [float(self.dlg_base.min_fraction.text()),float(self.dlg_base.max_fraction.text())]
+            dictionary["fraction"] = [float(self.dlg_hydrograph_calibration.min_fraction.text()),float(self.dlg_hydrograph_calibration.max_fraction.text())]
         
         if width == "calibrate":
-            dictionary["width"] = [float(self.dlg_base.min_width.text()),float(self.dlg_base.max_width.text())]
+            dictionary["width"] = [float(self.dlg_hydrograph_calibration.min_width.text()),float(self.dlg_hydrograph_calibration.max_width.text())]
         
         if length == "calibrate":
-            dictionary["length"] = [float(self.dlg_base.min_length.text()),float(self.dlg_base.max_length.text())]
+            dictionary["length"] = [float(self.dlg_hydrograph_calibration.min_length.text()),float(self.dlg_hydrograph_calibration.max_length.text())]
         
         if manning == "calibrate":
-            dictionary["manning"] = [float(self.dlg_base.min_manning.text()),float(self.dlg_base.max_manning.text())]
+            dictionary["manning"] = [float(self.dlg_hydrograph_calibration.min_manning.text()),float(self.dlg_hydrograph_calibration.max_manning.text())]
         
         if slope == "calibrate":
-            dictionary["slope"] = [float(self.dlg_base.min_slope.text()),float(self.dlg_base.max_slope.text())]
+            dictionary["slope"] = [float(self.dlg_hydrograph_calibration.min_slope.text()),float(self.dlg_hydrograph_calibration.max_slope.text())]
         
         return dictionary
     
@@ -5633,15 +5695,15 @@ class qvfsmod:
                 return -1
         
         
-        spacing = calibration(self.dlg_base.change_spacing,self.dlg_base.calibrate_spacing)
-        rougheness_grass = calibration(self.dlg_base.change_roughness,self.dlg_base.calibrate_roughness)
-        height = calibration(self.dlg_base.change_height,self.dlg_base.calibrate_height)
-        roughness_bare = calibration(self.dlg_base.change_bare,self.dlg_base.calibrate_bare)
-        coarse_sediment = calibration(self.dlg_base.change_coarse,self.dlg_base.calibrate_coarse)
-        incoming_flow = calibration(self.dlg_base.change_incoming,self.dlg_base.calibrate_incoming)
-        porosity = calibration(self.dlg_base.change_porosity,self.dlg_base.calibrate_porosity)
-        particle_class = calibration(self.dlg_base.change_class,self.dlg_base.calibrate_class)
-        particle_densitiy = calibration(self.dlg_base.change_density,self.dlg_base.calibrate_density)
+        spacing = calibration(self.dlg_sediment_calibration.change_spacing,self.dlg_sediment_calibration.calibrate_spacing)
+        rougheness_grass = calibration(self.dlg_sediment_calibration.change_roughness,self.dlg_sediment_calibration.calibrate_roughness)
+        height = calibration(self.dlg_sediment_calibration.change_height,self.dlg_sediment_calibration.calibrate_height)
+        roughness_bare = calibration(self.dlg_sediment_calibration.change_bare,self.dlg_sediment_calibration.calibrate_bare)
+        coarse_sediment = calibration(self.dlg_sediment_calibration.change_coarse,self.dlg_sediment_calibration.calibrate_coarse)
+        incoming_flow = calibration(self.dlg_sediment_calibration.change_incoming,self.dlg_sediment_calibration.calibrate_incoming)
+        porosity = calibration(self.dlg_sediment_calibration.change_porosity,self.dlg_sediment_calibration.calibrate_porosity)
+        particle_class = calibration(self.dlg_sediment_calibration.change_class,self.dlg_sediment_calibration.calibrate_class)
+        particle_densitiy = calibration(self.dlg_sediment_calibration.change_density,self.dlg_sediment_calibration.calibrate_density)
         
 
         #Change inputs if "Change" has selected
@@ -5649,31 +5711,31 @@ class qvfsmod:
         
         #Create dictionary
         if spacing == "calibrate":
-            dictionary["spacing"] = [float(self.dlg_base.min_spacing.text()),float(self.dlg_base.max_spacing.text())]
+            dictionary["spacing"] = [float(self.dlg_sediment_calibration.min_spacing.text()),float(self.dlg_sediment_calibration.max_spacing.text())]
             
         if rougheness_grass == "calibrate":
-            dictionary["rougheness_grass"] = [float(self.dlg_base.min_roughness.text()),float(self.dlg_base.max_roughness.text())]
+            dictionary["rougheness_grass"] = [float(self.dlg_sediment_calibration.min_roughness.text()),float(self.dlg_sediment_calibration.max_roughness.text())]
         
         if height == "calibrate":
-            dictionary["height"] = [float(self.dlg_base.min_height.text()),float(self.dlg_base.max_height.text())]
+            dictionary["height"] = [float(self.dlg_sediment_calibration.min_height.text()),float(self.dlg_sediment_calibration.max_height.text())]
         
         if roughness_bare == "calibrate":
-            dictionary["roughness_bare"] = [float(self.dlg_base.min_bare.text()),float(self.dlg_base.max_bare.text())]
+            dictionary["roughness_bare"] = [float(self.dlg_sediment_calibration.min_bare.text()),float(self.dlg_sediment_calibration.max_bare.text())]
         
         if coarse_sediment == "calibrate":
-            dictionary["coarse_sediment"] = [float(self.dlg_base.min_coarse.text()),float(self.dlg_base.max_coarse.text())]
+            dictionary["coarse_sediment"] = [float(self.dlg_sediment_calibration.min_coarse.text()),float(self.dlg_sediment_calibration.max_coarse.text())]
         
         if incoming_flow == "calibrate":
-            dictionary["incoming_flow"] = [float(self.dlg_base.min_incoming.text()),float(self.dlg_base.max_incoming.text())]
+            dictionary["incoming_flow"] = [float(self.dlg_sediment_calibration.min_incoming.text()),float(self.dlg_sediment_calibration.max_incoming.text())]
         
         if porosity == "calibrate":
-            dictionary["porosity"] = [float(self.dlg_base.min_porosity.text()),float(self.dlg_base.max_porosity.text())]
+            dictionary["porosity"] = [float(self.dlg_sediment_calibration.min_porosity.text()),float(self.dlg_sediment_calibration.max_porosity.text())]
         
         if particle_class == "calibrate":
-            dictionary["particle_class"] = [float(self.dlg_base.min_class.text()),float(self.dlg_base.max_class.text())]
+            dictionary["particle_class"] = [float(self.dlg_sediment_calibration.min_class.text()),float(self.dlg_sediment_calibration.max_class.text())]
         
         if particle_densitiy == "calibrate":
-            dictionary["particle_densitiy"] = [float(self.dlg_base.min_density.text()),float(self.dlg_base.max_density.text())]
+            dictionary["particle_densitiy"] = [float(self.dlg_sediment_calibration.min_density.text()),float(self.dlg_sediment_calibration.max_density.text())]
         
         return dictionary
         
@@ -5698,34 +5760,34 @@ class qvfsmod:
         """Method to change the inputs in the calibration of hydrograph if change is selected"""
         #vertical
         if inputs[0]=="change":
-            self.modify_inputs_calibration("iso",0,0,self.dlg_base.new_vertical.text())
+            self.modify_inputs_calibration("iso",0,0,self.dlg_hydrograph_calibration.new_vertical.text())
         #average
         if inputs[1]=="change":
-            self.modify_inputs_calibration("iso",0,1,self.dlg_base.new_average.text())
+            self.modify_inputs_calibration("iso",0,1,self.dlg_hydrograph_calibration.new_average.text())
         #saturated
         if inputs[2]=="change":
-            self.modify_inputs_calibration("iso",0,2,self.dlg_base.new_saturated.text())
+            self.modify_inputs_calibration("iso",0,2,self.dlg_hydrograph_calibration.new_saturated.text())
         #initial
         if inputs[3]=="change":
-            self.modify_inputs_calibration("iso",0,3,self.dlg_base.new_initial.text())
+            self.modify_inputs_calibration("iso",0,3,self.dlg_hydrograph_calibration.new_initial.text())
         #maximum
         if inputs[4]=="change":
-            self.modify_inputs_calibration("iso",0,4,self.dlg_base.new_maximum.text())
+            self.modify_inputs_calibration("iso",0,4,self.dlg_hydrograph_calibration.new_maximum.text())
         #fraction
         if inputs[5]=="change":
-            self.modify_inputs_calibration("iso",0,5,self.dlg_base.new_fraction.text())
+            self.modify_inputs_calibration("iso",0,5,self.dlg_hydrograph_calibration.new_fraction.text())
         #width
         if inputs[6]=="change":
-            self.modify_inputs_calibration("ikw",1,0,self.dlg_base.new_width.text())
+            self.modify_inputs_calibration("ikw",1,0,self.dlg_hydrograph_calibration.new_width.text())
         #length
         if inputs[7]=="change":
-            self.modify_ikw_file_calibration(self.dlg_base.new_length.text())
+            self.modify_ikw_file_calibration(self.dlg_hydrograph_calibration.new_length.text())
         #manning
         if inputs[8]=="change":
-            self.modify_mannign_slope_hydrograph_calibration(1,self.dlg_base.new_manning.text())
+            self.modify_mannign_slope_hydrograph_calibration(1,self.dlg_hydrograph_calibration.new_manning.text())
         #slope
         if inputs[9]=="change":
-            self.modify_mannign_slope_hydrograph_calibration(2,self.dlg_base.new_slope.text())
+            self.modify_mannign_slope_hydrograph_calibration(2,self.dlg_hydrograph_calibration.new_slope.text())
         
     
     def modify_mannign_slope_hydrograph_calibration(self,column,new_value):
@@ -5775,7 +5837,7 @@ class qvfsmod:
         
         #Data frame, but we take it from the original, not from the last execution
         #We import dataframe of segments from the original file
-        ruta = self.obtain_direction_vfsmod(self.dlg_base.vfs_project.text())
+        ruta = self.obtain_direction_vfsmod(self.dlg_hydrograph_calibration.vfs_project.text())
         with open(ruta, "r") as archivo:
             lineas_prj = archivo.readlines()
         ikw_original = lineas_prj[0].split("=")[-1]
@@ -7613,25 +7675,25 @@ class qvfsmod:
                 item.setTextAlignment(Qt.AlignCenter)
         
         #Calibration
-        self.dlg_base.no_vertical.setChecked(True)
-        self.dlg_base.no_average.setChecked(True)
-        self.dlg_base.no_saturated.setChecked(True)
-        self.dlg_base.no_initial.setChecked(True)
-        self.dlg_base.no_maximum.setChecked(True)
-        self.dlg_base.no_fraction.setChecked(True)
-        self.dlg_base.no_width.setChecked(True)
-        self.dlg_base.no_length.setChecked(True)
-        self.dlg_base.no_manning.setChecked(True)
-        self.dlg_base.no_slope.setChecked(True)
-        self.dlg_base.no_spacing.setChecked(True)
-        self.dlg_base.no_roughness.setChecked(True)
-        self.dlg_base.no_height.setChecked(True)
-        self.dlg_base.no_bare.setChecked(True)
-        self.dlg_base.no_coarse.setChecked(True)
-        self.dlg_base.no_incoming.setChecked(True)
-        self.dlg_base.no_porosity.setChecked(True)
-        self.dlg_base.no_class.setChecked(True)
-        self.dlg_base.no_density.setChecked(True)
+        self.dlg_hydrograph_calibration.no_vertical.setChecked(True)
+        self.dlg_hydrograph_calibration.no_average.setChecked(True)
+        self.dlg_hydrograph_calibration.no_saturated.setChecked(True)
+        self.dlg_hydrograph_calibration.no_initial.setChecked(True)
+        self.dlg_hydrograph_calibration.no_maximum.setChecked(True)
+        self.dlg_hydrograph_calibration.no_fraction.setChecked(True)
+        self.dlg_hydrograph_calibration.no_width.setChecked(True)
+        self.dlg_hydrograph_calibration.no_length.setChecked(True)
+        self.dlg_hydrograph_calibration.no_manning.setChecked(True)
+        self.dlg_hydrograph_calibration.no_slope.setChecked(True)
+        self.dlg_sediment_calibration.no_spacing.setChecked(True)
+        self.dlg_sediment_calibration.no_roughness.setChecked(True)
+        self.dlg_sediment_calibration.no_height.setChecked(True)
+        self.dlg_sediment_calibration.no_bare.setChecked(True)
+        self.dlg_sediment_calibration.no_coarse.setChecked(True)
+        self.dlg_sediment_calibration.no_incoming.setChecked(True)
+        self.dlg_sediment_calibration.no_porosity.setChecked(True)
+        self.dlg_sediment_calibration.no_class.setChecked(True)
+        self.dlg_sediment_calibration.no_density.setChecked(True)
 
         
         

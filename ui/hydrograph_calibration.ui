@@ -1,0 +1,1195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>884</width>
+    <height>586</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QLabel {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 16px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+}
+
+QLineEdit {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+    background-color: #f0f0f0; /* Color de fondo del QLineEdit */
+    border: 1px solid #000000; /* Borde blanco */
+}
+
+QComboBox {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+    background-color: #cfd4da; /* Fondo oscuro del ComboBox */
+}
+
+QRadioButton {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+}
+
+QCheckBox {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto (blanco) */
+}
+
+/* Cambiar la fuente y estilo de los QPushButton */
+QPushButton {
+    font-family: 'Georgia'; /* Cambiar la fuente */
+    font-size: 14px; /* Cambiar el tamaño de la fuente */
+    color: #000000; /* Color del texto negro */
+    background-color: #cfd4da; /* Fondo gris claro */
+    border: 1px solid #a1a6ad; /* Borde gris medio */
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 5px; /* Espaciado interno */
+}
+
+/* Estilo cuando el ratón pasa sobre el botón */
+QPushButton:hover {
+    color: #000000; /* Mantener el texto negro */
+    background-color: #b7bcc3; /* Fondo gris un poco más oscuro al pasar el mouse */
+}
+
+/* Estilo cuando el botón está presionado */
+QPushButton:pressed {
+    background-color: #a6acb3; /* Fondo ligeramente más oscuro al presionar */
+    color: #000000; /* Mantener el texto negro cuando se presiona */
+}
+
+
+
+/* Estilo general para QTableWidget y QTableView */
+QTableWidget, QTableView {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Tamaño de la fuente */
+    color: #000000; /* Color del texto negro */
+    background-color: #e6e9ed; /* Fondo gris claro para la tabla */
+    gridline-color: #a1a6ad; /* Color de las líneas de la tabla (gris medio) */
+    selection-background-color: #b7bcc3; /* Color de fondo cuando se selecciona una celda (gris suave) */
+    selection-color: #000000; /* Color del texto cuando la celda está seleccionada (negro) */
+}
+
+/* Estilo para el encabezado horizontal de la tabla */
+QHeaderView::section {
+    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+    font-size: 14px; /* Tamaño de la fuente */
+    color: #000000; /* Color del texto negro */
+    background-color: #cfd4da; /* Fondo gris claro del encabezado */
+    border: 1px solid #a1a6ad; /* Borde gris medio entre las secciones */
+    padding: 4px; /* Espaciado interno en el encabezado */
+}
+
+/* Estilo para las celdas de la tabla al pasar el mouse */
+QTableWidget::item:hover, QTableView::item:hover {
+    background-color: #b7bcc3; /* Fondo gris suave al pasar el mouse */
+    color: #000000; /* Mantener el texto negro */
+}
+
+/* Estilo para las celdas cuando están seleccionadas */
+QTableWidget::item:selected, QTableView::item:selected {
+    background-color: #a6acb3; /* Fondo gris intermedio cuando está seleccionado */
+    color: #000000; /* Texto negro cuando está seleccionado */
+}
+
+/* Ajustar el tamaño de las celdas */
+QTableWidget::item, QTableView::item {
+    padding: 4px; /* Espaciado interno de las celdas */
+}
+
+/* Estilo para el borde inferior de la tabla */
+QTableCornerButton::section {
+    background-color: #cfd4da; /* Fondo del botón de esquina */
+    border: 1px solid #a1a6ad; /* Borde gris medio del botón de esquina */
+}</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QScrollArea" name="scrollArea_7">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents_7">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>849</width>
+        <height>634</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_30">
+       <item row="2" column="1">
+        <widget class="QFrame" name="frame_40">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_57">
+          <item row="5" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_93">
+            <item>
+             <widget class="QLabel" name="label_97">
+              <property name="minimumSize">
+               <size>
+                <width>281</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Maximum Surface Storage 
+(SM, m)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_maximum">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_maximum">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_maximum">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="8" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_88">
+            <item>
+             <widget class="QLabel" name="label_90">
+              <property name="minimumSize">
+               <size>
+                <width>281</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Filter length
+(VL, m)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_length">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_length">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_length">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="9" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_84">
+            <item>
+             <widget class="QLabel" name="label_86">
+              <property name="minimumSize">
+               <size>
+                <width>281</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Filter Manning's n
+(RNA, s/m^1-3)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_manning">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_manning">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_manning">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_85">
+            <item>
+             <widget class="QLabel" name="label_87">
+              <property name="minimumSize">
+               <size>
+                <width>281</width>
+                <height>40</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Vertical Saturated K 
+(VKS, m/s)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_vertical">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_vertical">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_vertical">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="6" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_86">
+            <item>
+             <widget class="QLabel" name="label_88">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Filter fraction where ponding is checked 
+(SCHK,-)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_fraction">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_fraction">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_fraction">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="4" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_87">
+            <item>
+             <widget class="QLabel" name="label_89">
+              <property name="minimumSize">
+               <size>
+                <width>281</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Initial water content 
+(OI, m3/m3)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_initial">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_initial">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_initial">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="10" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_92">
+            <item>
+             <widget class="QLabel" name="label_96">
+              <property name="minimumSize">
+               <size>
+                <width>281</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Average Filter Slope
+(SOA, m/m)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_slope">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_slope">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_slope">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="3" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_83">
+            <item>
+             <widget class="QLabel" name="label_85">
+              <property name="minimumSize">
+               <size>
+                <width>281</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Saturated water content
+ (OS;m3/m3)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_saturated">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_saturated">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_saturated">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="2" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_90">
+            <item>
+             <widget class="QLabel" name="label_94">
+              <property name="minimumSize">
+               <size>
+                <width>281</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Average suction wetting front 
+(SAV, m)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_average">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_average">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_average">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="7" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_91">
+            <item>
+             <widget class="QLabel" name="label_95">
+              <property name="minimumSize">
+               <size>
+                <width>281</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Filter width 
+(FWIDTH,m)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_width">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_width">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_width">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_89">
+            <item>
+             <widget class="QWidget" name="widget_4" native="true">
+              <property name="minimumSize">
+               <size>
+                <width>270</width>
+                <height>0</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_91">
+              <property name="minimumSize">
+               <size>
+                <width>70</width>
+                <height>36</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>New Value</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_92">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Min</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_93">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Max</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="label_63">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>VFS Project Name</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="vfs_project">
+           <property name="minimumSize">
+            <size>
+             <width>175</width>
+             <height>0</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="browse_project">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_65">
+         <property name="text">
+          <string>Select parameter(s) to be changed or calibrated:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout_49">
+         <item>
+          <widget class="QLabel" name="label_64">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Hydrograph Measured
+Data File</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="hydrograph_file">
+           <property name="minimumSize">
+            <size>
+             <width>175</width>
+             <height>0</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="browse_hydrograph_calibration">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="edit_hydrograph">
+           <property name="text">
+            <string>Edit</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="3" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout_50">
+         <item>
+          <widget class="QPushButton" name="run_hydrograph">
+           <property name="text">
+            <string>Ok - Run</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="cancel_2">
+           <property name="text">
+            <string>Cancel</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="advanced_hydrograph">
+           <property name="text">
+            <string>Advanced Settings</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="calibration_result_hydrograph">
+           <property name="text">
+            <string>Calibration Results</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0">
+        <widget class="QFrame" name="frame_19">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_46">
+          <item row="9" column="0">
+           <widget class="QFrame" name="frame_32">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_49">
+             <item row="0" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_75">
+               <item>
+                <widget class="QRadioButton" name="no_manning">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="change_manning">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="calibrate_manning">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QFrame" name="frame_20">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_47">
+             <item row="0" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_73">
+               <item>
+                <widget class="QRadioButton" name="no_maximum">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="change_maximum">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="calibrate_maximum">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QFrame" name="frame_31">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_48">
+             <item row="0" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_74">
+               <item>
+                <widget class="QRadioButton" name="no_fraction">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="change_fraction">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="calibrate_fraction">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="8" column="0">
+           <widget class="QFrame" name="frame_36">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_53">
+             <item row="0" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_79">
+               <item>
+                <widget class="QRadioButton" name="no_length">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="change_length">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="calibrate_length">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QFrame" name="frame_34">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_51">
+             <item row="0" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_77">
+               <item>
+                <widget class="QRadioButton" name="no_saturated">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="change_saturated">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="calibrate_saturated">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="10" column="0">
+           <widget class="QFrame" name="frame_39">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_56">
+             <item row="0" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_82">
+               <item>
+                <widget class="QRadioButton" name="no_slope">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="change_slope">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="calibrate_slope">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QFrame" name="frame_35">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_52">
+             <item row="0" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_78">
+               <item>
+                <widget class="QRadioButton" name="no_average">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="change_average">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="calibrate_average">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QFrame" name="frame_38">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_55">
+             <item row="0" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_81">
+               <item>
+                <widget class="QRadioButton" name="no_initial">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="change_initial">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="calibrate_initial">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_72">
+            <item>
+             <widget class="QLabel" name="label_82">
+              <property name="text">
+               <string>No</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_83">
+              <property name="text">
+               <string>Change</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_84">
+              <property name="text">
+               <string>Calibrate</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
+           <widget class="QFrame" name="frame_33">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_50">
+             <item row="0" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_76">
+               <item>
+                <widget class="QRadioButton" name="no_vertical">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="change_vertical">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="calibrate_vertical">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="QFrame" name="frame_37">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_54">
+             <item row="0" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_80">
+               <item>
+                <widget class="QRadioButton" name="no_width">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="change_width">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="calibrate_width">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
