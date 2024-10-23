@@ -539,7 +539,19 @@ class qvfsmod:
             [[self.dlg_hydrograph_calibration.no_width,self.dlg_hydrograph_calibration.change_width,self.dlg_hydrograph_calibration.calibrate_width],[self.dlg_hydrograph_calibration.new_width,self.dlg_hydrograph_calibration.min_width,self.dlg_hydrograph_calibration.max_width]],
             [[self.dlg_hydrograph_calibration.no_length,self.dlg_hydrograph_calibration.change_length,self.dlg_hydrograph_calibration.calibrate_length],[self.dlg_hydrograph_calibration.new_length,self.dlg_hydrograph_calibration.min_length,self.dlg_hydrograph_calibration.max_length]],
             [[self.dlg_hydrograph_calibration.no_manning,self.dlg_hydrograph_calibration.change_manning,self.dlg_hydrograph_calibration.calibrate_manning],[self.dlg_hydrograph_calibration.new_manning,self.dlg_hydrograph_calibration.min_manning,self.dlg_hydrograph_calibration.max_manning]],
-            [[self.dlg_hydrograph_calibration.no_slope,self.dlg_hydrograph_calibration.change_slope,self.dlg_hydrograph_calibration.calibrate_slope],[self.dlg_hydrograph_calibration.new_slope,self.dlg_hydrograph_calibration.min_slope,self.dlg_hydrograph_calibration.max_slope]]]
+            [[self.dlg_hydrograph_calibration.no_slope,self.dlg_hydrograph_calibration.change_slope,self.dlg_hydrograph_calibration.calibrate_slope],[self.dlg_hydrograph_calibration.new_slope,self.dlg_hydrograph_calibration.min_slope,self.dlg_hydrograph_calibration.max_slope]],
+            [[self.dlg_hydrograph_calibration.no_depth,self.dlg_hydrograph_calibration.change_depth,self.dlg_hydrograph_calibration.calibrate_depth],[self.dlg_hydrograph_calibration.new_depth,self.dlg_hydrograph_calibration.min_depth,self.dlg_hydrograph_calibration.max_depth]],
+            [[self.dlg_hydrograph_calibration.no_ansiotropy,self.dlg_hydrograph_calibration.change_ansiotropy,self.dlg_hydrograph_calibration.calibrate_ansiotropy],[self.dlg_hydrograph_calibration.new_ansiotropy,self.dlg_hydrograph_calibration.min_ansiotropy,self.dlg_hydrograph_calibration.max_ansiotropy]],
+            [[self.dlg_hydrograph_calibration.no_soil_or,self.dlg_hydrograph_calibration.change_soil_or,self.dlg_hydrograph_calibration.calibrate_soil_or],[self.dlg_hydrograph_calibration.new_soil_or,self.dlg_hydrograph_calibration.min_soil_or,self.dlg_hydrograph_calibration.max_soil_or]],
+            [[self.dlg_hydrograph_calibration.no_soil_vgalpha,self.dlg_hydrograph_calibration.change_soil_vgalpha,self.dlg_hydrograph_calibration.calibrate_soil_vgalpha],[self.dlg_hydrograph_calibration.new_soil_vgalpha,self.dlg_hydrograph_calibration.min_soil_vgalpha,self.dlg_hydrograph_calibration.max_soil_vgalpha]],
+            [[self.dlg_hydrograph_calibration.no_soil_vgn,self.dlg_hydrograph_calibration.change_soil_vgn,self.dlg_hydrograph_calibration.calibrate_soil_vgn],[self.dlg_hydrograph_calibration.new_soil_vgn,self.dlg_hydrograph_calibration.min_soil_vgn,self.dlg_hydrograph_calibration.max_soil_vgn]],
+            [[self.dlg_hydrograph_calibration.no_soil_vgm,self.dlg_hydrograph_calibration.change_soil_vgm,self.dlg_hydrograph_calibration.calibrate_soil_vgm],[self.dlg_hydrograph_calibration.new_soil_vgm,self.dlg_hydrograph_calibration.min_soil_vgm,self.dlg_hydrograph_calibration.max_soil_vgm]],
+            [[self.dlg_hydrograph_calibration.no_soil_bcalpha,self.dlg_hydrograph_calibration.change_soil_bcalpha,self.dlg_hydrograph_calibration.calibrate_soil_bcalpha],[self.dlg_hydrograph_calibration.new_soil_bcalpha,self.dlg_hydrograph_calibration.min_soil_bcalpha,self.dlg_hydrograph_calibration.max_soil_bcalpha]],
+            [[self.dlg_hydrograph_calibration.no_soil_bclambda,self.dlg_hydrograph_calibration.change_soil_bclambda,self.dlg_hydrograph_calibration.calibrate_soil_bclambda],[self.dlg_hydrograph_calibration.new_soil_bclambda,self.dlg_hydrograph_calibration.min_soil_bclambda,self.dlg_hydrograph_calibration.max_soil_bclambda]],
+            [[self.dlg_hydrograph_calibration.no_unsaturated_vgm,self.dlg_hydrograph_calibration.change_unsaturated_vgm,self.dlg_hydrograph_calibration.calibrate_unsaturated_vgm],[self.dlg_hydrograph_calibration.new_unsaturated_vgm,self.dlg_hydrograph_calibration.min_unsaturated_vgm,self.dlg_hydrograph_calibration.max_unsaturated_vgm]],
+            [[self.dlg_hydrograph_calibration.no_unsaturated_bceta,self.dlg_hydrograph_calibration.change_unsaturated_bceta,self.dlg_hydrograph_calibration.calibrate_unsaturated_bceta],[self.dlg_hydrograph_calibration.new_unsaturated_bceta,self.dlg_hydrograph_calibration.min_unsaturated_bceta,self.dlg_hydrograph_calibration.max_unsaturated_bceta]],
+            [[self.dlg_hydrograph_calibration.no_unsaturated_bcalpha,self.dlg_hydrograph_calibration.change_unsaturated_bcalpha,self.dlg_hydrograph_calibration.calibrate_unsaturated_bcalpha],[self.dlg_hydrograph_calibration.new_unsaturated_bcalpha,self.dlg_hydrograph_calibration.min_unsaturated_bcalpha,self.dlg_hydrograph_calibration.max_unsaturated_bcalpha]],
+            [[self.dlg_hydrograph_calibration.no_unsaturated_gdalpha,self.dlg_hydrograph_calibration.change_unsaturated_gdalpha,self.dlg_hydrograph_calibration.calibrate_unsaturated_gdalpha],[self.dlg_hydrograph_calibration.new_unsaturated_gdalpha,self.dlg_hydrograph_calibration.min_unsaturated_gdalpha,self.dlg_hydrograph_calibration.max_unsaturated_gdalpha]],]
         for i in self.hydrology_checks:
             i[0][0].toggled.connect(self.draw_calibration_hydrology)
             i[0][1].toggled.connect(self.draw_calibration_hydrology)
@@ -742,22 +754,156 @@ class qvfsmod:
         """Method to add shallow water parameters to hydrograph calibration"""
         prj_path = self.obtain_direction_vfsmod(self.dlg_hydrograph_calibration.vfs_project.text())
         if os.path.exists(prj_path) and os.path.isfile(prj_path):
+            #First set invisible all the parameters that are not present in all the situations
+            #Function to set visible or invisible horizontal layouts and put "No" in calibration
+            def set_visible_horizontal(horizontal,condition):
+                for i in range(horizontal.count()):
+                    widget = horizontal.itemAt(i).widget()
+                    if widget is not None:
+                        widget.setVisible(condition)
+            #Suction at the wetting front
+            self.dlg_hydrograph_calibration.frame_35.setVisible(False)
+            set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_90,False)
+            self.dlg_hydrograph_calibration.no_average.setChecked(False)
+            #Initial water content
+            self.dlg_hydrograph_calibration.frame_38.setVisible(False)
+            set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_87,False)
+            self.dlg_hydrograph_calibration.no_initial.setChecked(False)
+            #Water table
+            self.dlg_hydrograph_calibration.frame_4.setVisible(False)
+            set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_3,False)
+            self.dlg_hydrograph_calibration.no_depth.setChecked(False)
+            #Soil saturated hydraulic \nconductivity anisotropy ratio 
+            self.dlg_hydrograph_calibration.frame_6.setVisible(False)
+            set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_4,False)
+            self.dlg_hydrograph_calibration.no_ansiotropy.setChecked(False)
+            #OR
+            self.dlg_hydrograph_calibration.frame_9.setVisible(False)
+            set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_5,False)
+            self.dlg_hydrograph_calibration.no_soil_or.setChecked(False)
+            #VGALPHA
+            self.dlg_hydrograph_calibration.frame_8.setVisible(False)
+            set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_6,False)
+            self.dlg_hydrograph_calibration.no_soil_vgalpha.setChecked(False)
+            #VGN
+            self.dlg_hydrograph_calibration.frame_5.setVisible(False)
+            set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_7,False)
+            self.dlg_hydrograph_calibration.no_soil_vgn.setChecked(False)
+            #VGM
+            self.dlg_hydrograph_calibration.frame_7.setVisible(False)
+            set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_8,False)
+            self.dlg_hydrograph_calibration.no_soil_vgm.setChecked(False)
+            #BCALPHA 
+            self.dlg_hydrograph_calibration.frame_10.setVisible(False)
+            set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_9,False)
+            self.dlg_hydrograph_calibration.no_soil_bcalpha.setChecked(False)
+            #BCLAMBDA
+            self.dlg_hydrograph_calibration.frame_12.setVisible(False)
+            set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_10,False)
+            self.dlg_hydrograph_calibration.no_soil_bclambda.setChecked(False)
+            #VGM
+            self.dlg_hydrograph_calibration.frame_11.setVisible(False)
+            set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_11,False)
+            self.dlg_hydrograph_calibration.no_unsaturated_vgm.setChecked(False)
+            #BCETA 
+            self.dlg_hydrograph_calibration.frame_14.setVisible(False)
+            set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_12,False)
+            self.dlg_hydrograph_calibration.no_unsaturated_bceta.setChecked(False)
+            #BCALPHA
+            self.dlg_hydrograph_calibration.frame_15.setVisible(False)
+            set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_13,False)
+            self.dlg_hydrograph_calibration.no_unsaturated_bcalpha.setChecked(False)
+            #GDALPHA
+            self.dlg_hydrograph_calibration.frame_13.setVisible(False)
+            set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_14,False)
+            self.dlg_hydrograph_calibration.no_unsaturated_gdalpha.setChecked(False)
+            print(prj_path)
             #Obtain iso path
             with open(prj_path, "r") as archivo:
                 lineas = archivo.readlines()
+            print(lineas)
             for i in lineas:
                 if i[:3]=="iso":
                     iso_path = i.split("=")[-1]
-                if not os.path.isabs(iso_path): #relative path
-                    iso_path = os.path.join(os.path.dirname(prj_path), iso_path)
-                iso_path = iso_path.replace("\n", "") #take out the line jumps
+            if not os.path.isabs(iso_path): #relative path
+                iso_path = os.path.join(os.path.dirname(prj_path), iso_path)
+            iso_path = iso_path.replace("\n", "") #take out the line jumps
             #Read inputs
             if os.path.exists(iso_path) and os.path.isfile(iso_path):
                 with open(iso_path, "r") as archivo:
                     lineas = archivo.readlines()
+                #If second line is a number then we have water table
+                try:
                     float(lineas[1])
-        
-        eliminar también los que no se utilizan!!!
+                    water_table = True
+                except:
+                    water_table = False
+                #Check if there is ansiotropy
+                try:
+                    float(lineas[4])
+                    ansiotropy = True
+                except:
+                    ansiotropy = False
+                print(water_table)
+                #Put and quit parameters depending on input file
+                if water_table:
+                    #Add the rest
+                    ITHETATYPE = int(lineas[2].split()[0])   
+                    IKUNSTYPE = int(lineas[3].split()[0])
+                    #Water table
+                    self.dlg_hydrograph_calibration.frame_4.setVisible(True)
+                    set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_3,True)
+                    #Ansiotropy
+                    if ansiotropy:
+                        self.dlg_hydrograph_calibration.frame_6.setVisible(True)
+                        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_4,True)
+                    
+                    if ITHETATYPE == 1:
+                        #OR
+                        self.dlg_hydrograph_calibration.frame_9.setVisible(True)
+                        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_5,True)
+                        #VGALPHA
+                        self.dlg_hydrograph_calibration.frame_8.setVisible(True)
+                        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_6,True)
+                        #VGN
+                        self.dlg_hydrograph_calibration.frame_5.setVisible(True)
+                        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_7,True)
+                        #VGM
+                        self.dlg_hydrograph_calibration.frame_7.setVisible(True)
+                        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_8,True)
+                    elif ITHETATYPE == 2:
+                        #OR 
+                        self.dlg_hydrograph_calibration.frame_9.setVisible(True)
+                        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_5,True)
+                        #BCALPHA 
+                        self.dlg_hydrograph_calibration.frame_10.setVisible(True)
+                        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_9,True)
+                        #BCLAMBDA
+                        self.dlg_hydrograph_calibration.frame_12.setVisible(True)
+                        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_10,True)
+                    if IKUNSTYPE == 1:
+                        #VGM
+                        self.dlg_hydrograph_calibration.frame_11.setVisible(True)
+                        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_11,True)
+                    elif IKUNSTYPE == 2:
+                        #BCETA 
+                        self.dlg_hydrograph_calibration.frame_14.setVisible(True)
+                        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_12,True)
+                        #BCALPHA
+                        self.dlg_hydrograph_calibration.frame_15.setVisible(True)
+                        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_13,True)
+                    elif IKUNSTYPE == 3:
+                        #GDALPHA
+                        self.dlg_hydrograph_calibration.frame_13.setVisible(True)
+                        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_14,True)
+                
+                elif not water_table:
+                    #Set visible suction at the wetting front
+                    self.dlg_hydrograph_calibration.frame_35.setVisible(True)
+                    set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_90,True)
+                    #Set visible initial water content
+                    self.dlg_hydrograph_calibration.frame_38.setVisible(True)
+                    set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_87,True)
     
     
     def update_buffer_length_table(self):
@@ -5645,8 +5791,24 @@ class qvfsmod:
         manning = calibration(self.dlg_hydrograph_calibration.change_manning,self.dlg_hydrograph_calibration.calibrate_manning)
         slope = calibration(self.dlg_hydrograph_calibration.change_slope,self.dlg_hydrograph_calibration.calibrate_slope)
         
+        water_depth = calibration(self.dlg_hydrograph_calibration.change_depth,self.dlg_hydrograph_calibration.calibrate_depth)
+        soil_saturated = calibration(self.dlg_hydrograph_calibration.change_ansiotropy,self.dlg_hydrograph_calibration.calibrate_ansiotropy)
+        soil_or = calibration(self.dlg_hydrograph_calibration.change_soil_or,self.dlg_hydrograph_calibration.calibrate_soil_or)
+        soil_vgalpha = calibration(self.dlg_hydrograph_calibration.change_soil_vgalpha,self.dlg_hydrograph_calibration.calibrate_soil_vgalpha)
+        soil_vgn = calibration(self.dlg_hydrograph_calibration.change_soil_vgn,self.dlg_hydrograph_calibration.calibrate_soil_vgn)
+        soil_vgm = calibration(self.dlg_hydrograph_calibration.change_soil_vgm,self.dlg_hydrograph_calibration.calibrate_soil_vgm)
+        soil_bcalpha = calibration(self.dlg_hydrograph_calibration.change_soil_bcalpha,self.dlg_hydrograph_calibration.calibrate_soil_bcalpha)
+        soil_bclamda = calibration(self.dlg_hydrograph_calibration.change_soil_bclambda,self.dlg_hydrograph_calibration.calibrate_soil_bclambda)
+        unsaturated_vgm = calibration(self.dlg_hydrograph_calibration.change_unsaturated_vgm,self.dlg_hydrograph_calibration.calibrate_unsaturated_vgm)
+        unsaturated_bceta = calibration(self.dlg_hydrograph_calibration.change_unsaturated_bceta,self.dlg_hydrograph_calibration.calibrate_unsaturated_bceta)
+        unsaturated_bcalpha = calibration(self.dlg_hydrograph_calibration.change_unsaturated_bcalpha,self.dlg_hydrograph_calibration.calibrate_unsaturated_bcalpha)
+        usaturated_gdalpha = calibration(self.dlg_hydrograph_calibration.change_unsaturated_gdalpha,self.dlg_hydrograph_calibration.calibrate_unsaturated_gdalpha)
+        
+        
+        
         #Change inputs if "Change" has selected
-        self.change_base_inputs_calibration_hydrograph([vertical,average,saturated,initial,maximum,fraction,width,length,manning,slope])
+        self.change_base_inputs_calibration_hydrograph([vertical,average,saturated,initial,maximum,fraction,width,length,manning,slope,
+            water_depth,soil_saturated,soil_or,soil_vgalpha,soil_vgn,soil_vgm,soil_bcalpha,soil_bclamda,unsaturated_vgm,unsaturated_bceta,unsaturated_bcalpha,usaturated_gdalpha])
         
         #Create dictionary
         if vertical == "calibrate":
@@ -5678,6 +5840,44 @@ class qvfsmod:
         
         if slope == "calibrate":
             dictionary["slope"] = [float(self.dlg_hydrograph_calibration.min_slope.text()),float(self.dlg_hydrograph_calibration.max_slope.text())]
+        
+        
+        
+        if water_depth == "calibrate":
+            dictionary["water_depth"] = [float(self.dlg_hydrograph_calibration.min_depth.text()),float(self.dlg_hydrograph_calibration.max_depth.text())]
+        
+        if soil_saturated == "calibrate":
+            dictionary["soil_saturated"] = [float(self.dlg_hydrograph_calibration.min_ansiotropy.text()),float(self.dlg_hydrograph_calibration.max_ansiotropy.text())]
+        
+        if soil_or == "calibrate":
+            dictionary["soil_or"] = [float(self.dlg_hydrograph_calibration.min_soil_or.text()),float(self.dlg_hydrograph_calibration.max_soil_or.text())]
+            
+        if soil_vgalpha == "calibrate":
+            dictionary["soil_vgalpha"] = [float(self.dlg_hydrograph_calibration.min_soil_vgalpha.text()),float(self.dlg_hydrograph_calibration.max_soil_vgalpha.text())]
+            
+        if soil_vgn == "calibrate":
+            dictionary["soil_vgn"] = [float(self.dlg_hydrograph_calibration.min_soil_vgn.text()),float(self.dlg_hydrograph_calibration.max_soil_vgn.text())]
+            
+        if soil_vgm == "calibrate":
+            dictionary["soil_vgm"] = [float(self.dlg_hydrograph_calibration.min_soil_vgm.text()),float(self.dlg_hydrograph_calibration.max_soil_vgm.text())]
+            
+        if soil_bcalpha == "calibrate":
+            dictionary["soil_bcalpha"] = [float(self.dlg_hydrograph_calibration.min_soil_bcalpha.text()),float(self.dlg_hydrograph_calibration.max_soil_bcalpha.text())]
+            
+        if soil_bclamda == "calibrate":
+            dictionary["soil_bclamda"] = [float(self.dlg_hydrograph_calibration.min_soil_bclambda.text()),float(self.dlg_hydrograph_calibration.max_soil_bclambda.text())]
+            
+        if unsaturated_vgm == "calibrate":
+            dictionary["unsaturated_vgm"] = [float(self.dlg_hydrograph_calibration.min_unsaturated_vgm.text()),float(self.dlg_hydrograph_calibration.max_unsaturated_vgm.text())]
+            
+        if unsaturated_bceta == "calibrate":
+            dictionary["unsaturated_bceta"] = [float(self.dlg_hydrograph_calibration.min_unsaturated_bceta.text()),float(self.dlg_hydrograph_calibration.max_unsaturated_bceta.text())]
+            
+        if unsaturated_bcalpha == "calibrate":
+            dictionary["unsaturated_bcalpha"] = [float(self.dlg_hydrograph_calibration.min_unsaturated_bcalpha.text()),float(self.dlg_hydrograph_calibration.max_unsaturated_bcalpha.text())]
+            
+        if usaturated_gdalpha == "calibrate":
+            dictionary["usaturated_gdalpha"] = [float(self.dlg_hydrograph_calibration.min_unsaturated_gdalpha.text()),float(self.dlg_hydrograph_calibration.max_unsaturated_gdalpha.text())]
         
         return dictionary
     
@@ -5788,8 +5988,44 @@ class qvfsmod:
         #slope
         if inputs[9]=="change":
             self.modify_mannign_slope_hydrograph_calibration(2,self.dlg_hydrograph_calibration.new_slope.text())
+        #water_depth
+        if inputs[10]=="change":
+            self.modify_inputs_calibration("iso",1,0,self.dlg_hydrograph_calibration.new_depth.text())
+        #soil_saturated
+        if inputs[11]=="change":
+            self.modify_inputs_calibration("iso",4,0,self.dlg_hydrograph_calibration.new_ansiotropy.text())
+        #soil_or
+        if inputs[12]=="change":
+            self.modify_inputs_calibration("iso",2,1,self.dlg_hydrograph_calibration.new_soil_or.text())
+        #soil_vgalpha
+        if inputs[13]=="change":
+            self.modify_inputs_calibration("iso",2,2,self.dlg_hydrograph_calibration.new_soil_vgalpha.text())
+        #soil_vgn
+        if inputs[14]=="change":
+            self.modify_inputs_calibration("iso",2,3,self.dlg_hydrograph_calibration.new_soil_vgn.text())
+        #soil_vgm
+        if inputs[15]=="change":
+            self.modify_inputs_calibration("iso",2,4,self.dlg_hydrograph_calibration.new_soil_vgm.text())
+        #soil_bcalpha
+        if inputs[16]=="change":
+            self.modify_inputs_calibration("iso",2,2,self.dlg_hydrograph_calibration.new_soil_bcalpha.text())
+        #soil_bclamda
+        if inputs[17]=="change":
+            self.modify_inputs_calibration("iso",2,3,self.dlg_hydrograph_calibration.new_soil_bclambda.text())
+        #unsaturated_vgm
+        if inputs[18]=="change":
+            self.modify_inputs_calibration("iso",3,1,self.dlg_hydrograph_calibration.new_unsaturated_vgm.text())
+        #unsaturated_bceta
+        if inputs[19]=="change":
+            self.modify_inputs_calibration("iso",3,1,self.dlg_hydrograph_calibration.new_unsaturated_bceta.text())
+        #unsaturated_bcalpha
+        if inputs[20]=="change":
+            self.modify_inputs_calibration("iso",3,2,self.dlg_hydrograph_calibration.new_unsaturated_bcalpha.text())
+        #usaturated_gdalpha
+        if inputs[21]=="change":
+            self.modify_inputs_calibration("iso",3,1,self.dlg_hydrograph_calibration.new_unsaturated_gdalpha.text())
         
-    
+        
     def modify_mannign_slope_hydrograph_calibration(self,column,new_value):
         """Method to modify the manning and slope for hydrograph calibration"""
         #We obtain information of ikw file
@@ -6392,8 +6628,8 @@ class qvfsmod:
         add_text(self.dlg_base.design_uh_file,"uh")
         add_text(self.dlg_base.design_vfs_file,"vfs")
         #Add paths to calibration
-        add_text(self.dlg_base.vfs_project,"vfs")
-        add_text(self.dlg_base.vfs_file,"vfs")
+        add_text(self.dlg_hydrograph_calibration.vfs_project,"vfs")
+        add_text(self.dlg_sediment_calibration.vfs_file,"vfs")
         #Add paths to sensitivity analysis
         add_text(self.dlg_base.uh_file_sensitivity,"uh")
         add_text(self.dlg_base.vfs_file_sensitivity,"vfs")
@@ -7685,6 +7921,19 @@ class qvfsmod:
         self.dlg_hydrograph_calibration.no_length.setChecked(True)
         self.dlg_hydrograph_calibration.no_manning.setChecked(True)
         self.dlg_hydrograph_calibration.no_slope.setChecked(True)
+        self.dlg_hydrograph_calibration.no_depth.setChecked(True)
+        self.dlg_hydrograph_calibration.no_ansiotropy.setChecked(True)
+        self.dlg_hydrograph_calibration.no_soil_or.setChecked(True)
+        self.dlg_hydrograph_calibration.no_soil_vgalpha.setChecked(True)
+        self.dlg_hydrograph_calibration.no_soil_vgn.setChecked(True)
+        self.dlg_hydrograph_calibration.no_soil_vgm.setChecked(True)
+        self.dlg_hydrograph_calibration.no_soil_bcalpha.setChecked(True)
+        self.dlg_hydrograph_calibration.no_soil_bclambda.setChecked(True)
+        self.dlg_hydrograph_calibration.no_unsaturated_vgm.setChecked(True)
+        self.dlg_hydrograph_calibration.no_unsaturated_bceta.setChecked(True)
+        self.dlg_hydrograph_calibration.no_unsaturated_bcalpha.setChecked(True)
+        self.dlg_hydrograph_calibration.no_unsaturated_gdalpha.setChecked(True)
+        
         self.dlg_sediment_calibration.no_spacing.setChecked(True)
         self.dlg_sediment_calibration.no_roughness.setChecked(True)
         self.dlg_sediment_calibration.no_height.setChecked(True)
@@ -7694,7 +7943,56 @@ class qvfsmod:
         self.dlg_sediment_calibration.no_porosity.setChecked(True)
         self.dlg_sediment_calibration.no_class.setChecked(True)
         self.dlg_sediment_calibration.no_density.setChecked(True)
-
+        
+        #Set invisible hydrograph calibration
+        def set_visible_horizontal(horizontal,condition):
+            for i in range(horizontal.count()):
+                widget = horizontal.itemAt(i).widget()
+                if widget is not None:
+                    widget.setVisible(condition)
+        #Suction at the wetting front
+        self.dlg_hydrograph_calibration.frame_35.setVisible(False)
+        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_90,False)
+        #Initial water content
+        self.dlg_hydrograph_calibration.frame_38.setVisible(False)
+        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_87,False)
+        #Water table
+        self.dlg_hydrograph_calibration.frame_4.setVisible(False)
+        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_3,False)
+        #Soil saturated hydraulic \nconductivity anisotropy ratio 
+        self.dlg_hydrograph_calibration.frame_6.setVisible(False)
+        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_4,False)
+        #OR
+        self.dlg_hydrograph_calibration.frame_9.setVisible(False)
+        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_5,False)
+        #VGALPHA
+        self.dlg_hydrograph_calibration.frame_8.setVisible(False)
+        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_6,False)
+        #VGN
+        self.dlg_hydrograph_calibration.frame_5.setVisible(False)
+        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_7,False)
+        #VGM
+        self.dlg_hydrograph_calibration.frame_7.setVisible(False)
+        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_8,False)
+        #BCALPHA 
+        self.dlg_hydrograph_calibration.frame_10.setVisible(False)
+        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_9,False)
+        #BCLAMBDA
+        self.dlg_hydrograph_calibration.frame_12.setVisible(False)
+        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_10,False)
+        #VGM
+        self.dlg_hydrograph_calibration.frame_11.setVisible(False)
+        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_11,False)
+        #BCETA 
+        self.dlg_hydrograph_calibration.frame_14.setVisible(False)
+        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_12,False)
+        #BCALPHA
+        self.dlg_hydrograph_calibration.frame_15.setVisible(False)
+        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_13,False)
+        #GDALPHA
+        self.dlg_hydrograph_calibration.frame_13.setVisible(False)
+        set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_14,False)
+        
         
         
     def user_defined_storm_type(self):

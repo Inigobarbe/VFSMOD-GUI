@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>884</width>
-    <height>586</height>
+    <width>957</width>
+    <height>644</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -116,7 +116,39 @@ QTableCornerButton::section {
     border: 1px solid #a1a6ad; /* Borde gris medio del botón de esquina */
 }</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="gridLayout_13">
+   <item row="1" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_50">
+     <item>
+      <widget class="QPushButton" name="run_hydrograph">
+       <property name="text">
+        <string>Ok - Run</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancel_2">
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="advanced_hydrograph">
+       <property name="text">
+        <string>Advanced Settings</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="calibration_result_hydrograph">
+       <property name="text">
+        <string>Calibration Results</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
    <item row="0" column="0">
     <widget class="QScrollArea" name="scrollArea_7">
      <property name="styleSheet">
@@ -133,13 +165,19 @@ QTableCornerButton::section {
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>849</width>
-        <height>634</height>
+        <width>922</width>
+        <height>1090</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_30">
        <item row="2" column="1">
         <widget class="QFrame" name="frame_40">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>37</height>
+          </size>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -147,396 +185,6 @@ QTableCornerButton::section {
           <enum>QFrame::Raised</enum>
          </property>
          <layout class="QGridLayout" name="gridLayout_57">
-          <item row="5" column="0" colspan="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_93">
-            <item>
-             <widget class="QLabel" name="label_97">
-              <property name="minimumSize">
-               <size>
-                <width>281</width>
-                <height>37</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Maximum Surface Storage 
-(SM, m)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="new_maximum">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="min_maximum">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="max_maximum">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="8" column="0" colspan="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_88">
-            <item>
-             <widget class="QLabel" name="label_90">
-              <property name="minimumSize">
-               <size>
-                <width>281</width>
-                <height>37</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Filter length
-(VL, m)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="new_length">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="min_length">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="max_length">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="9" column="0" colspan="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_84">
-            <item>
-             <widget class="QLabel" name="label_86">
-              <property name="minimumSize">
-               <size>
-                <width>281</width>
-                <height>37</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Filter Manning's n
-(RNA, s/m^1-3)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="new_manning">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="min_manning">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="max_manning">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="1" column="0" colspan="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_85">
-            <item>
-             <widget class="QLabel" name="label_87">
-              <property name="minimumSize">
-               <size>
-                <width>281</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Vertical Saturated K 
-(VKS, m/s)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="new_vertical">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="min_vertical">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="max_vertical">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="6" column="0" colspan="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_86">
-            <item>
-             <widget class="QLabel" name="label_88">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>37</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Filter fraction where ponding is checked 
-(SCHK,-)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="new_fraction">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="min_fraction">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="max_fraction">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="4" column="0" colspan="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_87">
-            <item>
-             <widget class="QLabel" name="label_89">
-              <property name="minimumSize">
-               <size>
-                <width>281</width>
-                <height>37</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Initial water content 
-(OI, m3/m3)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="new_initial">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="min_initial">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="max_initial">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="10" column="0" colspan="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_92">
-            <item>
-             <widget class="QLabel" name="label_96">
-              <property name="minimumSize">
-               <size>
-                <width>281</width>
-                <height>37</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Average Filter Slope
-(SOA, m/m)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="new_slope">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="min_slope">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="max_slope">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="3" column="0" colspan="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_83">
-            <item>
-             <widget class="QLabel" name="label_85">
-              <property name="minimumSize">
-               <size>
-                <width>281</width>
-                <height>37</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Saturated water content
- (OS;m3/m3)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="new_saturated">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="min_saturated">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="max_saturated">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="2" column="0" colspan="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_90">
-            <item>
-             <widget class="QLabel" name="label_94">
-              <property name="minimumSize">
-               <size>
-                <width>281</width>
-                <height>37</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Average suction wetting front 
-(SAV, m)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="new_average">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="min_average">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="max_average">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="7" column="0" colspan="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_91">
-            <item>
-             <widget class="QLabel" name="label_95">
-              <property name="minimumSize">
-               <size>
-                <width>281</width>
-                <height>37</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Filter width 
-(FWIDTH,m)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="new_width">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="min_width">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="max_width">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
           <item row="0" column="0" colspan="2">
            <layout class="QHBoxLayout" name="horizontalLayout_89">
             <item>
@@ -596,6 +244,720 @@ QTableCornerButton::section {
                <set>Qt::AlignCenter</set>
               </property>
              </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="3" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_83">
+            <item>
+             <widget class="QLabel" name="label_85">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Saturated water content
+ (OS;m3/m3)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_saturated">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_saturated">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_saturated">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="6" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_86">
+            <item>
+             <widget class="QLabel" name="label_88">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Filter fraction where ponding is 
+checked (SCHK,-)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_fraction">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_fraction">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_fraction">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="9" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_84">
+            <item>
+             <widget class="QLabel" name="label_86">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Filter Manning's n
+(RNA, s/m^1-3)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_manning">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_manning">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_manning">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="8" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_88">
+            <item>
+             <widget class="QLabel" name="label_90">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Filter length
+(VL, m)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_length">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_length">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_length">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="5" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_93">
+            <item>
+             <widget class="QLabel" name="label_97">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Maximum Surface Storage 
+(SM, m)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_maximum">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_maximum">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_maximum">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="10" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_92">
+            <item>
+             <widget class="QLabel" name="label_96">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Average Filter Slope
+(SOA, m/m)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_slope">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_slope">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_slope">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="7" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_91">
+            <item>
+             <widget class="QLabel" name="label_95">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Filter width 
+(FWIDTH,m)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_width">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_width">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_width">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_85">
+            <item>
+             <widget class="QLabel" name="label_87">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>40</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Vertical Saturated K 
+(VKS, m/s)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_vertical">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_vertical">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_vertical">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="11" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_90">
+            <item>
+             <widget class="QLabel" name="label_94">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Average suction wetting front 
+(SAV, m)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_average">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_average">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_average">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="12" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_87">
+            <item>
+             <widget class="QLabel" name="label_89">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Initial water content 
+(OI, m3/m3)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_initial">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_initial">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_initial">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="13" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Water table depth
+(m)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_depth"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_depth"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_depth"/>
+            </item>
+           </layout>
+          </item>
+          <item row="14" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <widget class="QLabel" name="label_2">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Soil saturated hydraulic 
+conductivity anisotropy ratio </string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_ansiotropy"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_ansiotropy"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_ansiotropy"/>
+            </item>
+           </layout>
+          </item>
+          <item row="15" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <item>
+             <widget class="QLabel" name="label_3">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Soil water characteristic curve 
+OR</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_soil_or"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_soil_or"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_soil_or"/>
+            </item>
+           </layout>
+          </item>
+          <item row="16" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <widget class="QLabel" name="label_4">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Soil water characteristic curve 
+VGALPHA</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_soil_vgalpha"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_soil_vgalpha"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_soil_vgalpha"/>
+            </item>
+           </layout>
+          </item>
+          <item row="17" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_7">
+            <item>
+             <widget class="QLabel" name="label_5">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Soil water characteristic curve 
+VGN</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_soil_vgn"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_soil_vgn"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_soil_vgn"/>
+            </item>
+           </layout>
+          </item>
+          <item row="18" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <item>
+             <widget class="QLabel" name="label_6">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Soil water characteristic curve 
+VGM</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_soil_vgm"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_soil_vgm"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_soil_vgm"/>
+            </item>
+           </layout>
+          </item>
+          <item row="19" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_9">
+            <item>
+             <widget class="QLabel" name="label_7">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Soil water characteristic curve 
+BCALPHA</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_soil_bcalpha"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_soil_bcalpha"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_soil_bcalpha"/>
+            </item>
+           </layout>
+          </item>
+          <item row="20" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <widget class="QLabel" name="label_8">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Soil water characteristic curve 
+BCLAMBDA</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_soil_bclambda"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_soil_bclambda"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_soil_bclambda"/>
+            </item>
+           </layout>
+          </item>
+          <item row="21" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_11">
+            <item>
+             <widget class="QLabel" name="label_9">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Unsaturated hydraulic conductivity 
+curve VGM</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_unsaturated_vgm"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_unsaturated_vgm"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_unsaturated_vgm"/>
+            </item>
+           </layout>
+          </item>
+          <item row="22" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_12">
+            <item>
+             <widget class="QLabel" name="label_10">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Unsaturated hydraulic conductivity 
+curve BCETA</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_unsaturated_bceta"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_unsaturated_bceta"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_unsaturated_bceta"/>
+            </item>
+           </layout>
+          </item>
+          <item row="23" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_13">
+            <item>
+             <widget class="QLabel" name="label_11">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Unsaturated hydraulic conductivity 
+curve BCALPHA</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_unsaturated_bcalpha"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_unsaturated_bcalpha"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_unsaturated_bcalpha"/>
+            </item>
+           </layout>
+          </item>
+          <item row="24" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_14">
+            <item>
+             <widget class="QLabel" name="label_12">
+              <property name="minimumSize">
+               <size>
+                <width>250</width>
+                <height>37</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Unsaturated hydraulic conductivity 
+curve GDALPHA</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_unsaturated_gdalpha"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_unsaturated_gdalpha"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_unsaturated_gdalpha"/>
             </item>
            </layout>
           </item>
@@ -685,38 +1047,6 @@ Data File</string>
          </item>
         </layout>
        </item>
-       <item row="3" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout_50">
-         <item>
-          <widget class="QPushButton" name="run_hydrograph">
-           <property name="text">
-            <string>Ok - Run</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="cancel_2">
-           <property name="text">
-            <string>Cancel</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="advanced_hydrograph">
-           <property name="text">
-            <string>Advanced Settings</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="calibration_result_hydrograph">
-           <property name="text">
-            <string>Calibration Results</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
        <item row="2" column="0">
         <widget class="QFrame" name="frame_19">
          <property name="frameShape">
@@ -726,266 +1056,53 @@ Data File</string>
           <enum>QFrame::Raised</enum>
          </property>
          <layout class="QGridLayout" name="gridLayout_46">
-          <item row="9" column="0">
-           <widget class="QFrame" name="frame_32">
+          <item row="18" column="0">
+           <widget class="QFrame" name="frame_7">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
             <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
+             <enum>QFrame::StyledPanel</enum>
             </property>
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
-            <layout class="QGridLayout" name="gridLayout_49">
+            <layout class="QGridLayout" name="gridLayout_4">
+             <item row="0" column="1">
+              <widget class="QRadioButton" name="change_soil_vgm">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QRadioButton" name="calibrate_soil_vgm">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
              <item row="0" column="0">
-              <layout class="QHBoxLayout" name="horizontalLayout_75">
-               <item>
-                <widget class="QRadioButton" name="no_manning">
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="checked">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="change_manning">
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="calibrate_manning">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <widget class="QRadioButton" name="no_soil_vgm">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
           </item>
-          <item row="5" column="0">
-           <widget class="QFrame" name="frame_20">
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_47">
-             <item row="0" column="0">
-              <layout class="QHBoxLayout" name="horizontalLayout_73">
-               <item>
-                <widget class="QRadioButton" name="no_maximum">
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="checked">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="change_maximum">
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="calibrate_maximum">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="6" column="0">
-           <widget class="QFrame" name="frame_31">
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_48">
-             <item row="0" column="0">
-              <layout class="QHBoxLayout" name="horizontalLayout_74">
-               <item>
-                <widget class="QRadioButton" name="no_fraction">
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="checked">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="change_fraction">
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="calibrate_fraction">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="8" column="0">
-           <widget class="QFrame" name="frame_36">
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_53">
-             <item row="0" column="0">
-              <layout class="QHBoxLayout" name="horizontalLayout_79">
-               <item>
-                <widget class="QRadioButton" name="no_length">
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="checked">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="change_length">
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="calibrate_length">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QFrame" name="frame_34">
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_51">
-             <item row="0" column="0">
-              <layout class="QHBoxLayout" name="horizontalLayout_77">
-               <item>
-                <widget class="QRadioButton" name="no_saturated">
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="checked">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="change_saturated">
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="calibrate_saturated">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="10" column="0">
-           <widget class="QFrame" name="frame_39">
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_56">
-             <item row="0" column="0">
-              <layout class="QHBoxLayout" name="horizontalLayout_82">
-               <item>
-                <widget class="QRadioButton" name="no_slope">
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="checked">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="change_slope">
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="calibrate_slope">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="2" column="0">
+          <item row="11" column="0">
            <widget class="QFrame" name="frame_35">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -1027,8 +1144,14 @@ Data File</string>
             </layout>
            </widget>
           </item>
-          <item row="4" column="0">
+          <item row="12" column="0">
            <widget class="QFrame" name="frame_38">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -1070,33 +1193,522 @@ Data File</string>
             </layout>
            </widget>
           </item>
-          <item row="0" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout_72">
-            <item>
-             <widget class="QLabel" name="label_82">
-              <property name="text">
-               <string>No</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_83">
-              <property name="text">
-               <string>Change</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_84">
-              <property name="text">
-               <string>Calibrate</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
+          <item row="6" column="0">
+           <widget class="QFrame" name="frame_31">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_48">
+             <item row="0" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_74">
+               <item>
+                <widget class="QRadioButton" name="no_fraction">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="change_fraction">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="calibrate_fraction">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="13" column="0">
+           <widget class="QFrame" name="frame_4">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout">
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="no_depth">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QRadioButton" name="change_depth">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QRadioButton" name="calibrate_depth">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="8" column="0">
+           <widget class="QFrame" name="frame_36">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_53">
+             <item row="0" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_79">
+               <item>
+                <widget class="QRadioButton" name="no_length">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="change_length">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="calibrate_length">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="23" column="0">
+           <widget class="QFrame" name="frame_15">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_12">
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="no_unsaturated_bcalpha">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QRadioButton" name="change_unsaturated_bcalpha">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QRadioButton" name="calibrate_unsaturated_bcalpha">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="15" column="0">
+           <widget class="QFrame" name="frame_9">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_6">
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="no_soil_or">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QRadioButton" name="change_soil_or">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QRadioButton" name="calibrate_soil_or">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="14" column="0">
+           <widget class="QFrame" name="frame_6">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="no_ansiotropy">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QRadioButton" name="change_ansiotropy">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QRadioButton" name="calibrate_ansiotropy">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="10" column="0">
+           <widget class="QFrame" name="frame_39">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_56">
+             <item row="0" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_82">
+               <item>
+                <widget class="QRadioButton" name="no_slope">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="change_slope">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="calibrate_slope">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="20" column="0">
+           <widget class="QFrame" name="frame_12">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_9">
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="no_soil_bclambda">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QRadioButton" name="change_soil_bclambda">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QRadioButton" name="calibrate_soil_bclambda">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="21" column="0">
+           <widget class="QFrame" name="frame_11">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_8">
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="no_unsaturated_vgm">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QRadioButton" name="change_unsaturated_vgm">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QRadioButton" name="calibrate_unsaturated_vgm">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="9" column="0">
+           <widget class="QFrame" name="frame_32">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_49">
+             <item row="0" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_75">
+               <item>
+                <widget class="QRadioButton" name="no_manning">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="change_manning">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="calibrate_manning">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="22" column="0">
+           <widget class="QFrame" name="frame_14">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_11">
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="no_unsaturated_bceta">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QRadioButton" name="change_unsaturated_bceta">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QRadioButton" name="calibrate_unsaturated_bceta">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="16" column="0">
+           <widget class="QFrame" name="frame_8">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_5">
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="no_soil_vgalpha">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QRadioButton" name="change_soil_vgalpha">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QRadioButton" name="calibrate_soil_vgalpha">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
           </item>
           <item row="1" column="0">
            <widget class="QFrame" name="frame_33">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -1138,8 +1750,63 @@ Data File</string>
             </layout>
            </widget>
           </item>
+          <item row="5" column="0">
+           <widget class="QFrame" name="frame_20">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_47">
+             <item row="0" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_73">
+               <item>
+                <widget class="QRadioButton" name="no_maximum">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="change_maximum">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="calibrate_maximum">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
           <item row="7" column="0">
            <widget class="QFrame" name="frame_37">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -1177,6 +1844,206 @@ Data File</string>
                 </widget>
                </item>
               </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="19" column="0">
+           <widget class="QFrame" name="frame_10">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="no_soil_bcalpha">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QRadioButton" name="change_soil_bcalpha">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QRadioButton" name="calibrate_soil_bcalpha">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_72">
+            <item>
+             <widget class="QLabel" name="label_82">
+              <property name="text">
+               <string>No</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_83">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>36</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Change</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_84">
+              <property name="text">
+               <string>Calibrate</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="17" column="0">
+           <widget class="QFrame" name="frame_5">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_2">
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="no_soil_vgn">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QRadioButton" name="change_soil_vgn">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QRadioButton" name="calibrate_soil_vgn">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QFrame" name="frame_34">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_51">
+             <item row="0" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_77">
+               <item>
+                <widget class="QRadioButton" name="no_saturated">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="change_saturated">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="calibrate_saturated">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="24" column="0">
+           <widget class="QFrame" name="frame_13">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>37</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_10">
+             <item row="0" column="0">
+              <widget class="QRadioButton" name="no_unsaturated_gdalpha">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QRadioButton" name="change_unsaturated_gdalpha">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QRadioButton" name="calibrate_unsaturated_gdalpha">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
