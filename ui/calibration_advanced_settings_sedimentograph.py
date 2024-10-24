@@ -29,13 +29,13 @@ from PyQt5 import QtWidgets
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'calibration_advanced_settings.ui'))
+    os.path.dirname(__file__), 'calibration_advanced_settings_sedimentograph.ui'))
 
 
-class calibration_advanced_settings(QtWidgets.QDialog, FORM_CLASS):
+class calibration_advanced_settings_sedimentograph(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
-        super(calibration_advanced_settings, self).__init__(parent)
+        super(calibration_advanced_settings_sedimentograph, self).__init__(parent)
         # Set up the user interface from Designer through FORM_CLASS.
         # After self.setupUi() you can access any designer object by doing
         # self.<objectname>, and you can use autoconnect slots - see

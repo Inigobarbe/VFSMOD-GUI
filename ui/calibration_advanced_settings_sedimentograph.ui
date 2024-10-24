@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>401</width>
+    <width>530</width>
     <height>234</height>
    </rect>
   </property>
@@ -123,7 +123,7 @@ QTableCornerButton::section {
       <widget class="QLabel" name="label">
        <property name="minimumSize">
         <size>
-         <width>186</width>
+         <width>233</width>
          <height>0</height>
         </size>
        </property>
@@ -150,7 +150,7 @@ QTableCornerButton::section {
       <widget class="QLabel" name="label_2">
        <property name="minimumSize">
         <size>
-         <width>186</width>
+         <width>233</width>
          <height>0</height>
         </size>
        </property>
@@ -162,7 +162,7 @@ QTableCornerButton::section {
      <item>
       <widget class="QLineEdit" name="exit_file">
        <property name="text">
-        <string>inverse/fittedparam.csv</string>
+        <string>inverse/fittedparam_sedimentograph.csv</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -197,7 +197,7 @@ QTableCornerButton::section {
       <widget class="QLabel" name="label_4">
        <property name="minimumSize">
         <size>
-         <width>186</width>
+         <width>233</width>
          <height>0</height>
         </size>
        </property>
