@@ -39,6 +39,7 @@ from ui.design_results import design_results
 from ui.design_results_graph import design_results_graph
 from ui.calibration_advanced_settings_hydrograph import calibration_advanced_settings_hydrograph
 from ui.calibration_advanced_settings_sedimentograph import calibration_advanced_settings_sedimentograph
+from ui.calibration_advanced_settings_single import calibration_advanced_settings_single
 from ui.sedimentograph_output import sedimentograph_output
 from ui.user_output_1 import user_output_1
 from ui.user_output_2 import user_output_2
@@ -59,6 +60,9 @@ from ui.calibration_results_sedimentograph import calibration_results_sedimentog
 from ui.calibration_results_hydrograph import calibration_results_hydrograph
 from ui.sediment_calibration import sediment_calibration
 from ui.hydrograph_calibration import hydrograph_calibration
+from ui.discharge_calibration_single import discharge_calibration_single
+from ui.sediment_calibration_single import sediment_calibration_single
+from ui.pesticide_calibration import pesticide_calibration
 
 #Local libraries
 from libraries.SALib.sample import saltelli
@@ -156,6 +160,7 @@ class qvfsmod:
         self.dlg_design_results_graph = design_results_graph()
         self.dlg_calibration_advanced_settings_hydrograph = calibration_advanced_settings_hydrograph()
         self.dlg_calibration_advanced_settings_sedimentograph = calibration_advanced_settings_sedimentograph()
+        self.dlg_calibration_advanced_settings_single = calibration_advanced_settings_single()
         self.dlg_sedimentograph_output = sedimentograph_output()
         self.dlg_user_output_1 = user_output_1()
         self.dlg_user_output_2 = user_output_2()
@@ -176,6 +181,9 @@ class qvfsmod:
         self.dlg_calibration_results_hydrograph = calibration_results_hydrograph()
         self.dlg_sediment_calibration = sediment_calibration()
         self.dlg_hydrograph_calibration = hydrograph_calibration()
+        self.dlg_discharge_calibration_single = discharge_calibration_single()
+        self.dlg_sediment_calibration_single = sediment_calibration_single()
+        self.dlg_pesticide_calibration = pesticide_calibration()
         
         #Set working directory
         self.dlg_base.working_directory_vfsmod.textChanged.connect(self.set_working_directory)
@@ -186,6 +194,9 @@ class qvfsmod:
         #Show calibration 
         self.dlg_base.show_calibration_hydrograph.clicked.connect(self.dlg_hydrograph_calibration.show)
         self.dlg_base.show_calibration_sedimentograph.clicked.connect(self.dlg_sediment_calibration.show)
+        self.dlg_base.inputs_discharge_single.clicked.connect(self.dlg_discharge_calibration_single.show)
+        self.dlg_base.inputs_sediment_single.clicked.connect(self.dlg_sediment_calibration_single.show)
+        self.dlg_base.inputs_pesticide_single.clicked.connect(self.dlg_pesticide_calibration.show)
         
         #Calibration results
         self.dlg_base.calibration_result_hydrograph.clicked.connect(self.dlg_calibration_results_hydrograph.show)
@@ -198,8 +209,15 @@ class qvfsmod:
         self.dlg_base.calibration_result_sedimentograph.clicked.connect(self.update_graph_calibration_sedimentograph)
         
         #Add shallow water parameters if present
+        #For the whole hydrograph
         self.dlg_base.vfs_project.textChanged.connect(self.add_shallow_water_table_paramters_calibration)
         self.dlg_base.show_calibration_hydrograph.clicked.connect(self.add_shallow_water_table_paramters_calibration)
+        #For the single value of total discharge
+        self.dlg_base.single_values_line.textChanged.connect(self.add_shallow_water_table_paramters_calibration_single)
+        self.dlg_base.inputs_discharge_single.clicked.connect(self.add_shallow_water_table_paramters_calibration_single)
+        #For pesticide
+        self.dlg_base.single_values_line.textChanged.connect(self.direct_input_calibration_pesticide)
+        self.dlg_base.inputs_pesticide_single.clicked.connect(self.direct_input_calibration_pesticide)
         
         #Stacked widget
         self.dlg_base.pushButton_6.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_folder))
@@ -561,6 +579,34 @@ class qvfsmod:
             i[0][1].toggled.connect(self.draw_calibration_hydrology)
             i[0][2].toggled.connect(self.draw_calibration_hydrology)
         
+        #The same for the calibration of discahrge single values
+        self.hydrology_single_checks = [[[self.dlg_discharge_calibration_single.no_vertical,self.dlg_discharge_calibration_single.change_vertical,self.dlg_discharge_calibration_single.calibrate_vertical],[self.dlg_discharge_calibration_single.new_vertical,self.dlg_discharge_calibration_single.min_vertical,self.dlg_discharge_calibration_single.max_vertical]],
+            [[self.dlg_discharge_calibration_single.no_average,self.dlg_discharge_calibration_single.change_average,self.dlg_discharge_calibration_single.calibrate_average],[self.dlg_discharge_calibration_single.new_average,self.dlg_discharge_calibration_single.min_average,self.dlg_discharge_calibration_single.max_average]],
+            [[self.dlg_discharge_calibration_single.no_saturated,self.dlg_discharge_calibration_single.change_saturated,self.dlg_discharge_calibration_single.calibrate_saturated],[self.dlg_discharge_calibration_single.new_saturated,self.dlg_discharge_calibration_single.min_saturated,self.dlg_discharge_calibration_single.max_saturated]],
+            [[self.dlg_discharge_calibration_single.no_initial,self.dlg_discharge_calibration_single.change_initial,self.dlg_discharge_calibration_single.calibrate_initial],[self.dlg_discharge_calibration_single.new_initial,self.dlg_discharge_calibration_single.min_initial,self.dlg_discharge_calibration_single.max_initial]],
+            [[self.dlg_discharge_calibration_single.no_maximum,self.dlg_discharge_calibration_single.change_maximum,self.dlg_discharge_calibration_single.calibrate_maximum],[self.dlg_discharge_calibration_single.new_maximum,self.dlg_discharge_calibration_single.min_maximum,self.dlg_discharge_calibration_single.max_maximum]],
+            [[self.dlg_discharge_calibration_single.no_fraction,self.dlg_discharge_calibration_single.change_fraction,self.dlg_discharge_calibration_single.calibrate_fraction],[self.dlg_discharge_calibration_single.new_fraction,self.dlg_discharge_calibration_single.min_fraction,self.dlg_discharge_calibration_single.max_fraction]],
+            [[self.dlg_discharge_calibration_single.no_width,self.dlg_discharge_calibration_single.change_width,self.dlg_discharge_calibration_single.calibrate_width],[self.dlg_discharge_calibration_single.new_width,self.dlg_discharge_calibration_single.min_width,self.dlg_discharge_calibration_single.max_width]],
+            [[self.dlg_discharge_calibration_single.no_length,self.dlg_discharge_calibration_single.change_length,self.dlg_discharge_calibration_single.calibrate_length],[self.dlg_discharge_calibration_single.new_length,self.dlg_discharge_calibration_single.min_length,self.dlg_discharge_calibration_single.max_length]],
+            [[self.dlg_discharge_calibration_single.no_manning,self.dlg_discharge_calibration_single.change_manning,self.dlg_discharge_calibration_single.calibrate_manning],[self.dlg_discharge_calibration_single.new_manning,self.dlg_discharge_calibration_single.min_manning,self.dlg_discharge_calibration_single.max_manning]],
+            [[self.dlg_discharge_calibration_single.no_slope,self.dlg_discharge_calibration_single.change_slope,self.dlg_discharge_calibration_single.calibrate_slope],[self.dlg_discharge_calibration_single.new_slope,self.dlg_discharge_calibration_single.min_slope,self.dlg_discharge_calibration_single.max_slope]],
+            [[self.dlg_discharge_calibration_single.no_depth,self.dlg_discharge_calibration_single.change_depth,self.dlg_discharge_calibration_single.calibrate_depth],[self.dlg_discharge_calibration_single.new_depth,self.dlg_discharge_calibration_single.min_depth,self.dlg_discharge_calibration_single.max_depth]],
+            [[self.dlg_discharge_calibration_single.no_ansiotropy,self.dlg_discharge_calibration_single.change_ansiotropy,self.dlg_discharge_calibration_single.calibrate_ansiotropy],[self.dlg_discharge_calibration_single.new_ansiotropy,self.dlg_discharge_calibration_single.min_ansiotropy,self.dlg_discharge_calibration_single.max_ansiotropy]],
+            [[self.dlg_discharge_calibration_single.no_soil_or,self.dlg_discharge_calibration_single.change_soil_or,self.dlg_discharge_calibration_single.calibrate_soil_or],[self.dlg_discharge_calibration_single.new_soil_or,self.dlg_discharge_calibration_single.min_soil_or,self.dlg_discharge_calibration_single.max_soil_or]],
+            [[self.dlg_discharge_calibration_single.no_soil_vgalpha,self.dlg_discharge_calibration_single.change_soil_vgalpha,self.dlg_discharge_calibration_single.calibrate_soil_vgalpha],[self.dlg_discharge_calibration_single.new_soil_vgalpha,self.dlg_discharge_calibration_single.min_soil_vgalpha,self.dlg_discharge_calibration_single.max_soil_vgalpha]],
+            [[self.dlg_discharge_calibration_single.no_soil_vgn,self.dlg_discharge_calibration_single.change_soil_vgn,self.dlg_discharge_calibration_single.calibrate_soil_vgn],[self.dlg_discharge_calibration_single.new_soil_vgn,self.dlg_discharge_calibration_single.min_soil_vgn,self.dlg_discharge_calibration_single.max_soil_vgn]],
+            [[self.dlg_discharge_calibration_single.no_soil_vgm,self.dlg_discharge_calibration_single.change_soil_vgm,self.dlg_discharge_calibration_single.calibrate_soil_vgm],[self.dlg_discharge_calibration_single.new_soil_vgm,self.dlg_discharge_calibration_single.min_soil_vgm,self.dlg_discharge_calibration_single.max_soil_vgm]],
+            [[self.dlg_discharge_calibration_single.no_soil_bcalpha,self.dlg_discharge_calibration_single.change_soil_bcalpha,self.dlg_discharge_calibration_single.calibrate_soil_bcalpha],[self.dlg_discharge_calibration_single.new_soil_bcalpha,self.dlg_discharge_calibration_single.min_soil_bcalpha,self.dlg_discharge_calibration_single.max_soil_bcalpha]],
+            [[self.dlg_discharge_calibration_single.no_soil_bclambda,self.dlg_discharge_calibration_single.change_soil_bclambda,self.dlg_discharge_calibration_single.calibrate_soil_bclambda],[self.dlg_discharge_calibration_single.new_soil_bclambda,self.dlg_discharge_calibration_single.min_soil_bclambda,self.dlg_discharge_calibration_single.max_soil_bclambda]],
+            [[self.dlg_discharge_calibration_single.no_unsaturated_vgm,self.dlg_discharge_calibration_single.change_unsaturated_vgm,self.dlg_discharge_calibration_single.calibrate_unsaturated_vgm],[self.dlg_discharge_calibration_single.new_unsaturated_vgm,self.dlg_discharge_calibration_single.min_unsaturated_vgm,self.dlg_discharge_calibration_single.max_unsaturated_vgm]],
+            [[self.dlg_discharge_calibration_single.no_unsaturated_bceta,self.dlg_discharge_calibration_single.change_unsaturated_bceta,self.dlg_discharge_calibration_single.calibrate_unsaturated_bceta],[self.dlg_discharge_calibration_single.new_unsaturated_bceta,self.dlg_discharge_calibration_single.min_unsaturated_bceta,self.dlg_discharge_calibration_single.max_unsaturated_bceta]],
+            [[self.dlg_discharge_calibration_single.no_unsaturated_bcalpha,self.dlg_discharge_calibration_single.change_unsaturated_bcalpha,self.dlg_discharge_calibration_single.calibrate_unsaturated_bcalpha],[self.dlg_discharge_calibration_single.new_unsaturated_bcalpha,self.dlg_discharge_calibration_single.min_unsaturated_bcalpha,self.dlg_discharge_calibration_single.max_unsaturated_bcalpha]],
+            [[self.dlg_discharge_calibration_single.no_unsaturated_gdalpha,self.dlg_discharge_calibration_single.change_unsaturated_gdalpha,self.dlg_discharge_calibration_single.calibrate_unsaturated_gdalpha],[self.dlg_discharge_calibration_single.new_unsaturated_gdalpha,self.dlg_discharge_calibration_single.min_unsaturated_gdalpha,self.dlg_discharge_calibration_single.max_unsaturated_gdalpha]],]
+        for i in self.hydrology_single_checks:
+            i[0][0].toggled.connect(self.draw_calibration_hydrology_single)
+            i[0][1].toggled.connect(self.draw_calibration_hydrology_single)
+            i[0][2].toggled.connect(self.draw_calibration_hydrology_single)
+        
         #The same for sedimentograph
         self.sedimentograph_checks = [[[self.dlg_sediment_calibration.no_spacing,self.dlg_sediment_calibration.change_spacing,self.dlg_sediment_calibration.calibrate_spacing],[self.dlg_sediment_calibration.new_spacing,self.dlg_sediment_calibration.min_spacing,self.dlg_sediment_calibration.max_spacing]],
             [[self.dlg_sediment_calibration.no_roughness,self.dlg_sediment_calibration.change_roughness,self.dlg_sediment_calibration.calibrate_roughness],[self.dlg_sediment_calibration.new_roughness,self.dlg_sediment_calibration.min_roughness,self.dlg_sediment_calibration.max_roughness]],
@@ -576,11 +622,41 @@ class qvfsmod:
             i[0][1].toggled.connect(self.draw_calibration_sedimentograph)
             i[0][2].toggled.connect(self.draw_calibration_sedimentograph)
         
+        #Sediment single
+        self.sedimentograph_checks_single = [[[self.dlg_sediment_calibration_single.no_spacing,self.dlg_sediment_calibration_single.change_spacing,self.dlg_sediment_calibration_single.calibrate_spacing],[self.dlg_sediment_calibration_single.new_spacing,self.dlg_sediment_calibration_single.min_spacing,self.dlg_sediment_calibration_single.max_spacing]],
+            [[self.dlg_sediment_calibration_single.no_roughness,self.dlg_sediment_calibration_single.change_roughness,self.dlg_sediment_calibration_single.calibrate_roughness],[self.dlg_sediment_calibration_single.new_roughness,self.dlg_sediment_calibration_single.min_roughness,self.dlg_sediment_calibration_single.max_roughness]],
+            [[self.dlg_sediment_calibration_single.no_height,self.dlg_sediment_calibration_single.change_height,self.dlg_sediment_calibration_single.calibrate_height],[self.dlg_sediment_calibration_single.new_height,self.dlg_sediment_calibration_single.min_height,self.dlg_sediment_calibration_single.max_height]],
+            [[self.dlg_sediment_calibration_single.no_bare,self.dlg_sediment_calibration_single.change_bare,self.dlg_sediment_calibration_single.calibrate_bare],[self.dlg_sediment_calibration_single.new_bare,self.dlg_sediment_calibration_single.min_bare,self.dlg_sediment_calibration_single.max_bare]],
+            [[self.dlg_sediment_calibration_single.no_coarse,self.dlg_sediment_calibration_single.change_coarse,self.dlg_sediment_calibration_single.calibrate_coarse],[self.dlg_sediment_calibration_single.new_coarse,self.dlg_sediment_calibration_single.min_coarse,self.dlg_sediment_calibration_single.max_coarse]],
+            [[self.dlg_sediment_calibration_single.no_incoming,self.dlg_sediment_calibration_single.change_incoming,self.dlg_sediment_calibration_single.calibrate_incoming],[self.dlg_sediment_calibration_single.new_incoming,self.dlg_sediment_calibration_single.min_incoming,self.dlg_sediment_calibration_single.max_incoming]],
+            [[self.dlg_sediment_calibration_single.no_porosity,self.dlg_sediment_calibration_single.change_porosity,self.dlg_sediment_calibration_single.calibrate_porosity],[self.dlg_sediment_calibration_single.new_porosity,self.dlg_sediment_calibration_single.min_porosity,self.dlg_sediment_calibration_single.max_porosity]],
+            [[self.dlg_sediment_calibration_single.no_class,self.dlg_sediment_calibration_single.change_class,self.dlg_sediment_calibration_single.calibrate_class],[self.dlg_sediment_calibration_single.new_class,self.dlg_sediment_calibration_single.min_class,self.dlg_sediment_calibration_single.max_class]],
+            [[self.dlg_sediment_calibration_single.no_density,self.dlg_sediment_calibration_single.change_density,self.dlg_sediment_calibration_single.calibrate_density],[self.dlg_sediment_calibration_single.new_density,self.dlg_sediment_calibration_single.min_density,self.dlg_sediment_calibration_single.max_density]]]
+        for i in self.sedimentograph_checks_single:
+            i[0][0].toggled.connect(self.draw_calibration_sedimentograph_single)
+            i[0][1].toggled.connect(self.draw_calibration_sedimentograph_single)
+            i[0][2].toggled.connect(self.draw_calibration_sedimentograph_single)
+        
+        #Pesticide
+        self.pesticide_checks = [[[self.dlg_pesticide_calibration.no_clay,self.dlg_pesticide_calibration.change_clay,self.dlg_pesticide_calibration.calibrate_clay],[self.dlg_pesticide_calibration.new_clay,self.dlg_pesticide_calibration.min_clay,self.dlg_pesticide_calibration.max_clay]],
+            [[self.dlg_pesticide_calibration.no_top,self.dlg_pesticide_calibration.change_top,self.dlg_pesticide_calibration.calibrate_top],[self.dlg_pesticide_calibration.new_top,self.dlg_pesticide_calibration.min_top,self.dlg_pesticide_calibration.max_top]],
+            [[self.dlg_pesticide_calibration.no_mixing,self.dlg_pesticide_calibration.change_mixing,self.dlg_pesticide_calibration.calibrate_mixing],[self.dlg_pesticide_calibration.new_mixing,self.dlg_pesticide_calibration.min_mixing,self.dlg_pesticide_calibration.max_mixing]],
+            [[self.dlg_pesticide_calibration.no_linear,self.dlg_pesticide_calibration.change_linear,self.dlg_pesticide_calibration.calibrate_linear],[self.dlg_pesticide_calibration.new_linear,self.dlg_pesticide_calibration.min_linear,self.dlg_pesticide_calibration.max_linear]],
+            [[self.dlg_pesticide_calibration.no_adsorption,self.dlg_pesticide_calibration.change_adsorption,self.dlg_pesticide_calibration.calibrate_adsorption],[self.dlg_pesticide_calibration.new_adsorption,self.dlg_pesticide_calibration.min_adsorption,self.dlg_pesticide_calibration.max_adsorption]],
+            [[self.dlg_pesticide_calibration.no_organic,self.dlg_pesticide_calibration.change_organic,self.dlg_pesticide_calibration.calibrate_organic],[self.dlg_pesticide_calibration.new_organic,self.dlg_pesticide_calibration.min_organic,self.dlg_pesticide_calibration.max_organic]]]
+        for i in self.pesticide_checks:
+            i[0][0].toggled.connect(self.draw_calibration_pesticide)
+            i[0][1].toggled.connect(self.draw_calibration_pesticide)
+            i[0][2].toggled.connect(self.draw_calibration_pesticide)
+        
+        
         #Show advances settings of calibration
         self.dlg_base.advanced_hydrograph.clicked.connect(self.dlg_calibration_advanced_settings_hydrograph.show)
         self.dlg_base.advanced_sedimentograph.clicked.connect(self.dlg_calibration_advanced_settings_sedimentograph.show)
+        self.dlg_base.advanced_single.clicked.connect(self.dlg_calibration_advanced_settings_single.show)
         self.dlg_calibration_advanced_settings_hydrograph.close_dialog.clicked.connect(self.dlg_calibration_advanced_settings_hydrograph.close)
         self.dlg_calibration_advanced_settings_sedimentograph.close_dialog.clicked.connect(self.dlg_calibration_advanced_settings_sedimentograph.close)
+        self.dlg_calibration_advanced_settings_single.close_dialog.clicked.connect(self.dlg_calibration_advanced_settings_single.close)
         
         #Browse files in calibration
         self.dlg_base.browse_project.clicked.connect(lambda _, b = ["prj",self.dlg_base,self.dlg_base.vfs_project]:self.browse_files_calibration(b))
@@ -998,6 +1074,214 @@ class qvfsmod:
                     #Set visible initial water content
                     self.dlg_hydrograph_calibration.frame_38.setVisible(True)
                     set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_87,True)
+    
+    def add_shallow_water_table_paramters_calibration_single(self):
+        """Method to add shallow water parameters to hydrograph calibration for the single values"""
+        prj_path = self.obtain_direction_vfsmod(self.dlg_base.single_values_line.text())
+        if os.path.exists(prj_path) and os.path.isfile(prj_path):
+            #First set invisible all the parameters that are not present in all the situations
+            #Function to set visible or invisible horizontal layouts and put "No" in calibration
+            def set_visible_horizontal(horizontal,condition):
+                for i in range(horizontal.count()):
+                    widget = horizontal.itemAt(i).widget()
+                    if widget is not None:
+                        widget.setVisible(condition)
+            #Suction at the wetting front
+            self.dlg_discharge_calibration_single.frame_35.setVisible(False)
+            set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_90,False)
+            self.dlg_discharge_calibration_single.no_average.setChecked(True)
+            #Initial water content
+            self.dlg_discharge_calibration_single.frame_38.setVisible(False)
+            set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_87,False)
+            self.dlg_discharge_calibration_single.no_initial.setChecked(True)
+            #Water table
+            self.dlg_discharge_calibration_single.frame_4.setVisible(False)
+            set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_3,False)
+            self.dlg_discharge_calibration_single.no_depth.setChecked(True)
+            #Soil saturated hydraulic \nconductivity anisotropy ratio 
+            self.dlg_discharge_calibration_single.frame_6.setVisible(False)
+            set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_4,False)
+            self.dlg_discharge_calibration_single.no_ansiotropy.setChecked(True)
+            #OR
+            self.dlg_discharge_calibration_single.frame_9.setVisible(False)
+            set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_5,False)
+            self.dlg_discharge_calibration_single.no_soil_or.setChecked(True)
+            #VGALPHA
+            self.dlg_discharge_calibration_single.frame_8.setVisible(False)
+            set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_6,False)
+            self.dlg_discharge_calibration_single.no_soil_vgalpha.setChecked(True)
+            #VGN
+            self.dlg_discharge_calibration_single.frame_5.setVisible(False)
+            set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_7,False)
+            self.dlg_discharge_calibration_single.no_soil_vgn.setChecked(True)
+            #VGM
+            self.dlg_discharge_calibration_single.frame_7.setVisible(False)
+            set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_8,False)
+            self.dlg_discharge_calibration_single.no_soil_vgm.setChecked(True)
+            #BCALPHA 
+            self.dlg_discharge_calibration_single.frame_10.setVisible(False)
+            set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_9,False)
+            self.dlg_discharge_calibration_single.no_soil_bcalpha.setChecked(True)
+            #BCLAMBDA
+            self.dlg_discharge_calibration_single.frame_12.setVisible(False)
+            set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_10,False)
+            self.dlg_discharge_calibration_single.no_soil_bclambda.setChecked(True)
+            #VGM
+            self.dlg_discharge_calibration_single.frame_11.setVisible(False)
+            set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_11,False)
+            self.dlg_discharge_calibration_single.no_unsaturated_vgm.setChecked(True)
+            #BCETA 
+            self.dlg_discharge_calibration_single.frame_14.setVisible(False)
+            set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_12,False)
+            self.dlg_discharge_calibration_single.no_unsaturated_bceta.setChecked(True)
+            #BCALPHA
+            self.dlg_discharge_calibration_single.frame_15.setVisible(False)
+            set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_13,False)
+            self.dlg_discharge_calibration_single.no_unsaturated_bcalpha.setChecked(True)
+            #GDALPHA
+            self.dlg_discharge_calibration_single.frame_13.setVisible(False)
+            set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_14,False)
+            self.dlg_discharge_calibration_single.no_unsaturated_gdalpha.setChecked(True)
+            #Obtain iso path
+            with open(prj_path, "r") as archivo:
+                lineas = archivo.readlines()
+            for i in lineas:
+                if i[:3]=="iso":
+                    iso_path = i.split("=")[-1]
+            if not os.path.isabs(iso_path): #relative path
+                iso_path = os.path.join(os.path.dirname(prj_path), iso_path)
+            iso_path = iso_path.replace("\n", "") #take out the line jumps
+            #Read inputs
+            if os.path.exists(iso_path) and os.path.isfile(iso_path):
+                with open(iso_path, "r") as archivo:
+                    lineas = archivo.readlines()
+                #If second line is a number then we have water table
+                try:
+                    float(lineas[1])
+                    water_table = True
+                except:
+                    water_table = False
+                #Check if there is ansiotropy
+                try:
+                    float(lineas[4])
+                    ansiotropy = True
+                except:
+                    ansiotropy = False
+                #Put and quit parameters depending on input file
+                if water_table:
+                    #Add the rest
+                    ITHETATYPE = int(lineas[2].split()[0])   
+                    IKUNSTYPE = int(lineas[3].split()[0])
+                    #Water table
+                    self.dlg_discharge_calibration_single.frame_4.setVisible(True)
+                    set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_3,True)
+                    #Ansiotropy
+                    if ansiotropy:
+                        self.dlg_discharge_calibration_single.frame_6.setVisible(True)
+                        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_4,True)
+                    
+                    if ITHETATYPE == 1:
+                        #OR
+                        self.dlg_discharge_calibration_single.frame_9.setVisible(True)
+                        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_5,True)
+                        #VGALPHA
+                        self.dlg_discharge_calibration_single.frame_8.setVisible(True)
+                        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_6,True)
+                        #VGN
+                        self.dlg_discharge_calibration_single.frame_5.setVisible(True)
+                        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_7,True)
+                        #VGM
+                        self.dlg_discharge_calibration_single.frame_7.setVisible(True)
+                        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_8,True)
+                    elif ITHETATYPE == 2:
+                        #OR 
+                        self.dlg_discharge_calibration_single.frame_9.setVisible(True)
+                        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_5,True)
+                        #BCALPHA 
+                        self.dlg_discharge_calibration_single.frame_10.setVisible(True)
+                        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_9,True)
+                        #BCLAMBDA
+                        self.dlg_discharge_calibration_single.frame_12.setVisible(True)
+                        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_10,True)
+                    if IKUNSTYPE == 1:
+                        #VGM
+                        self.dlg_discharge_calibration_single.frame_11.setVisible(True)
+                        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_11,True)
+                    elif IKUNSTYPE == 2:
+                        #BCETA 
+                        self.dlg_discharge_calibration_single.frame_14.setVisible(True)
+                        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_12,True)
+                        #BCALPHA
+                        self.dlg_discharge_calibration_single.frame_15.setVisible(True)
+                        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_13,True)
+                    elif IKUNSTYPE == 3:
+                        #GDALPHA
+                        self.dlg_discharge_calibration_single.frame_13.setVisible(True)
+                        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_14,True)
+                
+                elif not water_table:
+                    #Set visible suction at the wetting front
+                    self.dlg_discharge_calibration_single.frame_35.setVisible(True)
+                    set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_90,True)
+                    #Set visible initial water content
+                    self.dlg_discharge_calibration_single.frame_38.setVisible(True)
+                    set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_87,True)
+    
+    
+    def direct_input_calibration_pesticide(self):
+        """Method to put in the calibration dialog the parameters of the direct input"""
+        prj_path = self.obtain_direction_vfsmod(self.dlg_base.single_values_line.text())
+        if os.path.exists(prj_path) and os.path.isfile(prj_path):
+            #First set invisible all the parameters that are not present in all the situations
+            #Function to set visible or invisible horizontal layouts and put "No" in calibration
+            def set_visible_horizontal(horizontal,condition):
+                for i in range(horizontal.count()):
+                    widget = horizontal.itemAt(i).widget()
+                    if widget is not None:
+                        widget.setVisible(condition)
+            #Linear sorption coefficient \n(L/Kg)
+            self.dlg_pesticide_calibration.frame_45.setVisible(False)
+            set_visible_horizontal(self.dlg_pesticide_calibration.horizontalLayout_108,False)
+            self.dlg_pesticide_calibration.no_linear.setChecked(True)
+            #Adsorption coefficient \n(L/Kg)
+            self.dlg_pesticide_calibration.frame_47.setVisible(False)
+            set_visible_horizontal(self.dlg_pesticide_calibration.horizontalLayout_106,False)
+            self.dlg_pesticide_calibration.no_adsorption.setChecked(True)
+            #Organic carbon\n(%)
+            self.dlg_pesticide_calibration.frame_43.setVisible(False)
+            set_visible_horizontal(self.dlg_pesticide_calibration.horizontalLayout_110,False)
+            self.dlg_pesticide_calibration.no_organic.setChecked(True)
+            
+            #Obtain iso path
+            with open(prj_path, "r") as archivo:
+                lineas = archivo.readlines()
+            water_quality = False
+            for i in lineas:
+                if i[:3]=="iwq":
+                    iwq_path = i.split("=")[-1]
+                    water_quality = True
+            if water_quality:
+                if not os.path.isabs(iwq_path): #relative path
+                    iwq_path = os.path.join(os.path.dirname(prj_path), iwq_path)
+                iwq_path = iwq_path.replace("\n", "") #take out the line jumps
+                #Read inputs
+                if os.path.exists(iwq_path) and os.path.isfile(iwq_path):
+                    with open(iwq_path, "r") as archivo:
+                        lineas = archivo.readlines()
+                    #Obtain value of IKD
+                    IKD = int(lineas[1].split()[0])
+                    #Put and quit parameters depending on input file
+                    if IKD == 0:
+                        #Linear sorption coefficient (VKD)
+                        self.dlg_pesticide_calibration.frame_45.setVisible(True)
+                        set_visible_horizontal(self.dlg_pesticide_calibration.horizontalLayout_108,True)
+                    elif IKD == 1:
+                        #Adsorption coefficient \n(L/Kg) (KOC)
+                        self.dlg_pesticide_calibration.frame_47.setVisible(True)
+                        set_visible_horizontal(self.dlg_pesticide_calibration.horizontalLayout_106,True)
+                        #Organic carbon\n(%) (OCP) 
+                        self.dlg_pesticide_calibration.frame_43.setVisible(True)
+                        set_visible_horizontal(self.dlg_pesticide_calibration.horizontalLayout_110,True)
     
     
     def update_buffer_length_table(self):
@@ -4762,9 +5046,119 @@ class qvfsmod:
             else: #absolute path
                 information[2].setText(fname[0])
     
+    def obtain_outputs_to_calibrate_single(self):   
+        """Method to obtain the outputs that are going to be calibrated in single values calibration"""
+        outputs = {}
+        #Total discharge
+        if self.dlg_base.check_total_discharge.isChecked():
+            outputs["Total discharge"] = float(self.dlg_base.line_total_discharge.text())
+        #Filtered discharge
+        if self.dlg_base.check_filtered_discharge.isChecked():
+            outputs["Filtered discharge"] = float(self.dlg_base.line_filtered_discharge.text())
+        #Total sediment
+        if self.dlg_base.check_total_sediment.isChecked():
+            outputs["Total sediment"] = float(self.dlg_base.line_total_sediment.text())
+        #Filtered sediment
+        if self.dlg_base.check_filtered_sediment.isChecked():
+            outputs["Filtered sediment"] = float(self.dlg_base.line_filtered_sediment.text())
+        #Filtered pesticide
+        if self.dlg_base.check_filtered_pesticide.isChecked():
+            outputs["Filtered pesticide"] = float(self.dlg_base.line_filtered_pesticide.text())
+        #Pesticide out the filter
+        if self.dlg_base.check_pesticide_out.isChecked():
+            outputs["Pesticide out the filter"] = float(self.dlg_base.line_pesticide_out.text())
+        #Pesticide outflow in solid phase
+        if self.dlg_base.check_pesticide_solid.isChecked():
+            outputs["Pesticide outflow in solid phase"] = float(self.dlg_base.line_pesticide_solid.text())
+        #Pesticide outflow in liquid phase
+        if self.dlg_base.check_pesticide_liquid.isChecked():
+            outputs["Pesticide outflow in liquid phase"] = float(self.dlg_base.line_pesticide_liquid.text())
+            
+        return outputs
+        
+    
     def run_calibration_single(self):   
         """Method to run calibration of single values"""
+        #Obtain the outputs that are going to calibrate
+        self.output_calibrate_single = self.obtain_outputs_to_calibrate_single()
         
+        #Put the progress
+        self.calibration_execution_progress_single([0,])
+        
+        #If "inverse" folder does not exist, then create it
+        self.create_folder_calibration()
+        
+        #Move prj to the inverse folder and in inverse/inputs put the inputs
+        self.move_files_calibration_single()
+        
+        #Error if pesticide calibration is selected but there is not water quality
+        if self.water_quality and (self.dlg_base.check_filtered_pesticide.isChecked() or self.dlg_base.check_pesticide_out.isChecked() or self.dlg_base.check_pesticide_solid.isChecked() or self.dlg_base.check_pesticide_liquid.isChecked()):
+            self.warning_message("Pesticide calibration is selected but the project doesn't contain the water quality module")
+            return
+        
+        #Create the dictionary to know the bounds of the input parameters
+        self.calibration_dictionary = self.create_dictionary_calibration_single()
+        
+        #first we create the thread class to be able to use the dialog when executing
+        class ejecutor(QThread):
+            resultado_progress = pyqtSignal(list)
+            def __init__(self, plugin_directory, method_execution,dictionary,max_iterations,tolerance,save_results_calibration):
+                super().__init__()
+                self.plugin_directory = plugin_directory
+                self.execution_calibration_single = method_execution
+                self.dictionary = dictionary
+                self.best_result = {"x":None,"result":None} #save results of calibration iteration
+                self.list_of_inputs = []
+                self.list_of_results = []
+                self.max_iterations = int(max_iterations)
+                self.tolerance = float(tolerance)
+                self.save_results_calibration = save_results_calibration
+                
+            def run(self):
+                #Method to update progress in the optimization
+                self.ejecuciones = 0 
+                def objetivo(x):
+                    result = self.execution_calibration_single(x)
+                    # Emitir la señal con el número de ejecuciones y el resultado
+                    self.ejecuciones += 1
+                    self.resultado_progress.emit([self.ejecuciones, float(result)])
+                    #Save the best result if it is the first run or if it improves on the current best result
+                    if self.best_result["result"] is None or result < self.best_result["result"]:
+                        self.best_result["x"] = x
+                        self.best_result["result"] = result
+                        
+                    if self.ejecuciones == self.max_iterations: #condition of maximum number of iterations to stop the code
+                        1/0
+                    #Save inputs and results
+                    self.list_of_inputs.append(x)
+                    self.list_of_results.append(result)
+                    
+                    
+                    return result   
+                    
+                #Limits to the calibration
+                limites = list(self.dictionary.values())
+                #Global calibration
+                try:
+                    resultado_global = differential_evolution(objetivo, bounds=limites, strategy='best1bin',tol=self.tolerance)
+                except ZeroDivisionError: #maximum iterations achieved
+                    self.resultado_progress.emit(["Warning","Maximum iterations achieved \n Adding best result...\n"])
+                    objetivo(self.best_result["x"]) #execute best just so that users can see it
+                    self.list_of_inputs[:-1] #eilminate last one
+                    self.list_of_results[:-1]
+                    
+                #Message end global calibration
+                self.resultado_progress.emit(["Warning","Calibration ended"])
+                
+                #Save results
+                self.save_results_calibration(self.list_of_inputs,self.list_of_results)
+                
+        self.worker = ejecutor(self.plugin_directory, self.execution_calibration_single,self.calibration_dictionary,
+            self.dlg_calibration_advanced_settings_single.max_iterations.text(),self.dlg_calibration_advanced_settings_single.tolerance.text(),
+            self.save_results_calibration_single)
+        self.worker.start()
+        self.worker.resultado_progress.connect(self.calibration_execution_progress_single)
+    
     
     def run_calibration_sedimentograph(self):
         """Method to run the calibration for sedimentograph"""
@@ -4957,6 +5351,82 @@ class qvfsmod:
         #IWQ
         if self.water_quality:
             copy_paste("iwq")
+    
+    
+    def move_files_calibration_single(self):
+        """Method to move files to the corresponding folders for calibration"""
+        #Prj
+        prj_file = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.prj"
+        #Check if water quality is simulated
+        with open(self.obtain_direction_vfsmod(self.dlg_base.single_values_line.text()), "r") as archivo:
+            lineas = archivo.readlines()
+        self.water_quality = False
+        for i in lineas:
+            if i[:3]=="iwq":
+                self.water_quality = True
+            
+        #Create file
+        with open(prj_file, 'w') as archivo:
+            archivo.write(f"ikw=inputs\\inverse.ikw  \n")
+            archivo.write(f"iso=inputs\\inverse.iso  \n")
+            archivo.write(f"igr=inputs\\inverse.igr  \n")
+            archivo.write(f"isd=inputs\\inverse.isd  \n")
+            archivo.write(f"irn=inputs\\inverse.irn  \n")
+            archivo.write(f"iro=inputs\\inverse.iro  \n")
+            if self.water_quality:
+                archivo.write(f"iwq=inputs\\inverse.iwq  \n")
+            archivo.write(f"og1=output\\inverse.og1  \n")
+            archivo.write(f"og2=output\\inverse.og2  \n")
+            archivo.write(f"ohy=output\\inverse.ohy  \n")
+            archivo.write(f"osm=output\\inverse.osm  \n")
+            archivo.write(f"osp=output\\inverse.osp  \n")
+            if self.water_quality:
+                archivo.write(f"owq=output\\inverse.owq  \n")
+        
+        #UH
+        lis_file = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.lis"
+        #Create file
+        with open(lis_file, 'w') as archivo:
+            archivo.write(f"inp=inputs\\inverse.inp  \n")
+            archivo.write(f"iro=inputs\\inverse.iro  \n")
+            archivo.write(f"irn=inputs\\inverse.irn  \n")
+            archivo.write(f"isd=inputs\\inverse.isd  \n")
+            archivo.write(f"out=inputs\\inverse.out  \n")
+            archivo.write(f"hyt=inputs\\inverse.hyt  \n")
+        
+        #REST OF THE FILES
+        #Function to copy and paste the inputs to create the files to use in the design analysis
+        def copy_paste(type_input):
+            ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.{type_input}" 
+            ruta = self.obtain_direction_vfsmod(self.dlg_base.single_values_line.text())
+            if os.path.exists(ruta) and os.path.isfile(ruta):
+                #First we open .prj and obtain the direction of the copying file
+                with open(ruta, "r") as archivo:
+                    lineas = archivo.readlines()
+                for i in lineas:
+                    if i[:3]==type_input:
+                        ikw = i.split("=")[-1]
+                if not os.path.isabs(ikw): #relative path
+                    ikw = os.path.join(os.path.dirname(ruta), ikw)
+                ikw = ikw.replace("\n", "") #take out the line jumps
+                shutil.copyfile(ikw, ruta_pegar)
+        
+        #IKW
+        copy_paste("ikw")
+        #ISO
+        copy_paste("iso")
+        #IGR
+        copy_paste("igr")
+        #ISD
+        copy_paste("isd")
+        #IRN
+        copy_paste("irn")
+        #IRO
+        copy_paste("iro")
+        #IWQ
+        if self.water_quality:
+            copy_paste("iwq")
+        
     
     def run_calibration_hydrograph(self):
         """Method to run the calibration for hydrograph"""
@@ -5390,6 +5860,244 @@ class qvfsmod:
             nash_sutcliffe_efficiency = 1 - (suma_cuadrados_diferencias / suma_cuadrados_diferencias_observados)
             nnse = 1/(2-nash_sutcliffe_efficiency)
             return -nnse #the calibration function minimizes values, thats why -
+    
+    
+    def execution_calibration_single(self, input_parameters):
+        """Method to change inputs of calibration and execute"""
+        #First we translate the inputs of that method to a way so can it can be used
+        dic_inputs = {}
+        for k,i in enumerate(self.calibration_dictionary.keys()):
+            dic_inputs[i]= input_parameters[k]
+        #Modify inputs
+        print(self.calibration_dictionary)
+        print(dic_inputs)
+        for i in dic_inputs.keys():
+            #DISCHARGE VALUES
+            #vertical
+            if i=="vertical":
+                self.modify_inputs_calibration("iso",0,0,dic_inputs[i])
+            #average
+            elif i=="average":
+                self.modify_inputs_calibration("iso",0,1,dic_inputs[i])
+            #saturated
+            elif i=="saturated":
+                self.modify_inputs_calibration("iso",0,2,dic_inputs[i])
+            #initial
+            elif i=="initial":
+                self.modify_inputs_calibration("iso",0,3,dic_inputs[i])
+            #maximum
+            elif i=="maximum":
+                self.modify_inputs_calibration("iso",0,4,dic_inputs[i])
+            #fraction
+            elif i=="fraction":
+                self.modify_inputs_calibration("iso",0,5,dic_inputs[i])
+            #width
+            elif i=="width":
+                self.modify_inputs_calibration("ikw",1,0,dic_inputs[i])
+            #length
+            elif i=="length":
+                self.modify_ikw_file_calibration(dic_inputs[i])
+            #manning
+            elif i=="manning":
+                self.modify_mannign_slope_hydrograph_calibration(1,dic_inputs[i])
+            #slope
+            elif i=="slope":
+                self.modify_mannign_slope_hydrograph_calibration(2,dic_inputs[i])
+            
+            
+            #water_depth
+            elif i=="water_depth":
+                self.modify_inputs_calibration("iso",1,0,dic_inputs[i])
+            #soil_saturated
+            elif i=="soil_saturated":
+                self.modify_inputs_calibration("iso",4,0,dic_inputs[i])
+            #soil_or
+            elif i=="soil_or":
+                self.modify_inputs_calibration("iso",2,1,dic_inputs[i])
+            #soil_vgalpha
+            elif i=="soil_vgalpha":
+                self.modify_inputs_calibration("iso",2,2,dic_inputs[i])
+            #soil_vgn
+            elif i=="soil_vgn":
+                self.modify_inputs_calibration("iso",2,3,dic_inputs[i])
+            #soil_vgm
+            elif i=="soil_vgm":
+                self.modify_inputs_calibration("iso",2,4,dic_inputs[i])
+            #soil_bcalpha
+            elif i=="soil_bcalpha":
+                self.modify_inputs_calibration("iso",2,2,dic_inputs[i])
+            #soil_bclamda
+            elif i=="soil_bclamda":
+                self.modify_inputs_calibration("iso",2,3,dic_inputs[i])
+            #unsaturated_vgm
+            elif i=="unsaturated_vgm":
+                self.modify_inputs_calibration("iso",3,1,dic_inputs[i])
+            #unsaturated_bceta
+            elif i=="unsaturated_bceta":
+                self.modify_inputs_calibration("iso",3,1,dic_inputs[i])
+            #unsaturated_bcalpha
+            elif i=="unsaturated_bcalpha":
+                self.modify_inputs_calibration("iso",3,2,dic_inputs[i])
+            #usaturated_gdalpha
+            elif i=="usaturated_gdalpha":
+                self.modify_inputs_calibration("iso",3,1,dic_inputs[i])
+                
+            #SEDIMENT VALUES
+            #spacing
+            elif i=="spacing":
+                print("yes")
+                self.modify_inputs_calibration("igr",0,0,dic_inputs[i])
+            #roughness grass
+            elif i=="rougheness_grass":
+                self.modify_inputs_calibration("igr",0,1,dic_inputs[i])
+            #height
+            elif i=="height":
+                self.modify_inputs_calibration("igr",0,2,dic_inputs[i])
+            #roughness bare
+            elif i=="roughness_bare":
+                self.modify_inputs_calibration("igr",0,3,dic_inputs[i])
+            #coarse
+            elif i=="coarse_sediment":
+                self.modify_inputs_calibration("isd",0,1,dic_inputs[i])
+            #incoming
+            elif i=="incoming_flow":
+                self.modify_inputs_calibration("isd",0,2,dic_inputs[i])
+            #porosity
+            elif i=="porosity":
+                self.modify_inputs_calibration("isd",0,3,dic_inputs[i])
+            #sediment_class
+            elif i=="particle_class":
+                self.modify_inputs_calibration("isd",1,0,dic_inputs[i])
+            #sediment_density
+            elif i=="particle_densitiy":
+                self.modify_inputs_calibration("isd",1,1,dic_inputs[i]) 
+                
+            #PESTICIDE VALUES
+            elif i=="clay":
+                self.modify_inputs_calibration("iwq",2,0,dic_inputs[i])
+                
+            elif i=="top":
+                self.modify_inputs_calibration("iwq",4,2,dic_inputs[i])
+            
+            elif i=="mixing_layer":
+                self.modify_inputs_calibration("iwq",4,4,dic_inputs[i])
+                
+            elif i=="linear_sorption":
+                self.modify_inputs_calibration("iwq",1,1,dic_inputs[i])
+            
+            elif i=="adsorption_coefficient":
+                self.modify_inputs_calibration("iwq",1,1,dic_inputs[i])
+            
+            elif i=="organic_carbon":
+                self.modify_inputs_calibration("iwq",1,2,dic_inputs[i])
+            
+
+        #Update bat for calibration
+        self.update_bat_calibration()
+        #Execute
+        resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
+            capture_output=True, 
+            text=True, 
+            shell=True)
+        #Put warning
+        if not "...FINISHED..." in resultado.stdout:
+            #Return a very bad result so the search avoid that space
+            return 1e20
+        
+        #Obtain objective function value
+        return self.obtain_values_calibration_single()
+                
+
+    
+    def obtain_values_calibration_single(self):
+        """Method to calculate the objective function in single value calibration"""
+        #Create variable to add objective function
+        objective_function = 0
+        #Function to obtain results from osp
+        ruta = self.working_directory+f"\\inverse\\output\\inverse.osp"
+        with open(ruta, "r") as archivo:
+            lineas = archivo.readlines()
+        def obtain_result_osp(string):
+            for i in lineas:
+                if i.split("=")[-1]==string:
+                    for k in i.split("=")[0].split(" "):
+                        try:
+                            output = float(k)
+                            break
+                        except:
+                            pass
+            return output
+        
+        #Same for owq
+        if self.water_quality:
+            ruta = self.working_directory+f"\\inverse\\output\\inverse.owq"
+            with open(ruta, "r") as archivo:
+                lineas_owq = archivo.readlines()
+            def obtain_result_owq(string):
+                for i in lineas_owq:
+                    if i.split("=")[-1]==string:
+                        for k in i.split("=")[0].split(" "):
+                            try:
+                                output = float(k)
+                                return output
+                            except:
+                                pass
+        
+        self.calibration_single_results = {}
+        #Obtain results
+        if "Total discharge" in self.output_calibrate_single.keys():
+            total_discharge = obtain_result_osp(" Total Runoff out from Filter\n")
+            normalized = (total_discharge - float(self.dlg_base.line_total_discharge.text()))/float(self.dlg_base.line_total_discharge.text())
+            objective_function += abs(normalized)
+            self.calibration_single_results["Total discharge"] = total_discharge
+            
+        if "Filtered discharge" in self.output_calibrate_single.keys():
+            runoff_delivery = obtain_result_osp(" Runoff Delivery Ratio\n")
+            filtered_discharge = 1 -runoff_delivery
+            normalized = (filtered_discharge - float(self.dlg_base.line_filtered_discharge.text()))/float(self.dlg_base.line_filtered_discharge.text())
+            objective_function += abs(normalized)
+            self.calibration_single_results["Filtered discharge"] = filtered_discharge
+        
+        if "Total sediment" in self.output_calibrate_single.keys():
+            total_sediment = obtain_result_osp(" Mass Sediment Output from Filter\n")
+            normalized = (total_sediment - float(self.dlg_base.line_total_sediment.text()))/float(self.dlg_base.line_total_sediment.text())
+            objective_function += abs(normalized)
+            self.calibration_single_results["Total sediment"] = total_sediment
+        
+        if "Filtered sediment" in self.output_calibrate_single.keys():
+            sediment_delivery = obtain_result_osp(" Sediment Delivery Ratio\n")
+            filtered_sediment = 1 -sediment_delivery
+            normalized = (filtered_sediment - float(self.dlg_base.line_filtered_sediment.text()))/float(self.dlg_base.line_filtered_sediment.text())
+            objective_function += abs(normalized)
+            self.calibration_single_results["Filtered sediment"] = filtered_sediment
+        
+        if "Filtered pesticide" in self.output_calibrate_single.keys():
+            pesticide_input = obtain_result_owq(" Pesticide input (mi)\n")
+            pesticide_output = obtain_result_owq(" Pesticide output (mo)\n")
+            filtered_pesticide = (pesticide_input-pesticide_output)/(pesticide_input)
+            normalized = (filtered_pesticide - float(self.dlg_base.line_filtered_pesticide.text()))/float(self.dlg_base.line_filtered_pesticide.text())
+            objective_function += abs(normalized)
+            self.calibration_single_results["Filtered pesticide"] = filtered_pesticide
+            
+        if "Pesticide out the filter" in self.output_calibrate_single.keys():
+            pesticide_output = obtain_result_owq(" Pesticide output (mo)\n")
+            normalized = (pesticide_output - float(self.dlg_base.line_pesticide_out.text()))/float(self.dlg_base.line_pesticide_out.text())
+            objective_function += abs(normalized)
+        
+        if "Pesticide outflow in solid phase" in self.output_calibrate_single.keys():
+            pesticide_solid = obtain_result_owq(" Pesticide outflow in solid phase (mop)\n")
+            normalized = (pesticide_solid - float(self.dlg_base.line_pesticide_solid.text()))/float(self.dlg_base.line_pesticide_solid.text())
+            objective_function += abs(normalized)
+            self.calibration_single_results["Pesticide outflow in solid phase"] = pesticide_solid
+        
+        if "Pesticide outflow in liquid phase" in self.output_calibrate_single.keys():
+            pesticide_liquid = obtain_result_owq(" Pesticide outflow in liquid phase (mod)\n")
+            normalized = (pesticide_liquid - float(self.dlg_base.line_pesticide_liquid.text()))/float(self.dlg_base.line_pesticide_liquid.text())
+            objective_function += abs(normalized)
+            self.calibration_single_results["Pesticide outflow in liquid phase"] = pesticide_liquid
+        
+        return objective_function
+        
         
         
     def calibration_execution_progress_hydrograph(self,information):
@@ -5571,7 +6279,105 @@ class qvfsmod:
                 #Draw canvas
                 self.canvas_calibration_graph.draw()
     
-    
+    def calibration_execution_progress_single(self,information):
+        """Method to show the progress of calibration"""
+        #Progress befores we start with the executions
+        if information[0]=="Warning":
+            #Put the text
+            self.calibration_progress_text+=information[1]
+            self.dlg_calibration_progress.textEdit.setPlainText(self.calibration_progress_text)
+            self.dlg_calibration_progress.textEdit.moveCursor(QtGui.QTextCursor.End) #move to end the text to see it
+            
+        elif information[0] == 0:
+            #Show dialog
+            self.dlg_calibration_progress.show()
+            #Put the text
+            self.calibration_progress_text = ""
+            self.calibration_progress_text+="Starting calibration...\n"
+            self.dlg_calibration_progress.textEdit.setPlainText(self.calibration_progress_text)
+            self.dlg_calibration_progress.textEdit.moveCursor(QtGui.QTextCursor.End) #move to end the text to see it
+            
+            #Creation of graph
+            if not hasattr(self, 'canvas_calibration_graph'):
+                #Create the canvas of the graph
+                # Si no existe, crear el canvas y añadirlo al layout
+                self.canvas_calibration_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
+                
+                # Asignar un layout al QFrame si no tiene uno
+                layout = QVBoxLayout(self.dlg_calibration_progress.frame)
+                self.dlg_calibration_progress.frame.setLayout(layout)
+                
+                #Add canvas to layout
+                layout.addWidget(self.canvas_calibration_graph)
+            
+            #Add graph
+            self.canvas_calibration_graph.figure.clear()
+            if len(self.output_calibrate_single.keys()) == 1:
+                self.ax_calibration_progress = [self.canvas_calibration_graph.figure.subplots(1,len(self.output_calibrate_single.keys()))]
+            else:
+                self.ax_calibration_progress = self.canvas_calibration_graph.figure.subplots(1,len(self.output_calibrate_single.keys()))
+            
+            labels = list(self.output_calibrate_single.keys())
+            values = list(self.output_calibrate_single.values())
+            
+            for i, (label, value) in enumerate(zip(labels, values)):
+                #Add graph
+                self.ax_calibration_progress[i].bar(label, value, color='skyblue')
+                #Add values
+                self.ax_calibration_progress[i].text(0, value + (value * 0.05), f'{value}', ha='center')
+                #Add title y axis
+                self.ax_calibration_progress[i].set_ylabel(label)
+            
+            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+            self.canvas_calibration_graph.figure.subplots_adjust(wspace=0.7) #spacing beteween two graphs
+            self.canvas_calibration_graph.figure.subplots_adjust(left=0.3, bottom=0.2)
+            #Draw canvas
+            self.canvas_calibration_graph.draw()
+            
+            
+        else:
+            #First, put the text
+            #If we had an error then put it 
+            if information[1] == 1e20:
+                self.calibration_progress_text+=f"{information[0]}: Error in execution"+"\n"
+            else:
+                self.calibration_progress_text+=f"{information[0]}:OF = "+"{:.2e}".format(information[1])+"\n"
+
+            self.dlg_calibration_progress.textEdit.setPlainText(self.calibration_progress_text)
+            self.dlg_calibration_progress.textEdit.moveCursor(QtGui.QTextCursor.End) #move to end the text to see it
+            
+            #Add graph
+            #Then add the graph
+            self.canvas_calibration_graph.figure.clear()
+            if len(self.output_calibrate_single.keys()) == 1:
+                self.ax_calibration_progress = [self.canvas_calibration_graph.figure.subplots(1,len(self.output_calibrate_single.keys()))]
+            else:
+                self.ax_calibration_progress = self.canvas_calibration_graph.figure.subplots(1,len(self.output_calibrate_single.keys()))
+            
+            
+            labels_observed = list(self.output_calibrate_single.keys())
+            values_observed = list(self.output_calibrate_single.values())
+            
+            labels_simulated = list(self.calibration_single_results.keys())
+            values_simulated = list(self.calibration_single_results.values())
+            
+            for i in range(len(self.output_calibrate_single.keys())):
+                #Add graph
+                self.ax_calibration_progress[i].bar("Observed", values_observed[i], color='skyblue')
+                self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
+                #Add values
+                self.ax_calibration_progress[i].text("Observed", values_observed[i] + (values_observed[i] * 0.05), f'{values_observed[i]}', ha='center')
+                self.ax_calibration_progress[i].text("Simulated", values_simulated[i] + (values_simulated[i] * 0.05), f'{values_simulated[i]}', ha='center')
+                #Add title x and y axis
+                self.ax_calibration_progress[i].set_ylabel(labels_simulated[i])
+            
+            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+            self.canvas_calibration_graph.figure.subplots_adjust(wspace=0.7) #spacing beteween two graphs
+            self.canvas_calibration_graph.figure.subplots_adjust(left=0.25, bottom=0.2)
+            #Draw canvas
+            self.canvas_calibration_graph.draw()
+
+            
     
     def save_results_calibration(self,inputs, results):
         """Method to save results in calibration execution"""
@@ -5687,6 +6493,39 @@ class qvfsmod:
         #Set to false calibrations
         self.calibration_sedimentograph = False
         self.calibration_hydrograph = False
+    
+    def save_results_calibration_single(self,inputs, results):
+        """Method to save results in calibration execution"""
+        #Save only if there has not been an error
+        if min(results) != 1e20:
+            #Create csv with results
+            path = self.obtain_direction_vfsmod(self.dlg_calibration_advanced_settings_single.exit_file.text())
+
+            try:
+                with open(path, 'w') as f:
+                    #Add results of calibration
+                    f.write(f"Single values calibration" + '\n')
+                    f.write(f"Number of iterations: {len(inputs)}" + '\n')
+                    final_of = min(results)
+                    f.write(f"Final OF: {final_of}" + '\n')
+                    f.write(f"Estimated parameter values: ")
+                    for i in range(len(self.calibration_dictionary.keys())):
+                        if i != len(self.calibration_dictionary.keys())-1:
+                            f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]},")
+                        else:
+                            f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]}\n")
+            except PermissionError:
+                self.warning_message(f"{path} file is opened. Please close it to save results")
+            
+
+        else:
+            path = self.obtain_direction_vfsmod(self.dlg_calibration_advanced_settings_single.exit_file.text())
+            try:
+                with open(path, 'w') as f:
+                    #Add results of calibration
+                    f.write(f"All calibration executions gave errors. Please check project file or the intervals added." + '\n')
+            except PermissionError:
+                self.warning_message(f"{path} file is opened. Please close it to save results")
     
     def add_optimized_project_to_folder(self):
         """Method to add the optimized project to the working folder with a name to informe that it is optimized"""
@@ -6176,7 +7015,187 @@ class qvfsmod:
             dictionary["particle_densitiy"] = [float(self.dlg_sediment_calibration.min_density.text()),float(self.dlg_sediment_calibration.max_density.text())]
         
         return dictionary
+    
+    
+    def create_dictionary_calibration_single(self):
+        """Method to create the dictionary of bounds of the input parameters for the calibration of single values"""
+        #Inputs
+        dictionary = {}
+        #Function to return the value needed for the inverse calibration file
+        def calibration(radio_button_one,radio_button_two):
+            if radio_button_one.isChecked():
+                return "change"
+            elif radio_button_two.isChecked():
+                return "calibrate"
+            else:
+                return -1
         
+        #Discharge values
+        vertical = calibration(self.dlg_discharge_calibration_single.change_vertical,self.dlg_discharge_calibration_single.calibrate_vertical)
+        average = calibration(self.dlg_discharge_calibration_single.change_average,self.dlg_discharge_calibration_single.calibrate_average)
+        saturated = calibration(self.dlg_discharge_calibration_single.change_saturated,self.dlg_discharge_calibration_single.calibrate_saturated)
+        initial = calibration(self.dlg_discharge_calibration_single.change_initial,self.dlg_discharge_calibration_single.calibrate_initial)
+        maximum = calibration(self.dlg_discharge_calibration_single.change_maximum,self.dlg_discharge_calibration_single.calibrate_maximum)
+        fraction = calibration(self.dlg_discharge_calibration_single.change_fraction,self.dlg_discharge_calibration_single.calibrate_fraction)
+        width = calibration(self.dlg_discharge_calibration_single.change_width,self.dlg_discharge_calibration_single.calibrate_width)
+        length = calibration(self.dlg_discharge_calibration_single.change_length,self.dlg_discharge_calibration_single.calibrate_length)
+        manning = calibration(self.dlg_discharge_calibration_single.change_manning,self.dlg_discharge_calibration_single.calibrate_manning)
+        slope = calibration(self.dlg_discharge_calibration_single.change_slope,self.dlg_discharge_calibration_single.calibrate_slope)
+        
+        water_depth = calibration(self.dlg_discharge_calibration_single.change_depth,self.dlg_discharge_calibration_single.calibrate_depth)
+        soil_saturated = calibration(self.dlg_discharge_calibration_single.change_ansiotropy,self.dlg_discharge_calibration_single.calibrate_ansiotropy)
+        soil_or = calibration(self.dlg_discharge_calibration_single.change_soil_or,self.dlg_discharge_calibration_single.calibrate_soil_or)
+        soil_vgalpha = calibration(self.dlg_discharge_calibration_single.change_soil_vgalpha,self.dlg_discharge_calibration_single.calibrate_soil_vgalpha)
+        soil_vgn = calibration(self.dlg_discharge_calibration_single.change_soil_vgn,self.dlg_discharge_calibration_single.calibrate_soil_vgn)
+        soil_vgm = calibration(self.dlg_discharge_calibration_single.change_soil_vgm,self.dlg_discharge_calibration_single.calibrate_soil_vgm)
+        soil_bcalpha = calibration(self.dlg_discharge_calibration_single.change_soil_bcalpha,self.dlg_discharge_calibration_single.calibrate_soil_bcalpha)
+        soil_bclamda = calibration(self.dlg_discharge_calibration_single.change_soil_bclambda,self.dlg_discharge_calibration_single.calibrate_soil_bclambda)
+        unsaturated_vgm = calibration(self.dlg_discharge_calibration_single.change_unsaturated_vgm,self.dlg_discharge_calibration_single.calibrate_unsaturated_vgm)
+        unsaturated_bceta = calibration(self.dlg_discharge_calibration_single.change_unsaturated_bceta,self.dlg_discharge_calibration_single.calibrate_unsaturated_bceta)
+        unsaturated_bcalpha = calibration(self.dlg_discharge_calibration_single.change_unsaturated_bcalpha,self.dlg_discharge_calibration_single.calibrate_unsaturated_bcalpha)
+        usaturated_gdalpha = calibration(self.dlg_discharge_calibration_single.change_unsaturated_gdalpha,self.dlg_discharge_calibration_single.calibrate_unsaturated_gdalpha)
+        
+        
+        #Sediment values
+        spacing = calibration(self.dlg_sediment_calibration_single.change_spacing,self.dlg_sediment_calibration_single.calibrate_spacing)
+        rougheness_grass = calibration(self.dlg_sediment_calibration_single.change_roughness,self.dlg_sediment_calibration_single.calibrate_roughness)
+        height = calibration(self.dlg_sediment_calibration_single.change_height,self.dlg_sediment_calibration_single.calibrate_height)
+        roughness_bare = calibration(self.dlg_sediment_calibration_single.change_bare,self.dlg_sediment_calibration_single.calibrate_bare)
+        coarse_sediment = calibration(self.dlg_sediment_calibration_single.change_coarse,self.dlg_sediment_calibration_single.calibrate_coarse)
+        incoming_flow = calibration(self.dlg_sediment_calibration_single.change_incoming,self.dlg_sediment_calibration_single.calibrate_incoming)
+        porosity = calibration(self.dlg_sediment_calibration_single.change_porosity,self.dlg_sediment_calibration_single.calibrate_porosity)
+        particle_class = calibration(self.dlg_sediment_calibration_single.change_class,self.dlg_sediment_calibration_single.calibrate_class)
+        particle_densitiy = calibration(self.dlg_sediment_calibration_single.change_density,self.dlg_sediment_calibration_single.calibrate_density)
+        
+        #Pesticide values
+        clay = calibration(self.dlg_pesticide_calibration.change_clay,self.dlg_pesticide_calibration.calibrate_clay)
+        top = calibration(self.dlg_pesticide_calibration.change_top,self.dlg_pesticide_calibration.calibrate_top)
+        mixing_layer = calibration(self.dlg_pesticide_calibration.change_mixing,self.dlg_pesticide_calibration.calibrate_mixing)
+        linear_sorption = calibration(self.dlg_pesticide_calibration.change_linear,self.dlg_pesticide_calibration.calibrate_linear)
+        adsorption_coefficient = calibration(self.dlg_pesticide_calibration.change_adsorption,self.dlg_pesticide_calibration.calibrate_adsorption)
+        organic_carbon = calibration(self.dlg_pesticide_calibration.change_organic,self.dlg_pesticide_calibration.calibrate_organic)
+        
+        
+        #Change inputs if "Change" has selected
+        self.change_base_inputs_calibration_hydrograph([vertical,average,saturated,initial,maximum,fraction,width,length,manning,slope,
+            water_depth,soil_saturated,soil_or,soil_vgalpha,soil_vgn,soil_vgm,soil_bcalpha,soil_bclamda,unsaturated_vgm,unsaturated_bceta,unsaturated_bcalpha,usaturated_gdalpha,
+            spacing,rougheness_grass,height,roughness_bare,coarse_sediment,incoming_flow,porosity,particle_class,particle_densitiy,
+            clay,top,mixing_layer,linear_sorption,adsorption_coefficient,organic_carbon])
+        
+        #Create dictionary
+        #Discharge values
+        if vertical == "calibrate":
+            dictionary["vertical"] = [float(self.dlg_discharge_calibration_single.min_vertical.text()),float(self.dlg_discharge_calibration_single.max_vertical.text())]
+            
+        if average == "calibrate":
+            dictionary["average"] = [float(self.dlg_discharge_calibration_single.min_average.text()),float(self.dlg_discharge_calibration_single.max_average.text())]
+        
+        if saturated == "calibrate":
+            dictionary["saturated"] = [float(self.dlg_discharge_calibration_single.min_saturated.text()),float(self.dlg_discharge_calibration_single.max_saturated.text())]
+        
+        if initial == "calibrate":
+            dictionary["initial"] = [float(self.dlg_discharge_calibration_single.min_initial.text()),float(self.dlg_discharge_calibration_single.max_initial.text())]
+        
+        if maximum == "calibrate":
+            dictionary["maximum"] = [float(self.dlg_discharge_calibration_single.min_maximum.text()),float(self.dlg_discharge_calibration_single.max_maximum.text())]
+        
+        if fraction == "calibrate":
+            dictionary["fraction"] = [float(self.dlg_discharge_calibration_single.min_fraction.text()),float(self.dlg_discharge_calibration_single.max_fraction.text())]
+        
+        if width == "calibrate":
+            dictionary["width"] = [float(self.dlg_discharge_calibration_single.min_width.text()),float(self.dlg_discharge_calibration_single.max_width.text())]
+        
+        if length == "calibrate":
+            dictionary["length"] = [float(self.dlg_discharge_calibration_single.min_length.text()),float(self.dlg_discharge_calibration_single.max_length.text())]
+        
+        if manning == "calibrate":
+            dictionary["manning"] = [float(self.dlg_discharge_calibration_single.min_manning.text()),float(self.dlg_discharge_calibration_single.max_manning.text())]
+        
+        if slope == "calibrate":
+            dictionary["slope"] = [float(self.dlg_discharge_calibration_single.min_slope.text()),float(self.dlg_discharge_calibration_single.max_slope.text())]
+        
+        
+        
+        if water_depth == "calibrate":
+            dictionary["water_depth"] = [float(self.dlg_discharge_calibration_single.min_depth.text()),float(self.dlg_discharge_calibration_single.max_depth.text())]
+        
+        if soil_saturated == "calibrate":
+            dictionary["soil_saturated"] = [float(self.dlg_discharge_calibration_single.min_ansiotropy.text()),float(self.dlg_discharge_calibration_single.max_ansiotropy.text())]
+        
+        if soil_or == "calibrate":
+            dictionary["soil_or"] = [float(self.dlg_discharge_calibration_single.min_soil_or.text()),float(self.dlg_discharge_calibration_single.max_soil_or.text())]
+            
+        if soil_vgalpha == "calibrate":
+            dictionary["soil_vgalpha"] = [float(self.dlg_discharge_calibration_single.min_soil_vgalpha.text()),float(self.dlg_discharge_calibration_single.max_soil_vgalpha.text())]
+            
+        if soil_vgn == "calibrate":
+            dictionary["soil_vgn"] = [float(self.dlg_discharge_calibration_single.min_soil_vgn.text()),float(self.dlg_discharge_calibration_single.max_soil_vgn.text())]
+            
+        if soil_vgm == "calibrate":
+            dictionary["soil_vgm"] = [float(self.dlg_discharge_calibration_single.min_soil_vgm.text()),float(self.dlg_discharge_calibration_single.max_soil_vgm.text())]
+            
+        if soil_bcalpha == "calibrate":
+            dictionary["soil_bcalpha"] = [float(self.dlg_discharge_calibration_single.min_soil_bcalpha.text()),float(self.dlg_discharge_calibration_single.max_soil_bcalpha.text())]
+            
+        if soil_bclamda == "calibrate":
+            dictionary["soil_bclamda"] = [float(self.dlg_discharge_calibration_single.min_soil_bclambda.text()),float(self.dlg_discharge_calibration_single.max_soil_bclambda.text())]
+            
+        if unsaturated_vgm == "calibrate":
+            dictionary["unsaturated_vgm"] = [float(self.dlg_discharge_calibration_single.min_unsaturated_vgm.text()),float(self.dlg_discharge_calibration_single.max_unsaturated_vgm.text())]
+            
+        if unsaturated_bceta == "calibrate":
+            dictionary["unsaturated_bceta"] = [float(self.dlg_discharge_calibration_single.min_unsaturated_bceta.text()),float(self.dlg_discharge_calibration_single.max_unsaturated_bceta.text())]
+            
+        if unsaturated_bcalpha == "calibrate":
+            dictionary["unsaturated_bcalpha"] = [float(self.dlg_discharge_calibration_single.min_unsaturated_bcalpha.text()),float(self.dlg_discharge_calibration_single.max_unsaturated_bcalpha.text())]
+            
+        if usaturated_gdalpha == "calibrate":
+            dictionary["usaturated_gdalpha"] = [float(self.dlg_discharge_calibration_single.min_unsaturated_gdalpha.text()),float(self.dlg_discharge_calibration_single.max_unsaturated_gdalpha.text())]
+        
+        #Sediment values
+        if spacing == "calibrate":
+            dictionary["spacing"] = [float(self.dlg_sediment_calibration_single.min_spacing.text()),float(self.dlg_sediment_calibration_single.max_spacing.text())]
+            
+        if rougheness_grass == "calibrate":
+            dictionary["rougheness_grass"] = [float(self.dlg_sediment_calibration_single.min_roughness.text()),float(self.dlg_sediment_calibration_single.max_roughness.text())]
+        
+        if height == "calibrate":
+            dictionary["height"] = [float(self.dlg_sediment_calibration_single.min_height.text()),float(self.dlg_sediment_calibration_single.max_height.text())]
+        
+        if roughness_bare == "calibrate":
+            dictionary["roughness_bare"] = [float(self.dlg_sediment_calibration_single.min_bare.text()),float(self.dlg_sediment_calibration_single.max_bare.text())]
+        
+        if coarse_sediment == "calibrate":
+            dictionary["coarse_sediment"] = [float(self.dlg_sediment_calibration_single.min_coarse.text()),float(self.dlg_sediment_calibration_single.max_coarse.text())]
+        
+        if incoming_flow == "calibrate":
+            dictionary["incoming_flow"] = [float(self.dlg_sediment_calibration_single.min_incoming.text()),float(self.dlg_sediment_calibration_single.max_incoming.text())]
+        
+        if porosity == "calibrate":
+            dictionary["porosity"] = [float(self.dlg_sediment_calibration_single.min_porosity.text()),float(self.dlg_sediment_calibration_single.max_porosity.text())]
+        
+        if particle_class == "calibrate":
+            dictionary["particle_class"] = [float(self.dlg_sediment_calibration_single.min_class.text()),float(self.dlg_sediment_calibration_single.max_class.text())]
+        
+        if particle_densitiy == "calibrate":
+            dictionary["particle_densitiy"] = [float(self.dlg_sediment_calibration_single.min_density.text()),float(self.dlg_sediment_calibration_single.max_density.text())]
+        
+        #Pesticide
+        if clay == "calibrate":
+            dictionary["clay"] = [float(self.dlg_pesticide_calibration.min_clay.text()),float(self.dlg_pesticide_calibration.max_clay.text())]
+        if top == "calibrate":
+            dictionary["top"] = [float(self.dlg_pesticide_calibration.min_top.text()),float(self.dlg_pesticide_calibration.max_top.text())]
+        if mixing_layer == "calibrate":
+            dictionary["mixing_layer"] = [float(self.dlg_pesticide_calibration.min_mixing.text()),float(self.dlg_pesticide_calibration.max_mixing.text())]
+        if linear_sorption == "calibrate":
+            dictionary["linear_sorption"] = [float(self.dlg_pesticide_calibration.min_linear.text()),float(self.dlg_pesticide_calibration.max_linear.text())]
+        if adsorption_coefficient == "calibrate":
+            dictionary["adsorption_coefficient"] = [float(self.dlg_pesticide_calibration.min_adsorption.text()),float(self.dlg_pesticide_calibration.max_adsorption.text())]
+        if organic_carbon == "calibrate":
+            dictionary["organic_carbon"] = [float(self.dlg_pesticide_calibration.min_organic.text()),float(self.dlg_pesticide_calibration.max_organic.text())]
+        
+        
+        return dictionary
     
     def modify_inputs_calibration(self,extension, row, column, new_value):
         """Method to modify inputs in calibration"""
@@ -6395,10 +7414,91 @@ class qvfsmod:
                 i[1][1].setEnabled(True)
                 i[1][2].setStyleSheet("background-color: #f0f0f0;")
                 i[1][2].setEnabled(True)
+    
+    def draw_calibration_hydrology_single(self):
+        """Method to draw the dialog in calibration of hydrology for single values"""
+        for i in self.hydrology_single_checks:
+            if i[0][0].isChecked():#no is selected
+                i[1][0].setStyleSheet("background-color: #d9d9d9;")
+                i[1][0].setEnabled(False)
+                i[1][1].setStyleSheet("background-color: #d9d9d9;")
+                i[1][1].setEnabled(False)
+                i[1][2].setStyleSheet("background-color: #d9d9d9;")
+                i[1][2].setEnabled(False)
+                
+            elif i[0][1].isChecked():#change is selected
+                i[1][0].setStyleSheet("background-color: #f0f0f0;")
+                i[1][0].setEnabled(True)
+                i[1][1].setStyleSheet("background-color: #d9d9d9;")
+                i[1][1].setEnabled(False)
+                i[1][2].setStyleSheet("background-color: #d9d9d9;")
+                i[1][2].setEnabled(False)
+                
+            elif i[0][2].isChecked():#calibrate is selected
+                i[1][0].setStyleSheet("background-color: #d9d9d9;")
+                i[1][0].setEnabled(False)
+                i[1][1].setStyleSheet("background-color: #f0f0f0;")
+                i[1][1].setEnabled(True)
+                i[1][2].setStyleSheet("background-color: #f0f0f0;")
+                i[1][2].setEnabled(True)
             
     def draw_calibration_sedimentograph(self):
         """Method to draw the dialog in calibration of sedimentograph"""
         for i in self.sedimentograph_checks:
+            if i[0][0].isChecked():#no is selected
+                i[1][0].setStyleSheet("background-color: #d9d9d9;")
+                i[1][0].setEnabled(False)
+                i[1][1].setStyleSheet("background-color: #d9d9d9;")
+                i[1][1].setEnabled(False)
+                i[1][2].setStyleSheet("background-color: #d9d9d9;")
+                i[1][2].setEnabled(False)
+                
+            elif i[0][1].isChecked():#change is selected
+                i[1][0].setStyleSheet("background-color: #f0f0f0;")
+                i[1][0].setEnabled(True)
+                i[1][1].setStyleSheet("background-color: #d9d9d9;")
+                i[1][1].setEnabled(False)
+                i[1][2].setStyleSheet("background-color: #d9d9d9;")
+                i[1][2].setEnabled(False)
+                
+            elif i[0][2].isChecked():#calibrate is selected
+                i[1][0].setStyleSheet("background-color: #d9d9d9;")
+                i[1][0].setEnabled(False)
+                i[1][1].setStyleSheet("background-color: #f0f0f0;")
+                i[1][1].setEnabled(True)
+                i[1][2].setStyleSheet("background-color: #f0f0f0;")
+                i[1][2].setEnabled(True)
+    
+    def draw_calibration_sedimentograph_single(self):
+        """Method to draw the dialog in calibration of sedimentograph"""
+        for i in self.sedimentograph_checks_single:
+            if i[0][0].isChecked():#no is selected
+                i[1][0].setStyleSheet("background-color: #d9d9d9;")
+                i[1][0].setEnabled(False)
+                i[1][1].setStyleSheet("background-color: #d9d9d9;")
+                i[1][1].setEnabled(False)
+                i[1][2].setStyleSheet("background-color: #d9d9d9;")
+                i[1][2].setEnabled(False)
+                
+            elif i[0][1].isChecked():#change is selected
+                i[1][0].setStyleSheet("background-color: #f0f0f0;")
+                i[1][0].setEnabled(True)
+                i[1][1].setStyleSheet("background-color: #d9d9d9;")
+                i[1][1].setEnabled(False)
+                i[1][2].setStyleSheet("background-color: #d9d9d9;")
+                i[1][2].setEnabled(False)
+                
+            elif i[0][2].isChecked():#calibrate is selected
+                i[1][0].setStyleSheet("background-color: #d9d9d9;")
+                i[1][0].setEnabled(False)
+                i[1][1].setStyleSheet("background-color: #f0f0f0;")
+                i[1][1].setEnabled(True)
+                i[1][2].setStyleSheet("background-color: #f0f0f0;")
+                i[1][2].setEnabled(True)
+    
+    def draw_calibration_pesticide(self):
+        """Method to draw the dialog in calibration of sedimentograph"""
+        for i in self.pesticide_checks:
             if i[0][0].isChecked():#no is selected
                 i[1][0].setStyleSheet("background-color: #d9d9d9;")
                 i[1][0].setEnabled(False)
@@ -8150,6 +9250,7 @@ class qvfsmod:
                 item.setTextAlignment(Qt.AlignCenter)
         
         #Calibration
+        #Hydrograph
         self.dlg_hydrograph_calibration.no_vertical.setChecked(True)
         self.dlg_hydrograph_calibration.no_average.setChecked(True)
         self.dlg_hydrograph_calibration.no_saturated.setChecked(True)
@@ -8172,7 +9273,31 @@ class qvfsmod:
         self.dlg_hydrograph_calibration.no_unsaturated_bceta.setChecked(True)
         self.dlg_hydrograph_calibration.no_unsaturated_bcalpha.setChecked(True)
         self.dlg_hydrograph_calibration.no_unsaturated_gdalpha.setChecked(True)
+        #Single values
+        self.dlg_discharge_calibration_single.no_vertical.setChecked(True)
+        self.dlg_discharge_calibration_single.no_average.setChecked(True)
+        self.dlg_discharge_calibration_single.no_saturated.setChecked(True)
+        self.dlg_discharge_calibration_single.no_initial.setChecked(True)
+        self.dlg_discharge_calibration_single.no_maximum.setChecked(True)
+        self.dlg_discharge_calibration_single.no_fraction.setChecked(True)
+        self.dlg_discharge_calibration_single.no_width.setChecked(True)
+        self.dlg_discharge_calibration_single.no_length.setChecked(True)
+        self.dlg_discharge_calibration_single.no_manning.setChecked(True)
+        self.dlg_discharge_calibration_single.no_slope.setChecked(True)
+        self.dlg_discharge_calibration_single.no_depth.setChecked(True)
+        self.dlg_discharge_calibration_single.no_ansiotropy.setChecked(True)
+        self.dlg_discharge_calibration_single.no_soil_or.setChecked(True)
+        self.dlg_discharge_calibration_single.no_soil_vgalpha.setChecked(True)
+        self.dlg_discharge_calibration_single.no_soil_vgn.setChecked(True)
+        self.dlg_discharge_calibration_single.no_soil_vgm.setChecked(True)
+        self.dlg_discharge_calibration_single.no_soil_bcalpha.setChecked(True)
+        self.dlg_discharge_calibration_single.no_soil_bclambda.setChecked(True)
+        self.dlg_discharge_calibration_single.no_unsaturated_vgm.setChecked(True)
+        self.dlg_discharge_calibration_single.no_unsaturated_bceta.setChecked(True)
+        self.dlg_discharge_calibration_single.no_unsaturated_bcalpha.setChecked(True)
+        self.dlg_discharge_calibration_single.no_unsaturated_gdalpha.setChecked(True)
         
+        #Sedimentograph
         self.dlg_sediment_calibration.no_spacing.setChecked(True)
         self.dlg_sediment_calibration.no_roughness.setChecked(True)
         self.dlg_sediment_calibration.no_height.setChecked(True)
@@ -8183,7 +9308,27 @@ class qvfsmod:
         self.dlg_sediment_calibration.no_class.setChecked(True)
         self.dlg_sediment_calibration.no_density.setChecked(True)
         
+        #Sedimentograph single value
+        self.dlg_sediment_calibration_single.no_spacing.setChecked(True)
+        self.dlg_sediment_calibration_single.no_roughness.setChecked(True)
+        self.dlg_sediment_calibration_single.no_height.setChecked(True)
+        self.dlg_sediment_calibration_single.no_bare.setChecked(True)
+        self.dlg_sediment_calibration_single.no_coarse.setChecked(True)
+        self.dlg_sediment_calibration_single.no_incoming.setChecked(True)
+        self.dlg_sediment_calibration_single.no_porosity.setChecked(True)
+        self.dlg_sediment_calibration_single.no_class.setChecked(True)
+        self.dlg_sediment_calibration_single.no_density.setChecked(True)
+        
+        #Pesticide
+        self.dlg_pesticide_calibration.no_clay.setChecked(True)
+        self.dlg_pesticide_calibration.no_top.setChecked(True)
+        self.dlg_pesticide_calibration.no_mixing.setChecked(True)
+        self.dlg_pesticide_calibration.no_linear.setChecked(True)
+        self.dlg_pesticide_calibration.no_adsorption.setChecked(True)
+        self.dlg_pesticide_calibration.no_organic.setChecked(True)
+        
         #Set invisible hydrograph calibration
+        #Hydrograph
         def set_visible_horizontal(horizontal,condition):
             for i in range(horizontal.count()):
                 widget = horizontal.itemAt(i).widget()
@@ -8232,6 +9377,49 @@ class qvfsmod:
         self.dlg_hydrograph_calibration.frame_13.setVisible(False)
         set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_14,False)
         
+        #Single values
+        #Suction at the wetting front
+        self.dlg_discharge_calibration_single.frame_35.setVisible(False)
+        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_90,False)
+        #Initial water content
+        self.dlg_discharge_calibration_single.frame_38.setVisible(False)
+        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_87,False)
+        #Water table
+        self.dlg_discharge_calibration_single.frame_4.setVisible(False)
+        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_3,False)
+        #Soil saturated hydraulic \nconductivity anisotropy ratio 
+        self.dlg_discharge_calibration_single.frame_6.setVisible(False)
+        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_4,False)
+        #OR
+        self.dlg_discharge_calibration_single.frame_9.setVisible(False)
+        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_5,False)
+        #VGALPHA
+        self.dlg_discharge_calibration_single.frame_8.setVisible(False)
+        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_6,False)
+        #VGN
+        self.dlg_discharge_calibration_single.frame_5.setVisible(False)
+        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_7,False)
+        #VGM
+        self.dlg_discharge_calibration_single.frame_7.setVisible(False)
+        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_8,False)
+        #BCALPHA 
+        self.dlg_discharge_calibration_single.frame_10.setVisible(False)
+        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_9,False)
+        #BCLAMBDA
+        self.dlg_discharge_calibration_single.frame_12.setVisible(False)
+        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_10,False)
+        #VGM
+        self.dlg_discharge_calibration_single.frame_11.setVisible(False)
+        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_11,False)
+        #BCETA 
+        self.dlg_discharge_calibration_single.frame_14.setVisible(False)
+        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_12,False)
+        #BCALPHA
+        self.dlg_discharge_calibration_single.frame_15.setVisible(False)
+        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_13,False)
+        #GDALPHA
+        self.dlg_discharge_calibration_single.frame_13.setVisible(False)
+        set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_14,False)
         
         
     def user_defined_storm_type(self):

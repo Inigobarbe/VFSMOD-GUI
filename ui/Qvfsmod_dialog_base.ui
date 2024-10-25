@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1224</width>
+    <width>1229</width>
     <height>709</height>
    </rect>
   </property>
@@ -1632,7 +1632,7 @@ QTableCornerButton::section {
 }</string>
         </property>
         <property name="currentIndex">
-         <number>5</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="page_folder">
          <property name="styleSheet">
@@ -1661,7 +1661,7 @@ QTableCornerButton::section {
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>888</width>
+               <width>893</width>
                <height>150</height>
               </rect>
              </property>
@@ -3587,7 +3587,7 @@ typical 0.01-0.07</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>888</width>
+               <width>893</width>
                <height>653</height>
               </rect>
              </property>
@@ -4255,7 +4255,7 @@ typical 0.01-0.07</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>886</width>
+               <width>891</width>
                <height>651</height>
               </rect>
              </property>
@@ -4276,8 +4276,8 @@ typical 0.01-0.07</string>
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>869</width>
-               <height>670</height>
+               <width>874</width>
+               <height>773</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_56">
@@ -4534,15 +4534,74 @@ typical 0.01-0.07</string>
                     <enum>QFrame::Raised</enum>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_52">
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="label_81">
+                    <item row="3" column="1">
+                     <widget class="QPushButton" name="inputs_sediment_single">
                       <property name="text">
-                       <string>Discharge</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignCenter</set>
+                       <string>Set inputs</string>
                       </property>
                      </widget>
+                    </item>
+                    <item row="2" column="2">
+                     <layout class="QHBoxLayout" name="horizontalLayout_58">
+                      <item>
+                       <widget class="QCheckBox" name="check_pesticide_out">
+                        <property name="minimumSize">
+                         <size>
+                          <width>224</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                        <property name="text">
+                         <string>Pesticide out of the filter
+(mg)</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLineEdit" name="line_pesticide_out">
+                        <property name="enabled">
+                         <bool>false</bool>
+                        </property>
+                        <property name="styleSheet">
+                         <string notr="true">background-color: #d9d9d9;</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignCenter</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item row="4" column="2">
+                     <layout class="QHBoxLayout" name="horizontalLayout_61">
+                      <item>
+                       <widget class="QCheckBox" name="check_pesticide_liquid">
+                        <property name="minimumSize">
+                         <size>
+                          <width>224</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                        <property name="text">
+                         <string>Pesticide outflow in liquid phase
+(mg)</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLineEdit" name="line_pesticide_liquid">
+                        <property name="enabled">
+                         <bool>false</bool>
+                        </property>
+                        <property name="styleSheet">
+                         <string notr="true">background-color: #d9d9d9;</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignCenter</set>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
                     </item>
                     <item row="1" column="0">
                      <layout class="QHBoxLayout" name="horizontalLayout_56">
@@ -4550,12 +4609,13 @@ typical 0.01-0.07</string>
                        <widget class="QCheckBox" name="check_total_discharge">
                         <property name="minimumSize">
                          <size>
-                          <width>135</width>
+                          <width>150</width>
                           <height>0</height>
                          </size>
                         </property>
                         <property name="text">
-                         <string>Total discharge</string>
+                         <string>Total discharge out 
+(m3)</string>
                         </property>
                        </widget>
                       </item>
@@ -4585,7 +4645,8 @@ typical 0.01-0.07</string>
                          </size>
                         </property>
                         <property name="text">
-                         <string>Pesticide outflow in solid phase</string>
+                         <string>Pesticide outflow in solid phase
+(mg)</string>
                         </property>
                        </widget>
                       </item>
@@ -4604,20 +4665,20 @@ typical 0.01-0.07</string>
                       </item>
                      </layout>
                     </item>
-                    <item row="0" column="2">
-                     <widget class="QLabel" name="label_83">
+                    <item row="0" column="1">
+                     <widget class="QLabel" name="label_82">
                       <property name="text">
-                       <string>Pesticide</string>
+                       <string>Sediment</string>
                       </property>
                       <property name="alignment">
                        <set>Qt::AlignCenter</set>
                       </property>
                      </widget>
                     </item>
-                    <item row="0" column="1">
-                     <widget class="QLabel" name="label_82">
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="label_81">
                       <property name="text">
-                       <string>Sediment</string>
+                       <string>Discharge</string>
                       </property>
                       <property name="alignment">
                        <set>Qt::AlignCenter</set>
@@ -4660,12 +4721,13 @@ typical 0.01-0.07</string>
                        <widget class="QCheckBox" name="check_total_sediment">
                         <property name="minimumSize">
                          <size>
-                          <width>132</width>
+                          <width>150</width>
                           <height>0</height>
                          </size>
                         </property>
                         <property name="text">
-                         <string>Total sediment</string>
+                         <string>Total sediment out
+(kg)</string>
                         </property>
                        </widget>
                       </item>
@@ -4690,12 +4752,13 @@ typical 0.01-0.07</string>
                        <widget class="QCheckBox" name="check_filtered_discharge">
                         <property name="minimumSize">
                          <size>
-                          <width>135</width>
+                          <width>150</width>
                           <height>0</height>
                          </size>
                         </property>
                         <property name="text">
-                         <string>Filtered discharge</string>
+                         <string>Filtered discharge
+(ratio)</string>
                         </property>
                        </widget>
                       </item>
@@ -4720,12 +4783,13 @@ typical 0.01-0.07</string>
                        <widget class="QCheckBox" name="check_filtered_sediment">
                         <property name="minimumSize">
                          <size>
-                          <width>132</width>
+                          <width>150</width>
                           <height>0</height>
                          </size>
                         </property>
                         <property name="text">
-                         <string>Filtered sediment</string>
+                         <string>Filtered sediment
+(ratio)</string>
                         </property>
                        </widget>
                       </item>
@@ -4744,65 +4808,29 @@ typical 0.01-0.07</string>
                       </item>
                      </layout>
                     </item>
-                    <item row="2" column="2">
-                     <layout class="QHBoxLayout" name="horizontalLayout_58">
-                      <item>
-                       <widget class="QCheckBox" name="check_pesticide_out">
-                        <property name="minimumSize">
-                         <size>
-                          <width>224</width>
-                          <height>0</height>
-                         </size>
-                        </property>
-                        <property name="text">
-                         <string>Pesticide out of the filter</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QLineEdit" name="line_pesticide_out">
-                        <property name="enabled">
-                         <bool>false</bool>
-                        </property>
-                        <property name="styleSheet">
-                         <string notr="true">background-color: #d9d9d9;</string>
-                        </property>
-                        <property name="alignment">
-                         <set>Qt::AlignCenter</set>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
+                    <item row="3" column="0">
+                     <widget class="QPushButton" name="inputs_discharge_single">
+                      <property name="text">
+                       <string>Set inputs</string>
+                      </property>
+                     </widget>
                     </item>
-                    <item row="4" column="2">
-                     <layout class="QHBoxLayout" name="horizontalLayout_61">
-                      <item>
-                       <widget class="QCheckBox" name="check_pesticide_liquid">
-                        <property name="minimumSize">
-                         <size>
-                          <width>224</width>
-                          <height>0</height>
-                         </size>
-                        </property>
-                        <property name="text">
-                         <string>Pesticide outflow in liquid phase</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QLineEdit" name="line_pesticide_liquid">
-                        <property name="enabled">
-                         <bool>false</bool>
-                        </property>
-                        <property name="styleSheet">
-                         <string notr="true">background-color: #d9d9d9;</string>
-                        </property>
-                        <property name="alignment">
-                         <set>Qt::AlignCenter</set>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
+                    <item row="0" column="2">
+                     <widget class="QLabel" name="label_83">
+                      <property name="text">
+                       <string>Pesticide</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="5" column="2">
+                     <widget class="QPushButton" name="inputs_pesticide_single">
+                      <property name="text">
+                       <string>Set inputs</string>
+                      </property>
+                     </widget>
                     </item>
                    </layout>
                   </widget>
@@ -4857,6 +4885,13 @@ typical 0.01-0.07</string>
                  </item>
                  <item row="3" column="0">
                   <layout class="QHBoxLayout" name="horizontalLayout_62">
+                   <item>
+                    <widget class="QPushButton" name="advanced_single">
+                     <property name="text">
+                      <string>Advanced settings</string>
+                     </property>
+                    </widget>
+                   </item>
                    <item>
                     <widget class="QPushButton" name="run_calibration_single">
                      <property name="text">
