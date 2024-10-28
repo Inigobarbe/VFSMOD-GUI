@@ -16,11 +16,11 @@
 from PyQt5 import QtWidgets,QtGui
 from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QThread,pyqtSignal
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QAction, QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy
+from PyQt5.QtWidgets import QAction, QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy,QAction, QMenu
 # Initialize Qt resources from file resources.py
 from resources import *
 # Import the code for the dialog
-from ui.Qvfsmod_dialog import qvfsmodDialog
+from ui.Qvfsmod_dialog import qvfsmodMainWindow
 from ui.user_defined_storm_type import user_defined_storm_dialog
 from ui.hydrograph_dialog import output_hydrograph
 from ui.overland_flow import overland_flow
@@ -144,7 +144,7 @@ class qvfsmod:
         
   
         #Instantiate dialogs
-        self.dlg_base = qvfsmodDialog()
+        self.dlg_base = qvfsmodMainWindow()
         self.dlg_user_storm = user_defined_storm_dialog()
         self.dlg_overland_flow = overland_flow()
         self.dlg_buffer_segment = buffer_segment()
@@ -214,6 +214,9 @@ class qvfsmod:
         self.dlg_base.calibration_result_sedimentograph.clicked.connect(self.update_graph_calibration_sedimentograph)
         self.dlg_base.calibration_result_single.clicked.connect(self.update_graph_calibration_single)
         
+        #User defined storm
+        self.dlg_user_storm.tableWidget.itemChanged.connect(self.update_user_storm_graph)
+        
         #Add shallow water parameters if present
         #For the whole hydrograph
         self.dlg_base.vfs_project.textChanged.connect(self.add_shallow_water_table_paramters_calibration)
@@ -226,61 +229,19 @@ class qvfsmod:
         self.dlg_base.inputs_pesticide_single.clicked.connect(self.direct_input_calibration_pesticide)
         
         #Stacked widget
-        self.dlg_base.pushButton_6.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_folder))
-        self.dlg_base.pushButton_7.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_uh))
-        self.dlg_base.pushButton_8.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_vfs))
-        self.dlg_base.pushButton_5.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design_simple))
-        self.dlg_base.pushButton_14.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design_advanced))
-        self.dlg_base.pushButton_15.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration_hydrograph))
-        self.dlg_base.pushButton_16.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration_sedimentograph))
-        self.dlg_base.pushButton_21.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sensitivity_analysis))
-        self.dlg_base.pushButton_24.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sobol_results))
         
-        self.dlg_base.folder_selection.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_folder))
-        self.dlg_base.uh.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_uh))
-        self.dlg_base.vfs.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_vfs))
-        self.dlg_base.simple_design.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design_simple))
-        self.dlg_base.advanced_design.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design_advanced))
-        self.dlg_base.calibration_hydrograph.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration_hydrograph))
-        self.dlg_base.calibration_sedimentograph.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration_sedimentograph))
-        self.dlg_base.sensitivity_parameters.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sensitivity_analysis))
-        self.dlg_base.sobol_results.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sobol_results))
-        self.dlg_base.local_results.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.oat_results))
-        self.dlg_base.execution_uncertainity.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.uncertainity_page))
-        self.dlg_base.results_uncertainity.clicked.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_results_uncertainity))
+        # Conectar la acción a la función deseada
+        self.dlg_base.actionProject_selection.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_folder))
+        self.dlg_base.actionSource_Area_UH.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_uh))
+        self.dlg_base.actionVegetative_Strip_VFS.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_vfs))
+        self.dlg_base.actionSimple_design.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design_simple))
+        self.dlg_base.actionComplete_calibration.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration_hydrograph))
+        self.dlg_base.menu_execution_sensitivity.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sensitivity_analysis))
+        self.dlg_base.menu_global_results.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sobol_results))
+        self.dlg_base.menu_local_results.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.oat_results))
+        self.dlg_base.menu_execution_uncertainity.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.uncertainity_page))
+        self.dlg_base.menu_results_uncertainity.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_results_uncertainity))
         
-        #Conditions to show differente stacked widgets pages
-        self.dlg_base.calibration.clicked.connect(self.show_calibration_buttons)
-        self.dlg_base.pushButton_10.clicked.connect(self.show_calibration_buttons)
-        
-        self.dlg_base.design.clicked.connect(self.show_design_buttons)
-        self.dlg_base.pushButton_9.clicked.connect(self.show_design_buttons)
-        
-        self.dlg_base.sensitivity_analysis.clicked.connect(self.show_sensitivity_buttons)
-        self.dlg_base.pushButton_11.clicked.connect(self.show_sensitivity_buttons)
-        
-        
-        #In the dialog base, if a button is clicked then uncheck the rest
-        base_buttons = [[self.dlg_base.pushButton_6,self.dlg_base.folder_selection],
-            [self.dlg_base.pushButton_7,self.dlg_base.uh],
-            [self.dlg_base.pushButton_8,self.dlg_base.vfs],
-            [self.dlg_base.pushButton_9,self.dlg_base.design],
-            [self.dlg_base.pushButton_5,self.dlg_base.simple_design],
-            [self.dlg_base.pushButton_14,self.dlg_base.advanced_design],
-            [self.dlg_base.pushButton_10,self.dlg_base.calibration],
-            [self.dlg_base.pushButton_15,self.dlg_base.calibration_hydrograph],
-            [self.dlg_base.pushButton_16,self.dlg_base.calibration_sedimentograph],
-            [self.dlg_base.pushButton_11,self.dlg_base.sensitivity_analysis],
-            [self.dlg_base.pushButton_21,self.dlg_base.sensitivity_parameters],
-            [self.dlg_base.pushButton_24,self.dlg_base.sobol_results],
-            [self.dlg_base.pushButton_12,self.dlg_base.uncertainity]]
-        self.group_uno = QButtonGroup(None)
-        self.group_dos = QButtonGroup(None)
-        for i in base_buttons:
-            self.group_uno.addButton(i[0])
-            self.group_dos.addButton(i[1])
-        self.group_uno.setExclusive(True)
-        self.group_dos.setExclusive(True)
 
         #Close osp results dialog
         self.dlg_osp_results.close_dialog.clicked.connect(self.dlg_osp_results.close)
@@ -746,11 +707,12 @@ class qvfsmod:
         self.dlg_base.run_uncertainity.clicked.connect(self.run_uncertainity_analysis_part_one)
         
         #Show sensitivity results
-        self.dlg_base.sobol_results.clicked.connect(self.show_graph_sensitivity_global)
-        self.dlg_base.local_results.clicked.connect(self.show_graph_sensitivity_oat)
+        
+        self.dlg_base.menu_global_results.triggered.connect(self.show_graph_sensitivity_global)
+        self.dlg_base.menu_local_results.triggered.connect(self.show_graph_sensitivity_oat)
         
         #Show uncertainity results
-        self.dlg_base.results_uncertainity.clicked.connect(self.show_graph_sensitivity_uncertainity)
+        self.dlg_base.menu_results_uncertainity.triggered.connect(self.show_graph_sensitivity_uncertainity)
         
         #Browse file sensitivity graph
         self.dlg_base.browse.clicked.connect(self.browse_files_sensitivity_results)
@@ -1904,7 +1866,7 @@ class qvfsmod:
         path = self.obtain_direction_vfsmod(self.dlg_base.uh_input.text())
         #Disconnect storm type
         self.dlg_base.storm_type.currentIndexChanged.disconnect(self.user_defined_storm_type)
-        if os.path.exists(path):  
+        if os.path.exists(path) and os.path.isfile(path):  
             try:
                 with open(path, 'r') as file:
                     lineas = file.readlines()  
@@ -1917,6 +1879,30 @@ class qvfsmod:
                 #Storm type
                 storm_type = int(self.add_values_dialog(lineas,0,3,self.dlg_base.storm_type,True))
                 self.dlg_base.storm_type.setCurrentIndex(storm_type-1)
+                if storm_type == 5: #add to table
+                    self.dlg_user_storm.tableWidget.itemChanged.disconnect(self.update_user_storm_graph)
+                    self.dlg_user_storm.tableWidget.setRowCount(24)
+                    precipitations = []
+                    for i in range(len(lineas)):
+                        if lineas[i][-10:] == "P/P24=0.5\n":
+                            for k in range(i+1,len(lineas)):
+                                try:
+                                    precipitation = float(lineas[k].split()[1])
+                                    time = int(lineas[k].split()[0])
+                                    precipitations.append(precipitation)
+                                    if time == 24:
+                                        break
+                                except:
+                                    pass
+                    
+                    for fila in range(24):
+                        item = QTableWidgetItem(str(precipitations[fila]))
+                        self.dlg_user_storm.tableWidget.setItem(fila, 1, item)
+                        item.setTextAlignment(Qt.AlignCenter)
+                    
+                    self.dlg_user_storm.tableWidget.itemChanged.connect(self.update_user_storm_graph)
+                    self.update_user_storm_graph()
+                
                 #Source Length
                 self.add_values_dialog(lineas,0,5,self.dlg_base.length_source)
                 #Slope
@@ -2821,6 +2807,64 @@ class qvfsmod:
         self.dlg_buffer_segment.show()
         self.update_buffer_segment_graph()
     
+    def update_user_storm_graph(self):  
+        """Method to update the graph of user defined storm"""
+        #Obtain data
+        table = self.dlg_user_storm.tableWidget
+        rows = table.rowCount()
+        data = pd.DataFrame(data = {"Time":[float(table.item(row, 0).text()) for row in range(rows)],
+            "Precipitation":[float(table.item(row, 1).text()) for row in range(rows)]})
+        
+        #Add the graph
+        if not hasattr(self, 'canvas_user_defined_storm'):
+            #Create the canvas of the graph
+            # Si no existe, crear el canvas y añadirlo al layout
+            self.canvas_user_defined_storm = FigureCanvas(plt.Figure(figsize=(15, 6)))
+            # Asignar un layout al QFrame si no tiene uno
+            layout = QVBoxLayout(self.dlg_user_storm.frame_2)
+            self.dlg_user_storm.frame_2.setLayout(layout)
+            #Add canvas to layout
+            layout.addWidget(self.canvas_user_defined_storm)
+        
+        #Add graph
+        #Add graph
+        self.canvas_user_defined_storm.figure.clear()
+        self.ax_user_defined_storm = self.canvas_user_defined_storm.figure.subplots()
+        
+        horas = [x-0.5 for x in list(range(1, 25))]
+        precipitation = [float(data.Precipitation.iloc[0])]+[float(data.Precipitation.iloc[x]) - float(data.Precipitation.iloc[x-1]) for x in range(1,len(data.Precipitation))]
+        self.ax_user_defined_storm.bar(horas,precipitation,color='blue', edgecolor='black', linewidth=0.5,width = 1)
+        
+        #Axis
+        self.ax_user_defined_storm.set_xlabel("Time (s)",size = 10,family="arial",weight = "bold",color = "black")
+        self.ax_user_defined_storm.set_ylabel("Frequency",size = 10,family="arial",weight = "bold",color = "black")
+        self.ax_user_defined_storm.set_xticks(list(range(25)))
+        
+        #Cumulated precipitation
+        # Crear un eje Y secundario
+        self.ax_user_defined_storm_2 = self.ax_user_defined_storm.twinx()
+        self.ax_user_defined_storm_2.plot(data.Time, data.Precipitation, color="red", marker='o')
+        self.ax_user_defined_storm_2.set_ylabel("Cumulative frequency")
+        self.ax_user_defined_storm_2.set_yticks([x/100 for x in range(0,105,5)])
+
+        #X ticks
+        self.ax_user_defined_storm.tick_params(axis = "both",colors = "black",labelsize = 9)
+
+        #Thousand separator
+        #Separador de miles
+        def xfunc(x,pos):
+            s = '{:0,d}'.format(int(x))
+            return s
+        x_format = tkr.FuncFormatter(xfunc)
+        self.ax_user_defined_storm.xaxis.set_major_formatter(x_format)
+        
+        
+        # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+        self.canvas_user_defined_storm.figure.subplots_adjust(wspace=1) #spacing beteween two graphs
+        self.canvas_user_defined_storm.figure.subplots_adjust(left=0.1, bottom=0.2)
+        #Draw canvas
+        self.canvas_user_defined_storm.draw()
+    
     
     def update_buffer_segment_graph(self):
         """Method to update the buffer segment graph"""
@@ -2981,6 +3025,9 @@ class qvfsmod:
         
     def set_timestep_non_editable(self):
         """Method to disable the ability to modify the timestep of the user defined storm and center items"""
+        #Disconnect signal to dont update the graph
+        self.dlg_user_storm.tableWidget.itemChanged.disconnect(self.update_user_storm_graph)
+        
         row_count = self.dlg_user_storm.tableWidget.rowCount()
         
         # Iterar sobre todas las filas y hacer la columna 0 (timestep) no editable
@@ -3002,7 +3049,12 @@ class qvfsmod:
         
         # Deshabilitar el encabezado vertical (números de fila)
         self.dlg_user_storm.tableWidget.verticalHeader().setVisible(False)
-
+        
+        #Change width of precipitation column
+        self.dlg_user_storm.tableWidget.setColumnWidth(1, 250)
+        
+        #Connect signal again
+        self.dlg_user_storm.tableWidget.itemChanged.connect(self.update_user_storm_graph)
     
     
     def browse_design_results_csv(self):
@@ -9710,8 +9762,40 @@ class qvfsmod:
         """Metod to add the user defined storm type data"""
         if self.dlg_base.storm_type.currentIndex()==4:
             self.dlg_user_storm.show()
+            #Add values from files to dialog
+            path = self.obtain_direction_vfsmod(self.dlg_base.uh_input.text())
+            if os.path.exists(path) and os.path.isfile(path):  
+                try:
+                    with open(path, 'r') as file:
+                        lineas = file.readlines()
+                    self.dlg_user_storm.tableWidget.itemChanged.disconnect(self.update_user_storm_graph)
+                    self.dlg_user_storm.tableWidget.setRowCount(24)
+                    precipitations = []
+                    for i in range(len(lineas)):
+                        if lineas[i][-10:] == "P/P24=0.5\n":
+                            for k in range(i+1,len(lineas)):
+                                try:
+                                    precipitation = float(lineas[k].split()[1])
+                                    time = int(lineas[k].split()[0])
+                                    precipitations.append(precipitation)
+                                    if time == 24:
+                                        break
+                                except:
+                                    pass
+                    
+                    for fila in range(24):
+                        item = QTableWidgetItem(str(precipitations[fila]))
+                        self.dlg_user_storm.tableWidget.setItem(fila, 1, item)
+                        item.setTextAlignment(Qt.AlignCenter)
+                    
+                    self.dlg_user_storm.tableWidget.itemChanged.connect(self.update_user_storm_graph)
+                except:
+                    pass
+            #Update graph
+            self.update_user_storm_graph()
         else:
             self.dlg_user_storm.close()
+        
     
     def check_uh_output_exist(self):
         """Method to check if the UH output exists"""
