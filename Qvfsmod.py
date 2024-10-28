@@ -63,6 +63,7 @@ from ui.hydrograph_calibration import hydrograph_calibration
 from ui.discharge_calibration_single import discharge_calibration_single
 from ui.sediment_calibration_single import sediment_calibration_single
 from ui.pesticide_calibration import pesticide_calibration
+from ui.calibration_results_single import calibration_results_single
 
 #Local libraries
 from libraries.SALib.sample import saltelli
@@ -184,6 +185,7 @@ class qvfsmod:
         self.dlg_discharge_calibration_single = discharge_calibration_single()
         self.dlg_sediment_calibration_single = sediment_calibration_single()
         self.dlg_pesticide_calibration = pesticide_calibration()
+        self.dlg_calibration_results_single = calibration_results_single()
         
         #Set working directory
         self.dlg_base.working_directory_vfsmod.textChanged.connect(self.set_working_directory)
@@ -197,6 +199,8 @@ class qvfsmod:
         self.dlg_base.inputs_discharge_single.clicked.connect(self.dlg_discharge_calibration_single.show)
         self.dlg_base.inputs_sediment_single.clicked.connect(self.dlg_sediment_calibration_single.show)
         self.dlg_base.inputs_pesticide_single.clicked.connect(self.dlg_pesticide_calibration.show)
+        self.dlg_base.calibration_result_single.clicked.connect(self.dlg_calibration_results_single.show)
+        
         
         #Calibration results
         self.dlg_base.calibration_result_hydrograph.clicked.connect(self.dlg_calibration_results_hydrograph.show)
@@ -206,7 +210,9 @@ class qvfsmod:
         self.dlg_base.calibration_result_hydrograph.clicked.connect(self.update_graph_calibration_hydrograph)
         self.dlg_calibration_results_sedimentograph.results.textChanged.connect(self.update_graph_calibration_sedimentograph)
         self.dlg_calibration_results_sedimentograph.one_one.toggled.connect(self.update_graph_calibration_sedimentograph)
+        self.dlg_calibration_results_single.results.textChanged.connect(self.update_graph_calibration_single)
         self.dlg_base.calibration_result_sedimentograph.clicked.connect(self.update_graph_calibration_sedimentograph)
+        self.dlg_base.calibration_result_single.clicked.connect(self.update_graph_calibration_single)
         
         #Add shallow water parameters if present
         #For the whole hydrograph
@@ -754,6 +760,7 @@ class qvfsmod:
         #Browse calibration results
         self.dlg_calibration_results_hydrograph.browse.clicked.connect(self.browse_files_calibration_hydrograph)
         self.dlg_calibration_results_sedimentograph.browse.clicked.connect(self.browse_files_calibration_sedimentograph)
+        self.dlg_calibration_results_single.browse.clicked.connect(self.browse_files_calibration_single)
         
         #Update sensitivity graph for Sobol
         self.dlg_base.csv_results_2.textChanged.connect(self.update_sensitivity_graph_global)
@@ -2695,7 +2702,7 @@ class qvfsmod:
                     time.append(float(time_item.text()))
                     discharge.append(float(discharge_item.text()))
                 except:
-                    return
+                    break
         
         #Creation of graph        
         self.ax_vfsmod_hydrograph.plot(time,discharge,color='blue', linewidth=2, marker='o', markersize=4)
@@ -2761,9 +2768,11 @@ class qvfsmod:
                     time.append(float(time_item.text()))
                     precipitation.append(float(precipitation_item.text()))
                 except:
-                    return
+                    break
         
-        #Creation of graph        
+        #Creation of graph       
+        print("precipitation",precipitation)
+        print("time",time)
         widths = [time[i+1] - time[i] for i in range(len(time)-1)]
         self.ax_vfsmod_hyetograph.bar(time[:-1],precipitation[:-1],width=widths,color='blue', align='edge', edgecolor='black', linewidth=0.5)
         #Axis
@@ -3055,6 +3064,18 @@ class qvfsmod:
             else: #absolute path
                 text = fname[0]
             self.dlg_calibration_results_sedimentograph.results.setText(text)
+    
+    def browse_files_calibration_single(self):
+        """Method to select the file for single calibration results"""
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        fname = QFileDialog.getOpenFileName(self.dlg_calibration_results_single, "Select Calibration Results File",working_directory+"\\inverse" , "CSV files (*.csv)")
+        if fname[0]!="":
+            #Put the relative path if the file is inside the folder
+            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
+                text = os.path.relpath(fname[0], working_directory)
+            else: #absolute path
+                text = fname[0]
+            self.dlg_calibration_results_single.results.setText(text)
     
     def browse_csv_oat(self):
         """Method to add csv of oat results"""
@@ -5092,7 +5113,7 @@ class qvfsmod:
         self.move_files_calibration_single()
         
         #Error if pesticide calibration is selected but there is not water quality
-        if self.water_quality and (self.dlg_base.check_filtered_pesticide.isChecked() or self.dlg_base.check_pesticide_out.isChecked() or self.dlg_base.check_pesticide_solid.isChecked() or self.dlg_base.check_pesticide_liquid.isChecked()):
+        if not self.water_quality and (self.dlg_base.check_filtered_pesticide.isChecked() or self.dlg_base.check_pesticide_out.isChecked() or self.dlg_base.check_pesticide_solid.isChecked() or self.dlg_base.check_pesticide_liquid.isChecked()):
             self.warning_message("Pesticide calibration is selected but the project doesn't contain the water quality module")
             return
         
@@ -5869,8 +5890,6 @@ class qvfsmod:
         for k,i in enumerate(self.calibration_dictionary.keys()):
             dic_inputs[i]= input_parameters[k]
         #Modify inputs
-        print(self.calibration_dictionary)
-        print(dic_inputs)
         for i in dic_inputs.keys():
             #DISCHARGE VALUES
             #vertical
@@ -5896,7 +5915,7 @@ class qvfsmod:
                 self.modify_inputs_calibration("ikw",1,0,dic_inputs[i])
             #length
             elif i=="length":
-                self.modify_ikw_file_calibration(dic_inputs[i])
+                self.modify_ikw_file_calibration_single(dic_inputs[i])
             #manning
             elif i=="manning":
                 self.modify_mannign_slope_hydrograph_calibration(1,dic_inputs[i])
@@ -5945,7 +5964,6 @@ class qvfsmod:
             #SEDIMENT VALUES
             #spacing
             elif i=="spacing":
-                print("yes")
                 self.modify_inputs_calibration("igr",0,0,dic_inputs[i])
             #roughness grass
             elif i=="rougheness_grass":
@@ -6329,8 +6347,8 @@ class qvfsmod:
                 self.ax_calibration_progress[i].set_ylabel(label)
             
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-            self.canvas_calibration_graph.figure.subplots_adjust(wspace=0.7) #spacing beteween two graphs
-            self.canvas_calibration_graph.figure.subplots_adjust(left=0.3, bottom=0.2)
+            self.canvas_calibration_graph.figure.subplots_adjust(wspace=1) #spacing beteween two graphs
+            self.canvas_calibration_graph.figure.subplots_adjust(left=0.1, bottom=0.2)
             #Draw canvas
             self.canvas_calibration_graph.draw()
             
@@ -6347,35 +6365,39 @@ class qvfsmod:
             self.dlg_calibration_progress.textEdit.moveCursor(QtGui.QTextCursor.End) #move to end the text to see it
             
             #Add graph
-            #Then add the graph
-            self.canvas_calibration_graph.figure.clear()
-            if len(self.output_calibrate_single.keys()) == 1:
-                self.ax_calibration_progress = [self.canvas_calibration_graph.figure.subplots(1,len(self.output_calibrate_single.keys()))]
-            else:
-                self.ax_calibration_progress = self.canvas_calibration_graph.figure.subplots(1,len(self.output_calibrate_single.keys()))
-            
-            
-            labels_observed = list(self.output_calibrate_single.keys())
-            values_observed = list(self.output_calibrate_single.values())
-            
-            labels_simulated = list(self.calibration_single_results.keys())
-            values_simulated = list(self.calibration_single_results.values())
-            
-            for i in range(len(self.output_calibrate_single.keys())):
-                #Add graph
-                self.ax_calibration_progress[i].bar("Observed", values_observed[i], color='skyblue')
-                self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-                #Add values
-                self.ax_calibration_progress[i].text("Observed", values_observed[i] + (values_observed[i] * 0.05), f'{values_observed[i]}', ha='center')
-                self.ax_calibration_progress[i].text("Simulated", values_simulated[i] + (values_simulated[i] * 0.05), f'{values_simulated[i]}', ha='center')
-                #Add title x and y axis
-                self.ax_calibration_progress[i].set_ylabel(labels_simulated[i])
-            
-            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-            self.canvas_calibration_graph.figure.subplots_adjust(wspace=0.7) #spacing beteween two graphs
-            self.canvas_calibration_graph.figure.subplots_adjust(left=0.25, bottom=0.2)
-            #Draw canvas
-            self.canvas_calibration_graph.draw()
+            #Only if there as not been an error
+            if information[1] != 1e20:
+                self.canvas_calibration_graph.figure.clear()
+                if len(self.output_calibrate_single.keys()) == 1:
+                    self.ax_calibration_progress = [self.canvas_calibration_graph.figure.subplots(1,len(self.output_calibrate_single.keys()))]
+                else:
+                    self.ax_calibration_progress = self.canvas_calibration_graph.figure.subplots(1,len(self.output_calibrate_single.keys()))
+                
+                
+                labels_observed = list(self.output_calibrate_single.keys())
+                values_observed = list(self.output_calibrate_single.values())
+                
+                labels_simulated = list(self.calibration_single_results.keys())
+                values_simulated = list(self.calibration_single_results.values())
+                
+                for i in range(len(self.output_calibrate_single.keys())):
+                    #Add graph
+                    self.ax_calibration_progress[i].bar("Observed", values_observed[i], color='skyblue')
+                    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
+                    #Rotate ticks
+                    self.ax_calibration_progress[i].set_xticks(["Observed", "Simulated"])
+                    self.ax_calibration_progress[i].set_xticklabels(["Observed", "Simulated"], rotation=45)
+                    #Add values
+                    self.ax_calibration_progress[i].text("Observed", values_observed[i] + (values_observed[i] * 0.05), f'{values_observed[i]}', ha='center')
+                    self.ax_calibration_progress[i].text("Simulated", values_simulated[i] + (values_simulated[i] * 0.05), f'{round(values_simulated[i],3)}', ha='center')
+                    #Add title x and y axis
+                    self.ax_calibration_progress[i].set_ylabel(labels_simulated[i])
+                
+                # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+                self.canvas_calibration_graph.figure.subplots_adjust(wspace=1) #spacing beteween two graphs
+                self.canvas_calibration_graph.figure.subplots_adjust(left=0.1, bottom=0.2)
+                #Draw canvas
+                self.canvas_calibration_graph.draw()
 
             
     
@@ -6514,6 +6536,13 @@ class qvfsmod:
                             f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]},")
                         else:
                             f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]}\n")
+                    f.write(f"Observed vs predicted values: \n")
+                    for i in range(len(self.output_calibrate_single.keys())):
+                        if i != len(self.output_calibrate_single.keys())-1:
+                            f.write(f"{list(self.output_calibrate_single.keys())[i]}: {list(self.output_calibrate_single.values())[i]}-{list(self.calibration_single_results.values())[i]},")
+                        else:
+                            f.write(f"{list(self.output_calibrate_single.keys())[i]}: {list(self.output_calibrate_single.values())[i]}-{list(self.calibration_single_results.values())[i]}\n")
+                        
             except PermissionError:
                 self.warning_message(f"{path} file is opened. Please close it to save results")
             
@@ -6526,6 +6555,9 @@ class qvfsmod:
                     f.write(f"All calibration executions gave errors. Please check project file or the intervals added." + '\n')
             except PermissionError:
                 self.warning_message(f"{path} file is opened. Please close it to save results")
+        
+        #Put filepath in the results dialog
+        self.dlg_calibration_results_single.results.setText(self.dlg_calibration_advanced_settings_single.exit_file.text())
     
     def add_optimized_project_to_folder(self):
         """Method to add the optimized project to the working folder with a name to informe that it is optimized"""
@@ -6748,6 +6780,70 @@ class qvfsmod:
             self.canvas_calibration_graph_sedimentograph.figure.subplots_adjust(left=0.2, bottom=0.2)
             #Draw canvas
             self.canvas_calibration_graph_sedimentograph.draw()
+    
+    def update_graph_calibration_single(self):
+        """Method to update the graph of calibration"""
+        path = self.obtain_direction_vfsmod(self.dlg_calibration_results_single.results.text())
+        if os.path.exists(path) and os.path.isfile(path):    
+            #First add the text
+            with open(path, "r") as archivo:
+                lineas = archivo.readlines()
+            contenido = ""
+            data = {}
+            for k,i in enumerate(lineas):
+                if i==f"Observed vs predicted values: \n":
+                    for m in lineas[k+1].split(","):
+                        parameter = m.split(":")[0]
+                        observed = m.split(":")[1].split("-")[0]
+                        simulated = m.split(":")[1].split("-")[1]
+                        data[parameter] = [observed,simulated]
+                contenido += i
+            self.dlg_calibration_results_single.textEdit.setPlainText(contenido)
+            
+            #Add the graph
+            if not hasattr(self, 'canvas_calibration_graph_single'):
+                #Create the canvas of the graph
+                # Si no existe, crear el canvas y añadirlo al layout
+                self.canvas_calibration_graph_single = FigureCanvas(plt.Figure(figsize=(15, 6)))
+                # Asignar un layout al QFrame si no tiene uno
+                layout = QVBoxLayout(self.dlg_calibration_results_single.frame)
+                self.dlg_calibration_results_single.frame.setLayout(layout)
+                #Add canvas to layout
+                layout.addWidget(self.canvas_calibration_graph_single)
+            
+            #Add graph
+            #Add graph
+            self.canvas_calibration_graph_single.figure.clear()
+            if len(self.output_calibrate_single.keys()) == 1:
+                self.ax_calibration_results_single = [self.canvas_calibration_graph_single.figure.subplots(1,len(self.output_calibrate_single.keys()))]
+            else:
+                self.ax_calibration_results_single = self.canvas_calibration_graph_single.figure.subplots(1,len(self.output_calibrate_single.keys()))
+            
+            
+            labels_observed = list(self.output_calibrate_single.keys())
+            values_observed = list(self.output_calibrate_single.values())
+            
+            labels_simulated = list(self.calibration_single_results.keys())
+            values_simulated = list(self.calibration_single_results.values())
+            
+            for i in range(len(self.output_calibrate_single.keys())):
+                #Add graph
+                self.ax_calibration_results_single[i].bar("Observed", values_observed[i], color='skyblue')
+                self.ax_calibration_results_single[i].bar("Simulated", values_simulated[i], color='red')
+                #Rotate ticks
+                self.ax_calibration_results_single[i].set_xticks(["Observed", "Simulated"])
+                self.ax_calibration_results_single[i].set_xticklabels(["Observed", "Simulated"], rotation=45)
+                #Add values
+                self.ax_calibration_results_single[i].text("Observed", values_observed[i] + (values_observed[i] * 0.05), f'{values_observed[i]}', ha='center')
+                self.ax_calibration_results_single[i].text("Simulated", values_simulated[i] + (values_simulated[i] * 0.05), f'{round(values_simulated[i],3)}', ha='center')
+                #Add title x and y axis
+                self.ax_calibration_results_single[i].set_ylabel(labels_simulated[i])
+            
+            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+            self.canvas_calibration_graph_single.figure.subplots_adjust(wspace=1) #spacing beteween two graphs
+            self.canvas_calibration_graph_single.figure.subplots_adjust(left=0.1, bottom=0.2)
+            #Draw canvas
+            self.canvas_calibration_graph_single.draw()
             
             
             
@@ -7077,7 +7173,7 @@ class qvfsmod:
         
         
         #Change inputs if "Change" has selected
-        self.change_base_inputs_calibration_hydrograph([vertical,average,saturated,initial,maximum,fraction,width,length,manning,slope,
+        self.change_base_inputs_calibration_single([vertical,average,saturated,initial,maximum,fraction,width,length,manning,slope,
             water_depth,soil_saturated,soil_or,soil_vgalpha,soil_vgn,soil_vgm,soil_bcalpha,soil_bclamda,unsaturated_vgm,unsaturated_bceta,unsaturated_bcalpha,usaturated_gdalpha,
             spacing,rougheness_grass,height,roughness_bare,coarse_sediment,incoming_flow,porosity,particle_class,particle_densitiy,
             clay,top,mixing_layer,linear_sorption,adsorption_coefficient,organic_carbon])
@@ -7282,6 +7378,127 @@ class qvfsmod:
         #usaturated_gdalpha
         if inputs[21]=="change":
             self.modify_inputs_calibration("iso",3,1,self.dlg_hydrograph_calibration.new_unsaturated_gdalpha.text())
+    
+    def change_base_inputs_calibration_single(self,inputs):
+        """Method to change the inputs in the calibration of hydrograph if change is selected"""
+        #HYDROGRAPH
+        #vertical
+        if inputs[0]=="change":
+            self.modify_inputs_calibration("iso",0,0,self.dlg_discharge_calibration_single.new_vertical.text())
+        #average
+        if inputs[1]=="change":
+            self.modify_inputs_calibration("iso",0,1,self.dlg_discharge_calibration_single.new_average.text())
+        #saturated
+        if inputs[2]=="change":
+            self.modify_inputs_calibration("iso",0,2,self.dlg_discharge_calibration_single.new_saturated.text())
+        #initial
+        if inputs[3]=="change":
+            self.modify_inputs_calibration("iso",0,3,self.dlg_discharge_calibration_single.new_initial.text())
+        #maximum
+        if inputs[4]=="change":
+            self.modify_inputs_calibration("iso",0,4,self.dlg_discharge_calibration_single.new_maximum.text())
+        #fraction
+        if inputs[5]=="change":
+            self.modify_inputs_calibration("iso",0,5,self.dlg_discharge_calibration_single.new_fraction.text())
+        #width
+        if inputs[6]=="change":
+            self.modify_inputs_calibration("ikw",1,0,self.dlg_discharge_calibration_single.new_width.text())
+        #length
+        if inputs[7]=="change":
+            self.modify_ikw_file_calibration_single(self.dlg_discharge_calibration_single.new_length.text())
+        #manning
+        if inputs[8]=="change":
+            self.modify_mannign_slope_hydrograph_calibration(1,self.dlg_discharge_calibration_single.new_manning.text())
+        #slope
+        if inputs[9]=="change":
+            self.modify_mannign_slope_hydrograph_calibration(2,self.dlg_discharge_calibration_single.new_slope.text())
+            
+        #water_depth
+        if inputs[10]=="change":
+            self.modify_inputs_calibration("iso",1,0,self.dlg_discharge_calibration_single.new_depth.text())
+        #soil_saturated
+        if inputs[11]=="change":
+            self.modify_inputs_calibration("iso",4,0,self.dlg_discharge_calibration_single.new_ansiotropy.text())
+        #soil_or
+        if inputs[12]=="change":
+            self.modify_inputs_calibration("iso",2,1,self.dlg_discharge_calibration_single.new_soil_or.text())
+        #soil_vgalpha
+        if inputs[13]=="change":
+            self.modify_inputs_calibration("iso",2,2,self.dlg_discharge_calibration_single.new_soil_vgalpha.text())
+        #soil_vgn
+        if inputs[14]=="change":
+            self.modify_inputs_calibration("iso",2,3,self.dlg_discharge_calibration_single.new_soil_vgn.text())
+        #soil_vgm
+        if inputs[15]=="change":
+            self.modify_inputs_calibration("iso",2,4,self.dlg_discharge_calibration_single.new_soil_vgm.text())
+        #soil_bcalpha
+        if inputs[16]=="change":
+            self.modify_inputs_calibration("iso",2,2,self.dlg_discharge_calibration_single.new_soil_bcalpha.text())
+        #soil_bclamda
+        if inputs[17]=="change":
+            self.modify_inputs_calibration("iso",2,3,self.dlg_discharge_calibration_single.new_soil_bclambda.text())
+        #unsaturated_vgm
+        if inputs[18]=="change":
+            self.modify_inputs_calibration("iso",3,1,self.dlg_discharge_calibration_single.new_unsaturated_vgm.text())
+        #unsaturated_bceta
+        if inputs[19]=="change":
+            self.modify_inputs_calibration("iso",3,1,self.dlg_discharge_calibration_single.new_unsaturated_bceta.text())
+        #unsaturated_bcalpha
+        if inputs[20]=="change":
+            self.modify_inputs_calibration("iso",3,2,self.dlg_discharge_calibration_single.new_unsaturated_bcalpha.text())
+        #usaturated_gdalpha
+        if inputs[21]=="change":
+            self.modify_inputs_calibration("iso",3,1,self.dlg_discharge_calibration_single.new_unsaturated_gdalpha.text())
+        
+        #SEDIMENTOGRAPH
+        #spacing
+        if inputs[22]=="change":
+            self.modify_inputs_calibration("igr",0,0,self.dlg_sediment_calibration_single.new_spacing.text())
+        #roughness grass
+        if inputs[23]=="change":
+            self.modify_inputs_calibration("igr",0,1,self.dlg_sediment_calibration_single.new_roughness.text())
+        #height
+        if inputs[24]=="change":
+            self.modify_inputs_calibration("igr",0,2,self.dlg_sediment_calibration_single.new_height.text())
+        #roughness bare
+        if inputs[25]=="change":
+            self.modify_inputs_calibration("igr",0,3,self.dlg_sediment_calibration_single.new_bare.text())
+        #coarse
+        if inputs[26]=="change":
+            self.modify_inputs_calibration("isd",0,1,self.dlg_sediment_calibration_single.new_coarse.text())
+        #incoming
+        if inputs[27]=="change":
+            self.modify_inputs_calibration("isd",0,2,self.dlg_sediment_calibration_single.new_incoming.text())
+        #porosity
+        if inputs[28]=="change":
+            self.modify_inputs_calibration("isd",0,3,self.dlg_sediment_calibration_single.new_porosity.text())
+        #sediment_class
+        if inputs[29]=="change":
+            self.modify_inputs_calibration("isd",1,0,self.dlg_sediment_calibration_single.new_class.text())
+        #sediment_density
+        if inputs[30]=="change":
+            self.modify_inputs_calibration("isd",1,1,self.dlg_sediment_calibration_single.new_density.text())
+        
+        #PESTICIDE
+        #clay
+        if inputs[31]=="change":
+            self.modify_inputs_calibration("iwq",2,0,self.dlg_pesticide_calibration.new_clay.text())
+        #top
+        if inputs[32]=="change":
+            self.modify_inputs_calibration("iwq",4,2,self.dlg_pesticide_calibration.new_top.text())
+        #mixing layer
+        if inputs[33]=="change":
+            self.modify_inputs_calibration("iwq",4,4,self.dlg_pesticide_calibration.new_mixing.text())
+        #linear sorption
+        if inputs[34]=="change":
+            self.modify_inputs_calibration("iwq",1,1,self.dlg_pesticide_calibration.new_linear.text())
+        #adsorption coefficient
+        if inputs[35]=="change":
+            self.modify_inputs_calibration("iwq",1,1,self.dlg_pesticide_calibration.new_adsorption.text())
+        #organic carbon
+        if inputs[36]=="change":
+            self.modify_inputs_calibration("iwq",1,2,self.dlg_pesticide_calibration.new_organic.text())
+        
         
         
     def modify_mannign_slope_hydrograph_calibration(self,column,new_value):
@@ -7306,6 +7523,7 @@ class qvfsmod:
             with open(ikw, 'w') as archivo:
                 for i in lineas:
                     archivo.write(i)
+    
             
     def modify_ikw_file_calibration(self,value_change):
         """Metod to modify the ikw file for the hydrograph calibration"""
@@ -7332,6 +7550,69 @@ class qvfsmod:
         #Data frame, but we take it from the original, not from the last execution
         #We import dataframe of segments from the original file
         ruta = self.obtain_direction_vfsmod(self.dlg_base.vfs_project.text())
+        with open(ruta, "r") as archivo:
+            lineas_prj = archivo.readlines()
+        ikw_original = lineas_prj[0].split("=")[-1]
+        if not os.path.isabs(ikw_original): #relative path
+            ikw_original = os.path.join(os.path.dirname(ruta), ikw_original)
+        ikw_original = ikw_original.replace("\n", "")
+        with open(ikw_original, "r") as archivo:
+            lineas_ikw_original = archivo.readlines()
+        
+        #Data frame    
+        df = pd.DataFrame(data = {"Distance":[list(map(float, lineas_ikw_original[x].split()))[0] for x in range(4,4+number_segments)],
+                             "Manning":[list(map(float, lineas_ikw_original[x].split()))[1] for x in range(4,4+number_segments)],
+                             "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
+        
+        
+        actual_length = max(df["Distance"])
+        length_to_change = float(value_change)
+        if length_to_change <= actual_length:
+            df = df[df["Distance"]<=length_to_change]
+            df.loc[df.index[-1], "Distance"] = length_to_change
+        else:
+            df.loc[df.index[-1], "Distance"] = length_to_change
+        
+        
+        #Add to the file information 
+        lineas[3] = modify_number_in_string(lineas[3],0,len(df)) #change number of segments
+    
+        #Add to the file information
+        contenido = ""
+        for i in lineas[:4]:    
+            contenido+=f"{i}"
+        for i in range(len(df)):
+            contenido +=f" {df.iloc[i,0]}   {df.iloc[i,1]}   {df.iloc[i,2]}\n"
+        for i in lineas[-8:]:    
+            contenido+=f"{i}"
+        with open(ikw, 'w') as archivo:
+            archivo.write(contenido)
+    
+    def modify_ikw_file_calibration_single(self,value_change):
+        """Metod to modify the ikw file for the single calibration"""
+        #We obtain information of ikw file
+        ikw = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inputs\\inverse.ikw"
+        #We substitute value of length
+        with open(ikw, "r") as archivo:
+            lineas = archivo.readlines()
+
+        def modify_number_in_string(numbers_str, index, new_value):
+            # Use regex to find all numbers in the string
+            matches = re.findall(r'\S+', numbers_str)
+            # Replace the specific number at the given index
+            matches[index] = str(new_value)
+            # Rebuild the string by replacing only the specific number
+            return re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+        lineas[2] = modify_number_in_string(lineas[2],0,value_change)
+        
+        #Then we update the segments
+        number_segments = int(lineas[3])
+        length = list(map(float, lineas[2].split()))[0]
+        new_interval = length/number_segments
+        
+        #Data frame, but we take it from the original, not from the last execution
+        #We import dataframe of segments from the original file
+        ruta = self.obtain_direction_vfsmod(self.dlg_base.single_values_line.text())
         with open(ruta, "r") as archivo:
             lineas_prj = archivo.readlines()
         ikw_original = lineas_prj[0].split("=")[-1]
@@ -8077,10 +8358,13 @@ class qvfsmod:
             columna_1 = []
             columna_2 = []
             for linea in lineas:
-                columnas = linea.split()
-                if len(columnas) >= 2:
-                    columna_1.append(float(columnas[0]))
-                    columna_2.append(float(columnas[1]))
+                try:
+                    columnas = linea.split()
+                    if len(columnas) >= 2:
+                        columna_1.append(float(columnas[0]))
+                        columna_2.append(float(columnas[1]))
+                except:
+                    break
         #Add rainfall maximum intensity
         self.dlg_vfsmod_hyetograph.maximum_rainfall.setText(str(columna_2[0]))
         #Add the table

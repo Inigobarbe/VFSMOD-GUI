@@ -1632,7 +1632,7 @@ QTableCornerButton::section {
 }</string>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>5</number>
         </property>
         <widget class="QWidget" name="page_folder">
          <property name="styleSheet">
@@ -4275,7 +4275,7 @@ typical 0.01-0.07</string>
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>0</y>
+               <y>-122</y>
                <width>874</width>
                <height>773</height>
               </rect>
@@ -4900,7 +4900,7 @@ typical 0.01-0.07</string>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="pushButton_17">
+                    <widget class="QPushButton" name="calibration_result_single">
                      <property name="text">
                       <string>Results</string>
                      </property>
@@ -5536,7 +5536,7 @@ Solution Parameters</string>
                       <x>0</x>
                       <y>0</y>
                       <width>290</width>
-                      <height>173</height>
+                      <height>28</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_79">
@@ -6531,7 +6531,7 @@ Solution Parameters</string>
                       <x>0</x>
                       <y>0</y>
                       <width>290</width>
-                      <height>173</height>
+                      <height>28</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_86">
