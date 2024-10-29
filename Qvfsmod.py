@@ -64,6 +64,8 @@ from ui.discharge_calibration_single import discharge_calibration_single
 from ui.sediment_calibration_single import sediment_calibration_single
 from ui.pesticide_calibration import pesticide_calibration
 from ui.calibration_results_single import calibration_results_single
+from ui.hydrograph_calibration_edit import hydrograph_calibration_edit
+from ui.sedimentograph_calibration_edit import sedimentograph_calibration_edit
 
 #Local libraries
 from libraries.SALib.sample import saltelli
@@ -186,12 +188,38 @@ class qvfsmod:
         self.dlg_sediment_calibration_single = sediment_calibration_single()
         self.dlg_pesticide_calibration = pesticide_calibration()
         self.dlg_calibration_results_single = calibration_results_single()
+        self.dlg_hydrograph_calibration_edit = hydrograph_calibration_edit()
+        self.dlg_sedimentograph_calibration_edit = sedimentograph_calibration_edit()
+        
         
         #Set working directory
         self.dlg_base.working_directory_vfsmod.textChanged.connect(self.set_working_directory)
         
         #If the storm type is user defined, then emerges a dialog to add the data
         self.dlg_base.storm_type.currentIndexChanged.connect(self.user_defined_storm_type)
+        
+        #Edit calibration
+        self.dlg_base.edit_hydrograph.clicked.connect(self.dlg_hydrograph_calibration_edit_show)
+        self.dlg_hydrograph_calibration_edit.tableWidget.itemChanged.connect(self.dlg_hydrograph_calibration_edit_update_graph)
+        self.dlg_hydrograph_calibration_edit.file_hydrograph.textChanged.connect(self.dlg_hydrograph_calibration_edit_add_values_table)
+        self.dlg_hydrograph_calibration_edit.browse_hydrograph.clicked.connect(self.dlg_hydrograph_calibration_edit_browse)
+        self.dlg_hydrograph_calibration_edit.add.clicked.connect(lambda _, b = self.dlg_hydrograph_calibration_edit.tableWidget:self.dlg_hydrograph_calibration_edit_add(b))
+        self.dlg_hydrograph_calibration_edit.remove.clicked.connect(lambda _, b = self.dlg_hydrograph_calibration_edit.tableWidget:self.dlg_hydrograph_calibration_edit_remove(b))
+        self.dlg_hydrograph_calibration_edit.save_continue.clicked.connect(lambda _, b = False:self.dlg_hydrograph_calibration_edit_save(b))
+        self.dlg_hydrograph_calibration_edit.save_close.clicked.connect(lambda _, b = True:self.dlg_hydrograph_calibration_edit_save(b))
+        self.dlg_hydrograph_calibration_edit.close_dialog.clicked.connect(self.dlg_hydrograph_calibration_edit.close)
+        
+        
+        self.dlg_base.edit_sedimentograph.clicked.connect(self.dlg_sedimentograph_calibration_edit_show)
+        self.dlg_sedimentograph_calibration_edit.tableWidget.itemChanged.connect(self.dlg_sedimentograph_calibration_edit_update_graph)
+        self.dlg_sedimentograph_calibration_edit.file_sedimentograph.textChanged.connect(self.dlg_sedimentograph_calibration_edit_add_values_table)
+        self.dlg_sedimentograph_calibration_edit.browse_sedimentograph.clicked.connect(self.dlg_sedimentograph_calibration_edit_browse)
+        self.dlg_sedimentograph_calibration_edit.add.clicked.connect(lambda _, b = self.dlg_sedimentograph_calibration_edit.tableWidget:self.dlg_hydrograph_calibration_edit_add(b))
+        self.dlg_sedimentograph_calibration_edit.remove.clicked.connect(lambda _, b = self.dlg_sedimentograph_calibration_edit.tableWidget:self.dlg_hydrograph_calibration_edit_remove(b))
+        self.dlg_sedimentograph_calibration_edit.save_continue.clicked.connect(lambda _, b = False:self.dlg_sedimentograph_calibration_edit_save(b))
+        self.dlg_sedimentograph_calibration_edit.save_close.clicked.connect(lambda _, b = True:self.dlg_sedimentograph_calibration_edit_save(b))
+        self.dlg_sedimentograph_calibration_edit.close_dialog.clicked.connect(self.dlg_sedimentograph_calibration_edit.close)
+        
         
         #Show calibration 
         self.dlg_base.show_calibration_hydrograph.clicked.connect(self.dlg_hydrograph_calibration.show)
@@ -231,16 +259,16 @@ class qvfsmod:
         #Stacked widget
         
         # Conectar la acción a la función deseada
-        self.dlg_base.actionProject_selection.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_folder))
+        self.dlg_base.actionProject_Selection.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_folder))
         self.dlg_base.actionSource_Area_UH.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_uh))
         self.dlg_base.actionVegetative_Strip_VFS.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_vfs))
-        self.dlg_base.actionSimple_design.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design_simple))
-        self.dlg_base.actionComplete_calibration.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration_hydrograph))
-        self.dlg_base.menu_execution_sensitivity.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sensitivity_analysis))
-        self.dlg_base.menu_global_results.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sobol_results))
-        self.dlg_base.menu_local_results.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.oat_results))
-        self.dlg_base.menu_execution_uncertainity.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.uncertainity_page))
-        self.dlg_base.menu_results_uncertainity.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_results_uncertainity))
+        self.dlg_base.actionSimple_Design.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design_simple))
+        self.dlg_base.actionComplete_Calibration.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration_hydrograph))
+        self.dlg_base.actionExecution.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sensitivity_analysis))
+        self.dlg_base.actionGlobal_Results.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sobol_results))
+        self.dlg_base.actionLocal_Results.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.oat_results))
+        self.dlg_base.actionExecution_of_Uncertainity_Analysis.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.uncertainity_page))
+        self.dlg_base.actionResults.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_results_uncertainity))
         
 
         #Close osp results dialog
@@ -707,12 +735,11 @@ class qvfsmod:
         self.dlg_base.run_uncertainity.clicked.connect(self.run_uncertainity_analysis_part_one)
         
         #Show sensitivity results
-        
-        self.dlg_base.menu_global_results.triggered.connect(self.show_graph_sensitivity_global)
-        self.dlg_base.menu_local_results.triggered.connect(self.show_graph_sensitivity_oat)
+        self.dlg_base.actionGlobal_Results.triggered.connect(self.show_graph_sensitivity_global)
+        self.dlg_base.actionLocal_Results.triggered.connect(self.show_graph_sensitivity_oat)
         
         #Show uncertainity results
-        self.dlg_base.menu_results_uncertainity.triggered.connect(self.show_graph_sensitivity_uncertainity)
+        self.dlg_base.actionResults.triggered.connect(self.show_graph_sensitivity_uncertainity)
         
         #Browse file sensitivity graph
         self.dlg_base.browse.clicked.connect(self.browse_files_sensitivity_results)
@@ -807,6 +834,259 @@ class qvfsmod:
         
         #Update uncertainity graph
         self.dlg_base.csv_results_uncertainity.textChanged.connect(self.update_graph_uncertainity)
+    
+    
+    def dlg_hydrograph_calibration_edit_show(self):
+        """Method to show the editable hyddrograph for the calibration"""
+        #Add text of the file
+        self.dlg_hydrograph_calibration_edit.file_hydrograph.setText(self.dlg_base.hydrograph_file.text())
+        #Update graph
+        self.dlg_hydrograph_calibration_edit_add_values_table()
+        #Show dialog
+        self.dlg_hydrograph_calibration_edit.show()
+    
+    def dlg_sedimentograph_calibration_edit_show(self):
+        """Method to show the editable hyddrograph for the calibration"""
+        #Add text of the file
+        self.dlg_sedimentograph_calibration_edit.file_sedimentograph.setText(self.dlg_base.sedimentograph_file.text())
+        #Update graph
+        self.dlg_sedimentograph_calibration_edit_add_values_table()
+        #Show dialog
+        self.dlg_sedimentograph_calibration_edit.show()
+    
+    def dlg_sedimentograph_calibration_edit_add_values_table(self):  
+        """Method to update the graph of the hydrograph"""
+        path = self.obtain_direction_vfsmod(self.dlg_sedimentograph_calibration_edit.file_sedimentograph.text())
+        if os.path.exists(path) and os.path.isfile(path):
+            with open(path, "r") as archivo:
+                lineas = archivo.readlines()
+            #Obtain values
+            time = []
+            value = []
+            for i in lineas:
+                if len(i.split())>1:
+                    time.append(float(i.split()[0]))
+                    value.append(float(i.split()[1]))
+            data = pd.DataFrame(data = {"Time":time,"Value":value}) 
+            #Put them in the table
+            table = self.dlg_sedimentograph_calibration_edit.tableWidget
+            self.dlg_sedimentograph_calibration_edit.tableWidget.itemChanged.disconnect(self.dlg_sedimentograph_calibration_edit_update_graph)
+            table.setRowCount(len(time))
+            for fila in range(len(time)):
+                for columna in range(2):
+                    item = QTableWidgetItem(str(data.iloc[fila,columna]))
+                    table.setItem(fila, columna, item)
+                    item.setTextAlignment(Qt.AlignCenter)
+            #Connect again method
+            self.dlg_sedimentograph_calibration_edit.tableWidget.itemChanged.connect(self.dlg_sedimentograph_calibration_edit_update_graph)
+            #Update graph
+            self.dlg_sedimentograph_calibration_edit_update_graph()
+    
+    def dlg_hydrograph_calibration_edit_add_values_table(self):  
+        """Method to update the graph of the hydrograph"""
+        path = self.obtain_direction_vfsmod(self.dlg_hydrograph_calibration_edit.file_hydrograph.text())
+        if os.path.exists(path) and os.path.isfile(path):
+            with open(path, "r") as archivo:
+                lineas = archivo.readlines()
+            #Obtain values
+            time = []
+            value = []
+            for i in lineas:
+                if len(i.split())>1:
+                    time.append(float(i.split()[0]))
+                    value.append(float(i.split()[1]))
+            data = pd.DataFrame(data = {"Time":time,"Value":value}) 
+            #Put them in the table
+            table = self.dlg_hydrograph_calibration_edit.tableWidget
+            self.dlg_hydrograph_calibration_edit.tableWidget.itemChanged.disconnect(self.dlg_hydrograph_calibration_edit_update_graph)
+            table.setRowCount(len(time))
+            for fila in range(len(time)):
+                for columna in range(2):
+                    item = QTableWidgetItem(str(data.iloc[fila,columna]))
+                    table.setItem(fila, columna, item)
+                    item.setTextAlignment(Qt.AlignCenter)
+            #Connect again method
+            self.dlg_hydrograph_calibration_edit.tableWidget.itemChanged.connect(self.dlg_hydrograph_calibration_edit_update_graph)
+            #Update graph
+            self.dlg_hydrograph_calibration_edit_update_graph()
+    
+    def dlg_hydrograph_calibration_edit_update_graph(self):
+        """Method to update graph of hydrograph for calibration"""
+        try:
+            #First obtain the data
+            table = self.dlg_hydrograph_calibration_edit.tableWidget
+            rows = table.rowCount()
+            data = pd.DataFrame(data = {"Time":[float(table.item(row, 0).text()) for row in range(rows)],
+                "Value":[float(table.item(row, 1).text()) for row in range(rows)]})
+            
+            #Add the graph
+            if not hasattr(self, 'canvas_hydrograph_edit_calibration'):
+                #Create the canvas of the graph
+                # Si no existe, crear el canvas y añadirlo al layout
+                self.canvas_hydrograph_edit_calibration = FigureCanvas(plt.Figure(figsize=(15, 6)))
+                # Asignar un layout al QFrame si no tiene uno
+                layout = QVBoxLayout(self.dlg_hydrograph_calibration_edit.frame_2)
+                self.dlg_hydrograph_calibration_edit.frame_2.setLayout(layout)
+                #Add canvas to layout
+                layout.addWidget(self.canvas_hydrograph_edit_calibration)
+            
+            #Add graph
+            #Add graph
+            self.canvas_hydrograph_edit_calibration.figure.clear()
+            self.ax_hydrograph_edit_calibration = self.canvas_hydrograph_edit_calibration.figure.subplots()
+            
+            self.ax_hydrograph_edit_calibration.plot(data.Time,data.Value,color='blue', linewidth=2, marker='o', markersize=4)
+
+            #Axis
+            self.ax_hydrograph_edit_calibration.set_xlabel("Time (s)",size = 10,family="arial",weight = "bold",color = "black")
+            self.ax_hydrograph_edit_calibration.set_ylabel("Discharge (m$^{3}$/s)",size = 10,family="arial",weight = "bold",color = "black")
+
+            #X ticks
+            self.ax_hydrograph_edit_calibration.tick_params(axis = "both",colors = "black",labelsize = 9)
+
+            #Thousand separator
+            #Separador de miles
+            def xfunc(x,pos):
+                s = '{:0,d}'.format(int(x))
+                return s
+            x_format = tkr.FuncFormatter(xfunc)
+            self.ax_hydrograph_edit_calibration.xaxis.set_major_formatter(x_format)
+            
+            
+            # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
+            self.canvas_hydrograph_edit_calibration.figure.subplots_adjust(left=0.2, bottom=0.2)
+
+            # Redraw the canvas
+            self.canvas_hydrograph_edit_calibration.draw()
+        except:
+            pass
+    
+    def dlg_sedimentograph_calibration_edit_update_graph(self):
+        """Method to update graph of hydrograph for calibration"""
+        try:
+            #First obtain the data
+            table = self.dlg_sedimentograph_calibration_edit.tableWidget
+            rows = table.rowCount()
+            data = pd.DataFrame(data = {"Time":[float(table.item(row, 0).text()) for row in range(rows)],
+                "Value":[float(table.item(row, 1).text()) for row in range(rows)]})
+            
+            #Add the graph
+            if not hasattr(self, 'canvas_sedimentograph_edit_calibration'):
+                #Create the canvas of the graph
+                # Si no existe, crear el canvas y añadirlo al layout
+                self.canvas_sedimentograph_edit_calibration = FigureCanvas(plt.Figure(figsize=(15, 6)))
+                # Asignar un layout al QFrame si no tiene uno
+                layout = QVBoxLayout(self.dlg_sedimentograph_calibration_edit.frame_2)
+                self.dlg_sedimentograph_calibration_edit.frame_2.setLayout(layout)
+                #Add canvas to layout
+                layout.addWidget(self.canvas_sedimentograph_edit_calibration)
+            
+            #Add graph
+            #Add graph
+            self.canvas_sedimentograph_edit_calibration.figure.clear()
+            self.ax_sedimentograph_edit_calibration = self.canvas_sedimentograph_edit_calibration.figure.subplots()
+            
+            self.ax_sedimentograph_edit_calibration.plot(data.Time,data.Value,color='blue', linewidth=2, marker='o', markersize=4)
+
+            #Axis
+            self.ax_sedimentograph_edit_calibration.set_xlabel("Time (s)",size = 10,family="arial",weight = "bold",color = "black")
+            self.ax_sedimentograph_edit_calibration.set_ylabel("Discharge (m$^{3}$/s)",size = 10,family="arial",weight = "bold",color = "black")
+
+            #X ticks
+            self.ax_sedimentograph_edit_calibration.tick_params(axis = "both",colors = "black",labelsize = 9)
+
+            #Thousand separator
+            #Separador de miles
+            def xfunc(x,pos):
+                s = '{:0,d}'.format(int(x))
+                return s
+            x_format = tkr.FuncFormatter(xfunc)
+            self.ax_sedimentograph_edit_calibration.xaxis.set_major_formatter(x_format)
+            
+            
+            # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
+            self.canvas_sedimentograph_edit_calibration.figure.subplots_adjust(left=0.2, bottom=0.2)
+
+            # Redraw the canvas
+            self.canvas_sedimentograph_edit_calibration.draw()
+        except:
+            pass
+
+    def dlg_hydrograph_calibration_edit_browse(self):
+        """Method to browse the hydrograph file"""
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        fname = QFileDialog.getOpenFileName(self.dlg_hydrograph_calibration_edit, "Select Hydrograph",working_directory , "TXT files (*.txt)")
+        if fname[0]!="":
+            #Put the relative path if the file is inside the folder
+            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
+                text = os.path.relpath(fname[0], working_directory)
+            else: #absolute path
+                text = fname[0]
+            self.dlg_hydrograph_calibration_edit.file_hydrograph.setText(text)
+    
+    def dlg_sedimentograph_calibration_edit_browse(self):
+        """Method to browse the hydrograph file"""
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        fname = QFileDialog.getOpenFileName(self.dlg_sedimentograph_calibration_edit, "Select Hydrograph",working_directory , "TXT files (*.txt)")
+        if fname[0]!="":
+            #Put the relative path if the file is inside the folder
+            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
+                text = os.path.relpath(fname[0], working_directory)
+            else: #absolute path
+                text = fname[0]
+            self.dlg_sedimentograph_calibration_edit.file_sedimentograph.setText(text)
+    
+    
+    def dlg_hydrograph_calibration_edit_add(self,table):
+        """Method to add row to table in hydrograph calibration edit"""
+        row_position = table.rowCount()
+        table.insertRow(row_position)
+        # Center cell contents in the new row
+        for column in range(table.columnCount()):
+            item = QTableWidgetItem()
+            item.setTextAlignment(Qt.AlignCenter)
+            table.setItem(row_position, column, item)
+    
+    def dlg_hydrograph_calibration_edit_remove(self,table):
+        """Method to add row to table in hydrograph calibration edit"""
+        """Method to add rows in the buffer segment table"""
+        selected_row = table.rowCount()
+        if selected_row >= 0:
+            table.removeRow(selected_row-1)
+        #Update graph
+        self.dlg_hydrograph_calibration_edit_update_graph()
+    
+    def dlg_hydrograph_calibration_edit_save(self, condition):
+        """Method to save hydrograph"""
+        #Save file 
+        path = self.obtain_direction_vfsmod(self.dlg_hydrograph_calibration_edit.file_hydrograph.text())
+        table = self.dlg_hydrograph_calibration_edit.tableWidget
+        rows = table.rowCount()
+        data = pd.DataFrame(data = {"Time":[table.item(row, 0).text() for row in range(rows)],
+            "Value":[table.item(row, 1).text() for row in range(rows)]})
+        with open(path, 'w') as archivo:
+            for i in range(len(data)):
+                archivo.write(f"{data.iloc[i,0]}	{data.iloc[i,1]}\n")
+        #Close if its save and close
+        if condition:
+            self.dlg_hydrograph_calibration_edit.close()
+        
+    
+    def dlg_sedimentograph_calibration_edit_save(self, condition):
+        """Method to save hydrograph"""
+        #Save file 
+        path = self.obtain_direction_vfsmod(self.dlg_sedimentograph_calibration_edit.file_sedimentograph.text())
+        table = self.dlg_sedimentograph_calibration_edit.tableWidget
+        rows = table.rowCount()
+        data = pd.DataFrame(data = {"Time":[table.item(row, 0).text() for row in range(rows)],
+            "Value":[table.item(row, 1).text() for row in range(rows)]})
+        with open(path, 'w') as archivo:
+            for i in range(len(data)):
+                archivo.write(f"{data.iloc[i,0]}	{data.iloc[i,1]}\n")
+        #Close if its save and close
+        if condition:
+            self.dlg_sedimentograph_calibration_edit.close()
+    
     
     def calibration_single_values_checks(self,check):
         """Method to put the conditions of checks in calibration and to enable/disable lineEdits"""
@@ -2836,19 +3116,20 @@ class qvfsmod:
         self.ax_user_defined_storm.bar(horas,precipitation,color='blue', edgecolor='black', linewidth=0.5,width = 1)
         
         #Axis
-        self.ax_user_defined_storm.set_xlabel("Time (s)",size = 10,family="arial",weight = "bold",color = "black")
-        self.ax_user_defined_storm.set_ylabel("Frequency",size = 10,family="arial",weight = "bold",color = "black")
+        self.ax_user_defined_storm.set_xlabel("Time (s)",size = 12,family="arial",weight = "bold",color = "black")
+        self.ax_user_defined_storm.set_ylabel("Frequency",size = 12,family="arial",weight = "bold",color = "black")
         self.ax_user_defined_storm.set_xticks(list(range(25)))
         
         #Cumulated precipitation
         # Crear un eje Y secundario
         self.ax_user_defined_storm_2 = self.ax_user_defined_storm.twinx()
         self.ax_user_defined_storm_2.plot(data.Time, data.Precipitation, color="red", marker='o')
-        self.ax_user_defined_storm_2.set_ylabel("Cumulative frequency")
-        self.ax_user_defined_storm_2.set_yticks([x/100 for x in range(0,105,5)])
+        self.ax_user_defined_storm_2.set_ylabel("Cumulative frequency",size = 12,family="arial",weight = "bold",color = "black")
+        self.ax_user_defined_storm_2.set_yticks([x/100 for x in range(0,110,10)])
 
         #X ticks
-        self.ax_user_defined_storm.tick_params(axis = "both",colors = "black",labelsize = 9)
+        self.ax_user_defined_storm.tick_params(axis = "both",colors = "black",labelsize = 12)
+        self.ax_user_defined_storm_2.tick_params(axis = "both",colors = "black",labelsize = 12)
 
         #Thousand separator
         #Separador de miles
@@ -2861,7 +3142,7 @@ class qvfsmod:
         
         # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
         self.canvas_user_defined_storm.figure.subplots_adjust(wspace=1) #spacing beteween two graphs
-        self.canvas_user_defined_storm.figure.subplots_adjust(left=0.1, bottom=0.2)
+        self.canvas_user_defined_storm.figure.subplots_adjust(left=0.15, bottom=0.2)
         #Draw canvas
         self.canvas_user_defined_storm.draw()
     

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1229</width>
+    <width>1106</width>
     <height>709</height>
    </rect>
   </property>
@@ -4275,8 +4275,8 @@ typical 0.01-0.07</string>
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>-122</y>
-               <width>874</width>
+               <y>0</y>
+               <width>751</width>
                <height>773</height>
               </rect>
              </property>
