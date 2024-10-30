@@ -270,7 +270,9 @@ class qvfsmod:
         self.dlg_base.actionExecution_of_Uncertainity_Analysis.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.uncertainity_page))
         self.dlg_base.actionResults.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_results_uncertainity))
         
-
+        #Iso characteristic curve close
+        self.dlg_soil_curves.done.clicked.connect(self.dlg_soil_curves.close)
+        
         #Close osp results dialog
         self.dlg_osp_results.close_dialog.clicked.connect(self.dlg_osp_results.close)
         
@@ -358,6 +360,10 @@ class qvfsmod:
         self.dlg_water_quality.tableWidget.setColumnWidth(1, 230)
         self.dlg_water_quality.tableWidget.setColumnWidth(2, 250)
         self.dlg_water_quality.days.textChanged.connect(self.change_rows_water_quality)
+        
+        #Column widths of iro and irn
+        self.dlg_vfsmod_hydrograph.tableWidget.setColumnWidth(1, 150)
+        self.dlg_vfsmod_hyetograph.tableWidget.setColumnWidth(1, 150)
         
         #If text of the outputs is changed then check if the output exist for UH
         lineEdits = [self.dlg_base.uh_file,self.dlg_base.uh_input,self.dlg_base.line_hydrograph,
@@ -2557,6 +2563,9 @@ class qvfsmod:
                 pesticide_outflow_liquid,total_surface_residue_after_degradation,dissolved_surface_residue_after_degradation,
                 sorbed_surface_residue_after_degradation,next_event_residue_remobilization]
             
+            print(name_variables)
+            print(value_variables)
+            
             #Create graph
             #Add layout
             #If canvas exist then clear. If not then create it. 
@@ -2676,17 +2685,17 @@ class qvfsmod:
             self.ax_owq_graph[1].plot(ratio, profundidad, marker='o', color='b')
 
             # Etiquetas de los ejes
-            self.ax_owq_graph[0].set_xlabel('Pore water concentration (mg/L)', color='black')
-            self.ax_owq_graph[1].set_xlabel('Solid phase/liquid phase (mg/mg)', color='black')
-            self.ax_owq_graph[0].set_ylabel('Depth (m)', color='black')
+            self.ax_owq_graph[0].set_xlabel('Pore water concentration (mg/L)', color='black',weight = "bold")
+            self.ax_owq_graph[1].set_xlabel('Solid phase/liquid phase (mg/mg)', color='black',weight = "bold")
+            self.ax_owq_graph[0].set_ylabel('Depth (m)', color='black',weight = "bold")
 
             # Colorear el área entre profundidad 0 y 0.06
             self.ax_owq_graph[0].axhspan(0, 0.02, facecolor='gray', alpha=0.3)  # Opacidad del rectángulo
             self.ax_owq_graph[1].axhspan(0, 0.02, facecolor='gray', alpha=0.3)  # Opacidad del rectángulo
-
+            
             # Añadir texto "mixing layer" dentro del rectángulo con flechas más a la derecha
-            self.ax_owq_graph[0].text(max(concentracion)*0.85, 0.01, 'Mixing Layer', fontsize=10, ha='center', va='center')
-            self.ax_owq_graph[1].text(max(ratio)*0.85, 0.01, 'Mixing Layer', fontsize=10, ha='center', va='center')
+            self.ax_owq_graph[0].text(max(concentracion)*0.83, 0.01, 'Mixing Layer', fontsize=10, ha='center', va='center')
+            self.ax_owq_graph[1].text(max(ratio)*0.83, 0.01, 'Mixing Layer', fontsize=10, ha='center', va='center')
 
             # Colorear los ejes en negro
             self.ax_owq_graph[0].spines['bottom'].set_color('black')
@@ -2699,17 +2708,18 @@ class qvfsmod:
             self.ax_owq_graph[1].spines['right'].set_color('black')
             
             #Add line with value 1 
-            self.ax_owq_graph[1].axvline(x=1, color='red', linestyle='--')
             ticks1 = self.ax_owq_graph[1].get_xticks()
-            self.ax_owq_graph[1].set_xticklabels([f'{tick}' if tick != 1 else '1' for tick in ticks1])
             for tick in self.ax_owq_graph[1].get_xticklabels():
                 if tick.get_text() == '1':
                     tick.set_color('red')
-
+            self.ax_owq_graph[1].axvline(x=1, color='red', linestyle='--')
+            
             #Title
             self.ax_owq_graph[0].set_title("Pore water concentration (mg/L)")
             self.ax_owq_graph[1].set_title("Solid phase/liquid phase (mg/mg)")
             
+            #Space beteween two graphs
+            self.canvas_owq_graph.figure.subplots_adjust(wspace=0.6) #spacing beteween two graphs
             # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
             self.canvas_owq_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
 
@@ -3037,8 +3047,6 @@ class qvfsmod:
                     break
         
         #Creation of graph       
-        print("precipitation",precipitation)
-        print("time",time)
         widths = [time[i+1] - time[i] for i in range(len(time)-1)]
         self.ax_vfsmod_hyetograph.bar(time[:-1],precipitation[:-1],width=widths,color='blue', align='edge', edgecolor='black', linewidth=0.5)
         #Axis
@@ -3722,7 +3730,7 @@ class qvfsmod:
         has to be used because we need QTrhead to add progress bar"""
         self.number_execution = 0
         self.results = []
-        args_list = [(i, i % (self.number_cores*2), 
+        args_list = [(i, i % (self.number_cores), 
           self.combinations_design,self.working_directory,
           self.dlg_base.design_length.isChecked(),self.dlg_base.design_spacing.isChecked(),
           self.obtain_direction_vfsmod(self.dlg_base.design_vfs_file.text())) for i in range(len(self.combinations_design))]
@@ -3730,7 +3738,6 @@ class qvfsmod:
         self.progress_dialog.setWindowModality(Qt.WindowModal)
         self.progress_dialog.setWindowTitle("Progress")
         self.progress_dialog.show()
-        
         self.sensitivity_thread = DesignAnalysisThread(args_list)
         self.sensitivity_thread.update_progress.connect(self.update_progress_dialog_design)
         self.sensitivity_thread.start()
@@ -4217,7 +4224,7 @@ class qvfsmod:
         self.number_cores = psutil.cpu_count(logical=False)
         
         #Replicate prj as much as cores are
-        for core in range(self.number_cores*2):#we do *2 because if not there can be problems of overlapping:processes executing files that are already executing
+        for core in range(self.number_cores):#we do *2 because if not there can be problems of overlapping:processes executing files that are already executing
             with open(prj_file, 'r') as file:
                 lineas = file.readlines()
             lineas = [linea.replace("design",f"design_{core}") for linea in lineas]
@@ -4226,7 +4233,7 @@ class qvfsmod:
                 for i in lineas:
                     archivo.write(i)
         #Replicate lis as much as cores are
-        for core in range(self.number_cores*2):
+        for core in range(self.number_cores):
             with open(lis_file, 'r') as file:
                 lineas = file.readlines()
             lineas = [linea.replace("design",f"design_{core}") for linea in lineas]
@@ -4238,12 +4245,12 @@ class qvfsmod:
         carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\design"
         folder_path = Path(carpeta+"\\inputs")
         files = [f.name for f in folder_path.iterdir() if f.is_file() and "_" not in f.name]
-        for i in range(self.number_cores*2):
+        for i in range(self.number_cores):
             for k in files:
                 shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("design",f"design_{i}"))
         #Replicate executables
         carpeta_bat = self.plugin_directory+"\\executables"
-        for core in range(self.number_cores*2):
+        for core in range(self.number_cores):
             #Execution UH
             shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_uh_{core}.bat")
             f = open(carpeta_bat+"\\"+f"execution_uh_{core}.bat","w+")
@@ -10043,35 +10050,6 @@ class qvfsmod:
         """Metod to add the user defined storm type data"""
         if self.dlg_base.storm_type.currentIndex()==4:
             self.dlg_user_storm.show()
-            #Add values from files to dialog
-            path = self.obtain_direction_vfsmod(self.dlg_base.uh_input.text())
-            if os.path.exists(path) and os.path.isfile(path):  
-                try:
-                    with open(path, 'r') as file:
-                        lineas = file.readlines()
-                    self.dlg_user_storm.tableWidget.itemChanged.disconnect(self.update_user_storm_graph)
-                    self.dlg_user_storm.tableWidget.setRowCount(24)
-                    precipitations = []
-                    for i in range(len(lineas)):
-                        if lineas[i][-10:] == "P/P24=0.5\n":
-                            for k in range(i+1,len(lineas)):
-                                try:
-                                    precipitation = float(lineas[k].split()[1])
-                                    time = int(lineas[k].split()[0])
-                                    precipitations.append(precipitation)
-                                    if time == 24:
-                                        break
-                                except:
-                                    pass
-                    
-                    for fila in range(24):
-                        item = QTableWidgetItem(str(precipitations[fila]))
-                        self.dlg_user_storm.tableWidget.setItem(fila, 1, item)
-                        item.setTextAlignment(Qt.AlignCenter)
-                    
-                    self.dlg_user_storm.tableWidget.itemChanged.connect(self.update_user_storm_graph)
-                except:
-                    pass
             #Update graph
             self.update_user_storm_graph()
         else:
@@ -10597,9 +10575,10 @@ class qvfsmod:
 
 
 #PARALELIZATION OF DESIGN
-def wrapper_design_paralelization(args):
+def wrapper_design_paralelization(args, processer):
     """Esta función envuelve la función original para manejar múltiples argumentos"""
     i, core_id, param_values,working_directory,length_checked,spacing_checked, vfs_file_design= args
+    core_id = processer % psutil.cpu_count(logical=False)
     return design_paralelization(i, core_id, param_values,working_directory,length_checked,spacing_checked,vfs_file_design)
 
 def design_paralelization(number_execution,core,combinations_design,working_directory,length_checked,spacing_checked,vfs_file_design):
@@ -11507,7 +11486,7 @@ class DesignAnalysisThread(QThread):
             async_results = [
                 pool.apply_async(
                     wrapper_design_paralelization,
-                    args=(args,),
+                    args=(args,i),
                     callback=lambda result, idx=i: self.callback(idx, result)  # Cambiado aquí
                 ) for i, args in enumerate(self.args_list)
             ]

@@ -2439,6 +2439,9 @@ typical 0.01-0.07</string>
                      <height>16777215</height>
                     </size>
                    </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
                   </widget>
                  </item>
                  <item>
@@ -2495,6 +2498,9 @@ typical 0.01-0.07</string>
                      <width>315</width>
                      <height>16777215</height>
                     </size>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
                    </property>
                   </widget>
                  </item>
@@ -2750,8 +2756,8 @@ typical 0.01-0.07</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>762</width>
-             <height>521</height>
+             <width>98</width>
+             <height>28</height>
             </rect>
            </property>
           </widget>
@@ -2771,7 +2777,7 @@ typical 0.01-0.07</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>745</width>
+             <width>703</width>
              <height>773</height>
             </rect>
            </property>
