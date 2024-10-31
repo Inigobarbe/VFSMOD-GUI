@@ -242,6 +242,11 @@ class qvfsmod:
         self.dlg_base.calibration_result_sedimentograph.clicked.connect(self.update_graph_calibration_sedimentograph)
         self.dlg_base.calibration_result_single.clicked.connect(self.update_graph_calibration_single)
         
+        
+        #Save uh project and vfs project
+        self.dlg_base.save_uh_project.clicked.connect(self.save_uh_project)
+        self.dlg_base.save_vfs_project.clicked.connect(self.save_vfs_project)
+        
         #User defined storm
         self.dlg_user_storm.tableWidget.itemChanged.connect(self.update_user_storm_graph)
         
@@ -841,11 +846,47 @@ class qvfsmod:
         #Update uncertainity graph
         self.dlg_base.csv_results_uncertainity.textChanged.connect(self.update_graph_uncertainity)
     
+    def save_uh_project(self):
+        """Method to save uh project"""
+        #Save inputs from the dialog
+        self.project_file = self.dlg_base.working_directory_vfsmod.text()
+        self.name_project = self.dlg_base.name_files.text()
+        
+        #Create required folders in working directory
+        self.create_folders_in_directory()
+        
+        #Create .inp file
+        self.create_inp_file()
+        
+        #Create .lis file
+        self.create_lis_file()
+    
+    
+    def save_vfs_project(self):
+        """Method to save vfs project"""
+        #Folder creation
+        self.folder_creation_vfsmod()
+        
+        #First we create the .prj file
+        self.create_prj_file()
+        
+        #Create files
+        self.create_ikw_file()
+        self.create_iso_file()
+        self.create_igr_file()
+        self.create_isd_file()
+        self.create_irn_file()
+        self.create_iro_file()
+        if self.dlg_base.water_quality.isChecked():
+            self.create_iwq_file()
+    
     
     def dlg_hydrograph_calibration_edit_show(self):
         """Method to show the editable hyddrograph for the calibration"""
         #Add text of the file
         self.dlg_hydrograph_calibration_edit.file_hydrograph.setText(self.dlg_base.hydrograph_file.text())
+        #Change width of column
+        self.dlg_hydrograph_calibration_edit.tableWidget.setColumnWidth(1, 150)
         #Update graph
         self.dlg_hydrograph_calibration_edit_add_values_table()
         #Show dialog
@@ -1557,8 +1598,11 @@ class qvfsmod:
         actual_length = max(df["Distance"])
         length_to_change = float(self.dlg_overland_flow.length.text())
         if length_to_change <= actual_length:
-            df = df[df["Distance"]<=length_to_change]
-            df.loc[df.index[-1], "Distance"] = length_to_change
+            if length_to_change<min(df["Distance"]): #when distance is smaller than the first interval
+                df = df.head(1)
+            else:
+                df = df[df["Distance"]<=length_to_change]
+                df.loc[df.index[-1], "Distance"] = length_to_change
         else:
             df.loc[df.index[-1], "Distance"] = length_to_change
         
@@ -3730,7 +3774,7 @@ class qvfsmod:
         has to be used because we need QTrhead to add progress bar"""
         self.number_execution = 0
         self.results = []
-        args_list = [(i, i % (self.number_cores), 
+        args_list = [(i, i % (self.number_cores*5), 
           self.combinations_design,self.working_directory,
           self.dlg_base.design_length.isChecked(),self.dlg_base.design_spacing.isChecked(),
           self.obtain_direction_vfsmod(self.dlg_base.design_vfs_file.text())) for i in range(len(self.combinations_design))]
@@ -3759,7 +3803,7 @@ class qvfsmod:
         has to be used because we need QTrhead to add progress bar"""
         self.number_execution = 0
         self.results = []
-        args_list = [(i, i % (self.number_cores*2), 
+        args_list = [(i, i % (self.number_cores*5), 
           self.param_values, self.dic_data, 
           self.sensitivity_parameters, self.working_directory, 
           self.obtain_direction_vfsmod(self.vfs_sensitivity_file),self.water_quality) for i in range(len(self.param_values))]
@@ -3788,7 +3832,7 @@ class qvfsmod:
         has to be used because we need QTrhead to add progress bar"""
         self.number_execution = 0
         self.results = []
-        args_list = [(i, i % (self.number_cores*2), 
+        args_list = [(i, i % (self.number_cores*5), 
           self.param_values, self.dic_data, 
           self.sensitivity_parameters, self.working_directory, 
           self.obtain_direction_vfsmod(self.vfs_uncertainity_file),self.water_quality) for i in range(len(self.param_values))]
@@ -4224,7 +4268,7 @@ class qvfsmod:
         self.number_cores = psutil.cpu_count(logical=False)
         
         #Replicate prj as much as cores are
-        for core in range(self.number_cores):#we do *2 because if not there can be problems of overlapping:processes executing files that are already executing
+        for core in range(self.number_cores*5):#we do *5 because if not there can be problems of overlapping:processes executing files that are already executing
             with open(prj_file, 'r') as file:
                 lineas = file.readlines()
             lineas = [linea.replace("design",f"design_{core}") for linea in lineas]
@@ -4233,7 +4277,7 @@ class qvfsmod:
                 for i in lineas:
                     archivo.write(i)
         #Replicate lis as much as cores are
-        for core in range(self.number_cores):
+        for core in range(self.number_cores*5):
             with open(lis_file, 'r') as file:
                 lineas = file.readlines()
             lineas = [linea.replace("design",f"design_{core}") for linea in lineas]
@@ -4245,12 +4289,12 @@ class qvfsmod:
         carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\design"
         folder_path = Path(carpeta+"\\inputs")
         files = [f.name for f in folder_path.iterdir() if f.is_file() and "_" not in f.name]
-        for i in range(self.number_cores):
+        for i in range(self.number_cores*5):
             for k in files:
                 shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("design",f"design_{i}"))
         #Replicate executables
         carpeta_bat = self.plugin_directory+"\\executables"
-        for core in range(self.number_cores):
+        for core in range(self.number_cores*5):
             #Execution UH
             shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_uh_{core}.bat")
             f = open(carpeta_bat+"\\"+f"execution_uh_{core}.bat","w+")
@@ -4360,7 +4404,7 @@ class qvfsmod:
         self.number_cores = psutil.cpu_count(logical=False)
         
         #Replicate prj as much as cores are
-        for core in range(self.number_cores*2):#we do *2 because if not there can be problems of overlapping:processes executing files that are already executing
+        for core in range(self.number_cores*5):#we do *5 because if not there can be problems of overlapping:processes executing files that are already executing
             with open(prj_file, 'r') as file:
                 lineas = file.readlines()
             lineas = [linea.replace("sensitivity",f"sensitivity_{core}") for linea in lineas]
@@ -4369,7 +4413,7 @@ class qvfsmod:
                 for i in lineas:
                     archivo.write(i)
         #Replicate lis as much as cores are
-        for core in range(self.number_cores*2):
+        for core in range(self.number_cores*5):
             with open(lis_file, 'r') as file:
                 lineas = file.readlines()
             lineas = [linea.replace("sensitivity",f"sensitivity_{core}") for linea in lineas]
@@ -4381,12 +4425,12 @@ class qvfsmod:
         carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity"
         folder_path = Path(carpeta+"\\inputs")
         files = [f.name for f in folder_path.iterdir() if f.is_file() and "_" not in f.name]
-        for i in range(self.number_cores*2):
+        for i in range(self.number_cores*5):
             for k in files:
                 shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("sensitivity",f"sensitivity_{i}"))
         #Replicate executables
         carpeta_bat = self.plugin_directory+"\\executables"
-        for core in range(self.number_cores*2):
+        for core in range(self.number_cores*5):
             #Execution UH
             shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_uh_{core}.bat")
             f = open(carpeta_bat+"\\"+f"execution_uh_{core}.bat","w+")
@@ -4414,6 +4458,12 @@ class qvfsmod:
         files_delete += [self.working_directory+"\\design\\inputs\\"+x for x in os.listdir(self.working_directory+"\\design"+"\\inputs") if "design" in x and "_" in x]
         files_delete += [self.working_directory+"\\design\\output\\"+x for x in os.listdir(self.working_directory+"\\design"+"\\output") if "design" in x and "_" in x and x[-3:]!="csv"]
         files_delete += [self.plugin_directory+"\\executables\\"+x for x in os.listdir(self.plugin_directory+"\\executables") if "execution" in x and "_" in x]
+        for i in files_delete:
+            os.remove(i)
+    
+    def delete_files_calibration_single(self):
+        """Method to delete files of design analysis after parallelization"""
+        files_delete = [self.working_directory+"\\inverse\\output\\"+x for x in os.listdir(self.working_directory+"\\inverse"+"\\output")]
         for i in files_delete:
             os.remove(i)
     
@@ -4522,7 +4572,7 @@ class qvfsmod:
         self.number_cores = psutil.cpu_count(logical=False)
         
         #Replicate prj as much as cores are
-        for core in range(self.number_cores*2):#we do *2 because if not there can be problems of overlapping:processes executing files that are already executing
+        for core in range(self.number_cores*5):#we do *5 because if not there can be problems of overlapping:processes executing files that are already executing
             with open(prj_file, 'r') as file:
                 lineas = file.readlines()
             lineas = [linea.replace("uncertainity",f"uncertainity_{core}") for linea in lineas]
@@ -4531,7 +4581,7 @@ class qvfsmod:
                 for i in lineas:
                     archivo.write(i)
         #Replicate lis as much as cores are
-        for core in range(self.number_cores*2):
+        for core in range(self.number_cores*5):
             with open(lis_file, 'r') as file:
                 lineas = file.readlines()
             lineas = [linea.replace("uncertainity",f"uncertainity_{core}") for linea in lineas]
@@ -4543,12 +4593,12 @@ class qvfsmod:
         carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity"
         folder_path = Path(carpeta+"\\inputs")
         files = [f.name for f in folder_path.iterdir() if f.is_file() and "_" not in f.name]
-        for i in range(self.number_cores*2):
+        for i in range(self.number_cores*5):
             for k in files:
                 shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("uncertainity",f"uncertainity_{i}"))
         #Replicate executables
         carpeta_bat = self.plugin_directory+"\\executables"
-        for core in range(self.number_cores*2):
+        for core in range(self.number_cores*5):
             #Execution UH
             shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_uh_{core}.bat")
             f = open(carpeta_bat+"\\"+f"execution_uh_{core}.bat","w+")
@@ -5452,6 +5502,7 @@ class qvfsmod:
         #Move prj to the inverse folder and in inverse/inputs put the inputs
         self.move_files_calibration_single()
         
+        
         #Error if pesticide calibration is selected but there is not water quality
         if not self.water_quality and (self.dlg_base.check_filtered_pesticide.isChecked() or self.dlg_base.check_pesticide_out.isChecked() or self.dlg_base.check_pesticide_solid.isChecked() or self.dlg_base.check_pesticide_liquid.isChecked()):
             self.warning_message("Pesticide calibration is selected but the project doesn't contain the water quality module")
@@ -5459,6 +5510,11 @@ class qvfsmod:
         
         #Create the dictionary to know the bounds of the input parameters
         self.calibration_dictionary = self.create_dictionary_calibration_single()
+        
+        #Error if no inputs where selected
+        if len(self.calibration_dictionary)==0:
+            self.warning_message("Please select at least one input to calibrate")
+            return
         
         #first we create the thread class to be able to use the dialog when executing
         class ejecutor(QThread):
@@ -5504,12 +5560,16 @@ class qvfsmod:
                     resultado_global = differential_evolution(objetivo, bounds=limites, strategy='best1bin',tol=self.tolerance)
                 except ZeroDivisionError: #maximum iterations achieved
                     self.resultado_progress.emit(["Warning","Maximum iterations achieved \n Adding best result...\n"])
-                    objetivo(self.best_result["x"]) #execute best just so that users can see it
-                    self.list_of_inputs[:-1] #eilminate last one
-                    self.list_of_results[:-1]
+                resultado = objetivo(self.best_result["x"]) #execute best just so that users can see it
+                self.list_of_inputs[:-1] #eilminate last one
+                self.list_of_results[:-1]
                     
                 #Message end global calibration
                 self.resultado_progress.emit(["Warning","Calibration ended"])
+                
+                #If last result there was an error then add the error
+                if resultado == 1e20:
+                    self.resultado_progress.emit(["Error","Calibration ended"])
                 
                 #Save results
                 self.save_results_calibration(self.list_of_inputs,self.list_of_results)
@@ -5539,6 +5599,11 @@ class qvfsmod:
         
         #Create the dictionary to know the bounds of the input parameters
         self.calibration_dictionary = self.create_dictionary_calibration_sedimentograph()
+        
+        #Error if no inputs where selected
+        if len(self.calibration_dictionary)==0:
+            self.warning_message("Please select at least one input to calibrate")
+            return
         
         #first we create the thread class to be able to use the dialog when executing
         self.objective_function = [self.dlg_calibration_advanced_settings_sedimentograph.objective_function.itemText(i) for i in range(self.dlg_calibration_advanced_settings_sedimentograph.objective_function.count())][self.dlg_calibration_advanced_settings_sedimentograph.objective_function.currentIndex()]
@@ -5585,12 +5650,16 @@ class qvfsmod:
                     resultado_global = differential_evolution(objetivo, bounds=limites, strategy='best1bin',tol=self.tolerance)
                 except ZeroDivisionError: #maximum iterations achieved
                     self.resultado_progress.emit(["Warning","Maximum iterations achieved \n Adding best result...\n"])
-                    objetivo(self.best_result["x"]) #execute best just so that users can see it
-                    self.list_of_inputs[:-1] #eilminate last one
-                    self.list_of_results[:-1]
+                objetivo(self.best_result["x"]) #execute best just so that users can see it
+                self.list_of_inputs[:-1] #eilminate last one
+                self.list_of_results[:-1]
                     
                 #Message end global calibration
                 self.resultado_progress.emit(["Warning","Calibration ended"])
+                
+                #If last result there was an error then add the error
+                if resultado == 1e20:
+                    self.resultado_progress.emit(["Error","Calibration ended"])
                 
                 #Save results
                 self.save_results_calibration(self.list_of_inputs,self.list_of_results)
@@ -5808,6 +5877,11 @@ class qvfsmod:
         #Create the dictionary to know the bounds of the input parameters
         self.calibration_dictionary = self.create_dictionary_calibration_hydrograph()
         
+        #Error if no inputs where selected
+        if len(self.calibration_dictionary)==0:
+            self.warning_message("Please select at least one input to calibrate")
+            return
+        
         #Obtain information of objective function
         self.objective_function = [self.dlg_calibration_advanced_settings_hydrograph.objective_function.itemText(i) for i in range(self.dlg_calibration_advanced_settings_hydrograph.objective_function.count())][self.dlg_calibration_advanced_settings_hydrograph.objective_function.currentIndex()]
         #first we create the thread class to be able to use the dialog when executing
@@ -5854,12 +5928,16 @@ class qvfsmod:
                     resultado_global = differential_evolution(objetivo, bounds=limites, strategy='best1bin',tol=self.tolerance)
                 except ZeroDivisionError: #maximum iterations achieved
                     self.resultado_progress.emit(["Warning","Maximum iterations achieved \n Adding best result...\n"])
-                    objetivo(self.best_result["x"]) #execute best just so that users can see it
-                    self.list_of_inputs[:-1] #eilminate last one
-                    self.list_of_results[:-1]
+                objetivo(self.best_result["x"]) #execute best just so that users can see it
+                self.list_of_inputs[:-1] #eilminate last one
+                self.list_of_results[:-1]
                     
                 #Message end global calibration
                 self.resultado_progress.emit(["Warning","Calibration ended"])
+                
+                #If last result there was an error then add the error
+                if resultado == 1e20:
+                    self.resultado_progress.emit(["Error","Calibration ended"])
                 
                 #Save results
                 self.save_results_calibration(self.list_of_inputs,self.list_of_results)
@@ -5982,6 +6060,8 @@ class qvfsmod:
             capture_output=True, 
             text=True, 
             shell=True)
+        #Save warning
+        self.calibration_warning = resultado.stdout
         #Put warning
         if not "...FINISHED..." in resultado.stdout:
             #Return a very bad result so the search avoid that space
@@ -6114,6 +6194,8 @@ class qvfsmod:
             capture_output=True, 
             text=True, 
             shell=True)
+        #Save warning
+        self.calibration_warning = resultado.stdout
         #Put warning
         if not "...FINISHED..." in resultado.stdout:
             #Return a very bad result so the search avoid that space
@@ -6357,6 +6439,8 @@ class qvfsmod:
             capture_output=True, 
             text=True, 
             shell=True)
+        #Save warning
+        self.calibration_warning = resultado.stdout
         #Put warning
         if not "...FINISHED..." in resultado.stdout:
             #Return a very bad result so the search avoid that space
@@ -6370,7 +6454,7 @@ class qvfsmod:
     def obtain_values_calibration_single(self):
         """Method to calculate the objective function in single value calibration"""
         #Create variable to add objective function
-        objective_function = 0
+        objective_function = []
         #Function to obtain results from osp
         ruta = self.working_directory+f"\\inverse\\output\\inverse.osp"
         with open(ruta, "r") as archivo:
@@ -6389,8 +6473,12 @@ class qvfsmod:
         #Same for owq
         if self.water_quality:
             ruta = self.working_directory+f"\\inverse\\output\\inverse.owq"
-            with open(ruta, "r") as archivo:
-                lineas_owq = archivo.readlines()
+            try:
+                with open(ruta, "r") as archivo:
+                    lineas_owq = archivo.readlines()
+            except FileNotFoundError:
+                return 1e20
+                
             def obtain_result_owq(string):
                 for i in lineas_owq:
                     if i.split("=")[-1]==string:
@@ -6406,27 +6494,27 @@ class qvfsmod:
         if "Total discharge" in self.output_calibrate_single.keys():
             total_discharge = obtain_result_osp(" Total Runoff out from Filter\n")
             normalized = (total_discharge - float(self.dlg_base.line_total_discharge.text()))/float(self.dlg_base.line_total_discharge.text())
-            objective_function += abs(normalized)
+            objective_function.append(normalized)
             self.calibration_single_results["Total discharge"] = total_discharge
             
         if "Filtered discharge" in self.output_calibrate_single.keys():
             runoff_delivery = obtain_result_osp(" Runoff Delivery Ratio\n")
             filtered_discharge = 1 -runoff_delivery
             normalized = (filtered_discharge - float(self.dlg_base.line_filtered_discharge.text()))/float(self.dlg_base.line_filtered_discharge.text())
-            objective_function += abs(normalized)
+            objective_function.append(normalized)
             self.calibration_single_results["Filtered discharge"] = filtered_discharge
         
         if "Total sediment" in self.output_calibrate_single.keys():
             total_sediment = obtain_result_osp(" Mass Sediment Output from Filter\n")
             normalized = (total_sediment - float(self.dlg_base.line_total_sediment.text()))/float(self.dlg_base.line_total_sediment.text())
-            objective_function += abs(normalized)
+            objective_function.append(normalized)
             self.calibration_single_results["Total sediment"] = total_sediment
         
         if "Filtered sediment" in self.output_calibrate_single.keys():
             sediment_delivery = obtain_result_osp(" Sediment Delivery Ratio\n")
             filtered_sediment = 1 -sediment_delivery
             normalized = (filtered_sediment - float(self.dlg_base.line_filtered_sediment.text()))/float(self.dlg_base.line_filtered_sediment.text())
-            objective_function += abs(normalized)
+            objective_function.append(normalized)
             self.calibration_single_results["Filtered sediment"] = filtered_sediment
         
         if "Filtered pesticide" in self.output_calibrate_single.keys():
@@ -6434,27 +6522,33 @@ class qvfsmod:
             pesticide_output = obtain_result_owq(" Pesticide output (mo)\n")
             filtered_pesticide = (pesticide_input-pesticide_output)/(pesticide_input)
             normalized = (filtered_pesticide - float(self.dlg_base.line_filtered_pesticide.text()))/float(self.dlg_base.line_filtered_pesticide.text())
-            objective_function += abs(normalized)
+            objective_function.append(normalized)
             self.calibration_single_results["Filtered pesticide"] = filtered_pesticide
             
         if "Pesticide out the filter" in self.output_calibrate_single.keys():
             pesticide_output = obtain_result_owq(" Pesticide output (mo)\n")
             normalized = (pesticide_output - float(self.dlg_base.line_pesticide_out.text()))/float(self.dlg_base.line_pesticide_out.text())
-            objective_function += abs(normalized)
+            objective_function.append(normalized)
         
         if "Pesticide outflow in solid phase" in self.output_calibrate_single.keys():
             pesticide_solid = obtain_result_owq(" Pesticide outflow in solid phase (mop)\n")
             normalized = (pesticide_solid - float(self.dlg_base.line_pesticide_solid.text()))/float(self.dlg_base.line_pesticide_solid.text())
-            objective_function += abs(normalized)
+            objective_function.append(normalized)
             self.calibration_single_results["Pesticide outflow in solid phase"] = pesticide_solid
         
         if "Pesticide outflow in liquid phase" in self.output_calibrate_single.keys():
             pesticide_liquid = obtain_result_owq(" Pesticide outflow in liquid phase (mod)\n")
             normalized = (pesticide_liquid - float(self.dlg_base.line_pesticide_liquid.text()))/float(self.dlg_base.line_pesticide_liquid.text())
-            objective_function += abs(normalized)
+            objective_function.append(normalized)
             self.calibration_single_results["Pesticide outflow in liquid phase"] = pesticide_liquid
         
-        return objective_function
+        #Calculate objective function
+        value = 0
+        for i in objective_function:
+            value += i**2
+        value = (value**0.5)/len(objective_function)
+        
+        return value
         
         
         
@@ -6466,7 +6560,13 @@ class qvfsmod:
             self.calibration_progress_text+=information[1]
             self.dlg_calibration_progress.textEdit.setPlainText(self.calibration_progress_text)
             self.dlg_calibration_progress.textEdit.moveCursor(QtGui.QTextCursor.End) #move to end the text to see it
-            
+        
+        elif information[0]=="Error":
+            #Put the text
+            self.calibration_progress_text+=f"\nAll executions gave error.\n The next message was generated during the execution:\n{self.calibration_warning}"
+            self.dlg_calibration_progress.textEdit.setPlainText(self.calibration_progress_text)
+            self.dlg_calibration_progress.textEdit.moveCursor(QtGui.QTextCursor.End) #move to end the text to see it
+        
         elif information[0] == 0:
             #Show dialog
             self.dlg_calibration_progress.show()
@@ -6556,7 +6656,13 @@ class qvfsmod:
             self.calibration_progress_text+=information[1]
             self.dlg_calibration_progress.textEdit.setPlainText(self.calibration_progress_text)
             self.dlg_calibration_progress.textEdit.moveCursor(QtGui.QTextCursor.End) #move to end the text to see it
-            
+        
+        elif information[0]=="Error":
+            #Put the text
+            self.calibration_progress_text+=f"\nAll executions gave error.\n The next message was generated during the execution:\n{self.calibration_warning}"
+            self.dlg_calibration_progress.textEdit.setPlainText(self.calibration_progress_text)
+            self.dlg_calibration_progress.textEdit.moveCursor(QtGui.QTextCursor.End) #move to end the text to see it
+        
         elif information[0] == 0:
             #Show dialog
             self.dlg_calibration_progress.show()
@@ -6645,6 +6751,12 @@ class qvfsmod:
             self.calibration_progress_text+=information[1]
             self.dlg_calibration_progress.textEdit.setPlainText(self.calibration_progress_text)
             self.dlg_calibration_progress.textEdit.moveCursor(QtGui.QTextCursor.End) #move to end the text to see it
+        
+        elif information[0]=="Error":
+            #Put the text
+            self.calibration_progress_text+=f"\nAll executions gave error.\n The next message was generated during the execution:\n{self.calibration_warning}"
+            self.dlg_calibration_progress.textEdit.setPlainText(self.calibration_progress_text)
+            self.dlg_calibration_progress.textEdit.moveCursor(QtGui.QTextCursor.End) #move to end the text to see it
             
         elif information[0] == 0:
             #Show dialog
@@ -6728,10 +6840,10 @@ class qvfsmod:
                     self.ax_calibration_progress[i].set_xticks(["Observed", "Simulated"])
                     self.ax_calibration_progress[i].set_xticklabels(["Observed", "Simulated"], rotation=45)
                     #Add values
-                    self.ax_calibration_progress[i].text("Observed", values_observed[i] + (values_observed[i] * 0.05), f'{values_observed[i]}', ha='center')
-                    self.ax_calibration_progress[i].text("Simulated", values_simulated[i] + (values_simulated[i] * 0.05), f'{round(values_simulated[i],3)}', ha='center')
+                    self.ax_calibration_progress[i].text("Observed", values_observed[i] + (values_observed[i] * 0.05), f'{values_observed[i]}', ha='center',family="arial",weight = "bold",color = "black")
+                    self.ax_calibration_progress[i].text("Simulated", values_simulated[i] + (values_simulated[i] * 0.05), f'{round(values_simulated[i],3)}', ha='center',family="arial",weight = "bold",color = "black")
                     #Add title x and y axis
-                    self.ax_calibration_progress[i].set_ylabel(labels_simulated[i])
+                    self.ax_calibration_progress[i].set_ylabel(labels_simulated[i],family="arial",weight = "bold",color = "black")
                 
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_calibration_graph.figure.subplots_adjust(wspace=1) #spacing beteween two graphs
@@ -6836,21 +6948,11 @@ class qvfsmod:
             elif self.calibration_hydrograph:
                 self.dlg_calibration_results_hydrograph.results.setText(self.dlg_calibration_advanced_settings_hydrograph.exit_file.text())
             
-    
-        else:
-            if self.calibration_sedimentograph:
-                path = self.obtain_direction_vfsmod(self.dlg_calibration_advanced_settings_sedimentograph.exit_file.text())
-            elif self.calibration_hydrograph:
-                path = self.obtain_direction_vfsmod(self.dlg_calibration_advanced_settings_hydrograph.exit_file.text())
-            try:
-                with open(path, 'w') as f:
-                    #Add results of calibration
-                    f.write(f"All calibration executions gave errors. Please check project file or the intervals added." + '\n')
-            except PermissionError:
-                self.warning_message(f"{path} file is opened. Please close it to save results")
+            #Put the optimized project in the working directory with a name to informe that it is optimized
+            self.add_optimized_project_to_folder()
         
-        #Put the optimized project in the working directory with a name to informe that it is optimized
-        self.add_optimized_project_to_folder()
+        #Delete all outputs. If not in the next execution owq might be not created by the execution but still present and not giving error
+        self.delete_files_calibration_single()
         
         #Set to false calibrations
         self.calibration_sedimentograph = False
@@ -6886,19 +6988,13 @@ class qvfsmod:
             except PermissionError:
                 self.warning_message(f"{path} file is opened. Please close it to save results")
             
+            #Put filepath in the results dialog
+            self.dlg_calibration_results_single.results.setText(self.dlg_calibration_advanced_settings_single.exit_file.text())
 
-        else:
-            path = self.obtain_direction_vfsmod(self.dlg_calibration_advanced_settings_single.exit_file.text())
-            try:
-                with open(path, 'w') as f:
-                    #Add results of calibration
-                    f.write(f"All calibration executions gave errors. Please check project file or the intervals added." + '\n')
-            except PermissionError:
-                self.warning_message(f"{path} file is opened. Please close it to save results")
         
-        #Put filepath in the results dialog
-        self.dlg_calibration_results_single.results.setText(self.dlg_calibration_advanced_settings_single.exit_file.text())
-    
+        #Delete all outputs. If not in the next execution owq might be not created by the execution but still present and not giving error
+        self.delete_files_calibration_single()
+        
     def add_optimized_project_to_folder(self):
         """Method to add the optimized project to the working folder with a name to informe that it is optimized"""
         #Check if there is water quality
@@ -7134,8 +7230,8 @@ class qvfsmod:
                 if i==f"Observed vs predicted values: \n":
                     for m in lineas[k+1].split(","):
                         parameter = m.split(":")[0]
-                        observed = m.split(":")[1].split("-")[0]
-                        simulated = m.split(":")[1].split("-")[1]
+                        observed = float(m.split(":")[1].split("-")[0])
+                        simulated = float(m.split(":")[1].split("-")[1])
                         data[parameter] = [observed,simulated]
                 contenido += i
             self.dlg_calibration_results_single.textEdit.setPlainText(contenido)
@@ -7154,30 +7250,26 @@ class qvfsmod:
             #Add graph
             #Add graph
             self.canvas_calibration_graph_single.figure.clear()
-            if len(self.output_calibrate_single.keys()) == 1:
-                self.ax_calibration_results_single = [self.canvas_calibration_graph_single.figure.subplots(1,len(self.output_calibrate_single.keys()))]
+            if len(data) == 1:
+                self.ax_calibration_results_single = [self.canvas_calibration_graph_single.figure.subplots(1,len(data))]
             else:
-                self.ax_calibration_results_single = self.canvas_calibration_graph_single.figure.subplots(1,len(self.output_calibrate_single.keys()))
+                self.ax_calibration_results_single = self.canvas_calibration_graph_single.figure.subplots(1,len(data))
             
             
-            labels_observed = list(self.output_calibrate_single.keys())
-            values_observed = list(self.output_calibrate_single.values())
-            
-            labels_simulated = list(self.calibration_single_results.keys())
-            values_simulated = list(self.calibration_single_results.values())
-            
-            for i in range(len(self.output_calibrate_single.keys())):
+            for i,k in enumerate(data.keys()):
                 #Add graph
-                self.ax_calibration_results_single[i].bar("Observed", values_observed[i], color='skyblue')
-                self.ax_calibration_results_single[i].bar("Simulated", values_simulated[i], color='red')
+                self.ax_calibration_results_single[i].bar("Observed", data[k][0], color='skyblue')
+                self.ax_calibration_results_single[i].bar("Simulated", data[k][1], color='red')
                 #Rotate ticks
                 self.ax_calibration_results_single[i].set_xticks(["Observed", "Simulated"])
                 self.ax_calibration_results_single[i].set_xticklabels(["Observed", "Simulated"], rotation=45)
                 #Add values
-                self.ax_calibration_results_single[i].text("Observed", values_observed[i] + (values_observed[i] * 0.05), f'{values_observed[i]}', ha='center')
-                self.ax_calibration_results_single[i].text("Simulated", values_simulated[i] + (values_simulated[i] * 0.05), f'{round(values_simulated[i],3)}', ha='center')
+                self.ax_calibration_results_single[i].text("Observed", data[k][0] + (data[k][0] * 0.05), f'{data[k][0]}', ha='center',family="arial",weight = "bold",color = "black")
+                self.ax_calibration_results_single[i].text("Simulated", data[k][1] + (data[k][1] * 0.05), f'{round(data[k][1],3)}', ha='center',family="arial",weight = "bold",color = "black")
                 #Add title x and y axis
-                self.ax_calibration_results_single[i].set_ylabel(labels_simulated[i])
+                self.ax_calibration_results_single[i].set_ylabel(k)
+                #Y limit
+                self.ax_calibration_results_single[i].set_ylim(0, max(data[k][0],data[k][1])*1.1)
             
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
             self.canvas_calibration_graph_single.figure.subplots_adjust(wspace=1) #spacing beteween two graphs
@@ -7908,8 +8000,11 @@ class qvfsmod:
         actual_length = max(df["Distance"])
         length_to_change = float(value_change)
         if length_to_change <= actual_length:
-            df = df[df["Distance"]<=length_to_change]
-            df.loc[df.index[-1], "Distance"] = length_to_change
+            if length_to_change<min(df["Distance"]): #when distance is smaller than the first interval
+                df = df.head(1)
+            else:
+                df = df[df["Distance"]<=length_to_change]
+                df.loc[df.index[-1], "Distance"] = length_to_change
         else:
             df.loc[df.index[-1], "Distance"] = length_to_change
         
@@ -7971,8 +8066,11 @@ class qvfsmod:
         actual_length = max(df["Distance"])
         length_to_change = float(value_change)
         if length_to_change <= actual_length:
-            df = df[df["Distance"]<=length_to_change]
-            df.loc[df.index[-1], "Distance"] = length_to_change
+            if length_to_change<min(df["Distance"]): #when distance is smaller than the first interval
+                df = df.head(1)
+            else:
+                df = df[df["Distance"]<=length_to_change]
+                df.loc[df.index[-1], "Distance"] = length_to_change
         else:
             df.loc[df.index[-1], "Distance"] = length_to_change
         
@@ -8438,8 +8536,11 @@ class qvfsmod:
             actual_length = max(df["Distance"])
             length_to_change = float(value_change)
             if length_to_change <= actual_length:
-                df = df[df["Distance"]<=length_to_change]
-                df.loc[df.index[-1], "Distance"] = length_to_change
+                if length_to_change<min(df["Distance"]): #when distance is smaller than the first interval
+                    df = df.head(1)
+                else:
+                    df = df[df["Distance"]<=length_to_change]
+                    df.loc[df.index[-1], "Distance"] = length_to_change
             else:
                 df.loc[df.index[-1], "Distance"] = length_to_change
             
@@ -8555,22 +8656,24 @@ class qvfsmod:
                 igr = os.path.join(os.path.dirname(ruta), igr)
             ikw = ikw.replace("\n", "") #take out the line jumps
             igr = igr.replace("\n", "") #take out the line jumps
-            with open(ikw, "r") as archivo:
-                lineas = archivo.readlines()
-            for i in lineas[2].split(" "): #the first number bufer length
-                try:
-                    self.dlg_base.base_length.setText(str(float(i)))
-                    break
-                except:
-                    pass
-            with open(igr, "r") as archivo:
-                lineas = archivo.readlines()
-            for i in lineas[0].split(" "): #the first number is spacing
-                try:
-                    self.dlg_base.base_spacing.setText(str(float(i)))
-                    break
-                except:
-                    pass
+            if os.path.exists(ikw) and os.path.isfile(ikw):
+                with open(ikw, "r") as archivo:
+                    lineas = archivo.readlines()
+                for i in lineas[2].split(" "): #the first number bufer length
+                    try:
+                        self.dlg_base.base_length.setText(str(float(i)))
+                        break
+                    except:
+                        pass
+            if os.path.exists(igr) and os.path.isfile(igr):
+                with open(igr, "r") as archivo:
+                    lineas = archivo.readlines()
+                for i in lineas[0].split(" "): #the first number is spacing
+                    try:
+                        self.dlg_base.base_spacing.setText(str(float(i)))
+                        break
+                    except:
+                        pass
         
 
     def update_project_files(self):
@@ -8590,6 +8693,7 @@ class qvfsmod:
         #Add paths to calibration
         add_text(self.dlg_base.vfs_project,"vfs")
         add_text(self.dlg_base.vfs_file,"vfs")
+        add_text(self.dlg_base.single_values_line,"vfs")
         #Add paths to sensitivity analysis
         add_text(self.dlg_base.uh_file_sensitivity,"uh")
         add_text(self.dlg_base.vfs_file_sensitivity,"vfs")
@@ -9725,17 +9829,18 @@ class qvfsmod:
 
         #Create file
         irn_file =self.obtain_direction_vfsmod(self.dlg_base.line_storm.text())
-        with open(irn_file, 'w') as archivo:
-            linea_uno = f"  {number_steps}   {maximum}                     NRAIN, RPEAK(m/s)"
-            linea_dos = f"   {hyetograph.iloc[0,0]}    {hyetograph.iloc[0,1]}          time(s), rainfall rate (m/s)"
-            linea_tres = ""
-            for row in range(1,len(hyetograph)):
-                linea_tres += f"   {hyetograph.iloc[row,0]}    {hyetograph.iloc[row,1]}\n"
-            linea_cuatro = "------------------------------"
-            archivo.write(f"{linea_uno}\n")
-            archivo.write(f"{linea_dos}\n")
-            archivo.write(f"{linea_tres}")
-            archivo.write(f"{linea_cuatro}\n")
+        if os.path.exists(irn_file) and os.path.isfile(irn_file):
+            with open(irn_file, 'w') as archivo:
+                linea_uno = f"  {number_steps}   {maximum}                     NRAIN, RPEAK(m/s)"
+                linea_dos = f"   {hyetograph.iloc[0,0]}    {hyetograph.iloc[0,1]}          time(s), rainfall rate (m/s)"
+                linea_tres = ""
+                for row in range(1,len(hyetograph)):
+                    linea_tres += f"   {hyetograph.iloc[row,0]}    {hyetograph.iloc[row,1]}\n"
+                linea_cuatro = "------------------------------"
+                archivo.write(f"{linea_uno}\n")
+                archivo.write(f"{linea_dos}\n")
+                archivo.write(f"{linea_tres}")
+                archivo.write(f"{linea_cuatro}\n")
         
         if close:
             self.dlg_vfsmod_hyetograph.close()
@@ -9752,17 +9857,18 @@ class qvfsmod:
             "Discharge":[table.item(row, 1).text() for row in range(rows)]})
         #Create file
         iro_file =self.obtain_direction_vfsmod(self.dlg_base.line_source.text())
-        with open(iro_file, 'w') as archivo:
-            linea_uno = f"     {width}    {length}                     Swidth(m), Slength(m)"
-            linea_dos = f"    {rows}   {peak}                   nbcroff, bcropeak (m3/s)"
-            linea_tres = f"   {hydrograph.iloc[0,0]}   {hydrograph.iloc[0,1]}           time(s), ro(m3/s)\n"
-            for row in range(1,len(hydrograph)):
-                linea_tres += f"   {hydrograph.iloc[row,0]}   {hydrograph.iloc[row,1]}\n"
-            linea_cuatro = "------------------------------"
-            archivo.write(f"{linea_uno}\n")
-            archivo.write(f"{linea_dos}\n")
-            archivo.write(f"{linea_tres}")
-            archivo.write(f"{linea_cuatro}\n")
+        if os.path.exists(iro_file) and os.path.isfile(iro_file):
+            with open(iro_file, 'w') as archivo:
+                linea_uno = f"     {width}    {length}                     Swidth(m), Slength(m)"
+                linea_dos = f"    {rows}   {peak}                   nbcroff, bcropeak (m3/s)"
+                linea_tres = f"   {hydrograph.iloc[0,0]}   {hydrograph.iloc[0,1]}           time(s), ro(m3/s)\n"
+                for row in range(1,len(hydrograph)):
+                    linea_tres += f"   {hydrograph.iloc[row,0]}   {hydrograph.iloc[row,1]}\n"
+                linea_cuatro = "------------------------------"
+                archivo.write(f"{linea_uno}\n")
+                archivo.write(f"{linea_dos}\n")
+                archivo.write(f"{linea_tres}")
+                archivo.write(f"{linea_cuatro}\n")
         if close:
             self.dlg_vfsmod_hydrograph.close()
             
@@ -10231,13 +10337,14 @@ class qvfsmod:
         self.ax.clear()
         column_y = [self.dlg_design_results_graph.column.itemText(i) for i in range(self.dlg_design_results_graph.column.count())][self.dlg_design_results_graph.column.currentIndex()]
         column_x = df.columns[1]
-        x = df[column_x]
-        y = df[column_y]
-        values_per_storm = len(df)/len(np.unique(df["Rainfall (mm)"]))
-        list_range = list(range(0,len(df)+int(values_per_storm),int(values_per_storm)))
-        for i in range(len(list_range)-1):
-            self.ax.plot(x[list_range[i]:list_range[i+1]],y[list_range[i]:list_range[i+1]], linewidth=2, marker='o', markersize=4,label = f"{df['Rainfall (mm)'][list_range[i]]} mm")
-
+        
+        
+        for k,i in enumerate(list(np.unique(df["Rainfall (mm)"]))):
+            mask = df["Rainfall (mm)"]==i
+            x = df[mask][column_x]
+            y = df[mask][column_y]
+            self.ax.plot(x,y, linewidth=2, marker='o', markersize=4,label = f"{i} mm")
+            
         #Limits
         #self.ax.set_ylim([0, 1])
         #Labels
@@ -10264,12 +10371,13 @@ class qvfsmod:
         
         #Add crossing point between threshold and lines and put it in a table
         self.dlg_design_results_graph.tableWidget.setRowCount(1)
-        self.dlg_design_results_graph.tableWidget.setColumnCount(len(list_range)-1)
-        self.dlg_design_results_graph.tableWidget.setHorizontalHeaderLabels([f"{df['Rainfall (mm)'][list_range[i]]} mm" for i in range(len(list_range)-1)])
-        for i in range(len(list_range)-1):
+        self.dlg_design_results_graph.tableWidget.setColumnCount(len(np.unique(df["Rainfall (mm)"])))
+        self.dlg_design_results_graph.tableWidget.setHorizontalHeaderLabels([f"{i} mm" for i in list(np.unique(df["Rainfall (mm)"]))])
+        for k,i in enumerate(list(np.unique(df["Rainfall (mm)"]))):
             try:
-                x_values = x[list_range[i]:list_range[i+1]]
-                y_values = y[list_range[i]:list_range[i+1]]
+                mask = df["Rainfall (mm)"]==i
+                x_values = df[mask][column_x]
+                y_values = df[mask][column_y]
                 f = interp1d(y_values, x_values)
                 x_interpolado = str(round(f(value).item(),2))
             except ValueError:
@@ -10289,7 +10397,7 @@ class qvfsmod:
                         x_interpolado = "x"
                         
             item = QTableWidgetItem(x_interpolado)
-            self.dlg_design_results_graph.tableWidget.setItem(0, i, item)
+            self.dlg_design_results_graph.tableWidget.setItem(0, k, item)
             item.setTextAlignment(Qt.AlignCenter)
             
         #Change name of row
@@ -10578,8 +10686,10 @@ class qvfsmod:
 def wrapper_design_paralelization(args, processer):
     """Esta función envuelve la función original para manejar múltiples argumentos"""
     i, core_id, param_values,working_directory,length_checked,spacing_checked, vfs_file_design= args
-    core_id = processer % psutil.cpu_count(logical=False)
-    return design_paralelization(i, core_id, param_values,working_directory,length_checked,spacing_checked,vfs_file_design)
+    try:
+        return design_paralelization(i, core_id, param_values,working_directory,length_checked,spacing_checked,vfs_file_design)
+    except:
+        return save_outputs_design(working_directory,True,length_checked,spacing_checked,i,param_values,core_id)
 
 def design_paralelization(number_execution,core,combinations_design,working_directory,length_checked,spacing_checked,vfs_file_design):
     '''Function to run in paralell design analysis'''
@@ -10698,8 +10808,11 @@ def modify_ikw_file_design(vfs_file_design,working_directory,value_change,core):
         actual_length = max(df["Distance"])
         length_to_change = value_change
         if length_to_change <= actual_length:
-            df_a = df[df["Distance"]<=length_to_change]
-            df_a.loc[df.index[-1], "Distance"] = length_to_change
+            if length_to_change<min(df["Distance"]): #when distance is smaller than the first interval
+                df = df.head(1)
+            else:
+                df = df[df["Distance"]<=length_to_change]
+                df.loc[df.index[-1], "Distance"] = length_to_change
         else:
             df_a.loc[df.index[-1], "Distance"] = length_to_change
         
@@ -10743,8 +10856,6 @@ def modify_ikw_file_design(vfs_file_design,working_directory,value_change,core):
         })
         
         
-        
-        
         contenido = ""
         for i in lineas[:4]:    
             contenido+=f"{i}"
@@ -10761,7 +10872,7 @@ def save_outputs_design(working_directory,error,length_checked,spacing_checked,n
     """Function to save outputs in the design process"""
     #Obtain the values
     if error:
-        df_conc = pd.DataFrame(data = {"Total Runoff from source (mm)":[np.nan],
+        df_conc = pd.DataFrame(data = {"Error":[1],"Total Runoff from source (mm)":[np.nan],
             "Total Runoff from Source (m3)":[np.nan],"Total Runoff out from Filter (mm)":[np.nan],
             "Total Runoff out from Filter (m3)":[np.nan],"Total Infiltration in Filter":[np.nan],
             "Mass Sediment Input to Filter":[np.nan],"Concentration Sediment in Runoff from source Area":[np.nan],
@@ -10809,7 +10920,7 @@ def save_outputs_design(working_directory,error,length_checked,spacing_checked,n
         rdr = obtain_result(" Runoff Delivery Ratio\n")
         
         #Dataframe to concatenate results
-        df_conc = pd.DataFrame(data = {"Total Runoff from source (mm)":[runoff_from_source_mm],
+        df_conc = pd.DataFrame(data = {"Error":[0],"Total Runoff from source (mm)":[runoff_from_source_mm],
             "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm)":[runoff_out_filter_mm],
             "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter":[infiltration_filter],
             "Mass Sediment Input to Filter":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area":[concentration_sediment_source],
@@ -10836,12 +10947,15 @@ def wrapper_uncertainity_paralelization(args):
 
 def uncertainity_paralelization(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_uncertainity_file_file,water_quality):
     '''Function to run in paralell uncertainity analysis'''
-    execution = execution_uncertainity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_uncertainity_file_file)
-    #Save results
-    if execution == "error":
+    try: #if there is an error in the execution then return a dataframe with error
+        execution = execution_uncertainity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_uncertainity_file_file)
+        #Save results
+        if execution == "error":
+            return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = True)
+        else:
+            return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = False)
+    except:
         return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = True)
-    else:
-        return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = False)
 
 def execution_uncertainity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_uncertainity_file):
     """Function for the each execution of the uncertainity analysis"""
@@ -10964,8 +11078,11 @@ def change_buffer_length_uncertainity(value_change,core,vfs_uncertainity_file,wo
     actual_length = max(df["Distance"])
     length_to_change = value_change
     if length_to_change <= actual_length:
-        df_a = df[df["Distance"]<=length_to_change]
-        df_a.loc[df.index[-1], "Distance"] = length_to_change
+        if length_to_change<min(df["Distance"]): #when distance is smaller than the first interval
+            df = df.head(1)
+        else:
+            df = df[df["Distance"]<=length_to_change]
+            df.loc[df.index[-1], "Distance"] = length_to_change
     else:
         df_a.loc[df.index[-1], "Distance"] = length_to_change
     
@@ -11138,13 +11255,16 @@ def wrapper_sensitivity_paralelization(args):
 
 def sensitivity_paralelization(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file,water_quality):
     '''Function to run in paralell sensitivity analysis'''
-    execution = execution_sensitivity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file)
-    #Save results
-    if execution == "error":
+    try: #if there is an error execution then return a dataframe with error
+        execution = execution_sensitivity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file)
+        #Save results
+        if execution == "error":
+            return save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = True)
+            
+        else:
+            return save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = False)
+    except:
         return save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = True)
-        
-    else:
-        return save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = False)
         
     
     
@@ -11271,8 +11391,11 @@ def change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file,work
     actual_length = max(df["Distance"])
     length_to_change = value_change
     if length_to_change <= actual_length:
-        df_a = df[df["Distance"]<=length_to_change]
-        df_a.loc[df.index[-1], "Distance"] = length_to_change
+        if length_to_change<min(df["Distance"]): #when distance is smaller than the first interval
+            df = df.head(1)
+        else:
+            df = df[df["Distance"]<=length_to_change]
+            df.loc[df.index[-1], "Distance"] = length_to_change
     else:
         df_a.loc[df.index[-1], "Distance"] = length_to_change
     

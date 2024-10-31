@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>600</height>
+    <height>599</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -1199,9 +1199,9 @@ typical 0.01-0.07</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_8">
                <item row="1" column="0">
-                <widget class="QPushButton" name="pushButton">
+                <widget class="QPushButton" name="save_uh_project">
                  <property name="text">
-                  <string>Save</string>
+                  <string>Save This Project</string>
                  </property>
                 </widget>
                </item>
@@ -1229,7 +1229,7 @@ typical 0.01-0.07</string>
                <item row="0" column="0">
                 <widget class="QPushButton" name="execute">
                  <property name="text">
-                  <string>Execute</string>
+                  <string>Run This Project</string>
                  </property>
                 </widget>
                </item>
@@ -1280,16 +1280,424 @@ typical 0.01-0.07</string>
              <x>0</x>
              <y>0</y>
              <width>573</width>
-             <height>713</height>
+             <height>715</height>
             </rect>
            </property>
-           <layout class="QGridLayout" name="gridLayout_24">
-            <item row="3" column="0">
-             <widget class="QPushButton" name="run_vfsmod">
-              <property name="text">
-               <string>Run This Project</string>
+           <layout class="QGridLayout" name="gridLayout_17">
+            <item row="0" column="0">
+             <widget class="QFrame" name="frame_7">
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
               </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_11">
+               <item row="0" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_4">
+                 <item>
+                  <widget class="QLabel" name="label_4">
+                   <property name="minimumSize">
+                    <size>
+                     <width>246</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Filter Strip Project File:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="line_project_vfsmod">
+                   <property name="maximumSize">
+                    <size>
+                     <width>315</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browse_vfsmod_project">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../button_icons.qrc">
+                     <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
              </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QFrame" name="frame_11">
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_15">
+               <item row="0" column="0">
+                <widget class="QCheckBox" name="water_quality">
+                 <property name="minimumSize">
+                  <size>
+                   <width>246</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>246</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Include Water Quality</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QComboBox" name="combo_water">
+                 <property name="minimumSize">
+                  <size>
+                   <width>204</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <spacer name="horizontalSpacer_3">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QFrame" name="frame_8">
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_12">
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_5">
+                 <property name="font">
+                  <font>
+                   <family>Georgia</family>
+                   <pointsize>-1</pointsize>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Input files</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <item>
+                  <widget class="QLabel" name="label_6">
+                   <property name="minimumSize">
+                    <size>
+                     <width>246</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Overland Flow Inputs</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="line_overland"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="edit_overland">
+                   <property name="text">
+                    <string>Edit</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browse_overland">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../button_icons.qrc">
+                     <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="2" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_6">
+                 <item>
+                  <widget class="QLabel" name="label_7">
+                   <property name="minimumSize">
+                    <size>
+                     <width>246</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Infiltration - Soil Properties</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="line_infiltration"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="edit_infiltration">
+                   <property name="text">
+                    <string>Edit</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browse_infiltration">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../button_icons.qrc">
+                     <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="3" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_9">
+                 <item>
+                  <widget class="QLabel" name="label_10">
+                   <property name="minimumSize">
+                    <size>
+                     <width>246</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Buffer Vegetation Properties</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="line_buffer"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="edit_buffer">
+                   <property name="text">
+                    <string>Edit</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browse_buffer">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../button_icons.qrc">
+                     <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="4" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_10">
+                 <item>
+                  <widget class="QLabel" name="label_11">
+                   <property name="minimumSize">
+                    <size>
+                     <width>246</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Incoming Sediment Characteristics</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="line_incoming"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="edit_incoming">
+                   <property name="text">
+                    <string>Edit</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browse_incoming">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../button_icons.qrc">
+                     <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="5" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_11">
+                 <item>
+                  <widget class="QLabel" name="label_12">
+                   <property name="minimumSize">
+                    <size>
+                     <width>246</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Storm Hyetograph</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="line_storm"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="edit_storm">
+                   <property name="text">
+                    <string>Edit</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browse_storm">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../button_icons.qrc">
+                     <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="6" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_12">
+                 <item>
+                  <widget class="QLabel" name="label_13">
+                   <property name="minimumSize">
+                    <size>
+                     <width>246</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Source Area Storm Runoff</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="line_source"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="edit_source">
+                   <property name="text">
+                    <string>Edit</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browse_source">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../button_icons.qrc">
+                     <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="7" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_36">
+                 <item>
+                  <widget class="QLabel" name="label_quality_properties">
+                   <property name="minimumSize">
+                    <size>
+                     <width>246</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Water Quality (Properties)</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="line_water"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="edit_water">
+                   <property name="text">
+                    <string>Edit</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browse_water">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../button_icons.qrc">
+                     <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_51">
+              <item>
+               <widget class="QPushButton" name="save_vfs_project">
+                <property name="text">
+                 <string>Save This Project</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="run_vfsmod">
+                <property name="text">
+                 <string>Run This Project</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item row="4" column="0">
              <widget class="QFrame" name="frame_10">
@@ -1648,403 +2056,6 @@ typical 0.01-0.07</string>
               </layout>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QFrame" name="frame_8">
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_12">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_5">
-                 <property name="font">
-                  <font>
-                   <family>Georgia</family>
-                   <pointsize>-1</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>Input files</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_5">
-                 <item>
-                  <widget class="QLabel" name="label_6">
-                   <property name="minimumSize">
-                    <size>
-                     <width>246</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Overland Flow Inputs</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="line_overland"/>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="edit_overland">
-                   <property name="text">
-                    <string>Edit</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="browse_overland">
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="icon">
-                    <iconset resource="../button_icons.qrc">
-                     <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="2" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_6">
-                 <item>
-                  <widget class="QLabel" name="label_7">
-                   <property name="minimumSize">
-                    <size>
-                     <width>246</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Infiltration - Soil Properties</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="line_infiltration"/>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="edit_infiltration">
-                   <property name="text">
-                    <string>Edit</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="browse_infiltration">
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="icon">
-                    <iconset resource="../button_icons.qrc">
-                     <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="3" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_9">
-                 <item>
-                  <widget class="QLabel" name="label_10">
-                   <property name="minimumSize">
-                    <size>
-                     <width>246</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Buffer Vegetation Properties</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="line_buffer"/>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="edit_buffer">
-                   <property name="text">
-                    <string>Edit</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="browse_buffer">
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="icon">
-                    <iconset resource="../button_icons.qrc">
-                     <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="4" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_10">
-                 <item>
-                  <widget class="QLabel" name="label_11">
-                   <property name="minimumSize">
-                    <size>
-                     <width>246</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Incoming Sediment Characteristics</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="line_incoming"/>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="edit_incoming">
-                   <property name="text">
-                    <string>Edit</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="browse_incoming">
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="icon">
-                    <iconset resource="../button_icons.qrc">
-                     <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="5" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_11">
-                 <item>
-                  <widget class="QLabel" name="label_12">
-                   <property name="minimumSize">
-                    <size>
-                     <width>246</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Storm Hyetograph</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="line_storm"/>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="edit_storm">
-                   <property name="text">
-                    <string>Edit</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="browse_storm">
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="icon">
-                    <iconset resource="../button_icons.qrc">
-                     <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="6" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_12">
-                 <item>
-                  <widget class="QLabel" name="label_13">
-                   <property name="minimumSize">
-                    <size>
-                     <width>246</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Source Area Storm Runoff</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="line_source"/>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="edit_source">
-                   <property name="text">
-                    <string>Edit</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="browse_source">
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="icon">
-                    <iconset resource="../button_icons.qrc">
-                     <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="7" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_36">
-                 <item>
-                  <widget class="QLabel" name="label_quality_properties">
-                   <property name="minimumSize">
-                    <size>
-                     <width>246</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Water Quality (Properties)</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="line_water"/>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="edit_water">
-                   <property name="text">
-                    <string>Edit</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="browse_water">
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="icon">
-                    <iconset resource="../button_icons.qrc">
-                     <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QFrame" name="frame_11">
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_15">
-               <item row="0" column="0">
-                <widget class="QCheckBox" name="water_quality">
-                 <property name="minimumSize">
-                  <size>
-                   <width>246</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>246</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Include Water Quality</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QComboBox" name="combo_water">
-                 <property name="minimumSize">
-                  <size>
-                   <width>204</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <spacer name="horizontalSpacer_3">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QFrame" name="frame_7">
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_11">
-               <item row="0" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_4">
-                 <item>
-                  <widget class="QLabel" name="label_4">
-                   <property name="minimumSize">
-                    <size>
-                     <width>246</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Filter Strip Project File:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="line_project_vfsmod">
-                   <property name="maximumSize">
-                    <size>
-                     <width>315</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="browse_vfsmod_project">
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="icon">
-                    <iconset resource="../button_icons.qrc">
-                     <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
            </layout>
           </widget>
          </widget>
@@ -2083,7 +2094,7 @@ typical 0.01-0.07</string>
              <x>0</x>
              <y>0</y>
              <width>764</width>
-             <height>523</height>
+             <height>522</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_29">
@@ -2756,8 +2767,8 @@ typical 0.01-0.07</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>98</width>
-             <height>28</height>
+             <width>762</width>
+             <height>521</height>
             </rect>
            </property>
           </widget>
@@ -2769,6 +2780,9 @@ typical 0.01-0.07</string>
        <layout class="QGridLayout" name="gridLayout_30">
         <item row="0" column="0">
          <widget class="QScrollArea" name="scrollArea_2">
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
           <property name="widgetResizable">
            <bool>true</bool>
           </property>
@@ -2777,247 +2791,258 @@ typical 0.01-0.07</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>703</width>
-             <height>773</height>
+             <width>747</width>
+             <height>765</height>
             </rect>
            </property>
-           <layout class="QGridLayout" name="gridLayout_56">
+           <layout class="QGridLayout" name="gridLayout_9">
             <item row="0" column="0">
-             <widget class="QFrame" name="frame_34">
+             <widget class="QFrame" name="frame_19">
               <property name="frameShape">
                <enum>QFrame::StyledPanel</enum>
               </property>
               <property name="frameShadow">
                <enum>QFrame::Raised</enum>
               </property>
-              <layout class="QGridLayout" name="gridLayout_55">
+              <layout class="QGridLayout" name="gridLayout_49">
+               <item row="2" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_50">
+                 <item>
+                  <layout class="QGridLayout" name="gridLayout_46">
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_63">
+                     <property name="text">
+                      <string>VFS project file</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="3" column="0">
+                    <widget class="QLineEdit" name="hydrograph_file">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="3" column="1">
+                    <widget class="QPushButton" name="browse_hydrograph_calibration">
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QLineEdit" name="vfs_project">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="0">
+                    <widget class="QLabel" name="label_76">
+                     <property name="text">
+                      <string>Observed hydrograph</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="3" column="2">
+                    <widget class="QPushButton" name="edit_hydrograph">
+                     <property name="text">
+                      <string>Edit</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1">
+                    <widget class="QPushButton" name="browse_project">
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout">
+                   <item>
+                    <widget class="QPushButton" name="show_calibration_hydrograph">
+                     <property name="text">
+                      <string>Set inputs</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="advanced_hydrograph">
+                     <property name="text">
+                      <string>Advanced settings</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="run_hydrograph">
+                     <property name="text">
+                      <string>Run</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="calibration_result_hydrograph">
+                     <property name="text">
+                      <string>View results</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_72">
+                 <property name="font">
+                  <font>
+                   <family>Georgia</family>
+                   <pointsize>-1</pointsize>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Hydrograph</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_74">
+                 <property name="font">
+                  <font>
+                   <family>Georgia</family>
+                   <pointsize>-1</pointsize>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Sedimentograph</string>
+                 </property>
+                </widget>
+               </item>
                <item row="0" column="0">
-                <widget class="QFrame" name="frame_19">
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                <widget class="Line" name="line_2">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
                  </property>
-                 <property name="frameShadow">
-                  <enum>QFrame::Raised</enum>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_53">
+                 <item>
+                  <layout class="QGridLayout" name="gridLayout_48">
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_79">
+                     <property name="text">
+                      <string>VFS project file</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="3" column="0">
+                    <widget class="QLineEdit" name="sedimentograph_file">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="3" column="1">
+                    <widget class="QPushButton" name="browse_sedimentograph_calibration">
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QLineEdit" name="vfs_file">
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="0">
+                    <widget class="QLabel" name="label_80">
+                     <property name="text">
+                      <string>Observed sedimentograph</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1">
+                    <widget class="QPushButton" name="browse_project_sedimentograph">
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="3" column="2">
+                    <widget class="QPushButton" name="edit_sedimentograph">
+                     <property name="text">
+                      <string>Edit</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_54">
+                   <item>
+                    <widget class="QPushButton" name="show_calibration_sedimentograph">
+                     <property name="text">
+                      <string>Set inputs</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="advanced_sedimentograph">
+                     <property name="text">
+                      <string>Advanced settings</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="run_sedimentograph">
+                     <property name="text">
+                      <string>Run</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="calibration_result_sedimentograph">
+                     <property name="text">
+                      <string>View results</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </item>
+               <item row="3" column="0">
+                <widget class="Line" name="line">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
                  </property>
-                 <layout class="QGridLayout" name="gridLayout_49">
-                  <item row="3" column="0">
-                   <widget class="QLabel" name="label_74">
-                    <property name="text">
-                     <string>Sedimentograph</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_72">
-                    <property name="text">
-                     <string>Hydrograph</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="0">
-                   <layout class="QHBoxLayout" name="horizontalLayout_53">
-                    <item>
-                     <layout class="QGridLayout" name="gridLayout_48">
-                      <item row="0" column="0">
-                       <widget class="QLabel" name="label_79">
-                        <property name="text">
-                         <string>VFS project file</string>
-                        </property>
-                        <property name="alignment">
-                         <set>Qt::AlignCenter</set>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="3" column="0">
-                       <widget class="QLineEdit" name="sedimentograph_file">
-                        <property name="alignment">
-                         <set>Qt::AlignCenter</set>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="3" column="1">
-                       <widget class="QPushButton" name="browse_sedimentograph_calibration">
-                        <property name="text">
-                         <string/>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="1" column="0">
-                       <widget class="QLineEdit" name="vfs_file">
-                        <property name="alignment">
-                         <set>Qt::AlignCenter</set>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="2" column="0">
-                       <widget class="QLabel" name="label_80">
-                        <property name="text">
-                         <string>Observed sedimentograph</string>
-                        </property>
-                        <property name="alignment">
-                         <set>Qt::AlignCenter</set>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="1" column="1">
-                       <widget class="QPushButton" name="browse_project_sedimentograph">
-                        <property name="text">
-                         <string/>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="3" column="2">
-                       <widget class="QPushButton" name="edit_sedimentograph">
-                        <property name="text">
-                         <string>Edit</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
-                    </item>
-                    <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_54">
-                      <item>
-                       <widget class="QPushButton" name="show_calibration_sedimentograph">
-                        <property name="text">
-                         <string>Set inputs</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="advanced_sedimentograph">
-                        <property name="text">
-                         <string>Advanced settings</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="run_sedimentograph">
-                        <property name="text">
-                         <string>Run</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="calibration_result_sedimentograph">
-                        <property name="text">
-                         <string>View results</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="2" column="0">
-                   <layout class="QHBoxLayout" name="horizontalLayout_50">
-                    <item>
-                     <layout class="QGridLayout" name="gridLayout_46">
-                      <item row="0" column="0">
-                       <widget class="QLabel" name="label_63">
-                        <property name="text">
-                         <string>VFS project file</string>
-                        </property>
-                        <property name="alignment">
-                         <set>Qt::AlignCenter</set>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="3" column="0">
-                       <widget class="QLineEdit" name="hydrograph_file">
-                        <property name="alignment">
-                         <set>Qt::AlignCenter</set>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="3" column="1">
-                       <widget class="QPushButton" name="browse_hydrograph_calibration">
-                        <property name="text">
-                         <string/>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="1" column="0">
-                       <widget class="QLineEdit" name="vfs_project">
-                        <property name="alignment">
-                         <set>Qt::AlignCenter</set>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="2" column="0">
-                       <widget class="QLabel" name="label_76">
-                        <property name="text">
-                         <string>Observed hydrograph</string>
-                        </property>
-                        <property name="alignment">
-                         <set>Qt::AlignCenter</set>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="3" column="2">
-                       <widget class="QPushButton" name="edit_hydrograph">
-                        <property name="text">
-                         <string>Edit</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="1" column="1">
-                       <widget class="QPushButton" name="browse_project">
-                        <property name="text">
-                         <string/>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
-                    </item>
-                    <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout">
-                      <item>
-                       <widget class="QPushButton" name="show_calibration_hydrograph">
-                        <property name="text">
-                         <string>Set inputs</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="advanced_hydrograph">
-                        <property name="text">
-                         <string>Advanced settings</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="run_hydrograph">
-                        <property name="text">
-                         <string>Run</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="calibration_result_hydrograph">
-                        <property name="text">
-                         <string>View results</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_65">
-                    <property name="text">
-                     <string>CALIBRATION</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
                 </widget>
                </item>
               </layout>
              </widget>
             </item>
-            <item row="1" column="0">
+            <item row="2" column="0">
              <widget class="QFrame" name="frame_20">
               <property name="frameShape">
                <enum>QFrame::StyledPanel</enum>
@@ -3035,13 +3060,6 @@ typical 0.01-0.07</string>
                   <enum>QFrame::Raised</enum>
                  </property>
                  <layout class="QGridLayout" name="gridLayout_52">
-                  <item row="3" column="1">
-                   <widget class="QPushButton" name="inputs_sediment_single">
-                    <property name="text">
-                     <string>Set inputs</string>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="2" column="2">
                    <layout class="QHBoxLayout" name="horizontalLayout_58">
                     <item>
@@ -3073,24 +3091,51 @@ typical 0.01-0.07</string>
                     </item>
                    </layout>
                   </item>
-                  <item row="4" column="2">
-                   <layout class="QHBoxLayout" name="horizontalLayout_61">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_81">
+                    <property name="text">
+                     <string>Discharge</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="2">
+                   <widget class="QLabel" name="label_83">
+                    <property name="text">
+                     <string>Pesticide</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="2">
+                   <widget class="QPushButton" name="inputs_pesticide_single">
+                    <property name="text">
+                     <string>Set inputs</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <layout class="QHBoxLayout" name="horizontalLayout_55">
                     <item>
-                     <widget class="QCheckBox" name="check_pesticide_liquid">
+                     <widget class="QCheckBox" name="check_filtered_sediment">
                       <property name="minimumSize">
                        <size>
-                        <width>224</width>
+                        <width>150</width>
                         <height>0</height>
                        </size>
                       </property>
                       <property name="text">
-                       <string>Pesticide outflow in liquid phase
-(mg)</string>
+                       <string>Filtered sediment
+(ratio)</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLineEdit" name="line_pesticide_liquid">
+                     <widget class="QLineEdit" name="line_filtered_sediment">
                       <property name="enabled">
                        <bool>false</bool>
                       </property>
@@ -3135,37 +3180,6 @@ typical 0.01-0.07</string>
                     </item>
                    </layout>
                   </item>
-                  <item row="3" column="2">
-                   <layout class="QHBoxLayout" name="horizontalLayout_60">
-                    <item>
-                     <widget class="QCheckBox" name="check_pesticide_solid">
-                      <property name="minimumSize">
-                       <size>
-                        <width>224</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>Pesticide outflow in solid phase
-(mg)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="line_pesticide_solid">
-                      <property name="enabled">
-                       <bool>false</bool>
-                      </property>
-                      <property name="styleSheet">
-                       <string notr="true">background-color: #d9d9d9;</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
                   <item row="0" column="1">
                    <widget class="QLabel" name="label_82">
                     <property name="text">
@@ -3175,46 +3189,6 @@ typical 0.01-0.07</string>
                      <set>Qt::AlignCenter</set>
                     </property>
                    </widget>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_81">
-                    <property name="text">
-                     <string>Discharge</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="2">
-                   <layout class="QHBoxLayout" name="horizontalLayout_59">
-                    <item>
-                     <widget class="QCheckBox" name="check_filtered_pesticide">
-                      <property name="minimumSize">
-                       <size>
-                        <width>224</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>Filtered pesticide</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="line_filtered_pesticide">
-                      <property name="enabled">
-                       <bool>false</bool>
-                      </property>
-                      <property name="styleSheet">
-                       <string notr="true">background-color: #d9d9d9;</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
                   </item>
                   <item row="1" column="1">
                    <layout class="QHBoxLayout" name="horizontalLayout_49">
@@ -3247,6 +3221,82 @@ typical 0.01-0.07</string>
                     </item>
                    </layout>
                   </item>
+                  <item row="3" column="2">
+                   <layout class="QHBoxLayout" name="horizontalLayout_60">
+                    <item>
+                     <widget class="QCheckBox" name="check_pesticide_solid">
+                      <property name="minimumSize">
+                       <size>
+                        <width>224</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>Pesticide outflow in solid phase
+(mg)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="line_pesticide_solid">
+                      <property name="enabled">
+                       <bool>false</bool>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">background-color: #d9d9d9;</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QPushButton" name="inputs_discharge_single">
+                    <property name="text">
+                     <string>Set inputs</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="2">
+                   <layout class="QHBoxLayout" name="horizontalLayout_61">
+                    <item>
+                     <widget class="QCheckBox" name="check_pesticide_liquid">
+                      <property name="minimumSize">
+                       <size>
+                        <width>224</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>Pesticide outflow in liquid phase
+(mg)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="line_pesticide_liquid">
+                      <property name="enabled">
+                       <bool>false</bool>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">background-color: #d9d9d9;</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QPushButton" name="inputs_sediment_single">
+                    <property name="text">
+                     <string>Set inputs</string>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="2" column="0">
                    <layout class="QHBoxLayout" name="horizontalLayout_57">
                     <item>
@@ -3278,24 +3328,23 @@ typical 0.01-0.07</string>
                     </item>
                    </layout>
                   </item>
-                  <item row="2" column="1">
-                   <layout class="QHBoxLayout" name="horizontalLayout_55">
+                  <item row="1" column="2">
+                   <layout class="QHBoxLayout" name="horizontalLayout_59">
                     <item>
-                     <widget class="QCheckBox" name="check_filtered_sediment">
+                     <widget class="QCheckBox" name="check_filtered_pesticide">
                       <property name="minimumSize">
                        <size>
-                        <width>150</width>
+                        <width>224</width>
                         <height>0</height>
                        </size>
                       </property>
                       <property name="text">
-                       <string>Filtered sediment
-(ratio)</string>
+                       <string>Filtered pesticide</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLineEdit" name="line_filtered_sediment">
+                     <widget class="QLineEdit" name="line_filtered_pesticide">
                       <property name="enabled">
                        <bool>false</bool>
                       </property>
@@ -3309,37 +3358,21 @@ typical 0.01-0.07</string>
                     </item>
                    </layout>
                   </item>
-                  <item row="3" column="0">
-                   <widget class="QPushButton" name="inputs_discharge_single">
-                    <property name="text">
-                     <string>Set inputs</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="2">
-                   <widget class="QLabel" name="label_83">
-                    <property name="text">
-                     <string>Pesticide</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="5" column="2">
-                   <widget class="QPushButton" name="inputs_pesticide_single">
-                    <property name="text">
-                     <string>Set inputs</string>
-                    </property>
-                   </widget>
-                  </item>
                  </layout>
                 </widget>
                </item>
                <item row="0" column="0">
                 <widget class="QLabel" name="label_75">
+                 <property name="font">
+                  <font>
+                   <family>Georgia</family>
+                   <pointsize>-1</pointsize>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
                  <property name="text">
-                  <string>Single values calibration</string>
+                  <string>Single values</string>
                  </property>
                 </widget>
                </item>
@@ -3410,6 +3443,20 @@ typical 0.01-0.07</string>
                 </layout>
                </item>
               </layout>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="Line" name="line_3">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="Line" name="line_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
              </widget>
             </item>
            </layout>
@@ -4037,7 +4084,7 @@ Solution Parameters</string>
                     <x>0</x>
                     <y>0</y>
                     <width>290</width>
-                    <height>28</height>
+                    <height>173</height>
                    </rect>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_79">
@@ -5032,7 +5079,7 @@ Solution Parameters</string>
                     <x>0</x>
                     <y>0</y>
                     <width>290</width>
-                    <height>28</height>
+                    <height>173</height>
                    </rect>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_86">
