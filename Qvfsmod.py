@@ -16,7 +16,7 @@
 from PyQt5 import QtWidgets,QtGui
 from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QThread,pyqtSignal
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QAction, QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy,QAction, QMenu
+from PyQt5.QtWidgets import QAction, QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy,QAction, QMenu,QCheckBox  
 # Initialize Qt resources from file resources.py
 from resources import *
 # Import the code for the dialog
@@ -450,7 +450,7 @@ class qvfsmod:
         self.dlg_infiltration_soil.line_vertical_cmh_2.textChanged.connect(self.update_k_units_ms_2)
         
         
-        #Appear the VFSMOD editing dialogs
+        #Show the VFSMOD editing dialogs
         self.dlg_base.edit_overland.clicked.connect(self.dlg_overland_flow_show)
         self.dlg_overland_flow.edit_segment.clicked.connect(self.dlg_buffer_segment_show)
         self.dlg_base.edit_infiltration.clicked.connect(self.dlg_infiltration_soil_show)
@@ -458,8 +458,8 @@ class qvfsmod:
         self.dlg_base.edit_buffer.clicked.connect(self.dlg_buffer_properties_show)
         self.dlg_base.edit_water.clicked.connect(self.dlg_water_quality_show)
         self.dlg_base.edit_incoming.clicked.connect(self.dlg_incoming_sediment_show)
-        self.dlg_base.edit_storm.clicked.connect(self.add_hyetograph_to_dialog)
-        self.dlg_base.edit_source.clicked.connect(self.add_hydrograph_to_dialog)
+        self.dlg_base.edit_storm.clicked.connect(lambda _, b = True:self.add_hyetograph_to_dialog(b))
+        self.dlg_base.edit_source.clicked.connect(lambda _, b = True:self.add_hydrograph_to_dialog(b))
         
 
         #Enable/disable edition in water quality dialog
@@ -747,7 +747,7 @@ class qvfsmod:
         
         #Show sensitivity results
         self.dlg_base.actionGlobal_Results.triggered.connect(self.show_graph_sensitivity_global)
-        self.dlg_base.actionLocal_Results.triggered.connect(self.show_graph_sensitivity_oat)
+        self.dlg_base.actionLocal_Results.triggered.connect(self.update_sensitity_graph_oat)
         
         #Show uncertainity results
         self.dlg_base.actionResults.triggered.connect(self.show_graph_sensitivity_uncertainity)
@@ -762,16 +762,14 @@ class qvfsmod:
         self.dlg_calibration_results_sedimentograph.browse.clicked.connect(self.browse_files_calibration_sedimentograph)
         self.dlg_calibration_results_single.browse.clicked.connect(self.browse_files_calibration_single)
         
-        #Update sensitivity graph for Sobol
-        self.dlg_base.csv_results_2.textChanged.connect(self.update_sensitivity_graph_global)
-        check_boxes = [self.dlg_base.runoff_source_mm_2,self.dlg_base.runoff_source_m3_2,
-            self.dlg_base.runoff_filter_mm_2,self.dlg_base.runoff_filter_m3_2,
-            self.dlg_base.infiltration_filter_m3_2,self.dlg_base.sediment_input_2,
-            self.dlg_base.concentration_sediment_2,self.dlg_base.sediment_output_2,
-            self.dlg_base.sediment_runoff_exit_2,self.dlg_base.sediment_delivery_2,
-            self.dlg_base.runoff_delivery_2,self.dlg_base.radio_morris, self.dlg_base.radio_fast,self.dlg_base.radio_sobol]
+        #Update sensitivity graph for Global
+        self.dlg_base.csv_results_morris.textChanged.connect(self.show_sensitivity_graph_global)
+        self.dlg_base.csv_results_fast.textChanged.connect(self.show_sensitivity_graph_global)
+        self.dlg_base.csv_results_2.textChanged.connect(self.show_sensitivity_graph_global)
+        
+        check_boxes = [self.dlg_base.radio_morris, self.dlg_base.radio_fast,self.dlg_base.radio_sobol]
         for i in check_boxes:
-            i.toggled.connect(lambda checked, rb=i: self.update_sensitivity_graph_global() if checked else None)
+            i.toggled.connect(lambda checked, rb=i: self.show_sensitivity_graph_global() if checked else None)
         
         #Update sensitivity graph for OAT
         check_boxes = [self.dlg_base.runoff_source_mm_3,self.dlg_base.runoff_source_m3_3,
@@ -834,6 +832,7 @@ class qvfsmod:
         self.dlg_vfsmod_hydrograph.tableWidget.itemChanged.connect(self.update_vfsmod_hydrograph_graph)
         self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.connect(self.update_vfsmod_hyetograph_graph)
         
+        
         #Browse csv of oat sensitivity analysis
         self.dlg_base.browse_oat_csv.clicked.connect(self.browse_csv_oat)
         
@@ -875,7 +874,12 @@ class qvfsmod:
         self.create_iso_file()
         self.create_igr_file()
         self.create_isd_file()
+        #For irn and iro if the canvas is not created then the dialog has not been opened and no data is in the table
+        if not hasattr(self, 'canvas_vfsmod_hyetograph'):
+            self.add_hyetograph_to_dialog(False)
         self.create_irn_file()
+        if not hasattr(self, 'canvas_vfsmod_hydrograph'):
+            self.add_hydrograph_to_dialog(False)
         self.create_iro_file()
         if self.dlg_base.water_quality.isChecked():
             self.create_iwq_file()
@@ -1644,74 +1648,154 @@ class qvfsmod:
         else: 
             self.dlg_water_quality.frame_5.show()
     
+    def show_sensitivity_graph_global(self):
+        """Method to add the outputs for the graph visualization"""
+        if self.dlg_base.radio_morris.isChecked():
+            path = self.dlg_base.csv_results_morris.text()
+        elif self.dlg_base.radio_fast.isChecked():
+            path = self.dlg_base.csv_results_fast.text()
+        elif self.dlg_base.radio_sobol.isChecked():
+            path = self.dlg_base.csv_results_2.text()
+        if os.path.exists(path) and os.path.isfile(path):
+            with open(path), mode='r', encoding='utf-8') as file:
+                lines = file.read().splitlines()
+                
+            #Add the outputs
+            inputs = lines[1].split(":")[-1].split(",")
+            columns = lines[4].split(",")
+            outputs = len(columns)- (len(inputs) + 1)
+            #Then add them
+            if self.dlg_base.frame_64.layout() is not None:
+                layout_frame_22 = self.dlg_base.frame_64.layout()
+            else:
+                layout_frame_22 = QVBoxLayout()
+                self.dlg_base.frame_64.setLayout(layout_frame_22)
+
+            # Elimina todos los QRadioButton existentes y cualquier espaciador
+            for i in reversed(range(layout_frame_22.count())):
+                item = layout_frame_22.itemAt(i)
+                widget = item.widget()
+                
+                # Elimina el widget si es un QRadioButton
+                if isinstance(widget, QRadioButton):
+                    widget.deleteLater()
+                elif item.spacerItem() is not None:
+                    layout_frame_22.removeItem(item)
+
+            # Lista de nuevos nombres para los QRadioButtons a añadir
+            nuevos_inputs = columns[-outputs:]
+
+            # Crear y añadir nuevos QRadioButtons
+            outputs_checks = []
+            for opcion in nuevos_inputs:
+                radio_button = QRadioButton(opcion)
+                # Conectar la función solo una vez
+                radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_sensitivity_graph_global() if checked else None)
+                layout_frame_22.addWidget(radio_button)
+                outputs_checks.append(radio_button)
+
+            # Añade el espaciador de nuevo después de los nuevos QRadioButtons
+            spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+            layout_frame_22.addItem(spacer)
+            
+            #Select one radiobutton
+            outputs_checks[0].setChecked(True)
+    
+    
     def add_inputs_oat_results(self):
         """Method to add inputs into oat sensitivity results"""
         if os.path.exists(self.obtain_direction_vfsmod(self.dlg_base.csv_results_oat.text())):
             with open(self.obtain_direction_vfsmod(self.dlg_base.csv_results_oat.text()), mode='r', encoding='utf-8') as file:
                 lines = file.read().splitlines()
             if lines[0]=="OAT sensitivity results":
-                #First delete previous layout if it exits
                 if self.dlg_base.inputs_oat.layout() is not None:
-                    for i in reversed(range(self.dlg_base.inputs_oat.layout().count())): 
-                        widget = self.dlg_base.inputs_oat.layout().itemAt(i).widget()
-                        if widget is not None: 
-                            widget.deleteLater()  # Eliminar el widget
-                    self.dlg_base.inputs_oat.layout().deleteLater()
-                #Then create
-                try:
+                    # Obtén el layout actual
+                    layout = self.dlg_base.inputs_oat.layout()
+                    
+                    # Elimina todos los widgets y elementos del layout (incluyendo espaciadores)
+                    while layout.count():
+                        item = layout.takeAt(0)
+                        widget = item.widget()
+                        if widget is not None:
+                            widget.deleteLater()  # Elimina el widget
+                        elif item.spacerItem() is not None:
+                            layout.removeItem(item)  # Elimina el espaciador
+
+                else:
+                    # Si no hay un layout, crea uno nuevo
                     layout = QVBoxLayout()
-                    # Crear un QLabel con el texto que quieras
-                    label = QLabel("Inputs")
-
-                    # Añadir el QLabel al layout
-                    layout.addWidget(label)
-                    
-                    #Name of inputs
-                    inputs = lines[1].split(":")[-1].split(",")
-                    
-                    self.dictionary_radio_inputs = {}
-                    # Crear y añadir varios QRadioButton
-                    for opcion in inputs:
-                        radio_button = QRadioButton(opcion)
-                        #Connect funciton but only one time
-                        radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_sensitity_graph_oat() if checked else None)
-                        self.dictionary_radio_inputs[radio_button] = opcion
-                        layout.addWidget(radio_button)
-                    
-                    #add spacer
-                    spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-                    layout.addItem(spacer)
-
-                    # Establecer el layout en el frame `self.dlg_base.inputs_oat`
                     self.dlg_base.inputs_oat.setLayout(layout)
-                except:
-                    pass
+
+                # Agrega el QLabel
+                label = QLabel("Inputs")
+                layout.addWidget(label)
+
+                # Lista de nombres para los QRadioButtons
+                inputs = lines[1].split(":")[-1].split(",")
+                self.dictionary_radio_inputs = {}
+
+                # Crear y añadir varios QRadioButton
+                for opcion in inputs:
+                    radio_button = QRadioButton(opcion)
+                    # Conectar la función solo una vez
+                    radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_sensitity_graph_oat() if checked else None)
+                    self.dictionary_radio_inputs[radio_button] = opcion
+                    layout.addWidget(radio_button)
+
+                # Añade un espaciador para ajustar la posición
+                spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+                layout.addItem(spacer)
+
+                # Selecciona el primer QRadioButton
+                if self.dictionary_radio_inputs:
+                    list(self.dictionary_radio_inputs.keys())[0].setChecked(True)
+                
+                #Add the outputs
+                columns = lines[4].split(",")
+                outputs = len(columns)- (len(inputs) + 1)
+                #Then add them
+                if self.dlg_base.frame_22.layout() is not None:
+                    layout_frame_22 = self.dlg_base.frame_22.layout()
+                else:
+                    layout_frame_22 = QVBoxLayout()
+                    self.dlg_base.frame_22.setLayout(layout_frame_22)
+
+                # Elimina todos los QRadioButton existentes y cualquier espaciador
+                for i in reversed(range(layout_frame_22.count())):
+                    item = layout_frame_22.itemAt(i)
+                    widget = item.widget()
+                    
+                    # Elimina el widget si es un QRadioButton
+                    if isinstance(widget, QRadioButton):
+                        widget.deleteLater()
+                    elif item.spacerItem() is not None:
+                        layout_frame_22.removeItem(item)
+
+                # Lista de nuevos nombres para los QRadioButtons a añadir
+                nuevos_inputs = columns[-outputs:]
+
+                # Crear y añadir nuevos QRadioButtons
+                outputs_checks = []
+                for opcion in nuevos_inputs:
+                    radio_button = QRadioButton(opcion)
+                    # Conectar la función solo una vez
+                    radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_sensitity_graph_oat() if checked else None)
+                    layout_frame_22.addWidget(radio_button)
+                    outputs_checks.append(radio_button)
+
+                # Añade el espaciador de nuevo después de los nuevos QRadioButtons
+                spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+                layout_frame_22.addItem(spacer)
+                
+                #Select one radiobutton
+                outputs_checks[0].setChecked(True)
     
-    
-    def show_graph_sensitivity_oat(self):   
-        """Method to add OAT sensitivity analysis graph"""
-        if not hasattr(self, 'canvas_sensitivity_graph_oat'):
-            # Si no existe, crear el canvas y añadirlo al layout
-            self.canvas_sensitivity_graph_oat = FigureCanvas(plt.Figure(figsize=(15, 6)))
-            
-            # Asignar un layout al QFrame si no tiene uno
-            layout = QVBoxLayout(self.dlg_base.frame_24)
-            self.dlg_base.frame_24.setLayout(layout)
-            
-            # Añadir el canvas al layout
-            layout.addWidget(self.canvas_sensitivity_graph_oat)
-        else:
-            # Si ya existe, simplemente limpiar el canvas
-            self.canvas_sensitivity_graph_oat.figure.clear()
-        
-        #Then we create the graph
-        self.ax_oat = self.canvas_sensitivity_graph_oat.figure.subplots()
          
     def update_sensitity_graph_oat(self):
         """Method to update oat graph"""
         #Warning messages
         ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_oat.text())
-        if os.path.exists(ruta):
+        if os.path.exists(ruta) and os.path.isfile(ruta):
             with open(ruta, "r") as archivo:
                 lineas = archivo.readlines()
             #If the csv is not of a OAT sensitivity analysis then give error
@@ -1725,7 +1809,24 @@ class qvfsmod:
                     if i.isChecked():
                         input_parameter = self.dictionary_radio_inputs[i]
                         break
+            #Create graph
+            if not hasattr(self, 'canvas_sensitivity_graph_oat'):
+                # Si no existe, crear el canvas y añadirlo al layout
+                self.canvas_sensitivity_graph_oat = FigureCanvas(plt.Figure(figsize=(15, 6)))
                 
+                # Asignar un layout al QFrame si no tiene uno
+                layout = QVBoxLayout(self.dlg_base.frame_24)
+                self.dlg_base.frame_24.setLayout(layout)
+                
+                # Añadir el canvas al layout
+                layout.addWidget(self.canvas_sensitivity_graph_oat)
+            else:
+                # Si ya existe, simplemente limpiar el canvas
+                self.canvas_sensitivity_graph_oat.figure.clear()
+            
+            #Then we create the graph
+            self.ax_oat = self.canvas_sensitivity_graph_oat.figure.subplots()
+            
             #Clear graph before drawing
             self.ax_oat.clear()
             
@@ -1750,17 +1851,13 @@ class qvfsmod:
             df = df_original[df_original.Error == "0"]
             
             #Get output
-            if self.dlg_base.runoff_source_mm_3.isChecked():output_column = "Total Runoff from source (mm)"
-            elif self.dlg_base.runoff_source_m3_3.isChecked():output_column = "Total Runoff from Source (m3)"
-            elif self.dlg_base.runoff_filter_mm_3.isChecked():output_column = "Total Runoff out from Filter (mm)"
-            elif self.dlg_base.runoff_filter_m3_3.isChecked():output_column = "Total Runoff out from Filter (m3)"
-            elif self.dlg_base.infiltration_filter_m3_3.isChecked():output_column = "Total Infiltration in Filter (m3)"
-            elif self.dlg_base.sediment_input_3.isChecked():output_column = "Mass Sediment Input to Filter (kg)"
-            elif self.dlg_base.concentration_sediment_3.isChecked():output_column = "Concentration Sediment in Runoff from source Area (g/L)"
-            elif self.dlg_base.sediment_output_3.isChecked():output_column = "Mass Sediment Output from Filter (kg)"
-            elif self.dlg_base.sediment_runoff_exit_3.isChecked():output_column = "Concentration Sediment in Runoff exiting the Filter (g/L)"
-            elif self.dlg_base.sediment_delivery_3.isChecked():output_column = "Sediment Delivery Ratio"
-            elif self.dlg_base.runoff_delivery_3.isChecked():output_column = "Runoff Delivery Ratio"
+            for i in range(self.dlg_base.frame_22.layout().count()):
+                item = self.dlg_base.frame_22.layout().itemAt(i)
+                widget = item.widget()
+                
+                #Checks if the widget is a QCheckBox and if it is selected.
+                if isinstance(widget, QRadioButton) and widget.isChecked():
+                    output_column = widget.text()
             
             x = [float(x) for x in df[input_parameter]]
             y = [float(x) for x in df[output_column]]
@@ -1781,14 +1878,6 @@ class qvfsmod:
             if self.dlg_base.input_output.isChecked():
                 #Create graph
                 self.ax_oat.plot(x_sorted, y_sorted, marker='o', linestyle='-', color='b')
-                #Separador de miles
-                def formato_con_separador(valor, pos):
-                    if max(list(y_sorted))>10:
-                        return "{:,.0f}".format(valor)
-                    else:
-                        return "{:,.2f}".format(valor)
-                self.ax_oat.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
-                self.ax_oat.yaxis.set_major_formatter(FuncFormatter(formato_con_separador))
                 #Labels
                 self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
                 self.ax_oat.set_ylabel(output_column,size = 14,family="arial",weight = "bold",color = "black")
@@ -1806,14 +1895,6 @@ class qvfsmod:
                     absolute_sensitivity.append((y_sorted[i+1]-y_sorted[i])/(x_sorted[i+1]-x_sorted[i]))
                 #Create graph
                 self.ax_oat.plot(x_sorted[:-1], absolute_sensitivity, marker='o', linestyle='-', color='b')
-                #Separador de miles
-                def formato_con_separador(valor, pos):
-                    if max(list(absolute_sensitivity))>10:
-                        return "{:,.0f}".format(valor)
-                    else:
-                        return "{:,.2f}".format(valor)
-                self.ax_oat.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
-                self.ax_oat.yaxis.set_major_formatter(FuncFormatter(formato_con_separador))
                 #Labels
                 self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
                 self.ax_oat.set_ylabel(f"Absolute sensitivity\n{output_column}",size = 14,family="arial",weight = "bold",color = "black")
@@ -1838,14 +1919,6 @@ class qvfsmod:
                         relative_sensitivity.append(np.nan)
                 #Create graph
                 self.ax_oat.plot(x_sorted[:-1], relative_sensitivity, marker='o', linestyle='-', color='b')
-                #Separador de miles
-                def formato_con_separador(valor, pos):
-                    if max(list(relative_sensitivity))>10:
-                        return "{:,.0f}".format(valor)
-                    else:
-                        return "{:,.2f}".format(valor)
-                self.ax_oat.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
-                self.ax_oat.yaxis.set_major_formatter(FuncFormatter(formato_con_separador))
                 #Labels
                 self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
                 self.ax_oat.set_ylabel(f"Base relative sensitivity\n{output_column}",size = 14,family="arial",weight = "bold",color = "black")
@@ -1867,14 +1940,6 @@ class qvfsmod:
                         relative_sensitivity.append(np.nan)
                 #Create graph
                 self.ax_oat.plot(x_sorted[:-1], relative_sensitivity, marker='o', linestyle='-', color='b')
-                #Separador de miles
-                def formato_con_separador(valor, pos):
-                    if max(list(relative_sensitivity))>10:
-                        return "{:,.0f}".format(valor)
-                    else:
-                        return "{:,.2f}".format(valor)
-                self.ax_oat.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
-                self.ax_oat.yaxis.set_major_formatter(FuncFormatter(formato_con_separador))
                 #Labels
                 self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
                 self.ax_oat.set_ylabel(f"Relative sensitivity\n{output_column}",size = 14,family="arial",weight = "bold",color = "black")
@@ -1935,29 +2000,18 @@ class qvfsmod:
             df = df[df.Error==0]
             
             #Get output
-            if self.dlg_base.runoff_source_mm_4.isChecked():output_column = "Total Runoff from source (mm)"
-            elif self.dlg_base.runoff_source_m3_4.isChecked():output_column = "Total Runoff from Source (m3)"
-            elif self.dlg_base.runoff_filter_mm_4.isChecked():output_column = "Total Runoff out from Filter (mm)"
-            elif self.dlg_base.runoff_filter_m3_4.isChecked():output_column = "Total Runoff out from Filter (m3)"
-            elif self.dlg_base.infiltration_filter_m3_4.isChecked():output_column = "Total Infiltration in Filter (m3)"
-            elif self.dlg_base.sediment_input_4.isChecked():output_column = "Mass Sediment Input to Filter (kg)"
-            elif self.dlg_base.concentration_sediment_4.isChecked():output_column = "Concentration Sediment in Runoff from source Area (g/L)"
-            elif self.dlg_base.sediment_output_4.isChecked():output_column = "Mass Sediment Output from Filter (kg)"
-            elif self.dlg_base.sediment_runoff_exit_4.isChecked():output_column = "Concentration Sediment in Runoff exiting the Filter (g/L)"
-            elif self.dlg_base.sediment_delivery_4.isChecked():output_column = "Sediment Delivery Ratio"
-            elif self.dlg_base.runoff_delivery_4.isChecked():output_column = "Runoff Delivery Ratio"
+            for i in range(self.dlg_base.frame_68.layout().count()):
+                item = self.dlg_base.frame_68.layout().itemAt(i)
+                widget = item.widget()
+                
+                #Checks if the widget is a QCheckBox and if it is selected.
+                if isinstance(widget, QRadioButton) and widget.isChecked():
+                    output_column = widget.text()
             
             y = [float(x) for x in df[output_column]]
             
             bins = 30
             self.ax_uncertainity[0].hist(y, bins=bins, edgecolor='black')
-            #Separador de miles
-            def formato_con_separador(valor, pos):
-                if max(list(y))>10:
-                    return "{:,.0f}".format(valor)
-                else:
-                    return "{:,.2f}".format(valor)
-            self.ax_uncertainity[0].xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
             #Labels
             self.ax_uncertainity[0].set_xlabel(output_column,size = 12,family="arial",weight = "bold",color = "black")
             self.ax_uncertainity[0].set_ylabel("Frequency",size = 12,family="arial",weight = "bold",color = "black")
@@ -3007,47 +3061,50 @@ class qvfsmod:
     
     def update_vfsmod_hydrograph_graph(self):
         """Method to update the hydrograph graph"""
-        # Clear canvas
-        self.ax_vfsmod_hydrograph.clear()
-        # We obtain the data and create the graph
-        row_count = self.dlg_vfsmod_hydrograph.tableWidget.rowCount()
-        time = []
-        discharge = []
-        for row in range(row_count):
-            time_item = self.dlg_vfsmod_hydrograph.tableWidget.item(row, 0)
-            discharge_item = self.dlg_vfsmod_hydrograph.tableWidget.item(row, 1)
+        try: #to avoid error when we add time but not value
+            # Clear canvas
+            self.ax_vfsmod_hydrograph.clear()
+            # We obtain the data and create the graph
+            row_count = self.dlg_vfsmod_hydrograph.tableWidget.rowCount()
+            time = []
+            discharge = []
+            for row in range(row_count):
+                time_item = self.dlg_vfsmod_hydrograph.tableWidget.item(row, 0)
+                discharge_item = self.dlg_vfsmod_hydrograph.tableWidget.item(row, 1)
+                
+                if time_item and discharge_item:
+                    try: # if data is not added correctly
+                        time.append(float(time_item.text()))
+                        discharge.append(float(discharge_item.text()))
+                    except:
+                        break
             
-            if time_item and discharge_item:
-                try: # if data is not added correctly
-                    time.append(float(time_item.text()))
-                    discharge.append(float(discharge_item.text()))
-                except:
-                    break
-        
-        #Creation of graph        
-        self.ax_vfsmod_hydrograph.plot(time,discharge,color='blue', linewidth=2, marker='o', markersize=4)
+            #Creation of graph        
+            self.ax_vfsmod_hydrograph.plot(time,discharge,color='blue', linewidth=2, marker='o', markersize=4)
 
-        #Axis
-        self.ax_vfsmod_hydrograph.set_xlabel("Time (s)",size = 10,family="arial",weight = "bold",color = "black")
-        self.ax_vfsmod_hydrograph.set_ylabel("Discharge (m$^{3}$/s)",size = 10,family="arial",weight = "bold",color = "black")
+            #Axis
+            self.ax_vfsmod_hydrograph.set_xlabel("Time (s)",size = 10,family="arial",weight = "bold",color = "black")
+            self.ax_vfsmod_hydrograph.set_ylabel("Discharge (m$^{3}$/s)",size = 10,family="arial",weight = "bold",color = "black")
 
-        #X ticks
-        self.ax_vfsmod_hydrograph.tick_params(axis = "both",colors = "black",labelsize = 9)
+            #X ticks
+            self.ax_vfsmod_hydrograph.tick_params(axis = "both",colors = "black",labelsize = 9)
 
-        #Thousand separator
-        #Separador de miles
-        def xfunc(x,pos):
-            s = '{:0,d}'.format(int(x))
-            return s
-        x_format = tkr.FuncFormatter(xfunc)
-        self.ax_vfsmod_hydrograph.xaxis.set_major_formatter(x_format)
-        
-        
-        # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
-        self.canvas_vfsmod_hydrograph.figure.subplots_adjust(left=0.2, bottom=0.2)
+            #Thousand separator
+            #Separador de miles
+            def xfunc(x,pos):
+                s = '{:0,d}'.format(int(x))
+                return s
+            x_format = tkr.FuncFormatter(xfunc)
+            self.ax_vfsmod_hydrograph.xaxis.set_major_formatter(x_format)
+            
+            
+            # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
+            self.canvas_vfsmod_hydrograph.figure.subplots_adjust(left=0.2, bottom=0.2)
 
-        # Redraw the canvas
-        self.canvas_vfsmod_hydrograph.draw()
+            # Redraw the canvas
+            self.canvas_vfsmod_hydrograph.draw()
+        except:
+            pass
     
     
     def show_hietograph_vfsmod_graph(self):
@@ -3073,47 +3130,50 @@ class qvfsmod:
     
     def update_vfsmod_hyetograph_graph(self):
         """Method to update the hyetograph graph"""
-        # Clear canvas
-        self.ax_vfsmod_hyetograph.clear()
-        # We obtain the data and create the graph
-        row_count = self.dlg_vfsmod_hyetograph.tableWidget.rowCount()
-        time = []
-        precipitation = []
-        for row in range(row_count):
-            time_item = self.dlg_vfsmod_hyetograph.tableWidget.item(row, 0)
-            precipitation_item = self.dlg_vfsmod_hyetograph.tableWidget.item(row, 1)
+        try: #to avoid error when we add time but not value
+            # Clear canvas
+            self.ax_vfsmod_hyetograph.clear()
+            # We obtain the data and create the graph
+            row_count = self.dlg_vfsmod_hyetograph.tableWidget.rowCount()
+            time = []
+            precipitation = []
+            for row in range(row_count):
+                time_item = self.dlg_vfsmod_hyetograph.tableWidget.item(row, 0)
+                precipitation_item = self.dlg_vfsmod_hyetograph.tableWidget.item(row, 1)
+                
+                if time_item and precipitation_item:
+                    try: # if data is not added correctly
+                        time.append(float(time_item.text()))
+                        precipitation.append(float(precipitation_item.text()))
+                    except:
+                        break
             
-            if time_item and precipitation_item:
-                try: # if data is not added correctly
-                    time.append(float(time_item.text()))
-                    precipitation.append(float(precipitation_item.text()))
-                except:
-                    break
-        
-        #Creation of graph       
-        widths = [time[i+1] - time[i] for i in range(len(time)-1)]
-        self.ax_vfsmod_hyetograph.bar(time[:-1],precipitation[:-1],width=widths,color='blue', align='edge', edgecolor='black', linewidth=0.5)
-        #Axis
-        self.ax_vfsmod_hyetograph.set_xlabel("Time (s)",size = 10,family="arial",weight = "bold",color = "black")
-        self.ax_vfsmod_hyetograph.set_ylabel("Precipitation (m/s)",size = 10,family="arial",weight = "bold",color = "black")
+            #Creation of graph       
+            widths = [time[i+1] - time[i] for i in range(len(time)-1)]
+            self.ax_vfsmod_hyetograph.bar(time[:-1],precipitation[:-1],width=widths,color='blue', align='edge', edgecolor='black', linewidth=0.5)
+            #Axis
+            self.ax_vfsmod_hyetograph.set_xlabel("Time (s)",size = 10,family="arial",weight = "bold",color = "black")
+            self.ax_vfsmod_hyetograph.set_ylabel("Precipitation (m/s)",size = 10,family="arial",weight = "bold",color = "black")
 
-        #X ticks
-        self.ax_vfsmod_hyetograph.tick_params(axis = "both",colors = "black",labelsize = 9)
+            #X ticks
+            self.ax_vfsmod_hyetograph.tick_params(axis = "both",colors = "black",labelsize = 9)
 
-        #Thousand separator
-        #Separador de miles
-        def xfunc(x,pos):
-            s = '{:0,d}'.format(int(x))
-            return s
-        x_format = tkr.FuncFormatter(xfunc)
-        self.ax_vfsmod_hyetograph.xaxis.set_major_formatter(x_format)
-        
-        
-        # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
-        self.canvas_vfsmod_hyetograph.figure.subplots_adjust(left=0.2, bottom=0.2)
+            #Thousand separator
+            #Separador de miles
+            def xfunc(x,pos):
+                s = '{:0,d}'.format(int(x))
+                return s
+            x_format = tkr.FuncFormatter(xfunc)
+            self.ax_vfsmod_hyetograph.xaxis.set_major_formatter(x_format)
+            
+            
+            # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
+            self.canvas_vfsmod_hyetograph.figure.subplots_adjust(left=0.2, bottom=0.2)
 
-        # Redraw the canvas
-        self.canvas_vfsmod_hyetograph.draw()
+            # Redraw the canvas
+            self.canvas_vfsmod_hyetograph.draw()
+        except:
+            pass
         
         
     def dlg_buffer_segment_show(self):
@@ -3534,18 +3594,13 @@ class qvfsmod:
                 self.canvas_sensitivity_graph.figure.clear()
                 self.ax = self.canvas_sensitivity_graph.figure.subplots()
                 #Obtain data
-                #Obtain ouputs parameter
-                if self.dlg_base.runoff_source_mm_2.isChecked():output_column = "Total Runoff from source (mm)"
-                if self.dlg_base.runoff_source_m3_2.isChecked():output_column = "Total Runoff from Source (m3)"
-                if self.dlg_base.runoff_filter_mm_2.isChecked():output_column = "Total Runoff out from Filter (mm)"
-                if self.dlg_base.runoff_filter_m3_2.isChecked():output_column = "Total Runoff out from Filter (m3)"
-                if self.dlg_base.infiltration_filter_m3_2.isChecked():output_column = "Total Infiltration in Filter (m3)"
-                if self.dlg_base.sediment_input_2.isChecked():output_column = "Mass Sediment Input to Filter (kg)"
-                if self.dlg_base.concentration_sediment_2.isChecked():output_column = "Concentration Sediment in Runoff from source Area (g/L)"
-                if self.dlg_base.sediment_output_2.isChecked():output_column = "Mass Sediment Output from Filter (kg)"
-                if self.dlg_base.sediment_runoff_exit_2.isChecked():output_column = "Concentration Sediment in Runoff exiting the Filter (g/L)"
-                if self.dlg_base.sediment_delivery_2.isChecked():output_column = "Sediment Delivery Ratio"
-                if self.dlg_base.runoff_delivery_2.isChecked():output_column = "Runoff Delivery Ratio"
+                for i in range(self.dlg_base.frame_64.layout().count()):
+                    item = self.dlg_base.frame_64.layout().itemAt(i)
+                    widget = item.widget()
+                    
+                    #Checks if the widget is a QCheckBox and if it is selected.
+                    if isinstance(widget, QRadioButton) and widget.isChecked():
+                        output_column = widget.text()
                 
                 names_inputs = []
                 mu_star = []
@@ -3572,14 +3627,6 @@ class qvfsmod:
 
                 self.ax.set_xlim(0,max(list(mu_star)+list(sigma))*1.05)
                 self.ax.set_ylim(0,max(list(mu_star)+list(sigma))*1.05)
-                #Separador de miles
-                def formato_con_separador(valor, pos):
-                    if max(list(mu_star))>10:
-                        return "{:,.0f}".format(valor)
-                    else:
-                        return "{:,.2f}".format(valor)
-                self.ax.xaxis.set_major_formatter(FuncFormatter(formato_con_separador))
-                self.ax.yaxis.set_major_formatter(FuncFormatter(formato_con_separador))
                 #Labels
                 self.ax.set_xlabel("Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 14,family="arial",weight = "bold",color = "black")
                 self.ax.set_ylabel("Standard Deviation of Elementary Effects ($\sigma_{i}$)",size = 14,family="arial",weight = "bold",color = "black")
@@ -4069,7 +4116,7 @@ class qvfsmod:
         mask = new_df['Error'] == 0
         inputs_complete = inputs[mask]
         outputs_complete = outputs[mask]
-        if len(inputs_complete)>0:
+        if len(inputs_complete)<len(new_df): #if there are less inputs without errors than original df then there are errors
             for output in output_columns:
                 #Create model of linear regression
                 model_output = LinearRegression()
@@ -4835,6 +4882,7 @@ class qvfsmod:
             # Crea un nuevo QLabel y QLineEdit
             self.dlg_base.third_label = QLabel("Maximum value")
             self.dlg_base.third = QLineEdit()
+            self.dlg_base.third.setAlignment(Qt.AlignCenter)
             # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
             self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third_label, 4, 0)
             self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third, 4, 1)
@@ -4842,6 +4890,7 @@ class qvfsmod:
             # Crea un nuevo QLabel y QLineEdit
             self.dlg_base.fourth_label = QLabel("Increment")
             self.dlg_base.fourth = QLineEdit()
+            self.dlg_base.fourth.setAlignment(Qt.AlignCenter)
             # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
             self.dlg_base.gridLayout_81.addWidget(self.dlg_base.fourth_label, 5, 0)
             self.dlg_base.gridLayout_81.addWidget(self.dlg_base.fourth, 5, 1)
@@ -4862,6 +4911,7 @@ class qvfsmod:
                 # Crea un nuevo QLabel y QLineEdit
                 self.dlg_base.third_label = QLabel("Peak")
                 self.dlg_base.third = QLineEdit()
+                self.dlg_base.third.setAlignment(Qt.AlignCenter)
                 # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
                 self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third_label, 4, 0)
                 self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third, 4, 1)
@@ -4882,6 +4932,7 @@ class qvfsmod:
                 # Crea un nuevo QLabel y QLineEdit
                 self.dlg_base.third_label = QLabel("Mean")
                 self.dlg_base.third = QLineEdit()
+                self.dlg_base.third.setAlignment(Qt.AlignCenter)
                 # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
                 self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third_label, 4, 0)
                 self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third, 4, 1)
@@ -4889,6 +4940,7 @@ class qvfsmod:
                 # Crea un nuevo QLabel y QLineEdit
                 self.dlg_base.fourth_label = QLabel("Standard deviation")
                 self.dlg_base.fourth = QLineEdit()
+                self.dlg_base.fourth.setAlignment(Qt.AlignCenter)
                 # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
                 self.dlg_base.gridLayout_81.addWidget(self.dlg_base.fourth_label, 5, 0)
                 self.dlg_base.gridLayout_81.addWidget(self.dlg_base.fourth, 5, 1)
@@ -4936,6 +4988,7 @@ class qvfsmod:
             # Crea un nuevo QLabel y QLineEdit
             self.dlg_base.third_label_2 = QLabel("Peak")
             self.dlg_base.third_2 = QLineEdit()
+            self.dlg_base.third_2.setAlignment(Qt.AlignCenter)
             # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
             self.dlg_base.gridLayout_84.addWidget(self.dlg_base.third_label_2, 5, 0)
             self.dlg_base.gridLayout_84.addWidget(self.dlg_base.third_2, 5, 1)
@@ -4956,12 +5009,14 @@ class qvfsmod:
             # Crea un nuevo QLabel y QLineEdit
             self.dlg_base.third_label_2 = QLabel("Mean")
             self.dlg_base.third_2 = QLineEdit()
+            self.dlg_base.third_2.setAlignment(Qt.AlignCenter)
             # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
             self.dlg_base.gridLayout_84.addWidget(self.dlg_base.third_label_2, 5, 0)
             self.dlg_base.gridLayout_84.addWidget(self.dlg_base.third_2, 5, 1)
             
             # Crea un nuevo QLabel y QLineEdit
             self.dlg_base.fourth_label_2 = QLabel("Standard deviation")
+            self.dlg_base.fourth_label_2.setAlignment(Qt.AlignCenter)
             self.dlg_base.fourth_2 = QLineEdit()
             # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
             self.dlg_base.gridLayout_84.addWidget(self.dlg_base.fourth_label_2, 6, 0)
@@ -8788,81 +8843,89 @@ class qvfsmod:
             subprocess.run("pbcopy", universal_newlines=True, input=texto)
 
     
-    def add_hyetograph_to_dialog(self):
+    def add_hyetograph_to_dialog(self,show = True):
         """Method to add the hyetograph information to the dialog"""
         #Disconnect update of graph to avoid all the updates
         self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.disconnect(self.update_vfsmod_hyetograph_graph)
         #Obtain information
         direccion = self.obtain_direction_vfsmod(self.dlg_base.line_storm.text())
-        if not os.path.exists(direccion):
-            self.warning_message(f"{direccion} does not exist")
-            return
-        with open(direccion, "r") as archivo:
-            lineas = archivo.readlines()
-            columna_1 = []
-            columna_2 = []
-            for linea in lineas:
-                try:
-                    columnas = linea.split()
-                    if len(columnas) >= 2:
-                        columna_1.append(float(columnas[0]))
-                        columna_2.append(float(columnas[1]))
-                except:
-                    break
-        #Add rainfall maximum intensity
-        self.dlg_vfsmod_hyetograph.maximum_rainfall.setText(str(columna_2[0]))
-        #Add the table
-        time = columna_1[1:]
-        precipitation = columna_2[1:]
-        df = pd.DataFrame(data = {"time":time,"precipitation":precipitation})
-        self.dlg_vfsmod_hyetograph.tableWidget.setRowCount(len(time))
-        for fila in range(len(time)):
-            for columna in range(2):
-                item = QTableWidgetItem(str(df.iloc[fila,columna]))
-                self.dlg_vfsmod_hyetograph.tableWidget.setItem(fila, columna, item)
-                item.setTextAlignment(Qt.AlignCenter)
-        
+        #Eliminate first all the rows and lineEdits so that we dont get the information of another file
+        self.dlg_vfsmod_hyetograph.tableWidget.setRowCount(0)
+        self.dlg_vfsmod_hyetograph.maximum_rainfall.setText("")
+        #Add table
+        if os.path.exists(direccion) and os.path.isfile(direccion):
+            with open(direccion, "r") as archivo:
+                lineas = archivo.readlines()
+                columna_1 = []
+                columna_2 = []
+                for linea in lineas:
+                    try:
+                        columnas = linea.split()
+                        if len(columnas) >= 2:
+                            columna_1.append(float(columnas[0]))
+                            columna_2.append(float(columnas[1]))
+                    except:
+                        break
+            #Add rainfall maximum intensity
+            self.dlg_vfsmod_hyetograph.maximum_rainfall.setText(str(columna_2[0]))
+            #Add the table
+            time = columna_1[1:]
+            precipitation = columna_2[1:]
+            df = pd.DataFrame(data = {"time":time,"precipitation":precipitation})
+            self.dlg_vfsmod_hyetograph.tableWidget.setRowCount(len(time))
+            for fila in range(len(time)):
+                for columna in range(2):
+                    item = QTableWidgetItem(str(df.iloc[fila,columna]))
+                    self.dlg_vfsmod_hyetograph.tableWidget.setItem(fila, columna, item)
+                    item.setTextAlignment(Qt.AlignCenter)
+        print(show)
         #We show the dialog
-        self.dlg_vfsmod_hyetograph.show()
+        if show:
+            self.dlg_vfsmod_hyetograph.show()
         self.show_hietograph_vfsmod_graph()
         #Connect again update of graph to avoid all the updates
         self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.connect(self.update_vfsmod_hyetograph_graph)
         self.update_vfsmod_hyetograph_graph()
     
-    def add_hydrograph_to_dialog(self):
+    def add_hydrograph_to_dialog(self, show = True):
         """Method to add the hyetograph information to the dialog"""
         #Avoid the updating of graph that many times
         self.dlg_vfsmod_hydrograph.tableWidget.itemChanged.disconnect(self.update_vfsmod_hydrograph_graph)
         #Obtain information
         direccion = self.obtain_direction_vfsmod(self.dlg_base.line_source.text())
-        if not os.path.exists(direccion):
-            self.warning_message(f"{direccion} does not exist")
-            return
-        with open(direccion, "r") as archivo:
-            lineas = archivo.readlines()
-            columna_1 = []
-            columna_2 = []
-            for linea in lineas:
-                columnas = linea.split()
-                if len(columnas) >= 2:
-                    columna_1.append(float(columnas[0]))
-                    columna_2.append(float(columnas[1]))
-        #Add source area width, source area flow path length and peak flow of incoming hydrograph
-        self.dlg_vfsmod_hydrograph.width.setText(str(columna_1[0]))
-        self.dlg_vfsmod_hydrograph.length.setText(str(columna_2[0]))
-        self.dlg_vfsmod_hydrograph.peak.setText(str(columna_2[1]))
-        #Add the table
-        time = columna_1[2:]
-        runoff = columna_2[2:]
-        df = pd.DataFrame(data = {"time":time,"runoff":runoff})
-        self.dlg_vfsmod_hydrograph.tableWidget.setRowCount(len(time))
-        for fila in range(len(time)):
-            for columna in range(2):
-                item = QTableWidgetItem(str(df.iloc[fila,columna]))
-                self.dlg_vfsmod_hydrograph.tableWidget.setItem(fila, columna, item)
-                item.setTextAlignment(Qt.AlignCenter)
+        #Eliminate first all the rows and lineEdits so that we dont get the information of another file
+        self.dlg_vfsmod_hydrograph.tableWidget.setRowCount(0)
+        self.dlg_vfsmod_hydrograph.width.setText("")
+        self.dlg_vfsmod_hydrograph.length.setText("")
+        self.dlg_vfsmod_hydrograph.peak.setText("")
+        #Add table
+        if os.path.exists(direccion) and os.path.isfile(direccion):
+            with open(direccion, "r") as archivo:
+                lineas = archivo.readlines()
+                columna_1 = []
+                columna_2 = []
+                for linea in lineas:
+                    columnas = linea.split()
+                    if len(columnas) >= 2:
+                        columna_1.append(float(columnas[0]))
+                        columna_2.append(float(columnas[1]))
+            #Add source area width, source area flow path length and peak flow of incoming hydrograph
+            self.dlg_vfsmod_hydrograph.width.setText(str(columna_1[0]))
+            self.dlg_vfsmod_hydrograph.length.setText(str(columna_2[0]))
+            self.dlg_vfsmod_hydrograph.peak.setText(str(columna_2[1]))
+            #Add the table
+            time = columna_1[2:]
+            runoff = columna_2[2:]
+            df = pd.DataFrame(data = {"time":time,"runoff":runoff})
+            self.dlg_vfsmod_hydrograph.tableWidget.setRowCount(len(time))
+            for fila in range(len(time)):
+                for columna in range(2):
+                    item = QTableWidgetItem(str(df.iloc[fila,columna]))
+                    self.dlg_vfsmod_hydrograph.tableWidget.setItem(fila, columna, item)
+                    item.setTextAlignment(Qt.AlignCenter)
         #We show the dialog
-        self.dlg_vfsmod_hydrograph.show()
+        if show:
+            self.dlg_vfsmod_hydrograph.show()
         self.show_hydrograph_vfsmod_graph()
         #Connect again update of graph to avoid all the updates
         self.dlg_vfsmod_hydrograph.tableWidget.itemChanged.connect(self.update_vfsmod_hydrograph_graph)
@@ -9826,12 +9889,12 @@ class qvfsmod:
             "Precipitation":[table.item(row, 1).text() for row in range(rows)]})
         #We calculate de number of intervals. If the first value is 0 then we dont take it
         number_steps = rows
-
         #Create file
         irn_file =self.obtain_direction_vfsmod(self.dlg_base.line_storm.text())
         if os.path.exists(irn_file) and os.path.isfile(irn_file):
             with open(irn_file, 'w') as archivo:
                 linea_uno = f"  {number_steps}   {maximum}                     NRAIN, RPEAK(m/s)"
+                
                 linea_dos = f"   {hyetograph.iloc[0,0]}    {hyetograph.iloc[0,1]}          time(s), rainfall rate (m/s)"
                 linea_tres = ""
                 for row in range(1,len(hyetograph)):
