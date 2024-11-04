@@ -746,11 +746,8 @@ class qvfsmod:
         self.dlg_base.run_uncertainity.clicked.connect(self.run_uncertainity_analysis_part_one)
         
         #Show sensitivity results
-        self.dlg_base.actionGlobal_Results.triggered.connect(self.show_graph_sensitivity_global)
         self.dlg_base.actionLocal_Results.triggered.connect(self.update_sensitity_graph_oat)
         
-        #Show uncertainity results
-        self.dlg_base.actionResults.triggered.connect(self.show_graph_sensitivity_uncertainity)
         
         #Browse file sensitivity graph
         self.dlg_base.browse.clicked.connect(self.browse_files_sensitivity_results)
@@ -781,16 +778,6 @@ class qvfsmod:
             self.dlg_base.input_output,self.dlg_base.absolute,self.dlg_base.relative_base,self.dlg_base.relative_sensitivity]
         for i in check_boxes:
             i.toggled.connect(lambda checked, rb=i: self.update_sensitity_graph_oat() if checked else None)
-            
-        #Update sensitivity graph for uncertainity
-        check_boxes = [self.dlg_base.runoff_source_mm_4,self.dlg_base.runoff_source_m3_4,
-            self.dlg_base.runoff_filter_mm_4,self.dlg_base.runoff_filter_m3_4,
-            self.dlg_base.infiltration_filter_m3_4,self.dlg_base.sediment_input_4,
-            self.dlg_base.concentration_sediment_4,self.dlg_base.sediment_output_4,
-            self.dlg_base.sediment_runoff_exit_4,self.dlg_base.sediment_delivery_4,
-            self.dlg_base.runoff_delivery_4]
-        for i in check_boxes:
-            i.toggled.connect(lambda checked, rb=i: self.update_graph_uncertainity() if checked else None)
         
         #Browse files in sensitivity analysis
         self.dlg_base.browse_uh.clicked.connect(lambda _, b = "lis":self.browse_files_sensitivity(b))
@@ -843,7 +830,7 @@ class qvfsmod:
         self.dlg_base.csv_results_oat.textChanged.connect(self.add_inputs_oat_results)
         
         #Update uncertainity graph
-        self.dlg_base.csv_results_uncertainity.textChanged.connect(self.update_graph_uncertainity)
+        self.dlg_base.csv_results_uncertainity.textChanged.connect(self.show_graph_sensitivity_uncertainity)
     
     def save_uh_project(self):
         """Method to save uh project"""
@@ -1651,55 +1638,68 @@ class qvfsmod:
     def show_sensitivity_graph_global(self):
         """Method to add the outputs for the graph visualization"""
         if self.dlg_base.radio_morris.isChecked():
-            path = self.dlg_base.csv_results_morris.text()
+            path = self.obtain_direction_vfsmod(self.dlg_base.csv_results_morris.text())
         elif self.dlg_base.radio_fast.isChecked():
-            path = self.dlg_base.csv_results_fast.text()
+            path = self.obtain_direction_vfsmod(self.dlg_base.csv_results_fast.text())
         elif self.dlg_base.radio_sobol.isChecked():
-            path = self.dlg_base.csv_results_2.text()
+            path = self.obtain_direction_vfsmod(self.dlg_base.csv_results_2.text())
         if os.path.exists(path) and os.path.isfile(path):
-            with open(path), mode='r', encoding='utf-8') as file:
+            with open(path, mode='r', encoding='utf-8') as file:
                 lines = file.read().splitlines()
+            
+            #Obtain output names
+            outputs = []
+            for i in range(len(lines)):
+                if lines[i] == "----------------------------------------------------------------------":
+                    if len(lines[i+1].split(","))>1:
+                        break
+                    else:
+                        outputs.append(lines[i+1])
                 
-            #Add the outputs
-            inputs = lines[1].split(":")[-1].split(",")
-            columns = lines[4].split(",")
-            outputs = len(columns)- (len(inputs) + 1)
-            #Then add them
-            if self.dlg_base.frame_64.layout() is not None:
-                layout_frame_22 = self.dlg_base.frame_64.layout()
-            else:
-                layout_frame_22 = QVBoxLayout()
-                self.dlg_base.frame_64.setLayout(layout_frame_22)
-
-            # Elimina todos los QRadioButton existentes y cualquier espaciador
-            for i in reversed(range(layout_frame_22.count())):
-                item = layout_frame_22.itemAt(i)
+            #Obtain the name of the output that was selected previously
+            for i in range(self.dlg_base.frame_18.layout().count()):
+                item = self.dlg_base.frame_18.layout().itemAt(i)
                 widget = item.widget()
                 
-                # Elimina el widget si es un QRadioButton
-                if isinstance(widget, QRadioButton):
-                    widget.deleteLater()
-                elif item.spacerItem() is not None:
-                    layout_frame_22.removeItem(item)
-
-            # Lista de nuevos nombres para los QRadioButtons a añadir
-            nuevos_inputs = columns[-outputs:]
-
-            # Crear y añadir nuevos QRadioButtons
-            outputs_checks = []
-            for opcion in nuevos_inputs:
-                radio_button = QRadioButton(opcion)
-                # Conectar la función solo una vez
-                radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_sensitivity_graph_global() if checked else None)
-                layout_frame_22.addWidget(radio_button)
-                outputs_checks.append(radio_button)
-
-            # Añade el espaciador de nuevo después de los nuevos QRadioButtons
-            spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-            layout_frame_22.addItem(spacer)
+                #Checks if the widget is a QCheckBox and if it is selected.
+                if isinstance(widget, QRadioButton) and widget.isChecked():
+                    output = widget.text()
             
-            #Select one radiobutton
-            outputs_checks[0].setChecked(True)
+            #Add the outputs
+            if len(outputs)>0:
+                if self.dlg_base.frame_18.layout() is not None:
+                    layout_frame_22 = self.dlg_base.frame_18.layout()
+                else:
+                    layout_frame_22 = QVBoxLayout()
+                    self.dlg_base.frame_18.setLayout(layout_frame_22)
+
+                # Elimina todos los QRadioButton existentes y cualquier espaciador
+                for i in reversed(range(layout_frame_22.count())):
+                    item = layout_frame_22.itemAt(i)
+                    widget = item.widget()
+                    
+                    # Elimina el widget si es un QRadioButton
+                    if isinstance(widget, QRadioButton):
+                        widget.deleteLater()
+                    elif item.spacerItem() is not None:
+                        layout_frame_22.removeItem(item)
+                # Crear y añadir nuevos QRadioButtons
+                outputs_checks = []
+                for opcion in outputs:
+                    radio_button = QRadioButton(opcion)
+                    # Conectar la función solo una vez
+                    radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_sensitivity_graph_global() if checked else None)
+                    layout_frame_22.addWidget(radio_button)
+                    outputs_checks.append([opcion,radio_button])
+
+                # Añade el espaciador de nuevo después de los nuevos QRadioButtons
+                spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+                layout_frame_22.addItem(spacer)
+                
+                #Select one radiobutton
+                for i in outputs_checks:
+                    if i[0]==output:
+                        i[1].setChecked(True)
     
     
     def add_inputs_oat_results(self):
@@ -1951,20 +1951,67 @@ class qvfsmod:
                 self.canvas_sensitivity_graph_oat.draw()
     
     def show_graph_sensitivity_uncertainity(self):
-        """Method to add the graph of sensitivity analysis for uncertainity"""
-        if not hasattr(self, 'canvas_uncertainity_graph'):
-            # Si no existe, crear el canvas y añadirlo al layout
-            self.canvas_uncertainity_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
+        """Method to add the outputs for the graph visualization"""
+        path = self.obtain_direction_vfsmod(self.dlg_base.csv_results_uncertainity.text())
+
+        if os.path.exists(path) and os.path.isfile(path):
+            with open(path, mode='r', encoding='utf-8') as file:
+                lines = file.read().splitlines()
             
-            # Asignar un layout al QFrame si no tiene uno
-            layout = QVBoxLayout(self.dlg_base.frame_68)
-            self.dlg_base.frame_68.setLayout(layout)
+            #Obtain output names
+            columns = lines[2].split(",")
+            outputs = []
+            condicion = False
+            for i in columns:
+                if condicion:
+                    outputs.append(i)
+                if i == "Error":
+                    condicion = True
+                
+            #Obtain the name of the output that was selected previously
+            for i in range(self.dlg_base.frame_69.layout().count()):
+                item = self.dlg_base.frame_69.layout().itemAt(i)
+                widget = item.widget()
+                
+                #Checks if the widget is a QCheckBox and if it is selected.
+                if isinstance(widget, QRadioButton) and widget.isChecked():
+                    output = widget.text()
             
-            # Añadir el canvas al layout
-            layout.addWidget(self.canvas_uncertainity_graph)
-        else:
-            # Si ya existe, simplemente limpiar el canvas
-            self.canvas_uncertainity_graph.figure.clear()
+            #Add the outputs
+            if len(outputs)>0:
+                if self.dlg_base.frame_69.layout() is not None:
+                    layout_frame_22 = self.dlg_base.frame_69.layout()
+                else:
+                    layout_frame_22 = QVBoxLayout()
+                    self.dlg_base.frame_69.setLayout(layout_frame_22)
+
+                # Elimina todos los QRadioButton existentes y cualquier espaciador
+                for i in reversed(range(layout_frame_22.count())):
+                    item = layout_frame_22.itemAt(i)
+                    widget = item.widget()
+                    
+                    # Elimina el widget si es un QRadioButton
+                    if isinstance(widget, QRadioButton):
+                        widget.deleteLater()
+                    elif item.spacerItem() is not None:
+                        layout_frame_22.removeItem(item)
+                # Crear y añadir nuevos QRadioButtons
+                outputs_checks = []
+                for opcion in outputs:
+                    radio_button = QRadioButton(opcion)
+                    # Conectar la función solo una vez
+                    radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_graph_uncertainity() if checked else None)
+                    layout_frame_22.addWidget(radio_button)
+                    outputs_checks.append([opcion,radio_button])
+
+                # Añade el espaciador de nuevo después de los nuevos QRadioButtons
+                spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+                layout_frame_22.addItem(spacer)
+                
+                #Select one radiobutton
+                for i in outputs_checks:
+                    if i[0]==output:
+                        i[1].setChecked(True)
     
     
     def update_graph_uncertainity(self):
@@ -1981,7 +2028,19 @@ class qvfsmod:
                 
             #Clear graph before drawing
             #Create and clear axis before drawing
-            self.canvas_uncertainity_graph.figure.clear()
+            if not hasattr(self, 'canvas_uncertainity_graph'):
+                # Si no existe, crear el canvas y añadirlo al layout
+                self.canvas_uncertainity_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
+                
+                # Asignar un layout al QFrame si no tiene uno
+                layout = QVBoxLayout(self.dlg_base.frame_68)
+                self.dlg_base.frame_68.setLayout(layout)
+                
+                # Añadir el canvas al layout
+                layout.addWidget(self.canvas_uncertainity_graph)
+            else:
+                # Si ya existe, simplemente limpiar el canvas
+                self.canvas_uncertainity_graph.figure.clear()
             self.ax_uncertainity = self.canvas_uncertainity_graph.figure.subplots(1,2)
             
             #Obtain data 
@@ -2000,8 +2059,8 @@ class qvfsmod:
             df = df[df.Error==0]
             
             #Get output
-            for i in range(self.dlg_base.frame_68.layout().count()):
-                item = self.dlg_base.frame_68.layout().itemAt(i)
+            for i in range(self.dlg_base.frame_69.layout().count()):
+                item = self.dlg_base.frame_69.layout().itemAt(i)
                 widget = item.widget()
                 
                 #Checks if the widget is a QCheckBox and if it is selected.
@@ -3473,6 +3532,8 @@ class qvfsmod:
             else: #absolute path
                 text = fname[0]
             self.dlg_base.csv_results_2.setText(text)
+            #Update graph
+            self.update_sensitivity_graph_global()
     
     def browse_files_sensitivity_results_fast(self):
         """Method to select the file for sensitivity analysis graph between the local files for FAST"""
@@ -3485,6 +3546,8 @@ class qvfsmod:
             else: #absolute path
                 text = fname[0]
             self.dlg_base.csv_results_fast.setText(text)
+            #Update graph
+            self.update_sensitivity_graph_global()
     
     def browse_files_calibration_hydrograph(self):
         """Method to select the file for calibration results"""
@@ -3559,22 +3622,8 @@ class qvfsmod:
             else: #absolute path
                 text = fname[0]
             self.dlg_base.csv_results_morris.setText(text)
-    
-    def show_graph_sensitivity_global(self):
-        """Method to add the graph of global sensitivity analysis"""
-        if not hasattr(self, 'canvas_sensitivity_graph'):
-            # Si no existe, crear el canvas y añadirlo al layout
-            self.canvas_sensitivity_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
-            
-            # Asignar un layout al QFrame si no tiene uno
-            layout = QVBoxLayout(self.dlg_base.frame_64)
-            self.dlg_base.frame_64.setLayout(layout)
-            
-            # Añadir el canvas al layout
-            layout.addWidget(self.canvas_sensitivity_graph)
-        else:
-            # Si ya existe, simplemente limpiar el canvas
-            self.canvas_sensitivity_graph.figure.clear()
+            #Update graph
+            self.update_sensitivity_graph_global()
         
         
     def update_sensitivity_graph_global(self):
@@ -3591,11 +3640,23 @@ class qvfsmod:
                     return
                 
                 #Create and clear axis before drawing
-                self.canvas_sensitivity_graph.figure.clear()
+                if not hasattr(self, 'canvas_sensitivity_graph'):
+                    # Si no existe, crear el canvas y añadirlo al layout
+                    self.canvas_sensitivity_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
+                    
+                    # Asignar un layout al QFrame si no tiene uno
+                    layout = QVBoxLayout(self.dlg_base.frame_64)
+                    self.dlg_base.frame_64.setLayout(layout)
+                    
+                    # Añadir el canvas al layout
+                    layout.addWidget(self.canvas_sensitivity_graph)
+                else:
+                    # Si ya existe, simplemente limpiar el canvas
+                    self.canvas_sensitivity_graph.figure.clear()
                 self.ax = self.canvas_sensitivity_graph.figure.subplots()
-                #Obtain data
-                for i in range(self.dlg_base.frame_64.layout().count()):
-                    item = self.dlg_base.frame_64.layout().itemAt(i)
+                #Obtain output
+                for i in range(self.dlg_base.frame_18.layout().count()):
+                    item = self.dlg_base.frame_18.layout().itemAt(i)
                     widget = item.widget()
                     
                     #Checks if the widget is a QCheckBox and if it is selected.
@@ -3651,19 +3712,14 @@ class qvfsmod:
                 self.canvas_sensitivity_graph.figure.clear()
                 self.ax_fast = self.canvas_sensitivity_graph.figure.subplots(1,2)
                 
-                #Obtain data
-                #Obtain ouputs parameter
-                if self.dlg_base.runoff_source_mm_2.isChecked():output_column = "Total Runoff from source (mm)"
-                if self.dlg_base.runoff_source_m3_2.isChecked():output_column = "Total Runoff from Source (m3)"
-                if self.dlg_base.runoff_filter_mm_2.isChecked():output_column = "Total Runoff out from Filter (mm)"
-                if self.dlg_base.runoff_filter_m3_2.isChecked():output_column = "Total Runoff out from Filter (m3)"
-                if self.dlg_base.infiltration_filter_m3_2.isChecked():output_column = "Total Infiltration in Filter (m3)"
-                if self.dlg_base.sediment_input_2.isChecked():output_column = "Mass Sediment Input to Filter (kg)"
-                if self.dlg_base.concentration_sediment_2.isChecked():output_column = "Concentration Sediment in Runoff from source Area (g/L)"
-                if self.dlg_base.sediment_output_2.isChecked():output_column = "Mass Sediment Output from Filter (kg)"
-                if self.dlg_base.sediment_runoff_exit_2.isChecked():output_column = "Concentration Sediment in Runoff exiting the Filter (g/L)"
-                if self.dlg_base.sediment_delivery_2.isChecked():output_column = "Sediment Delivery Ratio"
-                if self.dlg_base.runoff_delivery_2.isChecked():output_column = "Runoff Delivery Ratio"
+                #Obtain output
+                for i in range(self.dlg_base.frame_18.layout().count()):
+                    item = self.dlg_base.frame_18.layout().itemAt(i)
+                    widget = item.widget()
+                    
+                    #Checks if the widget is a QCheckBox and if it is selected.
+                    if isinstance(widget, QRadioButton) and widget.isChecked():
+                        output_column = widget.text()
                 
                 names_inputs = []
                 s1 = []
@@ -3714,19 +3770,14 @@ class qvfsmod:
                 self.canvas_sensitivity_graph.figure.clear()
                 self.ax_sobol = self.canvas_sensitivity_graph.figure.subplots(1, 2)
                 
-                #Obtain data
-                #Obtain ouputs parameter
-                if self.dlg_base.runoff_source_mm_2.isChecked():output_column = "Total Runoff from source (mm)"
-                if self.dlg_base.runoff_source_m3_2.isChecked():output_column = "Total Runoff from Source (m3)"
-                if self.dlg_base.runoff_filter_mm_2.isChecked():output_column = "Total Runoff out from Filter (mm)"
-                if self.dlg_base.runoff_filter_m3_2.isChecked():output_column = "Total Runoff out from Filter (m3)"
-                if self.dlg_base.infiltration_filter_m3_2.isChecked():output_column = "Total Infiltration in Filter (m3)"
-                if self.dlg_base.sediment_input_2.isChecked():output_column = "Mass Sediment Input to Filter (kg)"
-                if self.dlg_base.concentration_sediment_2.isChecked():output_column = "Concentration Sediment in Runoff from source Area (g/L)"
-                if self.dlg_base.sediment_output_2.isChecked():output_column = "Mass Sediment Output from Filter (kg)"
-                if self.dlg_base.sediment_runoff_exit_2.isChecked():output_column = "Concentration Sediment in Runoff exiting the Filter (g/L)"
-                if self.dlg_base.sediment_delivery_2.isChecked():output_column = "Sediment Delivery Ratio"
-                if self.dlg_base.runoff_delivery_2.isChecked():output_column = "Runoff Delivery Ratio"
+                #Obtain output
+                for i in range(self.dlg_base.frame_18.layout().count()):
+                    item = self.dlg_base.frame_18.layout().itemAt(i)
+                    widget = item.widget()
+                    
+                    #Checks if the widget is a QCheckBox and if it is selected.
+                    if isinstance(widget, QRadioButton) and widget.isChecked():
+                        output_column = widget.text()
                 
                 names_inputs = []
                 s1 = []
@@ -4146,7 +4197,7 @@ class qvfsmod:
         self.vfs_uncertainity_file = self.dlg_base.vfs_file_uncertainity.text()
         
         #Warning
-        if int(self.dlg_base.samples_uncertainity.text())<2:
+        if int(self.dlg_base.samples_uncertainity.text())<256:
             self.warning_message("N value must be higher than 256 when executing Uncertainity Analysis")
             return
         

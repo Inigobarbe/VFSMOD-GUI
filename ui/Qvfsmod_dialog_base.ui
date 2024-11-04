@@ -3490,8 +3490,8 @@ typical 0.01-0.07</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_8">
            <property name="geometry">
             <rect>
-             <x>-136</x>
-             <y>-108</y>
+             <x>0</x>
+             <y>0</y>
              <width>923</width>
              <height>613</height>
             </rect>
@@ -4217,273 +4217,11 @@ Solution Parameters</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1002</width>
-             <height>529</height>
+             <width>1000</width>
+             <height>553</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_43">
-            <item row="0" column="0">
-             <widget class="QFrame" name="frame_63">
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_42">
-               <item row="7" column="0">
-                <spacer name="verticalSpacer_9">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="4" column="1">
-                <widget class="QFrame" name="frame_26">
-                 <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
-                 </property>
-                 <property name="frameShadow">
-                  <enum>QFrame::Raised</enum>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_16">
-                  <item>
-                   <widget class="QLabel" name="label_70">
-                    <property name="text">
-                     <string>Method</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QRadioButton" name="radio_morris">
-                    <property name="text">
-                     <string>Morris</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QRadioButton" name="radio_fast">
-                    <property name="text">
-                     <string>FAST</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QRadioButton" name="radio_sobol">
-                    <property name="text">
-                     <string>Sobol</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <spacer name="verticalSpacer_10">
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>20</width>
-                      <height>40</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_126">
-                 <item>
-                  <widget class="QLabel" name="label_129">
-                   <property name="minimumSize">
-                    <size>
-                     <width>125</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Sobol results file</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="csv_results_2"/>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="browse_2">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="4" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_130">
-                 <item>
-                  <widget class="QFrame" name="frame_25">
-                   <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Raised</enum>
-                   </property>
-                   <layout class="QGridLayout" name="gridLayout_41">
-                    <item row="7" column="0">
-                     <widget class="QRadioButton" name="concentration_sediment_2">
-                      <property name="text">
-                       <string>Concentration Sediment in Runoff from source Area (g/L)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="0">
-                     <widget class="QRadioButton" name="runoff_filter_mm_2">
-                      <property name="text">
-                       <string>Total Runoff out from Filter (mm)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="0">
-                     <widget class="QRadioButton" name="runoff_filter_m3_2">
-                      <property name="text">
-                       <string>Total Runoff out from Filter (m3)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="10" column="0">
-                     <widget class="QRadioButton" name="sediment_delivery_2">
-                      <property name="text">
-                       <string>Sediment Delivery Ratio</string>
-                      </property>
-                      <property name="checked">
-                       <bool>true</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="5" column="0">
-                     <widget class="QRadioButton" name="infiltration_filter_m3_2">
-                      <property name="text">
-                       <string>Total Infiltration in Filter (m3)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="6" column="0">
-                     <widget class="QRadioButton" name="sediment_input_2">
-                      <property name="text">
-                       <string>Mass Sediment Input to Filter (kg)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="11" column="0">
-                     <widget class="QRadioButton" name="runoff_delivery_2">
-                      <property name="text">
-                       <string>Runoff Delivery Ratio</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QRadioButton" name="runoff_source_m3_2">
-                      <property name="text">
-                       <string>Total Runoff from Source (m3)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="8" column="0">
-                     <widget class="QRadioButton" name="sediment_output_2">
-                      <property name="text">
-                       <string>Mass Sediment Output from Filter (kg)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="9" column="0">
-                     <widget class="QRadioButton" name="sediment_runoff_exit_2">
-                      <property name="text">
-                       <string>Concentration Sediment in Runoff exiting the Filter (g/L)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QRadioButton" name="runoff_source_mm_2">
-                      <property name="text">
-                       <string>Total Runoff from source (mm)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="label_71">
-                      <property name="text">
-                       <string>Parameter</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="0" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_124">
-                 <item>
-                  <widget class="QLabel" name="label_128">
-                   <property name="minimumSize">
-                    <size>
-                     <width>125</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Morris results file</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="csv_results_morris"/>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="browse">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="1" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_131">
-                 <item>
-                  <widget class="QLabel" name="label_133">
-                   <property name="minimumSize">
-                    <size>
-                     <width>125</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>FAST results file</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="csv_results_fast"/>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="browse_fast_csv">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
             <item row="0" column="1">
              <widget class="QFrame" name="frame_64">
               <property name="minimumSize">
@@ -4524,6 +4262,301 @@ Solution Parameters</string>
                </widget>
               </item>
              </layout>
+            </item>
+            <item row="0" column="0">
+             <widget class="QFrame" name="frame_63">
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_33">
+               <item row="0" column="0" colspan="2">
+                <layout class="QHBoxLayout" name="horizontalLayout_124">
+                 <item>
+                  <widget class="QLabel" name="label_128">
+                   <property name="minimumSize">
+                    <size>
+                     <width>125</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Morris results file</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="csv_results_morris">
+                   <property name="minimumSize">
+                    <size>
+                     <width>213</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browse">
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="1" column="0" colspan="2">
+                <layout class="QHBoxLayout" name="horizontalLayout_131">
+                 <item>
+                  <widget class="QLabel" name="label_133">
+                   <property name="minimumSize">
+                    <size>
+                     <width>125</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>FAST results file</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="csv_results_fast">
+                   <property name="minimumSize">
+                    <size>
+                     <width>213</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browse_fast_csv">
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="2" column="0" colspan="2">
+                <layout class="QHBoxLayout" name="horizontalLayout_126">
+                 <item>
+                  <widget class="QLabel" name="label_129">
+                   <property name="minimumSize">
+                    <size>
+                     <width>125</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Sobol results file</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="csv_results_2">
+                   <property name="minimumSize">
+                    <size>
+                     <width>213</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browse_2">
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="3" column="2">
+                <widget class="QFrame" name="frame_26">
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_16">
+                  <item>
+                   <widget class="QLabel" name="label_70">
+                    <property name="text">
+                     <string>Method</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="radio_morris">
+                    <property name="text">
+                     <string>Morris</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="radio_fast">
+                    <property name="text">
+                     <string>FAST</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="radio_sobol">
+                    <property name="text">
+                     <string>Sobol</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="verticalSpacer_10">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <spacer name="verticalSpacer_9">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>17</width>
+                   <height>37</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="3" column="0" colspan="2">
+                <widget class="QFrame" name="frame_18">
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_31">
+                  <item row="2" column="0">
+                   <widget class="QRadioButton" name="runoff_source_m3_2">
+                    <property name="text">
+                     <string>Total Runoff from Source (m3)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="QRadioButton" name="runoff_filter_m3_2">
+                    <property name="text">
+                     <string>Total Runoff out from Filter (m3)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="9" column="0">
+                   <widget class="QRadioButton" name="sediment_runoff_exit_2">
+                    <property name="text">
+                     <string>Concentration Sediment in Runoff exiting the Filter (g/L)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="11" column="0">
+                   <widget class="QRadioButton" name="runoff_delivery_2">
+                    <property name="text">
+                     <string>Runoff Delivery Ratio</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="0">
+                   <widget class="QRadioButton" name="sediment_output_2">
+                    <property name="text">
+                     <string>Mass Sediment Output from Filter (kg)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="0">
+                   <widget class="QRadioButton" name="infiltration_filter_m3_2">
+                    <property name="text">
+                     <string>Total Infiltration in Filter (m3)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="0">
+                   <widget class="QRadioButton" name="concentration_sediment_2">
+                    <property name="text">
+                     <string>Concentration Sediment in Runoff from source Area (g/L)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QRadioButton" name="runoff_filter_mm_2">
+                    <property name="text">
+                     <string>Total Runoff out from Filter (mm)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QRadioButton" name="runoff_source_mm_2">
+                    <property name="text">
+                     <string>Total Runoff from source (mm)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="0">
+                   <widget class="QRadioButton" name="sediment_input_2">
+                    <property name="text">
+                     <string>Mass Sediment Input to Filter (kg)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="10" column="0">
+                   <widget class="QRadioButton" name="sediment_delivery_2">
+                    <property name="text">
+                     <string>Sediment Delivery Ratio</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_71">
+                    <property name="text">
+                     <string>Parameter</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="12" column="0">
+                   <spacer name="horizontalSpacer_14">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -4835,7 +4868,7 @@ Solution Parameters</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_10">
            <property name="geometry">
             <rect>
-             <x>-172</x>
+             <x>0</x>
              <y>0</y>
              <width>923</width>
              <height>613</height>
@@ -5412,9 +5445,9 @@ Solution Parameters</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-67</y>
+             <y>-104</y>
              <width>1068</width>
-             <height>572</height>
+             <height>609</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_96">
@@ -5427,27 +5460,6 @@ Solution Parameters</string>
                <enum>QFrame::Raised</enum>
               </property>
               <layout class="QGridLayout" name="gridLayout_97">
-               <item row="0" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_139">
-                 <item>
-                  <widget class="QLabel" name="label_143">
-                   <property name="text">
-                    <string>Uncertainity results file</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="csv_results_uncertainity"/>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="browse_uncertainity_csv">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
                <item row="1" column="0">
                 <widget class="QFrame" name="frame_69">
                  <property name="frameShape">
@@ -5557,31 +5569,6 @@ Solution Parameters</string>
                     </property>
                    </spacer>
                   </item>
-                  <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_138">
-                    <item>
-                     <widget class="QPushButton" name="pushButton_33">
-                      <property name="text">
-                       <string>Copy to Clipboard</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="pushButton_34">
-                      <property name="text">
-                       <string>Print</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="pushButton_35">
-                      <property name="text">
-                       <string>Edit</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
                  </layout>
                 </widget>
                </item>
@@ -5615,6 +5602,52 @@ Solution Parameters</string>
                   </item>
                  </layout>
                 </widget>
+               </item>
+               <item row="0" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_139">
+                 <item>
+                  <widget class="QLabel" name="label_143">
+                   <property name="text">
+                    <string>Uncertainity results file</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="csv_results_uncertainity"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browse_uncertainity_csv">
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="2" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_138">
+                 <item>
+                  <widget class="QPushButton" name="pushButton_33">
+                   <property name="text">
+                    <string>Copy to Clipboard</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButton_34">
+                   <property name="text">
+                    <string>Print</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButton_35">
+                   <property name="text">
+                    <string>Edit</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
               </layout>
              </widget>
