@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>784</width>
+    <width>965</width>
     <height>414</height>
    </rect>
   </property>
@@ -166,7 +166,14 @@ QTableCornerButton::section {
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="column"/>
+         <widget class="QComboBox" name="column">
+          <property name="minimumSize">
+           <size>
+            <width>250</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
