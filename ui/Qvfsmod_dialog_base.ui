@@ -348,7 +348,7 @@ QTableCornerButton::section {
              <x>0</x>
              <y>0</y>
              <width>573</width>
-             <height>966</height>
+             <height>1012</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_25">
@@ -1040,7 +1040,22 @@ typical 0.01-0.07</string>
                <enum>QFrame::Raised</enum>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">
-               <item row="2" column="0">
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_24">
+                 <property name="font">
+                  <font>
+                   <family>Georgia</family>
+                   <pointsize>-1</pointsize>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Rainfall Event and Runoff</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
                 <layout class="QHBoxLayout" name="horizontalLayout_17">
                  <item>
                   <widget class="QLabel" name="label_17">
@@ -1064,7 +1079,31 @@ typical 0.01-0.07</string>
                  </item>
                 </layout>
                </item>
-               <item row="3" column="0">
+               <item row="1" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout_21">
+                 <item>
+                  <widget class="QLabel" name="label_21">
+                   <property name="text">
+                    <string>Storm duration (h)</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="storm_duration">
+                   <property name="maximumSize">
+                    <size>
+                     <width>54</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="2" column="0">
                 <layout class="QHBoxLayout" name="horizontalLayout_18">
                  <item>
                   <widget class="QLabel" name="label_18">
@@ -1088,22 +1127,7 @@ typical 0.01-0.07</string>
                  </item>
                 </layout>
                </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_24">
-                 <property name="font">
-                  <font>
-                   <family>Georgia</family>
-                   <pointsize>-1</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>Rainfall Event and Runoff</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
+               <item row="2" column="1">
                 <layout class="QHBoxLayout" name="horizontalLayout_22">
                  <item>
                   <widget class="QLabel" name="label_22">
@@ -1124,25 +1148,35 @@ typical 0.01-0.07</string>
                  </item>
                 </layout>
                </item>
-               <item row="2" column="1">
-                <layout class="QHBoxLayout" name="horizontalLayout_21">
+               <item row="3" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_62">
                  <item>
-                  <widget class="QLabel" name="label_21">
+                  <widget class="QCheckBox" name="timestep_check">
                    <property name="text">
-                    <string>Storm duration (h)</string>
+                    <string>Modify time step (min)
+default 5 min</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="storm_duration">
+                  <widget class="QLineEdit" name="timestep">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="maximumSize">
                     <size>
                      <width>54</width>
                      <height>16777215</height>
                     </size>
                    </property>
+                   <property name="styleSheet">
+                    <string notr="true">background-color: #d9d9d9</string>
+                   </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
+                   </property>
+                   <property name="readOnly">
+                    <bool>false</bool>
                    </property>
                   </widget>
                  </item>
@@ -2804,7 +2838,7 @@ typical 0.01-0.07</string>
              <x>0</x>
              <y>0</y>
              <width>733</width>
-             <height>782</height>
+             <height>780</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_9">
@@ -3195,7 +3229,7 @@ typical 0.01-0.07</string>
                <enum>QFrame::Raised</enum>
               </property>
               <layout class="QGridLayout" name="gridLayout_41">
-               <item row="0" column="0">
+               <item row="0" column="0" colspan="2">
                 <widget class="Line" name="line_2">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
@@ -3218,86 +3252,94 @@ typical 0.01-0.07</string>
                 </widget>
                </item>
                <item row="2" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_50">
+                <layout class="QGridLayout" name="gridLayout_46">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_63">
+                   <property name="text">
+                    <string>VFS project file</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLineEdit" name="hydrograph_file">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QPushButton" name="browse_hydrograph_calibration">
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLineEdit" name="vfs_project">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_76">
+                   <property name="text">
+                    <string>Observed hydrograph</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="2">
+                  <widget class="QPushButton" name="edit_hydrograph">
+                   <property name="text">
+                    <string>Edit</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QPushButton" name="browse_project">
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="2" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout">
                  <item>
-                  <layout class="QGridLayout" name="gridLayout_46">
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="label_63">
+                  <layout class="QVBoxLayout" name="verticalLayout_23">
+                   <item>
+                    <widget class="QPushButton" name="calibration_sensitivity_hydrograph">
                      <property name="text">
-                      <string>VFS project file</string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignCenter</set>
+                      <string>Sensitivity
+analysis</string>
                      </property>
                     </widget>
                    </item>
-                   <item row="3" column="0">
-                    <widget class="QLineEdit" name="hydrograph_file">
-                     <property name="alignment">
-                      <set>Qt::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="3" column="1">
-                    <widget class="QPushButton" name="browse_hydrograph_calibration">
+                   <item>
+                    <widget class="QPushButton" name="show_calibration_hydrograph">
                      <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="0">
-                    <widget class="QLineEdit" name="vfs_project">
-                     <property name="alignment">
-                      <set>Qt::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="0">
-                    <widget class="QLabel" name="label_76">
-                     <property name="text">
-                      <string>Observed hydrograph</string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="3" column="2">
-                    <widget class="QPushButton" name="edit_hydrograph">
-                     <property name="text">
-                      <string>Edit</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="1">
-                    <widget class="QPushButton" name="browse_project">
-                     <property name="text">
-                      <string/>
+                      <string>Set inputs</string>
                      </property>
                     </widget>
                    </item>
                   </layout>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout">
+                  <layout class="QVBoxLayout" name="verticalLayout_24">
                    <item>
-                    <layout class="QVBoxLayout" name="verticalLayout_23">
-                     <item>
-                      <widget class="QPushButton" name="calibration_sensitivity_hydrograph">
-                       <property name="text">
-                        <string>Sensitivity
-analysis</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="show_calibration_hydrograph">
-                       <property name="text">
-                        <string>Set inputs</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
+                    <widget class="QPushButton" name="results_sensitivity_hydrograph">
+                     <property name="text">
+                      <string>Results
+sensitivity</string>
+                     </property>
+                    </widget>
                    </item>
                    <item>
                     <widget class="QPushButton" name="advanced_hydrograph">
@@ -3306,25 +3348,25 @@ analysis</string>
                      </property>
                     </widget>
                    </item>
-                   <item>
-                    <widget class="QPushButton" name="run_hydrograph">
-                     <property name="text">
-                      <string>Run</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="calibration_result_hydrograph">
-                     <property name="text">
-                      <string>View results</string>
-                     </property>
-                    </widget>
-                   </item>
                   </layout>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="run_hydrograph">
+                   <property name="text">
+                    <string>Run</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="calibration_result_hydrograph">
+                   <property name="text">
+                    <string>View results</string>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </item>
-               <item row="3" column="0">
+               <item row="3" column="0" colspan="2">
                 <widget class="Line" name="line">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
@@ -3346,7 +3388,7 @@ analysis</string>
                  </property>
                 </widget>
                </item>
-               <item row="5" column="0">
+               <item row="5" column="0" colspan="2">
                 <layout class="QHBoxLayout" name="horizontalLayout_53">
                  <item>
                   <layout class="QGridLayout" name="gridLayout_48">
@@ -5832,12 +5874,12 @@ Solution Parameters</string>
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>512</x>
-     <y>321</y>
+     <x>117</x>
+     <y>68</y>
     </hint>
     <hint type="destinationlabel">
-     <x>126</x>
-     <y>311</y>
+     <x>117</x>
+     <y>68</y>
     </hint>
    </hints>
   </connection>
@@ -5848,12 +5890,12 @@ Solution Parameters</string>
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>622</x>
-     <y>318</y>
+     <x>117</x>
+     <y>68</y>
     </hint>
     <hint type="destinationlabel">
-     <x>365</x>
-     <y>363</y>
+     <x>117</x>
+     <y>68</y>
     </hint>
    </hints>
   </connection>
@@ -5864,12 +5906,12 @@ Solution Parameters</string>
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>623</x>
-     <y>344</y>
+     <x>117</x>
+     <y>68</y>
     </hint>
     <hint type="destinationlabel">
-     <x>380</x>
-     <y>355</y>
+     <x>117</x>
+     <y>68</y>
     </hint>
    </hints>
   </connection>
@@ -5880,12 +5922,12 @@ Solution Parameters</string>
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>665</x>
-     <y>367</y>
+     <x>117</x>
+     <y>68</y>
     </hint>
     <hint type="destinationlabel">
-     <x>373</x>
-     <y>395</y>
+     <x>117</x>
+     <y>68</y>
     </hint>
    </hints>
   </connection>
@@ -5896,12 +5938,12 @@ Solution Parameters</string>
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>560</x>
-     <y>321</y>
+     <x>117</x>
+     <y>68</y>
     </hint>
     <hint type="destinationlabel">
-     <x>584</x>
-     <y>406</y>
+     <x>117</x>
+     <y>68</y>
     </hint>
    </hints>
   </connection>

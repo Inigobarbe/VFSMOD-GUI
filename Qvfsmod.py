@@ -67,6 +67,7 @@ from ui.calibration_results_single import calibration_results_single
 from ui.hydrograph_calibration_edit import hydrograph_calibration_edit
 from ui.sedimentograph_calibration_edit import sedimentograph_calibration_edit
 from ui.calibration_sensitivity_hydrograph import calibration_sensitivity_hydrograph
+from ui.sensitivity_calibration_results_hydrograph import sensitivity_calibration_results_hydrograph
 
 #Local libraries
 from libraries.SALib.sample import saltelli
@@ -192,7 +193,18 @@ class qvfsmod:
         self.dlg_hydrograph_calibration_edit = hydrograph_calibration_edit()
         self.dlg_sedimentograph_calibration_edit = sedimentograph_calibration_edit()
         self.dlg_calibration_sensitivity_hydrograph = calibration_sensitivity_hydrograph()
+        self.dlg_sensitivity_calibration_results_hydrograph = sensitivity_calibration_results_hydrograph()
         
+        #Sensitivity calibration results conditions
+        self.dlg_base.results_sensitivity_hydrograph.clicked.connect(self.dlg_sensitivity_calibration_results_hydrograph.show)
+        self.dlg_sensitivity_calibration_results_hydrograph.browse_file.clicked.connect(self.browse_sensitivity_calibration_results)
+        self.dlg_sensitivity_calibration_results_hydrograph.line_file.textChanged.connect(self.udpate_sensitivity_calibration_results)
+        self.dlg_base.results_sensitivity_hydrograph.clicked.connect(self.udpate_sensitivity_calibration_results)
+        self.dlg_sensitivity_calibration_results_hydrograph.threshold.textChanged.connect(self.udpate_sensitivity_calibration_results)
+        
+        
+        #Enable disable adding timestep
+        self.dlg_base.timestep_check.stateChanged.connect(self.enable_disable_timestep)
         
         #Set working directory
         self.dlg_base.working_directory_vfsmod.textChanged.connect(self.set_working_directory)
@@ -730,7 +742,7 @@ class qvfsmod:
                 "Soil erodibility (K)":["inp",3,0,"uh"],"Percent organic matter":["inp",5,0,"uh"],"Crop factor":["inp",3,1,"uh"],"Particle Class Diameter":["inp",3,3,"uh"],"Practice Factor":["inp",3,2,"uh"],
                 "Buffer length (m)":["ikw",2,0,"vfs"],"Width of the Strip (m)":["ikw",1,0,"vfs"],"Filter Manning n (RNA s/m^1/3)":["ikw","nan","nan","vfs"],"Average Filter Slope":["ikw","nan","nan","vfs"],
                 "Number of Nodes":["ikw",2,1,"vfs"],"Time Weight Factor":["ikw",2,2,"vfs"],"Number of Elemental Nodal Points":["ikw",2,5,"vfs"],"Courant Number":["ikw",2,3,"vfs"],"Maximum Iterations":["ikw",2,4,"vfs"],
-                "Vertical Saturated K":["iso",0,0,"vfs"],"Average Suction at the Wetting Front":["iso",0,1,"vfs"],"Initial Water Content":["iso",0,3,"vfs"],"Saturated Water Content":["iso",0,2,"vfs"],"Maximum Surface Storage":["iso",0,4,"vfs"],"Fraction of the filter where ponding is checked":["iso",0,5,"vfs"],"Water depth":["iso",1,0,"vfs"],"Soil saturated hydraulic\nconductivity ansiotropy ratio":["iso",4,0,"vfs"],"Soil water characteristic OR":["iso",2,1,"vfs"],"Soil water characteristic VGALPHA":["iso",2,2,"vfs"],"Soil water characteristic VGN":["iso",2,3,"vfs"],"Soil water characteristic VGM":["iso",2,4,"vfs"],"Soil water characteristic BCALPHA":["iso",2,2,"vfs"],"Soil water characteristic BCLAMDA":["iso",2,3,"vfs"],"Unsaturated hydraulic \nconductivity curve VGM":["iso",3,1,"vfs"],"Unsaturated hydraulic \nconductivity curve BCETA":["iso",3,1,"vfs"],"Unsaturated hydraulic \nconductivity curve BCALPHA":["iso",3,2,"vfs"],"Unsaturated hydraulic \nconductivity curve GDALPHA":["iso",3,1,"vfs"],
+                "Vertical Saturated K":["iso",0,0,"vfs"],"Average Suction at the Wetting Front":["iso",0,1,"vfs"],"Initial Water Content":["iso",0,3,"vfs"],"Saturated Water Content":["iso",0,2,"vfs"],"Maximum Surface Storage":["iso",0,4,"vfs"],"Fraction of the filter where ponding is checked":["iso",0,5,"vfs"],"Water table depth":["iso",1,0,"vfs"],"Soil saturated hydraulic\nconductivity ansiotropy ratio":["iso",4,0,"vfs"],"Soil water characteristic OR":["iso",2,1,"vfs"],"Soil water characteristic VGALPHA":["iso",2,2,"vfs"],"Soil water characteristic VGN":["iso",2,3,"vfs"],"Soil water characteristic VGM":["iso",2,4,"vfs"],"Soil water characteristic BCALPHA":["iso",2,2,"vfs"],"Soil water characteristic BCLAMDA":["iso",2,3,"vfs"],"Unsaturated hydraulic \nconductivity curve VGM":["iso",3,1,"vfs"],"Unsaturated hydraulic \nconductivity curve BCETA":["iso",3,1,"vfs"],"Unsaturated hydraulic \nconductivity curve BCALPHA":["iso",3,2,"vfs"],"Unsaturated hydraulic \nconductivity curve GDALPHA":["iso",3,1,"vfs"],
                 "Spacing for grass stems (cm)":["igr",0,0,"vfs"],"Roughness-Grass Mannings n VN":["igr",0,1,"vfs"],"Height of grass (cm)":["igr",0,2,"vfs"],"Roughness-Bare surface Mannings n (Vn2)":["igr",0,3,"vfs"],
                 "Incoming flow sediment concentration (g/cm^3)":["isd",0,2,"vfs"],"Sediment particle size diameter d50 (cm)":["isd",1,0,"vfs"],"Porosity of deposited sediment as a fraction":["isd",0,3,"vfs"],"Portion of Particles from incoming sediment \nwith diameter >0.0037 cm":["isd",0,1,"vfs"],"Sediment particle density (g/cm^3)":["isd",1,1,"vfs"],
                 "Linear sorption coefficient (L/Kg)":["iwq",1,1,"vfs"],"Adsorption coefficient (L/Kg)":["iwq",1,1,"vfs"],"Organic Carbon (%)":["iwq",1,2,"vfs"],"Clay in incoming sediment (%)":["iwq",2,0,"vfs"],"Pesticide half-life (days)":["iwq",4,1,"vfs"],"Topsoil field capacity (m3/m3)":["iwq",4,2,"vfs"],"Total pesticide mass per unit area source field (mg/m2)":["iwq",4,3,"vfs"],"Surface mixing layer thickness (cm)":["iwq",4,4,"vfs"],"Dispersion length of chemical (m)":["iwq",4,5,"vfs"],"Runoff remobilized VFS residue \nfrom last event (mg/m2)":["iwq",4,6,"vfs"]}
@@ -901,7 +913,7 @@ class qvfsmod:
                     ITHETATYPE = int(lineas[2].split()[0])   
                     IKUNSTYPE = int(lineas[3].split()[0])
                     #Water table
-                    inputs.append("Water depth")
+                    inputs.append("Water table depth")
                     #Ansiotropy
                     if ansiotropy:
                         inputs.append("Soil saturated hydraulic\nconductivity ansiotropy ratio")
@@ -1235,6 +1247,14 @@ class qvfsmod:
         if condition:
             self.dlg_sedimentograph_calibration_edit.close()
     
+    def enable_disable_timestep(self):
+        """Method to enable or disable the timestep change"""
+        if self.dlg_base.timestep_check.isChecked():
+            self.dlg_base.timestep.setEnabled(True)
+            self.dlg_base.timestep.setStyleSheet("background-color: #f0f0f0;")
+        elif not self.dlg_base.timestep_check.isChecked():
+            self.dlg_base.timestep.setEnabled(False)
+            self.dlg_base.timestep.setStyleSheet("background-color: #d9d9d9;")
     
     def calibration_single_values_checks(self,check):
         """Method to put the conditions of checks in calibration and to enable/disable lineEdits"""
@@ -1421,7 +1441,7 @@ class qvfsmod:
                     #Water table
                     self.dlg_hydrograph_calibration.frame_4.setVisible(True)
                     set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_3,True)
-                    self.parameters_sensitivity_calibration_hydrograph.append("Water depth")
+                    self.parameters_sensitivity_calibration_hydrograph.append("Water table depth")
                     #Ansiotropy
                     if ansiotropy:
                         self.dlg_hydrograph_calibration.frame_6.setVisible(True)
@@ -2496,6 +2516,14 @@ class qvfsmod:
                 r = int(self.add_values_dialog(lineas,4,0,self.dlg_base.williams,True))
                 if r==1: self.dlg_base.williams.setChecked(True)
                 elif r==2: self.dlg_base.creams_gleams.setChecked(True)
+                #Timestep
+                self.dlg_base.timestep_check.setChecked(False)
+                timestep = self.add_values_dialog(lineas,0,7,self.dlg_base.timestep, True)
+                try:
+                    float(timestep)
+                    self.add_values_dialog(lineas,0,7,self.dlg_base.timestep)
+                except:
+                    pass
             
             except:
                 pass
@@ -3643,6 +3671,24 @@ class qvfsmod:
                 text = fname[0]
             self.dlg_design_results.design_file.setText(text)
     
+    
+    def browse_sensitivity_calibration_results(self):
+        """Method tho browse project for sensitivity for sensitivity for calibration"""
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        fname = QFileDialog.getOpenFileName(self.dlg_sensitivity_calibration_results_hydrograph, "Select CSV Project File",working_directory , "CSV files (*.csv)")
+        if fname[0]!="":
+            #Put the relative path if the file is inside the folder
+            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
+                text = os.path.relpath(fname[0], working_directory)
+            else: #absolute path
+                text = fname[0]
+            self.dlg_sensitivity_calibration_results_hydrograph.line_file.setText(text)
+        
+            #Update input parameters
+            self.udpate_sensitivity_calibration_results()
+            
+    
+    
     def browse_calibration_sensitivity_hydrograph(self):
         """Method tho browse project for sensitivity for calibration"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
@@ -3765,13 +3811,98 @@ class qvfsmod:
             #Update graph
             self.update_sensitivity_graph_global()
         
-        
+    
+    def udpate_sensitivity_calibration_results(self):
+        """Method to update the graph for sensitivity calibration"""
+        ruta = self.obtain_direction_vfsmod(self.dlg_sensitivity_calibration_results_hydrograph.line_file.text())
+        if os.path.exists(ruta) and os.path.isfile(ruta):
+            with open(ruta, "r") as archivo:
+                lineas = archivo.readlines()
+            #If the csv is not of a Morris sensitivity analysis then give error
+            if lineas[0]!="Morris sensitivity indexes" + '\n':
+                self.warning_message("Please select a csv file that contains Morris sensitivity analysis results")
+                return
+            
+            #Create and clear axis before drawing
+            if not hasattr(self, 'canvas_sensitivity_graph_calibration'):
+                # Si no existe, crear el canvas y añadirlo al layout
+                self.canvas_sensitivity_graph_calibration = FigureCanvas(plt.Figure(figsize=(15, 6)))
+                
+                # Asignar un layout al QFrame si no tiene uno
+                layout = QVBoxLayout(self.dlg_sensitivity_calibration_results_hydrograph.frame)
+                self.dlg_sensitivity_calibration_results_hydrograph.frame.setLayout(layout)
+                
+                # Añadir el canvas al layout
+                layout.addWidget(self.canvas_sensitivity_graph_calibration)
+            else:
+                # Si ya existe, simplemente limpiar el canvas
+                self.canvas_sensitivity_graph_calibration.figure.clear()
+            self.ax_calibration_sensitivity = self.canvas_sensitivity_graph_calibration.figure.subplots()
+            #Obtain output
+            output_column = "NSE"
+            
+            names_inputs = []
+            mu_star = []
+            sigma = []
+            for i in range(len(lineas)):
+                if lineas[i] == output_column+ '\n':
+                    for k in lineas[i+1:]:
+                        if k == "----------------------------------------------------------------------" + '\n':
+                                break
+                        names_inputs.append(k.split(":")[0])
+                        mu_star.append(float(k.split(":")[1].split("_")[0]))
+                        sigma.append(float(k.split(":")[1].split("_")[1]))
+                        
+            # Graficar los puntos con color granate y agregar etiquetas
+            for i, (x, y) in enumerate(zip(mu_star, sigma)):
+                if np.isnan(x):x = 0
+                if np.isnan(y):y = 0
+                self.ax_calibration_sensitivity.scatter(x, y, marker="o", color="maroon")
+                self.ax_calibration_sensitivity.annotate(f'{names_inputs[i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
+                    fontweight='bold',fontsize = 8)
+            #Linea 1:1
+            line_plot = list(range(-1,int(max(list(mu_star)+list(sigma))*1.05)+2))
+            self.ax_calibration_sensitivity.plot(line_plot, line_plot, color="red",linestyle="--")
+            
+            #Threshold line
+            try:
+                threshold = float(self.dlg_sensitivity_calibration_results_hydrograph.threshold.text())
+                self.ax_calibration_sensitivity.axvline(x=threshold, color='red', linestyle='--', linewidth=2)
+            except:
+                threshold = 0
+            
+
+            self.ax_calibration_sensitivity.set_xlim(0,max(list(mu_star)+list(sigma))*1.05)
+            self.ax_calibration_sensitivity.set_ylim(0,max(list(mu_star)+list(sigma))*1.05)
+            #Labels
+            self.ax_calibration_sensitivity.set_xlabel("Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 14,family="arial",weight = "bold",color = "black")
+            self.ax_calibration_sensitivity.set_ylabel("Standard Deviation of Elementary Effects ($\sigma_{i}$)",size = 14,family="arial",weight = "bold",color = "black")
+            self.ax_calibration_sensitivity.set_title("Morris sensitivity analysis indexes", size=16, family="arial", weight="bold", color="black")
+            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+            self.canvas_sensitivity_graph_calibration.figure.subplots_adjust(left=0.2, bottom=0.2)
+            #Draw canvas
+            self.canvas_sensitivity_graph_calibration.draw()
+            
+            #Put data in table
+            data = [[names_inputs[x],mu_star[x],sigma[x]] for x in range(len(mu_star)) if mu_star[x]>=threshold]
+            data_ordered = sorted(data, key=lambda x: x[1],reverse = True)
+            #First delete table
+            self.dlg_sensitivity_calibration_results_hydrograph.tableWidget.setRowCount(0)
+            #Add to the table
+            self.dlg_sensitivity_calibration_results_hydrograph.tableWidget.setRowCount(len(data_ordered))
+            for fila in range(len(data_ordered)):
+                for columna in range(3):
+                    item = QTableWidgetItem(str(data_ordered[fila][columna]))
+                    self.dlg_sensitivity_calibration_results_hydrograph.tableWidget.setItem(fila, columna, item)
+                    item.setTextAlignment(Qt.AlignCenter)
+    
+    
     def update_sensitivity_graph_global(self):
         """Method to update the graph of the sensitivity for Sobol"""
         #MORRIS
         if self.dlg_base.radio_morris.isChecked():
             ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_morris.text())
-            if os.path.exists(ruta):
+            if os.path.exists(ruta) and os.path.isfile(ruta):
                 with open(ruta, "r") as archivo:
                     lineas = archivo.readlines()
                 #If the csv is not of a Morris sensitivity analysis then give error
@@ -3840,7 +3971,7 @@ class qvfsmod:
         #FAST
         if self.dlg_base.radio_fast.isChecked():
             ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_fast.text())
-            if os.path.exists(ruta):
+            if os.path.exists(ruta) and os.path.isfile(ruta):
                 with open(ruta, "r") as archivo:
                     lineas = archivo.readlines()
                 #If the csv is not of a FAST sensitivity analysis then give error
@@ -3898,7 +4029,7 @@ class qvfsmod:
         #Sobol
         elif self.dlg_base.radio_sobol.isChecked():
             ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_2.text())
-            if os.path.exists(ruta):
+            if os.path.exists(ruta) and os.path.isfile(ruta):
                 with open(ruta, "r") as archivo:
                     lineas = archivo.readlines()
                 #If the csv is not of a Sobol sensitivity analysis then give error
@@ -4239,12 +4370,12 @@ class qvfsmod:
         #Method were the paralelization is achieved
         self.start_analysis_sensitivity()
         
-    def run_sensitivity_analysis_part_two(self):
+    def run_sensitivity_analysis_calibration_part_two(self):
         """Second part of sensitivity analysis to analyze the results. I have splitted sensitivity running
         in two because we use Thread method and we need to stop till the thread finishes, if not we get an error"""
         
         #Create DataFrame or results
-        self.results_sensitivity = self.create_df_sensitivity(self.results)
+        self.results_sensitivity = self.create_df_sensitivity_calibration(self.results)
         
         #Delete all files created for paralelization of sensitivity analysis
         self.delete_files_sensitivity_calibration()
@@ -4256,7 +4387,7 @@ class qvfsmod:
                 #Add first row
                 f.write("Morris sensitivity indexes" + '\n')
                 #Add sensitivity indexes for each output
-                for i in self.results_sensitivity.columns[-self.number_outputs:]:
+                for i in self.results_sensitivity.columns[-1:]:
                     f.write("----------------------------------------------------------------------" + '\n')
                     f.write(f"{i}" + '\n')
                     si = analyze_morris(self.problem,np.array(self.param_values),np.array(self.results_sensitivity[i]))
@@ -4269,20 +4400,23 @@ class qvfsmod:
             return
         
         #Append results
-        self.results_sensitivity.to_csv(path, mode='a',index=False, float_format='%.5f')
-            
+        self.results_sensitivity.to_csv(path, mode='a',index=False, float_format='%.10f')
+        
+        #Add file to the dialog of results and update graph
+        self.dlg_sensitivity_calibration_results_hydrograph.line_file.setText(self.dlg_calibration_sensitivity_hydrograph.file_save.text())
+        self.udpate_sensitivity_calibration_results()
         
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)
         self.warning_message("Sensitivity analysis completed succesfully!")
     
     
-    def run_sensitivity_analysis_calibration_part_two(self):
+    def run_sensitivity_analysis_part_two(self):
         """Second part of sensitivity analysis for calibration to analyze the results. I have splitted sensitivity running
         in two because we use Thread method and we need to stop till the thread finishes, if not we get an error"""
         
         #Create DataFrame or results
-        self.results_sensitivity = self.create_df_sensitivity_calibration(self.results)
+        self.results_sensitivity = self.create_df_sensitivity(self.results)
         
         #Delete all files created for paralelization of sensitivity analysis
         self.delete_files_sensitivity()
@@ -4428,6 +4562,9 @@ class qvfsmod:
         mask = new_df['Error'] == 0
         inputs_complete = inputs[mask]
         outputs_complete = outputs[mask]
+        if len(inputs_complete) == 0: #all rows are error
+            self.warning_message("All executions gave error.\n Please check input data.")
+            return
         if len(inputs_complete)<len(new_df): #if there are less inputs without errors than original df then there are errors
             for output in output_columns:
                 #Create model of linear regression
@@ -4445,7 +4582,6 @@ class qvfsmod:
     def create_df_sensitivity_calibration(self,results):
         """Method to create the dataframe of sensitivity after parallelization for calibration"""
         #First create dataframe
-        print(results)
         df = pd.DataFrame(columns=list(results[0].columns))
         for i in results:
             df = pd.concat([df,i], ignore_index=True)
@@ -4461,12 +4597,15 @@ class qvfsmod:
         
         #If there are errors then make a linear regression to add data
         inputs = new_df[input_parameters]
-        output_columns = new_df.columns[-self.number_outputs:].tolist()
+        output_columns = new_df.columns[-1:].tolist()
         outputs = new_df[output_columns]
         # Filtrar los datos completos (sin valores NaN en outputs)
         mask = new_df['Error'] == 0
         inputs_complete = inputs[mask]
         outputs_complete = outputs[mask]
+        if len(inputs_complete) == 0: #all rows are error
+            self.warning_message("All executions gave error.\n Please check input data.")
+            return
         if len(inputs_complete)<len(new_df): #if there are less inputs without errors than original df then there are errors
             for output in output_columns:
                 #Create model of linear regression
@@ -4497,7 +4636,7 @@ class qvfsmod:
         self.vfs_uncertainity_file = self.dlg_base.vfs_file_uncertainity.text()
         
         #Warning
-        if int(self.dlg_base.samples_uncertainity.text())<2:
+        if int(self.dlg_base.samples_uncertainity.text())<256:
             self.warning_message("N value must be higher than 256 when executing Uncertainity Analysis")
             return
         
@@ -5889,7 +6028,7 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
                 
         if button == self.dlg_base.infiltration:
-            parameters = ["Vertical Saturated K","Average Suction at the Wetting Front","Initial Water Content","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked","Water depth","Soil saturated hydraulic\nconductivity ansiotropy ratio","Soil water characteristic OR","Soil water characteristic VGALPHA","Soil water characteristic VGN","Soil water characteristic VGM","Soil water characteristic BCALPHA","Soil water characteristic BCLAMDA","Unsaturated hydraulic \nconductivity curve VGM","Unsaturated hydraulic \nconductivity curve BCETA","Unsaturated hydraulic \nconductivity curve BCALPHA","Unsaturated hydraulic \nconductivity curve GDALPHA"]
+            parameters = ["Vertical Saturated K","Average Suction at the Wetting Front","Initial Water Content","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked","Water table depth","Soil saturated hydraulic\nconductivity ansiotropy ratio","Soil water characteristic OR","Soil water characteristic VGALPHA","Soil water characteristic VGN","Soil water characteristic VGM","Soil water characteristic BCALPHA","Soil water characteristic BCLAMDA","Unsaturated hydraulic \nconductivity curve VGM","Unsaturated hydraulic \nconductivity curve BCETA","Unsaturated hydraulic \nconductivity curve BCALPHA","Unsaturated hydraulic \nconductivity curve GDALPHA"]
             for nombre in parameters:
                 boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
@@ -5995,7 +6134,7 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
                 
         if button == self.dlg_base.infiltration_2:
-            parameters = ["Vertical Saturated K","Average Suction at the Wetting Front","Initial Water Content","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked","Water depth","Soil saturated hydraulic\nconductivity ansiotropy ratio","Soil water characteristic OR","Soil water characteristic VGALPHA","Soil water characteristic VGN","Soil water characteristic VGM","Soil water characteristic BCALPHA","Soil water characteristic BCLAMDA","Unsaturated hydraulic \nconductivity curve VGM","Unsaturated hydraulic \nconductivity curve BCETA","Unsaturated hydraulic \nconductivity curve BCALPHA","Unsaturated hydraulic \nconductivity curve GDALPHA"]
+            parameters = ["Vertical Saturated K","Average Suction at the Wetting Front","Initial Water Content","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked","Water table depth","Soil saturated hydraulic\nconductivity ansiotropy ratio","Soil water characteristic OR","Soil water characteristic VGALPHA","Soil water characteristic VGN","Soil water characteristic VGM","Soil water characteristic BCALPHA","Soil water characteristic BCLAMDA","Unsaturated hydraulic \nconductivity curve VGM","Unsaturated hydraulic \nconductivity curve BCETA","Unsaturated hydraulic \nconductivity curve BCALPHA","Unsaturated hydraulic \nconductivity curve GDALPHA"]
             for nombre in parameters:
                 boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
                 boton.setObjectName(nombre)
@@ -6257,7 +6396,7 @@ class qvfsmod:
                     resultado_global = differential_evolution(objetivo, bounds=limites, strategy='best1bin',tol=self.tolerance)
                 except ZeroDivisionError: #maximum iterations achieved
                     self.resultado_progress.emit(["Warning","Maximum iterations achieved \n Adding best result...\n"])
-                objetivo(self.best_result["x"]) #execute best just so that users can see it
+                resultado = objetivo(self.best_result["x"]) #execute best just so that users can see it
                 self.list_of_inputs[:-1] #eilminate last one
                 self.list_of_results[:-1]
                     
@@ -6535,7 +6674,7 @@ class qvfsmod:
                     resultado_global = differential_evolution(objetivo, bounds=limites, strategy='best1bin',tol=self.tolerance)
                 except ZeroDivisionError: #maximum iterations achieved
                     self.resultado_progress.emit(["Warning","Maximum iterations achieved \n Adding best result...\n"])
-                objetivo(self.best_result["x"]) #execute best just so that users can see it
+                resultado = objetivo(self.best_result["x"]) #execute best just so that users can see it
                 self.list_of_inputs[:-1] #eilminate last one
                 self.list_of_results[:-1]
                     
@@ -8877,7 +9016,7 @@ class qvfsmod:
         self.create_prj_file()
         
         #The hietograph file with this version of the executable creates .irn file with one more rain steps and it gets error
-        self.correct_irn_file(self.obtain_direction_vfsmod(self.dlg_base.line_storm.text()))
+        #self.correct_irn_file(self.obtain_direction_vfsmod(self.dlg_base.line_storm.text()))
         
         #We update the bat for the execution fo VFSMOD
         self.update_bat_vfsmod()
@@ -10147,6 +10286,15 @@ class qvfsmod:
         particle_size = float(self.dlg_base.particle_diameter.text())
         crop_factor = float(self.dlg_base.crop_factor.text())
         practice_factor = float(self.dlg_base.practice_factor.text())
+        if self.dlg_base.timestep_check.isChecked() and self.dlg_base.timestep.text() != "":
+            timestep = float(self.dlg_base.timestep.text())
+            try: #if the timestep selected is not a float
+                float(timestep)
+            except:
+                self.warning_message("Please select a correct timestep")
+                return
+        else:
+            timestep = ""
         
         if self.dlg_base.williams.isChecked(): rainfall_factor = 1
         elif self.dlg_base.creams_gleams.isChecked(): rainfall_factor = 2
@@ -10167,7 +10315,7 @@ class qvfsmod:
         #Create file
         inp_file = self.obtain_direction_vfsmod(self.dlg_base.uh_input.text())
         with open(inp_file, 'w') as archivo:
-            linea_uno = f" {rainfall_amount}  {curve_number}  {area}  {storm_type}  {storm_duration}  {length}  {slope}       'P,CN,A,storm type,D,L,Y"
+            linea_uno = f" {rainfall_amount}  {curve_number}  {area}  {storm_type}  {storm_duration}  {length}  {slope} {timestep} 'P,CN,A,storm type,D,L,Y (,dincr)"
             linea_dos = "                                           'Note: Storm type I,IA,II,III (j=1,4)"
             linea_tres = f"{soil_type}                     'Soil Type"
             linea_cuatro = f"  {K_factor}  {crop_factor}  {practice_factor}  {particle_size}                           'K, C, P, Dp "
@@ -11353,7 +11501,7 @@ def design_paralelization(number_execution,core,combinations_design,working_dire
         error = True
         
     #Correct hietograph file
-    correct_irn_file(working_directory+f"\\design\\inputs\\design_{core}.irn") 
+    #correct_irn_file(working_directory+f"\\design\\inputs\\design_{core}.irn") 
     
     #VFS
     resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_vfs_{core}.bat"],
@@ -11662,7 +11810,7 @@ def execution_uncertainity_analysis(number_execution,core,param_values,dic_data,
             return "error"
             
         #Correct hietograph file
-        correct_irn_file(working_directory+f"\\uncertainity\\inputs\\uncertainity_{core}.irn") 
+        #correct_irn_file(working_directory+f"\\uncertainity\\inputs\\uncertainity_{core}.irn") 
     
     #VFS
     resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_vfs_{core}.bat"],
@@ -11995,7 +12143,7 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
     
     
         #Correct hietograph file
-        correct_irn_file(working_directory+f"\\sensitivity\\inputs\\sensitivity_{core}.irn") 
+        #correct_irn_file(working_directory+f"\\sensitivity\\inputs\\sensitivity_{core}.irn") 
     
     #VFS
     resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_vfs_{core}.bat"],
@@ -12326,7 +12474,7 @@ def sensitivity_paralelization_calibration(number_execution,core,param_values,di
             return save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality ,hidrograma,error = False)
     except:
         return save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality ,hidrograma,error = True)
-        
+   
     
 
 def execution_sensitivity_analysis_calibration(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file):
@@ -12354,20 +12502,6 @@ def execution_sensitivity_analysis_calibration(number_execution,core,param_value
            
     
     #We execute
-    #Only execute UH if there are parameters that need to be executed in UH
-    if execute_uh:
-        resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_uh_{core}.bat"],
-            capture_output=True, 
-            text=True, 
-            shell=True)
-        #Put warning
-        if not "...FINISHED..." in resultado.stdout:            
-            return "error"
-    
-    
-        #Correct hietograph file
-        correct_irn_file(working_directory+f"\\inverse\\inputs\\inverse_{core}.irn") 
-    
     #VFS
     resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_vfs_{core}.bat"],
             capture_output=True, 
@@ -12578,7 +12712,7 @@ def save_results_sensitivity_analysis_calibration(number_execution,core,working_
 
     else:
     
-        ruta = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\output\\inverse_{core}.ohy"
+        ruta = working_directory+f"\\inverse\\output\\inverse_{core}.ohy"
         with open(ruta, "r") as archivo:
             lineas = archivo.readlines()
         discharge = []
@@ -12635,7 +12769,7 @@ def save_results_sensitivity_analysis_calibration(number_execution,core,working_
         suma_cuadrados_diferencias_observados = cuadrados_diferencias_observados.sum()
         nash_sutcliffe_efficiency = 1 - (suma_cuadrados_diferencias / suma_cuadrados_diferencias_observados)
         
-        df_conc = pd.DataFrame(data = {"Error":[1],"NSE":[nash_sutcliffe_efficiency]})
+        df_conc = pd.DataFrame(data = {"Error":[0],"NSE":[nash_sutcliffe_efficiency]})
 
     #Add the values of inputs 
     for k,i in enumerate(dic_data.keys()):
