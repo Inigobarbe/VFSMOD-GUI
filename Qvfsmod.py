@@ -197,9 +197,13 @@ class qvfsmod:
         
         #Sensitivity calibration results conditions
         self.dlg_base.results_sensitivity_hydrograph.clicked.connect(self.dlg_sensitivity_calibration_results_hydrograph.show)
+        self.dlg_base.results_sensitivity_sedimentograph.clicked.connect(self.dlg_sensitivity_calibration_results_hydrograph.show)
+        self.dlg_base.results_sensitivity_single.clicked.connect(self.dlg_sensitivity_calibration_results_hydrograph.show)
         self.dlg_sensitivity_calibration_results_hydrograph.browse_file.clicked.connect(self.browse_sensitivity_calibration_results)
         self.dlg_sensitivity_calibration_results_hydrograph.line_file.textChanged.connect(self.udpate_sensitivity_calibration_results)
         self.dlg_base.results_sensitivity_hydrograph.clicked.connect(self.udpate_sensitivity_calibration_results)
+        self.dlg_base.results_sensitivity_sedimentograph.clicked.connect(self.udpate_sensitivity_calibration_results)
+        self.dlg_base.results_sensitivity_single.clicked.connect(self.udpate_sensitivity_calibration_results)
         self.dlg_sensitivity_calibration_results_hydrograph.threshold.textChanged.connect(self.udpate_sensitivity_calibration_results)
         
         
@@ -213,10 +217,26 @@ class qvfsmod:
         self.dlg_base.storm_type.currentIndexChanged.connect(self.user_defined_storm_type)
         
         #Sensitivity for calibration open dialogs
-        self.dlg_base.calibration_sensitivity_hydrograph.clicked.connect(lambda _, b = True:self.dlg_calibration_sensitivity_hydrograph_show(b))
+        self.dlg_base.calibration_sensitivity_hydrograph.clicked.connect(lambda _, b = [True,"hydrograph"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
+        self.dlg_base.calibration_sensitivity_sedimentograph.clicked.connect(lambda _, b = [True,"sedimentograph"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
+        self.dlg_base.calibration_sensitivity_single.clicked.connect(lambda _, b = [True,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
         
         #Text changed in sensitivity analysis for calibration
-        self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.textChanged.connect(lambda _, b = False:self.dlg_calibration_sensitivity_hydrograph_show(b))
+        self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.textChanged.connect(lambda _, b = [False,""]:self.dlg_calibration_sensitivity_hydrograph_show(b))
+        
+        
+        #In single values, when checkbox is changed then update the parameters
+        self.dlg_base.check_total_discharge.stateChanged.connect(lambda _, b = [False,"hydrograph"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
+        self.dlg_base.check_filtered_discharge.stateChanged.connect(lambda _, b = [False,"hydrograph"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
+        
+        self.dlg_base.check_total_sediment.stateChanged.connect(lambda _, b = [False,"sedimentograph"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
+        self.dlg_base.check_filtered_sediment.stateChanged.connect(lambda _, b = [False,"sedimentograph"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
+        
+        self.dlg_base.check_filtered_pesticide.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
+        self.dlg_base.check_pesticide_out.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
+        self.dlg_base.check_pesticide_solid.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
+        self.dlg_base.check_pesticide_liquid.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
+        
         
         #Browse sensitivity for calibration
         self.dlg_calibration_sensitivity_hydrograph.browse_vfs.clicked.connect(self.browse_calibration_sensitivity_hydrograph)
@@ -874,101 +894,266 @@ class qvfsmod:
         #Create .lis file
         self.create_lis_file()
     
-    def dlg_calibration_sensitivity_hydrograph_show(self,show):  
+    def dlg_calibration_sensitivity_hydrograph_show(self,args):  
         """Method to add parameters of the calibration to sensitivity analysis"""
-        #Select inputs that can be selected in sensitivity analysis
-        #First add the ones that area always
-        inputs = ["Vertical Saturated K","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked","Width of the Strip (m)","Buffer length (m)","Filter Manning n (RNA s/m^1/3)","Average Filter Slope"]
-        #Then add the others
-        prj_path = self.obtain_direction_vfsmod(self.dlg_base.vfs_project.text())
-        if os.path.exists(prj_path) and os.path.isfile(prj_path):
-            #Obtain iso path
-            with open(prj_path, "r") as archivo:
-                lineas = archivo.readlines()
-            for i in lineas:
-                if i[:3]=="iso":
-                    iso_path = i.split("=")[-1]
-            if not os.path.isabs(iso_path): #relative path
-                iso_path = os.path.join(os.path.dirname(prj_path), iso_path)
-            iso_path = iso_path.replace("\n", "") #take out the line jumps
-            #Read inputs
-            if os.path.exists(iso_path) and os.path.isfile(iso_path):
-                with open(iso_path, "r") as archivo:
-                    lineas = archivo.readlines()
-                #If second line is a number then we have water table
-                try:
-                    float(lineas[1])
-                    water_table = True
-                except:
-                    water_table = False
-                #Check if there is ansiotropy
-                try:
-                    float(lineas[4])
-                    ansiotropy = True
-                except:
-                    ansiotropy = False
-                #Put and quit parameters depending on input file
-                if water_table:
-                    #Add the rest
-                    ITHETATYPE = int(lineas[2].split()[0])   
-                    IKUNSTYPE = int(lineas[3].split()[0])
-                    #Water table
-                    inputs.append("Water table depth")
-                    #Ansiotropy
-                    if ansiotropy:
-                        inputs.append("Soil saturated hydraulic\nconductivity ansiotropy ratio")
-                    if ITHETATYPE == 1:
-                        #OR
-                        inputs.append("Soil water characteristic OR")
-                        #VGALPHA
-                        inputs.append("Soil water characteristic VGALPHA")
-                        #VGN
-                        inputs.append("Soil water characteristic VGN")
-                        #VGM
-                        inputs.append("Soil water characteristic VGM")
-                    elif ITHETATYPE == 2:
-                        #OR 
-                        inputs.append("Soil water characteristic OR")
-                        #BCALPHA 
-                        inputs.append("Soil water characteristic BCALPHA")
-                        #BCLAMBDA
-                        inputs.append("Soil water characteristic BCLAMDA")
-                    if IKUNSTYPE == 1:
-                        #VGM
-                        inputs.append("Unsaturated hydraulic \nconductivity curve VGM")
-                    elif IKUNSTYPE == 2:
-                        #BCETA 
-                        inputs.append("Unsaturated hydraulic \nconductivity curve BCETA")
-                        #BCALPHA
-                        inputs.append("Unsaturated hydraulic \nconductivity curve BCALPHA")
-                    elif IKUNSTYPE == 3:
-                        #GDALPHA
-                        inputs.append("Unsaturated hydraulic \nconductivity curve GDALPHA")
-                
-                elif not water_table:
-                    inputs.append("Average Suction at the Wetting Front")
-                    inputs.append("Initial Water Content")
-
-        #Delete all elements of vertical layout of scroll area
-        while self.dlg_calibration_sensitivity_hydrograph.verticalLayout_19.count():
-            child = self.dlg_calibration_sensitivity_hydrograph.verticalLayout_19.takeAt(0)
-            if child.widget():
-                child.widget().deleteLater()
-        #Add element
-        for nombre in inputs:
-            boton = QtWidgets.QPushButton(nombre, self.dlg_calibration_sensitivity_hydrograph.scrollAreaWidgetContents_12)
-            boton.setObjectName(nombre)
-            self.dlg_calibration_sensitivity_hydrograph.verticalLayout_19.addWidget(boton)
-            politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-            boton.setSizePolicy(politica_tamaño)
-            boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_calibration_sensitivity(b))
-        
+        #Obtain inputs
+        show, type_calibration = args
+        #Show and add text
         if show:
             #Put project to lineEdit
-            self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.setText(self.dlg_base.vfs_project.text())
+            if type_calibration == "hydrograph":
+                self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.setText(self.dlg_base.vfs_project.text())
+            elif type_calibration == "sedimentograph":
+                self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.setText(self.dlg_base.vfs_file.text())
+            elif type_calibration == "single":
+                self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.setText(self.dlg_base.single_values_line.text())
             
             #Show dialog
             self.dlg_calibration_sensitivity_hydrograph.show()
+        #Select inputs that can be selected in sensitivity analysis
+        #Hydrograph
+        if type_calibration == "hydrograph":
+            #Create variable to know which type of sensitivity analysis for calibration we are doing
+            self.type_calibration_sensitivity = "hydrograph"
+            #First add the ones that area always
+            inputs = ["Vertical Saturated K","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked","Width of the Strip (m)","Buffer length (m)","Filter Manning n (RNA s/m^1/3)","Average Filter Slope"]
+            #Then add the others
+            prj_path = self.obtain_direction_vfsmod(self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.text())
+            if os.path.exists(prj_path) and os.path.isfile(prj_path):
+                #Obtain iso path
+                with open(prj_path, "r") as archivo:
+                    lineas = archivo.readlines()
+                for i in lineas:
+                    if i[:3]=="iso":
+                        iso_path = i.split("=")[-1]
+                if not os.path.isabs(iso_path): #relative path
+                    iso_path = os.path.join(os.path.dirname(prj_path), iso_path)
+                iso_path = iso_path.replace("\n", "") #take out the line jumps
+                #Read inputs
+                if os.path.exists(iso_path) and os.path.isfile(iso_path):
+                    with open(iso_path, "r") as archivo:
+                        lineas = archivo.readlines()
+                    #If second line is a number then we have water table
+                    try:
+                        float(lineas[1])
+                        water_table = True
+                    except:
+                        water_table = False
+                    #Check if there is ansiotropy
+                    try:
+                        float(lineas[4])
+                        ansiotropy = True
+                    except:
+                        ansiotropy = False
+                    #Put and quit parameters depending on input file
+                    if water_table:
+                        #Add the rest
+                        ITHETATYPE = int(lineas[2].split()[0])   
+                        IKUNSTYPE = int(lineas[3].split()[0])
+                        #Water table
+                        inputs.append("Water table depth")
+                        #Ansiotropy
+                        if ansiotropy:
+                            inputs.append("Soil saturated hydraulic\nconductivity ansiotropy ratio")
+                        if ITHETATYPE == 1:
+                            #OR
+                            inputs.append("Soil water characteristic OR")
+                            #VGALPHA
+                            inputs.append("Soil water characteristic VGALPHA")
+                            #VGN
+                            inputs.append("Soil water characteristic VGN")
+                            #VGM
+                            inputs.append("Soil water characteristic VGM")
+                        elif ITHETATYPE == 2:
+                            #OR 
+                            inputs.append("Soil water characteristic OR")
+                            #BCALPHA 
+                            inputs.append("Soil water characteristic BCALPHA")
+                            #BCLAMBDA
+                            inputs.append("Soil water characteristic BCLAMDA")
+                        if IKUNSTYPE == 1:
+                            #VGM
+                            inputs.append("Unsaturated hydraulic \nconductivity curve VGM")
+                        elif IKUNSTYPE == 2:
+                            #BCETA 
+                            inputs.append("Unsaturated hydraulic \nconductivity curve BCETA")
+                            #BCALPHA
+                            inputs.append("Unsaturated hydraulic \nconductivity curve BCALPHA")
+                        elif IKUNSTYPE == 3:
+                            #GDALPHA
+                            inputs.append("Unsaturated hydraulic \nconductivity curve GDALPHA")
+                    
+                    elif not water_table:
+                        inputs.append("Average Suction at the Wetting Front")
+                        inputs.append("Initial Water Content")
+
+                #Delete all elements of vertical layout of scroll area
+                while self.dlg_calibration_sensitivity_hydrograph.verticalLayout_19.count():
+                    child = self.dlg_calibration_sensitivity_hydrograph.verticalLayout_19.takeAt(0)
+                    if child.widget():
+                        child.widget().deleteLater()
+                #Add element
+                for nombre in inputs:
+                    boton = QtWidgets.QPushButton(nombre, self.dlg_calibration_sensitivity_hydrograph.scrollAreaWidgetContents_12)
+                    boton.setObjectName(nombre)
+                    self.dlg_calibration_sensitivity_hydrograph.verticalLayout_19.addWidget(boton)
+                    politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                    boton.setSizePolicy(politica_tamaño)
+                    boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_calibration_sensitivity(b))
+        
+        #Sedimentograph
+        if type_calibration == "sedimentograph":
+            #Create variable to know which type of sensitivity analysis for calibration we are doing
+            self.type_calibration_sensitivity = "sedimentograph"
+            inputs = ["Spacing for grass stems (cm)","Roughness-Grass Mannings n VN","Height of grass (cm)","Roughness-Bare surface Mannings n (Vn2)",
+                "Portion of Particles from incoming sediment \nwith diameter >0.0037 cm","Incoming flow sediment concentration (g/cm^3)",
+                "Porosity of deposited sediment as a fraction","Sediment particle size diameter d50 (cm)","Sediment particle density (g/cm^3)"]
+            #Delete all elements of vertical layout of scroll area
+            while self.dlg_calibration_sensitivity_hydrograph.verticalLayout_19.count():
+                child = self.dlg_calibration_sensitivity_hydrograph.verticalLayout_19.takeAt(0)
+                if child.widget():
+                    child.widget().deleteLater()
+            #Add element
+            for nombre in inputs:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_calibration_sensitivity_hydrograph.scrollAreaWidgetContents_12)
+                boton.setObjectName(nombre)
+                self.dlg_calibration_sensitivity_hydrograph.verticalLayout_19.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_calibration_sensitivity(b))
+                
+        #Single 
+        if type_calibration == "single":
+            #Create variable to know which type of sensitivity analysis for calibration we are doing
+            self.type_calibration_sensitivity = "single"
+            inputs = []
+            #Hydrograph inputs
+            if self.dlg_base.check_total_discharge.isChecked() or self.dlg_base.check_filtered_discharge.isChecked():
+                #First add the ones that area always
+                inputs += ["Vertical Saturated K","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked","Width of the Strip (m)","Buffer length (m)","Filter Manning n (RNA s/m^1/3)","Average Filter Slope"]
+                #Then add the others
+                prj_path = self.obtain_direction_vfsmod(self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.text())
+                if os.path.exists(prj_path) and os.path.isfile(prj_path):
+                    #Obtain iso path
+                    with open(prj_path, "r") as archivo:
+                        lineas = archivo.readlines()
+                    for i in lineas:
+                        if i[:3]=="iso":
+                            iso_path = i.split("=")[-1]
+                    if not os.path.isabs(iso_path): #relative path
+                        iso_path = os.path.join(os.path.dirname(prj_path), iso_path)
+                    iso_path = iso_path.replace("\n", "") #take out the line jumps
+                    #Read inputs
+                    if os.path.exists(iso_path) and os.path.isfile(iso_path):
+                        with open(iso_path, "r") as archivo:
+                            lineas = archivo.readlines()
+                        #If second line is a number then we have water table
+                        try:
+                            float(lineas[1])
+                            water_table = True
+                        except:
+                            water_table = False
+                        #Check if there is ansiotropy
+                        try:
+                            float(lineas[4])
+                            ansiotropy = True
+                        except:
+                            ansiotropy = False
+                        #Put and quit parameters depending on input file
+                        if water_table:
+                            #Add the rest
+                            ITHETATYPE = int(lineas[2].split()[0])   
+                            IKUNSTYPE = int(lineas[3].split()[0])
+                            #Water table
+                            inputs.append("Water table depth")
+                            #Ansiotropy
+                            if ansiotropy:
+                                inputs.append("Soil saturated hydraulic\nconductivity ansiotropy ratio")
+                            if ITHETATYPE == 1:
+                                #OR
+                                inputs.append("Soil water characteristic OR")
+                                #VGALPHA
+                                inputs.append("Soil water characteristic VGALPHA")
+                                #VGN
+                                inputs.append("Soil water characteristic VGN")
+                                #VGM
+                                inputs.append("Soil water characteristic VGM")
+                            elif ITHETATYPE == 2:
+                                #OR 
+                                inputs.append("Soil water characteristic OR")
+                                #BCALPHA 
+                                inputs.append("Soil water characteristic BCALPHA")
+                                #BCLAMBDA
+                                inputs.append("Soil water characteristic BCLAMDA")
+                            if IKUNSTYPE == 1:
+                                #VGM
+                                inputs.append("Unsaturated hydraulic \nconductivity curve VGM")
+                            elif IKUNSTYPE == 2:
+                                #BCETA 
+                                inputs.append("Unsaturated hydraulic \nconductivity curve BCETA")
+                                #BCALPHA
+                                inputs.append("Unsaturated hydraulic \nconductivity curve BCALPHA")
+                            elif IKUNSTYPE == 3:
+                                #GDALPHA
+                                inputs.append("Unsaturated hydraulic \nconductivity curve GDALPHA")
+                        
+                        elif not water_table:
+                            inputs.append("Average Suction at the Wetting Front")
+                            inputs.append("Initial Water Content")
+            
+            #Sedimentograph inputs
+            if self.dlg_base.check_total_sediment.isChecked() or self.dlg_base.check_filtered_sediment.isChecked():
+                inputs += ["Spacing for grass stems (cm)","Roughness-Grass Mannings n VN","Height of grass (cm)","Roughness-Bare surface Mannings n (Vn2)",
+                    "Portion of Particles from incoming sediment \nwith diameter >0.0037 cm","Incoming flow sediment concentration (g/cm^3)",
+                    "Porosity of deposited sediment as a fraction","Sediment particle size diameter d50 (cm)","Sediment particle density (g/cm^3)"]
+            
+            #Pesticide inputs
+            if self.dlg_base.check_filtered_pesticide.isChecked() or self.dlg_base.check_pesticide_out.isChecked() or self.dlg_base.check_pesticide_solid.isChecked() or self.dlg_base.check_pesticide_liquid.isChecked():
+                prj_path = self.obtain_direction_vfsmod(self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.text())
+                if os.path.exists(prj_path) and os.path.isfile(prj_path):
+                    #Obtain prj path
+                    with open(prj_path, "r") as archivo:
+                        lineas = archivo.readlines()
+                    water_quality = False
+                    for i in lineas:
+                        if i[:3]=="iwq":
+                            iwq_path = i.split("=")[-1]
+                            water_quality = True
+                    if water_quality:
+                        inputs += ["Clay in incoming sediment (%)","Topsoil field capacity (m3/m3)","Surface mixing layer thickness (cm)"]
+                        if not os.path.isabs(iwq_path): #relative path
+                            iwq_path = os.path.join(os.path.dirname(prj_path), iwq_path)
+                        iwq_path = iwq_path.replace("\n", "") #take out the line jumps
+                        #Read inputs
+                        if os.path.exists(iwq_path) and os.path.isfile(iwq_path):
+                            with open(iwq_path, "r") as archivo:
+                                lineas = archivo.readlines()
+                            #Obtain value of IKD
+                            IKD = int(lineas[1].split()[0])
+                            #Put and quit parameters depending on input file
+                            if IKD == 0:
+                                #Linear sorption coefficient (VKD)
+                                inputs.append("Linear sorption coefficient (L/Kg)")
+                            elif IKD == 1:
+                                #Adsorption coefficient \n(L/Kg) (KOC)
+                                inputs.append("Adsorption coefficient (L/Kg)")
+                                #Organic carbon\n(%) (OCP) 
+                                inputs.append("Organic Carbon (%)")   
+                    
+            #Delete all elements of vertical layout of scroll area
+            while self.dlg_calibration_sensitivity_hydrograph.verticalLayout_19.count():
+                child = self.dlg_calibration_sensitivity_hydrograph.verticalLayout_19.takeAt(0)
+                if child.widget():
+                    child.widget().deleteLater()
+            #Add element
+            for nombre in inputs:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_calibration_sensitivity_hydrograph.scrollAreaWidgetContents_12)
+                boton.setObjectName(nombre)
+                self.dlg_calibration_sensitivity_hydrograph.verticalLayout_19.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_calibration_sensitivity(b))
+        
     
     def save_vfs_project(self):
         """Method to save vfs project"""
@@ -2026,6 +2211,9 @@ class qvfsmod:
                 self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
                 self.ax_oat.set_ylabel(output_column,size = 14,family="arial",weight = "bold",color = "black")
                 self.ax_oat.set_title("Input-output graph",size = 14,family="arial",weight = "bold",color = "black")
+                #Change background color
+                self.canvas_sensitivity_graph_oat.figure.set_facecolor('#f0f0f0')
+                self.ax_oat.set_facecolor('#f0f0f0')
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
@@ -2043,6 +2231,9 @@ class qvfsmod:
                 self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
                 self.ax_oat.set_ylabel(f"Absolute sensitivity\n{output_column}",size = 14,family="arial",weight = "bold",color = "black")
                 self.ax_oat.set_title("Absolute sensitivity graph",size = 14,family="arial",weight = "bold",color = "black")
+                #Change background color
+                self.canvas_sensitivity_graph_oat.figure.set_facecolor('#f0f0f0')
+                self.ax_oat.set_facecolor('#f0f0f0')
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
@@ -2067,6 +2258,9 @@ class qvfsmod:
                 self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
                 self.ax_oat.set_ylabel(f"Base relative sensitivity\n{output_column}",size = 14,family="arial",weight = "bold",color = "black")
                 self.ax_oat.set_title("Relative sensitivity graph respect to base",size = 14,family="arial",weight = "bold",color = "black")
+                #Change background color
+                self.canvas_sensitivity_graph_oat.figure.set_facecolor('#f0f0f0')
+                self.ax_oat.set_facecolor('#f0f0f0')
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
@@ -2088,6 +2282,9 @@ class qvfsmod:
                 self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
                 self.ax_oat.set_ylabel(f"Relative sensitivity\n{output_column}",size = 14,family="arial",weight = "bold",color = "black")
                 self.ax_oat.set_title("Relative sensitivity graph",size = 14,family="arial",weight = "bold",color = "black")
+                #Change background color
+                self.canvas_sensitivity_graph_oat.figure.set_facecolor('#f0f0f0')
+                self.ax_oat.set_facecolor('#f0f0f0')
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
@@ -3702,7 +3899,7 @@ class qvfsmod:
             self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.setText(text)
         
             #Update input parameters
-            self.dlg_calibration_sensitivity_hydrograph_show(False)
+            self.dlg_calibration_sensitivity_hydrograph_show([False,""])
     
     
     def browse_files_sensitivity_results_sobol(self):
@@ -3839,7 +4036,7 @@ class qvfsmod:
                 self.canvas_sensitivity_graph_calibration.figure.clear()
             self.ax_calibration_sensitivity = self.canvas_sensitivity_graph_calibration.figure.subplots()
             #Obtain output
-            output_column = "NSE"
+            output_column = "Goodnes of fit"
             
             names_inputs = []
             mu_star = []
@@ -3861,7 +4058,7 @@ class qvfsmod:
                 self.ax_calibration_sensitivity.annotate(f'{names_inputs[i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
                     fontweight='bold',fontsize = 8)
             #Linea 1:1
-            line_plot = list(range(-1,int(max(list(mu_star)+list(sigma))*1.05)+2))
+            line_plot = list(range(-1,int(max(list(mu_star)+list(sigma))*1.2)+2))
             self.ax_calibration_sensitivity.plot(line_plot, line_plot, color="red",linestyle="--")
             
             #Threshold line
@@ -3872,14 +4069,17 @@ class qvfsmod:
                 threshold = 0
             
 
-            self.ax_calibration_sensitivity.set_xlim(0,max(list(mu_star)+list(sigma))*1.05)
-            self.ax_calibration_sensitivity.set_ylim(0,max(list(mu_star)+list(sigma))*1.05)
+            self.ax_calibration_sensitivity.set_xlim(0,max(list(mu_star)+list(sigma))*1.2)
+            self.ax_calibration_sensitivity.set_ylim(0,max(list(mu_star)+list(sigma))*1.2)
             #Labels
-            self.ax_calibration_sensitivity.set_xlabel("Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 14,family="arial",weight = "bold",color = "black")
-            self.ax_calibration_sensitivity.set_ylabel("Standard Deviation of Elementary Effects ($\sigma_{i}$)",size = 14,family="arial",weight = "bold",color = "black")
-            self.ax_calibration_sensitivity.set_title("Morris sensitivity analysis indexes", size=16, family="arial", weight="bold", color="black")
+            self.ax_calibration_sensitivity.set_xlabel("Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 12,family="arial",weight = "bold",color = "black")
+            self.ax_calibration_sensitivity.set_ylabel("Standard Deviation of \nElementary Effects ($\sigma_{i}$)",size = 12,family="arial",weight = "bold",color = "black")
+            self.ax_calibration_sensitivity.set_title("Morris sensitivity analysis indexes", size=14, family="arial", weight="bold", color="black")
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
             self.canvas_sensitivity_graph_calibration.figure.subplots_adjust(left=0.2, bottom=0.2)
+            #Change background color
+            self.canvas_sensitivity_graph_calibration.figure.set_facecolor('#f0f0f0')
+            self.ax_calibration_sensitivity.set_facecolor('#f0f0f0')
             #Draw canvas
             self.canvas_sensitivity_graph_calibration.draw()
             
@@ -3895,6 +4095,8 @@ class qvfsmod:
                     item = QTableWidgetItem(str(data_ordered[fila][columna]))
                     self.dlg_sensitivity_calibration_results_hydrograph.tableWidget.setItem(fila, columna, item)
                     item.setTextAlignment(Qt.AlignCenter)
+            #Change width of first column
+            self.dlg_water_quality.tableWidget.setColumnWidth(0, 400)
     
     
     def update_sensitivity_graph_global(self):
@@ -3937,6 +4139,7 @@ class qvfsmod:
                 names_inputs = []
                 mu_star = []
                 sigma = []
+                mu = []
                 for i in range(len(lineas)):
                     if lineas[i] == output_column+ '\n':
                         for k in lineas[i+1:]:
@@ -3945,24 +4148,50 @@ class qvfsmod:
                             names_inputs.append(k.split(":")[0])
                             mu_star.append(float(k.split(":")[1].split("_")[0]))
                             sigma.append(float(k.split(":")[1].split("_")[1]))
+                            mu.append(float(k.split(":")[1].split("_")[2]))
                             
                 # Graficar los puntos con color granate y agregar etiquetas
+                add_label_monotonic = True # add label only once
+                add_label_non_monotonic = True # add label only once
                 for i, (x, y) in enumerate(zip(mu_star, sigma)):
                     if np.isnan(x):x = 0
                     if np.isnan(y):y = 0
-                    self.ax.scatter(x, y, marker="o", color="maroon")
-                    self.ax.annotate(f'{names_inputs[i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
-                        fontweight='bold',fontsize = 8)
+                    #If the difference between mu and mu star is higher than 5%, then is non-monotonic
+                    if (abs(mu_star[i])-abs(mu[i]))/abs(mu_star[i])>0.05:
+                        if add_label_non_monotonic: # add label only once
+                            self.ax.scatter(x, y, color="blue", marker="*", label="Non-Monotonic")
+                            add_label_non_monotonic = False
+                        else:
+                            self.ax.scatter(x, y, color="blue", marker="*")
+                        self.ax.annotate(f'{names_inputs[i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
+                            fontweight='bold',fontsize = 8)
+                    else:
+                        if add_label_monotonic: # add label only once
+                            self.ax.scatter(x, y, marker="o", color="maroon",label="Monotonic")
+                            add_label_monotonic = False
+                        else:
+                            self.ax.scatter(x, y, marker="o", color="maroon")
+                            
+                        self.ax.annotate(f'{names_inputs[i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
+                            fontweight='bold',fontsize = 8)
+                        
                 #Linea 1:1
-                line_plot = list(range(-1,int(max(list(mu_star)+list(sigma))*1.05)+2))
+                line_plot = list(range(-1,int(max(list(mu_star)+list(sigma))*1.2)+2))
                 self.ax.plot(line_plot, line_plot, color="red",linestyle="--")
-
-                self.ax.set_xlim(0,max(list(mu_star)+list(sigma))*1.05)
-                self.ax.set_ylim(0,max(list(mu_star)+list(sigma))*1.05)
+                
+                self.ax.set_xlim(0,max(list(mu_star)+list(sigma))*1.2)
+                self.ax.set_ylim(0,max(list(mu_star)+list(sigma))*1.2)
+                
+                #Add legend
+                legend = self.ax.legend(loc="upper right")
+                legend.get_frame().set_facecolor('#f0f0f0')
                 #Labels
                 self.ax.set_xlabel("Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 14,family="arial",weight = "bold",color = "black")
                 self.ax.set_ylabel("Standard Deviation of Elementary Effects ($\sigma_{i}$)",size = 14,family="arial",weight = "bold",color = "black")
                 self.ax.set_title("Morris sensitivity analysis indexes", size=16, family="arial", weight="bold", color="black")
+                #Change background color
+                self.canvas_sensitivity_graph.figure.set_facecolor('#f0f0f0')
+                self.ax.set_facecolor('#f0f0f0')
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_sensitivity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
                 #Draw canvas
@@ -4019,6 +4248,10 @@ class qvfsmod:
                 self.ax_fast[1].set_title('FAST First order index (S1)', fontsize=10)
                 self.ax_fast[1].tick_params(axis='x', rotation=20,labelsize = 8)
                 
+                #Change background color
+                self.canvas_sensitivity_graph.figure.set_facecolor('#f0f0f0')
+                self.ax_fast[0].set_facecolor('#f0f0f0')
+                self.ax_fast[1].set_facecolor('#f0f0f0')
                 
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_sensitivity_graph.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
@@ -4077,6 +4310,10 @@ class qvfsmod:
                 self.ax_sobol[1].set_title('Sobol First order index (S1)', fontsize=10)
                 self.ax_sobol[1].tick_params(axis='x', rotation=20,labelsize = 8)
                 
+                #Change background color
+                self.canvas_sensitivity_graph.figure.set_facecolor('#f0f0f0')
+                self.ax_sobol[0].set_facecolor('#f0f0f0')
+                self.ax_sobol[1].set_facecolor('#f0f0f0')
                 
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_sensitivity_graph.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
@@ -4177,7 +4414,7 @@ class qvfsmod:
           self.param_values, self.dic_data, 
           self.sensitivity_parameters, self.working_directory, 
           self.obtain_direction_vfsmod(self.vfs_sensitivity_file),self.water_quality,
-          self.hydrograph_calibration_df) for i in range(len(self.param_values))]
+          self.observed_data,self.type_calibration_sensitivity) for i in range(len(self.param_values))]
         self.progress_dialog = QProgressDialog("Starting sensitivity analysis...", "Cancel", 0, len(args_list))
         self.progress_dialog.setWindowModality(Qt.WindowModal)
         self.progress_dialog.setWindowTitle("Progress")
@@ -4266,8 +4503,13 @@ class qvfsmod:
         
         self.vfs_sensitivity_file = self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.text()
         
-        #Obtain dataframe of hydrograph
-        self.hydrograph_calibration_df = self.obtain_df_hydrograph_calibration()
+        #Obtain dataframe of hydrograph or sedimentograph. We 
+        if self.type_calibration_sensitivity == "hydrograph":
+            self.observed_data = self.obtain_df_hydrograph_calibration()
+        elif self.type_calibration_sensitivity == "sedimentograph":
+            self.observed_data = self.obtain_df_sedimentograph_calibration()
+        elif self.type_calibration_sensitivity == "single":
+            self.observed_data = self.obtain_outputs_to_calibrate_single()
         
         #Create problem variable
         self.problem = {'num_vars': len(self.dic_data),'names': list(self.dic_data.keys()),'bounds': [x[1] for x in self.dic_data.values()],"dists":[x[0] for x in self.dic_data.values()]}
@@ -4379,7 +4621,6 @@ class qvfsmod:
         
         #Delete all files created for paralelization of sensitivity analysis
         self.delete_files_sensitivity_calibration()
-        
         #Save results in CSV
         path = self.obtain_direction_vfsmod(self.dlg_calibration_sensitivity_hydrograph.file_save.text())
         try:
@@ -4447,7 +4688,7 @@ class qvfsmod:
                         f.write(f"{i}" + '\n')
                         si = analyze_morris(self.problem,np.array(self.param_values),np.array(self.results_sensitivity[i]))
                         for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
-                            f.write(f"{input_parameter}:{si['mu_star'][input_parameter_k]}_{si['sigma'][input_parameter_k]}" + '\n')
+                            f.write(f"{input_parameter}:{si['mu_star'][input_parameter_k]}_{si['sigma'][input_parameter_k]}_{si['mu'][input_parameter_k]}" + '\n')
                     f.write("----------------------------------------------------------------------" + '\n')
             
             elif self.dlg_base.fast.isChecked():
@@ -4856,6 +5097,143 @@ class qvfsmod:
             f.write("{} \n".format(linea_dos))
             f.write("{} \n".format(linea_tres))
             f.close()
+    
+    def move_files_sensitivity_analysis(self):
+        """Method to move files to the corresponding folders for sensitiviy analysis"""
+        #Prj
+        prj_file = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\sensitivity.prj"
+        #Check if water quality is simulated
+        with open(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity.text()), "r") as archivo:
+            lineas = archivo.readlines()
+        self.water_quality = False
+        for i in lineas:
+            if i[:3]=="iwq":
+                self.water_quality = True
+            
+        #Create file
+        with open(prj_file, 'w') as archivo:
+            archivo.write(f"ikw=inputs\\sensitivity.ikw  \n")
+            archivo.write(f"iso=inputs\\sensitivity.iso  \n")
+            archivo.write(f"igr=inputs\\sensitivity.igr  \n")
+            archivo.write(f"isd=inputs\\sensitivity.isd  \n")
+            archivo.write(f"irn=inputs\\sensitivity.irn  \n")
+            archivo.write(f"iro=inputs\\sensitivity.iro  \n")
+            if self.water_quality:
+                archivo.write(f"iwq=inputs\\sensitivity.iwq  \n")
+            archivo.write(f"og1=output\\sensitivity.og1  \n")
+            archivo.write(f"og2=output\\sensitivity.og2  \n")
+            archivo.write(f"ohy=output\\sensitivity.ohy  \n")
+            archivo.write(f"osm=output\\sensitivity.osm  \n")
+            archivo.write(f"osp=output\\sensitivity.osp  \n")
+            if self.water_quality:
+                archivo.write(f"owq=output\\sensitivity.owq  \n")
+        
+        #UH
+        lis_file = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\sensitivity.lis"
+        #Create file
+        with open(lis_file, 'w') as archivo:
+            archivo.write(f"inp=inputs\\sensitivity.inp  \n")
+            archivo.write(f"iro=inputs\\sensitivity.iro  \n")
+            archivo.write(f"irn=inputs\\sensitivity.irn  \n")
+            archivo.write(f"isd=inputs\\sensitivity.isd  \n")
+            archivo.write(f"out=inputs\\sensitivity.out  \n")
+            archivo.write(f"hyt=inputs\\sensitivity.hyt  \n")
+        
+        #REST OF THE FILES
+        #Function to copy and paste the inputs to create the files to use in the sensitivity analysis
+        def copy_paste(process,type_input):
+            ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\sensitivity\\inputs\\sensitivity.{type_input}" 
+            if process == "UH":
+                ruta = self.obtain_direction_vfsmod(self.dlg_base.uh_file_sensitivity.text())
+            elif process == "VFS":
+                ruta = self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity.text())
+            if os.path.exists(ruta) and os.path.isfile(ruta):
+                #First we open .prj and obtain the direction of the copying file
+                with open(ruta, "r") as archivo:
+                    lineas = archivo.readlines()
+                for i in lineas:
+                    if i[:3]==type_input:
+                        ikw = i.split("=")[-1]
+                if not os.path.isabs(ikw): #relative path
+                    ikw = os.path.join(os.path.dirname(ruta), ikw)
+                ikw = ikw.replace("\n", "") #take out the line jumps
+                shutil.copyfile(ikw, ruta_pegar)
+        #INP
+        copy_paste("UH","inp")
+        #OUT
+        copy_paste("UH","out")
+        #HYT
+        copy_paste("UH","hyt")
+        
+        #IKW
+        copy_paste("VFS","ikw")
+        #ISO
+        copy_paste("VFS","iso")
+        #IGR
+        copy_paste("VFS","igr")
+        #ISD
+        copy_paste("VFS","isd")
+        #IRN
+        copy_paste("VFS","irn")
+        #IRO
+        copy_paste("VFS","iro")
+        #IWQ
+        if self.water_quality:
+            copy_paste("VFS","iwq")
+        
+        #NOW WE REPLICATE THE FILES AS MUCH AS CORES ARE IN THE COMPUTER
+        self.number_cores = psutil.cpu_count(logical=False)
+        
+        #Replicate prj as much as cores are
+        for core in range(self.number_cores*5):#we do *5 because if not there can be problems of overlapping:processes executing files that are already executing
+            with open(prj_file, 'r') as file:
+                lineas = file.readlines()
+            lineas = [linea.replace("sensitivity",f"sensitivity_{core}") for linea in lineas]
+            new_filepath = prj_file.replace("sensitivity.prj",f"sensitivity_{core}.prj")
+            with open(new_filepath, 'w') as archivo:
+                for i in lineas:
+                    archivo.write(i)
+        #Replicate lis as much as cores are
+        for core in range(self.number_cores*5):
+            with open(lis_file, 'r') as file:
+                lineas = file.readlines()
+            lineas = [linea.replace("sensitivity",f"sensitivity_{core}") for linea in lineas]
+            new_filepath = lis_file.replace("sensitivity.lis",f"sensitivity_{core}.lis")
+            with open(new_filepath, 'w') as archivo:
+                for i in lineas:
+                    archivo.write(i)
+        #Move replicated input files 
+        carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity"
+        folder_path = Path(carpeta+"\\inputs")
+        files = [f.name for f in folder_path.iterdir() if f.is_file() and "_" not in f.name]
+        for i in range(self.number_cores*5):
+            for k in files:
+                shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("sensitivity",f"sensitivity_{i}"))
+        #Replicate executables
+        carpeta_bat = self.plugin_directory+"\\executables"
+        for core in range(self.number_cores*5):
+            #Execution UH
+            shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_uh_{core}.bat")
+            f = open(carpeta_bat+"\\"+f"execution_uh_{core}.bat","w+")
+            linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\sensitivity\\"')
+            linea_dos = f'"{self.plugin_directory}\\executables\\uh" sensitivity_{core}.lis'
+            linea_tres = "Pause"
+            f.write("{} \n".format(linea_uno))
+            f.write("{} \n".format(linea_dos))
+            f.write("{} \n".format(linea_tres))
+            f.close()
+            #Execution VFS
+            shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_vfs_{core}.bat")
+            f = open(carpeta_bat+"\\"+f"execution_vfs_{core}.bat","w+")
+            linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\sensitivity\\"')
+            linea_dos = f'"{self.plugin_directory}\\executables\\vfsm" sensitivity_{core}.prj'
+            linea_tres = "Pause"
+            f.write("{} \n".format(linea_uno))
+            f.write("{} \n".format(linea_dos))
+            f.write("{} \n".format(linea_tres))
+            f.close()
+    
+    
     
     def move_files_sensitivity_analysis_calibration(self):
         """Method to move files to the corresponding folders for sensitiviy analysis for calibration"""
@@ -6714,8 +7092,11 @@ class qvfsmod:
     def obtain_df_sedimentograph_calibration(self):
         """Method to obtain the dataframe of the sedimentograph to be used in the calibration"""
         ruta = self.obtain_direction_vfsmod(self.dlg_base.sedimentograph_file.text())
-        with open(ruta, "r") as archivo:
-            lineas = archivo.readlines()
+        try:
+            with open(ruta, "r") as archivo:
+                lineas = archivo.readlines()
+        except FileNotFoundError:
+            self.warning_message("File for observed sedimentograph not found")
         sediment = []
         times = []
         for i in lineas:
@@ -7278,6 +7659,7 @@ class qvfsmod:
             pesticide_output = obtain_result_owq(" Pesticide output (mo)\n")
             normalized = (pesticide_output - float(self.dlg_base.line_pesticide_out.text()))/float(self.dlg_base.line_pesticide_out.text())
             objective_function.append(normalized)
+            self.calibration_single_results["Pesticide out the filter"] = pesticide_output
         
         if "Pesticide outflow in solid phase" in self.output_calibrate_single.keys():
             pesticide_solid = obtain_result_owq(" Pesticide outflow in solid phase (mop)\n")
@@ -12458,22 +12840,22 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
 #PARALELIZATION OF SENSITIVITY FOR CALIBRATION
 def wrapper_sensitivity_paralelization_calibration(args):
     """Esta función envuelve la función original para manejar múltiples argumentos"""
-    i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality, hidrograma = args
-    return sensitivity_paralelization_calibration(i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality,hidrograma)
+    i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality, hidrograma, type_calibration = args
+    return sensitivity_paralelization_calibration(i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality,hidrograma,type_calibration)
 
 
-def sensitivity_paralelization_calibration(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file,water_quality,hidrograma):
+def sensitivity_paralelization_calibration(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file,water_quality,hidrograma,type_calibration):
     '''Function to run in paralell sensitivity analysis'''
     try: #if there is an error execution then return a dataframe with error
         execution = execution_sensitivity_analysis_calibration(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file)
         #Save results
         if execution == "error":
-            return save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality ,hidrograma,error = True)
+            return save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality ,hidrograma,type_calibration,error = True)
             
         else:
-            return save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality ,hidrograma,error = False)
+            return save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality ,hidrograma,type_calibration,error = False)
     except:
-        return save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality ,hidrograma,error = True)
+        return save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality ,hidrograma,type_calibration,error = True)
    
     
 
@@ -12703,73 +13085,231 @@ def correct_irn_file_calibration(path):
         archivo.write(contenido)
 
 
-def save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality,hidrograma,error):
+def save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality,hidrograma,type_calibration,error):
     """Function to save sensitivity results"""
     #Obtain the values
     if error:
         #Dataframe to concatenate to the sensitivity results
-        df_conc = pd.DataFrame(data = {"Error":[1],"NSE":[np.nan]})
+        df_conc = pd.DataFrame(data = {"Error":[1],"Goodnes of fit":[np.nan]})
 
     else:
-    
-        ruta = working_directory+f"\\inverse\\output\\inverse_{core}.ohy"
-        with open(ruta, "r") as archivo:
-            lineas = archivo.readlines()
-        discharge = []
-        times = []
-        for i in range(len(lineas)):
-            if lineas[i]=="     TIME     OUTFLOW    CUM.FLOW     ie =r-f     INFLOW    CUM.INFLOW       f          z        ITER\n":
-                for k in range(i+3,len(lineas)):
-                    times.append(float(lineas[k].split()[0]))
-                    discharge.append(float(lineas[k].split()[1]))
-        calibration_df_progress = pd.DataFrame(data = {"Time":times,"Discharge":discharge})
-        
-        
-        #Obtain interpolated dataframe
-        calibration_df_progress.set_index('Time', inplace=True)
-        hydrograph_calibration_df = hidrograma
-        hydrograph_calibration_df.set_index('Time', inplace=True)
-        
-        #Do the interpolation
-        # Crear un nuevo DataFrame para los resultados
-        data_aligned = pd.DataFrame(index=calibration_df_progress.index)
-        
-        
-        # Rellenar b_aligned con los valores de b o interpolados
-        for idx in calibration_df_progress.index:
-            if idx in hydrograph_calibration_df.index:
-                data_aligned.loc[idx, 'Discharge'] = hydrograph_calibration_df.loc[idx, 'Discharge']
-            else:
-                lower_index = hydrograph_calibration_df.index[hydrograph_calibration_df.index < idx]
-                upper_index = hydrograph_calibration_df.index[hydrograph_calibration_df.index > idx]
-                
-                if len(lower_index) > 0 and len(upper_index) > 0:
-                    # Hay índices válidos para interpolar
-                    lower_idx = lower_index[-1]  # Último índice inferior
-                    upper_idx = upper_index[0]    # Primer índice superior
-                    
-                    # Interpolación lineal
-                    lower_value = hydrograph_calibration_df.loc[lower_idx, 'Discharge']
-                    upper_value = hydrograph_calibration_df.loc[upper_idx, 'Discharge']
-                    # Calcular el valor interpolado
-                    interpolated_value = lower_value + (upper_value - lower_value) * ((idx - lower_idx) / (upper_idx - lower_idx))
-                    data_aligned.loc[idx, 'Discharge'] = interpolated_value
+        if type_calibration == "hydrograph":
+            ruta = working_directory+f"\\inverse\\output\\inverse_{core}.ohy"
+            with open(ruta, "r") as archivo:
+                lineas = archivo.readlines()
+            discharge = []
+            times = []
+            for i in range(len(lineas)):
+                if lineas[i]=="     TIME     OUTFLOW    CUM.FLOW     ie =r-f     INFLOW    CUM.INFLOW       f          z        ITER\n":
+                    for k in range(i+3,len(lineas)):
+                        times.append(float(lineas[k].split()[0]))
+                        discharge.append(float(lineas[k].split()[1]))
+            calibration_df_progress = pd.DataFrame(data = {"Time":times,"Discharge":discharge})
+            
+            
+            #Obtain interpolated dataframe
+            calibration_df_progress.set_index('Time', inplace=True)
+            hydrograph_calibration_df = hidrograma
+            hydrograph_calibration_df.set_index('Time', inplace=True)
+            
+            #Do the interpolation
+            # Crear un nuevo DataFrame para los resultados
+            data_aligned = pd.DataFrame(index=calibration_df_progress.index)
+            
+            
+            # Rellenar b_aligned con los valores de b o interpolados
+            for idx in calibration_df_progress.index:
+                if idx in hydrograph_calibration_df.index:
+                    data_aligned.loc[idx, 'Discharge'] = hydrograph_calibration_df.loc[idx, 'Discharge']
                 else:
-                    # Si no hay índices cercanos, dejar como NaN
-                    data_aligned.loc[idx, 'Discharge'] = float('nan')
+                    lower_index = hydrograph_calibration_df.index[hydrograph_calibration_df.index < idx]
+                    upper_index = hydrograph_calibration_df.index[hydrograph_calibration_df.index > idx]
+                    
+                    if len(lower_index) > 0 and len(upper_index) > 0:
+                        # Hay índices válidos para interpolar
+                        lower_idx = lower_index[-1]  # Último índice inferior
+                        upper_idx = upper_index[0]    # Primer índice superior
+                        
+                        # Interpolación lineal
+                        lower_value = hydrograph_calibration_df.loc[lower_idx, 'Discharge']
+                        upper_value = hydrograph_calibration_df.loc[upper_idx, 'Discharge']
+                        # Calcular el valor interpolado
+                        interpolated_value = lower_value + (upper_value - lower_value) * ((idx - lower_idx) / (upper_idx - lower_idx))
+                        data_aligned.loc[idx, 'Discharge'] = interpolated_value
+                    else:
+                        # Si no hay índices cercanos, dejar como NaN
+                        data_aligned.loc[idx, 'Discharge'] = float('nan')
+            
+            
+            #Calculate objective function
+            diferencias = calibration_df_progress['Discharge'] - data_aligned['Discharge']
+            cuadrados_diferencias = diferencias ** 2
+            suma_cuadrados_diferencias = cuadrados_diferencias.sum()
+            media_observados = data_aligned['Discharge'].mean()
+            diferencias_media_observados = data_aligned['Discharge'] - media_observados
+            cuadrados_diferencias_observados = diferencias_media_observados ** 2
+            suma_cuadrados_diferencias_observados = cuadrados_diferencias_observados.sum()
+            nash_sutcliffe_efficiency = 1 - (suma_cuadrados_diferencias / suma_cuadrados_diferencias_observados)
+            
+            df_conc = pd.DataFrame(data = {"Error":[0],"Goodnes of fit":[nash_sutcliffe_efficiency]})
         
-        
-        #Calculate objective function
-        diferencias = calibration_df_progress['Discharge'] - data_aligned['Discharge']
-        cuadrados_diferencias = diferencias ** 2
-        suma_cuadrados_diferencias = cuadrados_diferencias.sum()
-        media_observados = data_aligned['Discharge'].mean()
-        diferencias_media_observados = data_aligned['Discharge'] - media_observados
-        cuadrados_diferencias_observados = diferencias_media_observados ** 2
-        suma_cuadrados_diferencias_observados = cuadrados_diferencias_observados.sum()
-        nash_sutcliffe_efficiency = 1 - (suma_cuadrados_diferencias / suma_cuadrados_diferencias_observados)
-        
-        df_conc = pd.DataFrame(data = {"Error":[0],"NSE":[nash_sutcliffe_efficiency]})
+        elif type_calibration == "sedimentograph":
+            ruta = working_directory+f"\\inverse\\output\\inverse_{core}.og1"
+            with open(ruta, "r") as archivo:
+                lineas = archivo.readlines()
+            sediment = []
+            times = []
+            for i in range(len(lineas)):
+                if lineas[i]=="  Time      Y(t)     X1(t)     X2(t)      L(t)      Se       gsi       gsI       gs2       gso     Cum.gsi Wedge_mass Lower_mass  Cum.gso     f        frac      DEP      CDEP       Tt\n":
+                    for k in range(i+3,len(lineas)):
+                        times.append(float(lineas[k].split()[0]))
+                        sediment.append(float(lineas[k].split()[9]))
+            calibration_df_progress = pd.DataFrame(data = {"Time":times,"Sediment":sediment})
+            #Then obtain the width of the filter
+            with open(working_directory+f"\\inverse\\output\\inverse_{core}.osp", "r") as archivo:
+                lineas = archivo.readlines()
+            for i in lineas:
+                if i.split("=")[-1]==" Filter Strip Width (input)\n":
+                    for k in i.split("=")[0].split(" "):
+                        try:
+                            width = float(k)
+                            break
+                        except:
+                            pass
+            calibration_df_progress["Sediment"] = calibration_df_progress["Sediment"]*width*100
+            
+            #Obtain interpolated dataframe
+            calibration_df_progress.set_index('Time', inplace=True)
+            sedimentograph_calibration_df = hidrograma
+            sedimentograph_calibration_df.set_index('Time', inplace=True)
+            
+            #Do the interpolation
+            # Crear un nuevo DataFrame para los resultados
+            data_aligned = pd.DataFrame(index=calibration_df_progress.index)
+            
+            # Rellenar b_aligned con los valores de b o interpolados
+            for idx in calibration_df_progress.index:
+                if idx in sedimentograph_calibration_df.index:
+                    data_aligned.loc[idx, 'Sediment'] = sedimentograph_calibration_df.loc[idx, 'Sediment']
+                else:
+                    lower_index = sedimentograph_calibration_df.index[sedimentograph_calibration_df.index < idx]
+                    upper_index = sedimentograph_calibration_df.index[sedimentograph_calibration_df.index > idx]
+                    
+                    if len(lower_index) > 0 and len(upper_index) > 0:
+                        # Hay índices válidos para interpolar
+                        lower_idx = lower_index[-1]  # Último índice inferior
+                        upper_idx = upper_index[0]    # Primer índice superior
+                        
+                        # Interpolación lineal
+                        lower_value = sedimentograph_calibration_df.loc[lower_idx, 'Sediment']
+                        upper_value = sedimentograph_calibration_df.loc[upper_idx, 'Sediment']
+                        # Calcular el valor interpolado
+                        interpolated_value = lower_value + (upper_value - lower_value) * ((idx - lower_idx) / (upper_idx - lower_idx))
+                        data_aligned.loc[idx, 'Sediment'] = interpolated_value
+                    else:
+                        # Si no hay índices cercanos, dejar como NaN
+                        data_aligned.loc[idx, 'Sediment'] = float('nan')
+            
+            
+            #Calculate objective function
+            diferencias = calibration_df_progress['Sediment'] - data_aligned['Sediment']
+            cuadrados_diferencias = diferencias ** 2
+            suma_cuadrados_diferencias = cuadrados_diferencias.sum()
+            media_observados = data_aligned['Sediment'].mean()
+            diferencias_media_observados = data_aligned['Sediment'] - media_observados
+            cuadrados_diferencias_observados = diferencias_media_observados ** 2
+            suma_cuadrados_diferencias_observados = cuadrados_diferencias_observados.sum()
+            nash_sutcliffe_efficiency = 1 - (suma_cuadrados_diferencias / suma_cuadrados_diferencias_observados)
+            df_conc = pd.DataFrame(data = {"Error":[0],"Goodnes of fit":[nash_sutcliffe_efficiency]})
+    
+        elif type_calibration == "single":
+            
+            #Create variable to add objective function
+            objective_function = []
+            #Function to obtain results from osp
+            ruta = working_directory+f"\\inverse\\output\\inverse_{core}.osp"
+            with open(ruta, "r") as archivo:
+                lineas = archivo.readlines()
+            def obtain_result_osp(string):
+                for i in lineas:
+                    if i.split("=")[-1]==string:
+                        for k in i.split("=")[0].split(" "):
+                            try:
+                                output = float(k)
+                                break
+                            except:
+                                pass
+                return output
+            
+            #Same for owq
+            if water_quality:
+                ruta = working_directory+f"\\inverse\\output\\inverse_{core}.owq"
+                with open(ruta, "r") as archivo:
+                    lineas_owq = archivo.readlines()
+                    
+                def obtain_result_owq(string):
+                    for i in lineas_owq:
+                        if i.split("=")[-1]==string:
+                            for k in i.split("=")[0].split(" "):
+                                try:
+                                    output = float(k)
+                                    return output
+                                except:
+                                    pass
+            
+            #Obtain results
+            if "Total discharge" in hidrograma.keys():
+                total_discharge = obtain_result_osp(" Total Runoff out from Filter\n")
+                normalized = (total_discharge - hidrograma["Total discharge"])/hidrograma["Total discharge"]
+                objective_function.append(normalized)
+                
+            if "Filtered discharge" in hidrograma.keys():
+                runoff_delivery = obtain_result_osp(" Runoff Delivery Ratio\n")
+                filtered_discharge = 1 -runoff_delivery
+                normalized = (filtered_discharge - hidrograma["Filtered discharge"])/hidrograma["Filtered discharge"]
+                objective_function.append(normalized)
+            
+            if "Total sediment" in hidrograma.keys():
+                total_sediment = obtain_result_osp(" Mass Sediment Output from Filter\n")
+                normalized = (total_sediment - hidrograma["Total sediment"])/hidrograma["Total sediment"]
+                objective_function.append(normalized)
+            
+            if "Filtered sediment" in hidrograma.keys():
+                sediment_delivery = obtain_result_osp(" Sediment Delivery Ratio\n")
+                filtered_sediment = 1 -sediment_delivery
+                normalized = (filtered_sediment - hidrograma["Filtered sediment"])/hidrograma["Filtered sediment"]
+                objective_function.append(normalized)
+            
+            if "Filtered pesticide" in hidrograma.keys():
+                pesticide_input = obtain_result_owq(" Pesticide input (mi)\n")
+                pesticide_output = obtain_result_owq(" Pesticide output (mo)\n")
+                filtered_pesticide = (pesticide_input-pesticide_output)/(pesticide_input)
+                normalized = (filtered_pesticide - hidrograma["Filtered pesticide"])/hidrograma["Filtered pesticide"]
+                objective_function.append(normalized)
+                
+            if "Pesticide out the filter" in hidrograma.keys():
+                pesticide_output = obtain_result_owq(" Pesticide output (mo)\n")
+                normalized = (pesticide_output - hidrograma["Pesticide out the filter"])/hidrograma["Pesticide out the filter"]
+                objective_function.append(normalized)
+            
+            if "Pesticide outflow in solid phase" in hidrograma.keys():
+                pesticide_solid = obtain_result_owq(" Pesticide outflow in solid phase (mop)\n")
+                normalized = (pesticide_solid - hidrograma["Pesticide outflow in solid phase"])/hidrograma["Pesticide outflow in solid phase"]
+                objective_function.append(normalized)
+            
+            if "Pesticide outflow in liquid phase" in hidrograma.keys():
+                pesticide_liquid = obtain_result_owq(" Pesticide outflow in liquid phase (mod)\n")
+                normalized = (pesticide_liquid - hidrograma["Pesticide outflow in liquid phase"])/hidrograma["Pesticide outflow in liquid phase"]
+                objective_function.append(normalized)
+            
+            #Calculate objective function
+            value = 0
+            for i in objective_function:
+                value += i**2
+            value = (value**0.5)/len(objective_function)
+            
+            df_conc = pd.DataFrame(data = {"Error":[0],"Goodnes of fit":[value]})
+            
 
     #Add the values of inputs 
     for k,i in enumerate(dic_data.keys()):

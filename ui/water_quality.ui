@@ -719,7 +719,7 @@ of residues</string>
             </item>
            </layout>
           </item>
-          <item row="5" column="0" colspan="2">
+          <item row="5" column="0">
            <widget class="QTableWidget" name="tableWidget">
             <property name="minimumSize">
              <size>
@@ -803,6 +803,20 @@ of residues</string>
              </property>
             </item>
            </widget>
+          </item>
+          <item row="5" column="1">
+           <layout class="QHBoxLayout" name="horizontalLayout_12">
+            <item>
+             <widget class="QLabel" name="label_23">
+              <property name="text">
+               <string>Number of pesticides</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="number_pesticides"/>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>

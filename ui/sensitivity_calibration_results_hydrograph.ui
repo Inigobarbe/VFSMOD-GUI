@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>819</width>
+    <width>890</width>
     <height>458</height>
    </rect>
   </property>
@@ -133,7 +133,11 @@ QTableCornerButton::section {
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="line_file"/>
+      <widget class="QLineEdit" name="line_file">
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="browse_file">
@@ -179,15 +183,18 @@ QTableCornerButton::section {
       <widget class="QLineEdit" name="threshold">
        <property name="minimumSize">
         <size>
-         <width>197</width>
+         <width>0</width>
          <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>16777215</width>
+         <width>100</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
@@ -208,6 +215,9 @@ QTableCornerButton::section {
    </item>
    <item row="2" column="0">
     <widget class="QTableWidget" name="tableWidget">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <column>
       <property name="text">
        <string>Parameter</string>
