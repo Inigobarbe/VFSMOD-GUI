@@ -15,8 +15,8 @@
 
 from PyQt5 import QtWidgets,QtGui
 from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QThread,pyqtSignal
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QAction, QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy,QAction, QMenu,QCheckBox  
+from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtWidgets import QAction, QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy,QAction, QMenu,QCheckBox, QFrame,QGridLayout
 # Initialize Qt resources from file resources.py
 from resources import *
 # Import the code for the dialog
@@ -852,6 +852,10 @@ class qvfsmod:
         #Add filepaths to vfs when prj is changed
         self.dlg_base.line_project_vfsmod.textChanged.connect(self.add_values_vfs_outputs_dialog)
         
+        #Put as many frames as pesticides are in the dialog
+        self.number_pesticides_dialog = 1
+        self.dlg_water_quality.number_pesticides.textChanged.connect(self.add_pesticides_dialog)
+        
         #Default values
         self.default_values()
         
@@ -879,6 +883,77 @@ class qvfsmod:
         #Update uncertainity graph
         self.dlg_base.csv_results_uncertainity.textChanged.connect(self.show_graph_sensitivity_uncertainity)
     
+    def add_pesticides_dialog(self):
+        """Method to add widgets to pesticide dialog when more than a pesticide species is added"""
+        try:
+            number_pesticides = int(self.dlg_water_quality.number_pesticides.text())
+            if number_pesticides<=10: #if not the dialog can freeze and close
+                #Delete previous pesticides
+                if self.number_pesticides_dialog>1:
+                    widgets_to_delete = ["pesticide_label_","mass_label_","dispersion_label_","half_label_","remobilized_label_",
+                        "mass_","dispersion_","half_","remobilized_"]
+                    for p in range(self.number_pesticides_dialog-1):
+                        pesticide = p+2
+                        for i in widgets_to_delete:
+                            widget = getattr(self.dlg_water_quality, f"{i}{pesticide}")
+                            self.dlg_water_quality.gridLayout_10.removeWidget(widget)
+                            widget.deleteLater()
+                    
+                #Add pesticides
+                for i in range(number_pesticides-1):
+                    #Create widgets
+                    pesticide = i+2
+                    label = QLabel(f"Pesticide {pesticide} data")
+                    setattr(self.dlg_water_quality, f"pesticide_label_{pesticide}", label)
+                    font = QFont()
+                    font.setBold(True)
+                    getattr(self.dlg_water_quality, f"pesticide_label_{pesticide}").setFont(font)
+                    
+                    
+                    label = QLabel("Pesticide mass entering filter \nper unit source area (mg/m2)")
+                    setattr(self.dlg_water_quality, f"mass_label_{pesticide}", label)
+                    label = QLabel("Dispersion length of chemical (m)")
+                    setattr(self.dlg_water_quality, f"dispersion_label_{pesticide}", label)
+                    label = QLabel("Pesticide half life (days)")
+                    setattr(self.dlg_water_quality, f"half_label_{pesticide}", label)
+                    label = QLabel("Runoff remobilized VFS residue \nfrom last event (mg/m2)")
+                    setattr(self.dlg_water_quality, f"remobilized_label_{pesticide}", label)
+                    
+                    
+                    line = QLineEdit()
+                    setattr(self.dlg_water_quality, f"mass_{pesticide}", line)
+                    getattr(self.dlg_water_quality, f"mass_{pesticide}").setAlignment(Qt.AlignCenter)
+                    
+                    line = QLineEdit()
+                    setattr(self.dlg_water_quality, f"dispersion_{pesticide}", line)
+                    getattr(self.dlg_water_quality, f"dispersion_{pesticide}").setAlignment(Qt.AlignCenter)
+                    
+                    line = QLineEdit()
+                    setattr(self.dlg_water_quality, f"half_{pesticide}", line)
+                    getattr(self.dlg_water_quality, f"half_{pesticide}").setAlignment(Qt.AlignCenter)
+                    
+                    line = QLineEdit()
+                    setattr(self.dlg_water_quality, f"remobilized_{pesticide}", line)
+                    getattr(self.dlg_water_quality, f"remobilized_{pesticide}").setAlignment(Qt.AlignCenter)
+                    
+                    
+                    #Add widgets
+                    self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"pesticide_label_{pesticide}"), 3*pesticide-3, 0)
+                    self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"mass_label_{pesticide}"), 3*pesticide-2, 0)
+                    self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"mass_{pesticide}"), 3*pesticide-2, 1)
+                    self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"dispersion_label_{pesticide}"), 3*pesticide-1, 0)
+                    self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"dispersion_{pesticide}"), 3*pesticide-1, 1)
+                    self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"half_label_{pesticide}"), 3*pesticide-2, 2)
+                    self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"half_{pesticide}"), 3*pesticide-2, 3)
+                    self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"remobilized_label_{pesticide}"), 3*pesticide-1, 2)
+                    self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"remobilized_{pesticide}"), 3*pesticide-1, 3)
+                    
+                #Create variable to know how many pesticides there are
+                self.number_pesticides_dialog = number_pesticides
+                
+        except:
+            pass
+        
     def save_uh_project(self):
         """Method to save uh project"""
         #Save inputs from the dialog
