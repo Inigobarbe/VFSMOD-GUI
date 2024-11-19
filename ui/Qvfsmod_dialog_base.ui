@@ -181,7 +181,7 @@ QTableCornerButton::section {
                  </size>
                 </property>
                 <property name="text">
-                 <string>Project name:</string>
+                 <string>New project name:</string>
                 </property>
                </widget>
               </item>
@@ -268,7 +268,7 @@ QTableCornerButton::section {
                  <string/>
                 </property>
                 <property name="icon">
-                 <iconset resource="../button_icons.qrc">
+                 <iconset>
                   <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                 </property>
                </widget>
@@ -347,8 +347,8 @@ QTableCornerButton::section {
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>573</width>
-             <height>1012</height>
+             <width>588</width>
+             <height>1014</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_25">
@@ -562,7 +562,7 @@ typical 0.01-0.07</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -593,7 +593,7 @@ typical 0.01-0.07</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -771,7 +771,7 @@ typical 0.01-0.07</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -826,7 +826,7 @@ typical 0.01-0.07</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -887,7 +887,7 @@ typical 0.01-0.07</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -942,7 +942,7 @@ typical 0.01-0.07</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -997,7 +997,7 @@ typical 0.01-0.07</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -1319,8 +1319,8 @@ default 5 min</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>573</width>
-             <height>715</height>
+             <width>588</width>
+             <height>722</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_17">
@@ -1364,7 +1364,7 @@ default 5 min</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -1483,7 +1483,7 @@ default 5 min</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -1521,7 +1521,7 @@ default 5 min</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -1559,7 +1559,7 @@ default 5 min</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -1597,7 +1597,7 @@ default 5 min</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -1635,7 +1635,7 @@ default 5 min</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -1673,7 +1673,7 @@ default 5 min</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -1711,7 +1711,7 @@ default 5 min</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -1772,7 +1772,7 @@ default 5 min</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -1827,7 +1827,7 @@ default 5 min</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -1897,7 +1897,7 @@ default 5 min</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -1952,7 +1952,7 @@ default 5 min</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -2007,7 +2007,7 @@ default 5 min</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -2062,7 +2062,7 @@ default 5 min</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -2133,8 +2133,8 @@ default 5 min</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>764</width>
-             <height>522</height>
+             <width>696</width>
+             <height>413</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_29">
@@ -2507,7 +2507,7 @@ default 5 min</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -2561,7 +2561,7 @@ default 5 min</string>
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="../button_icons.qrc">
+                    <iconset>
                      <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
                    </property>
                   </widget>
@@ -2807,8 +2807,8 @@ default 5 min</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>762</width>
-             <height>520</height>
+             <width>98</width>
+             <height>28</height>
             </rect>
            </property>
           </widget>
@@ -2836,8 +2836,8 @@ default 5 min</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-256</y>
-             <width>733</width>
+             <y>0</y>
+             <width>693</width>
              <height>778</height>
             </rect>
            </property>
@@ -3780,7 +3780,7 @@ sensitivity</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>231</width>
+                       <width>204</width>
                        <height>381</height>
                       </rect>
                      </property>
@@ -5069,7 +5069,7 @@ Solution Parameters</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>231</width>
+                       <width>204</width>
                        <height>381</height>
                       </rect>
                      </property>
@@ -5875,9 +5875,7 @@ Solution Parameters</string>
    </property>
   </action>
  </widget>
- <resources>
-  <include location="../button_icons.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>oat</sender>

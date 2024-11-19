@@ -206,6 +206,8 @@ class qvfsmod:
         self.dlg_base.results_sensitivity_single.clicked.connect(self.udpate_sensitivity_calibration_results)
         self.dlg_sensitivity_calibration_results_hydrograph.threshold.textChanged.connect(self.udpate_sensitivity_calibration_results)
         
+        #Add widgets for having more than one species of pesticide
+        self.create_pesticides_widgets()
         
         #Enable disable adding timestep
         self.dlg_base.timestep_check.stateChanged.connect(self.enable_disable_timestep)
@@ -236,6 +238,7 @@ class qvfsmod:
         self.dlg_base.check_pesticide_out.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
         self.dlg_base.check_pesticide_solid.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
         self.dlg_base.check_pesticide_liquid.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
+        
         
         
         #Browse sensitivity for calibration
@@ -492,7 +495,7 @@ class qvfsmod:
         self.dlg_base.edit_infiltration.clicked.connect(self.dlg_infiltration_soil_show)
         self.dlg_infiltration_soil.show_parameters.clicked.connect(self.show_soil_curves)
         self.dlg_base.edit_buffer.clicked.connect(self.dlg_buffer_properties_show)
-        self.dlg_base.edit_water.clicked.connect(self.dlg_water_quality_show)
+        self.dlg_base.edit_water.clicked.connect(lambda _, b = True:self.dlg_water_quality_show(b))
         self.dlg_base.edit_incoming.clicked.connect(self.dlg_incoming_sediment_show)
         self.dlg_base.edit_storm.clicked.connect(lambda _, b = True:self.add_hyetograph_to_dialog(b))
         self.dlg_base.edit_source.clicked.connect(lambda _, b = True:self.add_hydrograph_to_dialog(b))
@@ -883,6 +886,134 @@ class qvfsmod:
         #Update uncertainity graph
         self.dlg_base.csv_results_uncertainity.textChanged.connect(self.show_graph_sensitivity_uncertainity)
     
+    
+    def create_pesticides_widgets(self):
+        """Method to create the widgets for all the species of pesticides that then can be deleted"""
+        try:
+            number_pesticides = 10     
+            #Add pesticides
+            for i in range(number_pesticides-1):
+                #Create widgets
+                pesticide = i+2
+                #Direct input 
+                label = QLabel(f"Pesticide {pesticide} data")
+                setattr(self.dlg_water_quality, f"pesticide_direct_label_{pesticide}", label)
+                font = QFont()
+                font.setBold(True)
+                getattr(self.dlg_water_quality, f"pesticide_direct_label_{pesticide}").setFont(font)
+                
+                label = QLabel("Kd")
+                setattr(self.dlg_water_quality, f"label_kd_{pesticide}", label)
+                label = QLabel("KOC")
+                setattr(self.dlg_water_quality, f"label_koc_{pesticide}", label)
+                
+                line = QLineEdit()
+                setattr(self.dlg_water_quality, f"line_kd_{pesticide}", line)
+                getattr(self.dlg_water_quality, f"line_kd_{pesticide}").setAlignment(Qt.AlignCenter)
+                
+                line = QLineEdit()
+                setattr(self.dlg_water_quality, f"line_koc_{pesticide}", line)
+                getattr(self.dlg_water_quality, f"line_koc_{pesticide}").setAlignment(Qt.AlignCenter)
+                
+                
+                #Rest of the data
+                label = QLabel(f"Pesticide {pesticide} data")
+                setattr(self.dlg_water_quality, f"pesticide_label_{pesticide}", label)
+                font = QFont()
+                font.setBold(True)
+                getattr(self.dlg_water_quality, f"pesticide_label_{pesticide}").setFont(font)
+                
+                
+                label = QLabel("Pesticide mass entering filter \nper unit source area (mg/m2)")
+                setattr(self.dlg_water_quality, f"mass_label_{pesticide}", label)
+                label = QLabel("Dispersion length of chemical (m)")
+                setattr(self.dlg_water_quality, f"dispersion_label_{pesticide}", label)
+                label = QLabel("Pesticide half life (days)")
+                setattr(self.dlg_water_quality, f"half_label_{pesticide}", label)
+                label = QLabel("Runoff remobilized VFS residue \nfrom last event (mg/m2)")
+                setattr(self.dlg_water_quality, f"remobilized_label_{pesticide}", label)
+                
+                
+                line = QLineEdit()
+                setattr(self.dlg_water_quality, f"mass_{pesticide}", line)
+                getattr(self.dlg_water_quality, f"mass_{pesticide}").setAlignment(Qt.AlignCenter)
+                
+                line = QLineEdit()
+                setattr(self.dlg_water_quality, f"dispersion_{pesticide}", line)
+                getattr(self.dlg_water_quality, f"dispersion_{pesticide}").setAlignment(Qt.AlignCenter)
+                
+                line = QLineEdit()
+                setattr(self.dlg_water_quality, f"half_life_{pesticide}", line)
+                getattr(self.dlg_water_quality, f"half_life_{pesticide}").setAlignment(Qt.AlignCenter)
+                
+                line = QLineEdit()
+                setattr(self.dlg_water_quality, f"remobilized_{pesticide}", line)
+                getattr(self.dlg_water_quality, f"remobilized_{pesticide}").setAlignment(Qt.AlignCenter)
+                
+                
+                #Add widgets
+                #Direct inputs
+                self.dlg_water_quality.gridLayout_9.addWidget(getattr(self.dlg_water_quality, f"pesticide_direct_label_{pesticide}"), 2*pesticide-2, 0)
+                self.dlg_water_quality.gridLayout_9.addWidget(getattr(self.dlg_water_quality, f"label_kd_{pesticide}"), 2*pesticide-1, 0)
+                self.dlg_water_quality.gridLayout_9.addWidget(getattr(self.dlg_water_quality, f"label_koc_{pesticide}"), 2*pesticide-1, 2)
+                self.dlg_water_quality.gridLayout_9.addWidget(getattr(self.dlg_water_quality, f"line_kd_{pesticide}"), 2*pesticide-1, 1)
+                self.dlg_water_quality.gridLayout_9.addWidget(getattr(self.dlg_water_quality, f"line_koc_{pesticide}"),2*pesticide-1, 3)
+                
+                #Rest of the inputs
+                self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"pesticide_label_{pesticide}"), 3*pesticide-3, 0)
+                self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"mass_label_{pesticide}"), 3*pesticide-2, 0)
+                self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"mass_{pesticide}"), 3*pesticide-2, 1)
+                self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"dispersion_label_{pesticide}"), 3*pesticide-1, 0)
+                self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"dispersion_{pesticide}"), 3*pesticide-1, 1)
+                self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"half_label_{pesticide}"), 3*pesticide-2, 2)
+                self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"half_life_{pesticide}"), 3*pesticide-2, 3)
+                self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"remobilized_label_{pesticide}"), 3*pesticide-1, 2)
+                self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"remobilized_{pesticide}"), 3*pesticide-1, 3)
+                
+                #Then hide them
+                widget = getattr(self.dlg_water_quality, f"pesticide_direct_label_{pesticide}")
+                self.dlg_water_quality.gridLayout_10.removeWidget(widget)
+                widget.hide()
+                widget = getattr(self.dlg_water_quality, f"label_kd_{pesticide}")
+                self.dlg_water_quality.gridLayout_10.removeWidget(widget)
+                widget.hide()
+                widget = getattr(self.dlg_water_quality, f"label_koc_{pesticide}")
+                self.dlg_water_quality.gridLayout_10.removeWidget(widget)
+                widget.hide()
+                widget = getattr(self.dlg_water_quality, f"line_kd_{pesticide}")
+                self.dlg_water_quality.gridLayout_10.removeWidget(widget)
+                widget.hide()
+                widget = getattr(self.dlg_water_quality, f"line_koc_{pesticide}")
+                self.dlg_water_quality.gridLayout_10.removeWidget(widget)
+                widget.hide()
+                
+                widget = getattr(self.dlg_water_quality, f"pesticide_label_{pesticide}")
+                widget.hide()
+                widget = getattr(self.dlg_water_quality, f"mass_label_{pesticide}")
+                widget.hide()
+                widget = getattr(self.dlg_water_quality, f"mass_{pesticide}")
+                widget.hide()
+                widget = getattr(self.dlg_water_quality, f"dispersion_label_{pesticide}")
+                widget.hide()
+                widget = getattr(self.dlg_water_quality, f"dispersion_{pesticide}")
+                widget.hide()
+                widget = getattr(self.dlg_water_quality, f"half_label_{pesticide}")
+                widget.hide()
+                widget = getattr(self.dlg_water_quality, f"half_life_{pesticide}")
+                widget.hide()
+                widget = getattr(self.dlg_water_quality, f"remobilized_label_{pesticide}")
+                widget.hide()
+                widget = getattr(self.dlg_water_quality, f"remobilized_{pesticide}")
+                widget.hide()
+                
+            #Create variable to know how many pesticides there are
+            self.number_pesticides_dialog = number_pesticides
+            
+            self.enable_disable_water_quality_dialog() #update enabling/disabling direct input
+                
+        except:
+            pass
+    
     def add_pesticides_dialog(self):
         """Method to add widgets to pesticide dialog when more than a pesticide species is added"""
         try:
@@ -890,66 +1021,43 @@ class qvfsmod:
             if number_pesticides<=10: #if not the dialog can freeze and close
                 #Delete previous pesticides
                 if self.number_pesticides_dialog>1:
-                    widgets_to_delete = ["pesticide_label_","mass_label_","dispersion_label_","half_label_","remobilized_label_",
-                        "mass_","dispersion_","half_","remobilized_"]
+                    widgets_to_delete = ["pesticide_direct_label_","label_kd_","label_koc_","line_kd_","line_koc_",
+                        "pesticide_label_","mass_label_","dispersion_label_","half_label_","remobilized_label_",
+                        "mass_","dispersion_","half_life_","remobilized_"]
                     for p in range(self.number_pesticides_dialog-1):
                         pesticide = p+2
                         for i in widgets_to_delete:
                             widget = getattr(self.dlg_water_quality, f"{i}{pesticide}")
-                            self.dlg_water_quality.gridLayout_10.removeWidget(widget)
-                            widget.deleteLater()
+                            widget.hide()
                     
                 #Add pesticides
                 for i in range(number_pesticides-1):
                     #Create widgets
                     pesticide = i+2
-                    label = QLabel(f"Pesticide {pesticide} data")
-                    setattr(self.dlg_water_quality, f"pesticide_label_{pesticide}", label)
-                    font = QFont()
-                    font.setBold(True)
-                    getattr(self.dlg_water_quality, f"pesticide_label_{pesticide}").setFont(font)
-                    
-                    
-                    label = QLabel("Pesticide mass entering filter \nper unit source area (mg/m2)")
-                    setattr(self.dlg_water_quality, f"mass_label_{pesticide}", label)
-                    label = QLabel("Dispersion length of chemical (m)")
-                    setattr(self.dlg_water_quality, f"dispersion_label_{pesticide}", label)
-                    label = QLabel("Pesticide half life (days)")
-                    setattr(self.dlg_water_quality, f"half_label_{pesticide}", label)
-                    label = QLabel("Runoff remobilized VFS residue \nfrom last event (mg/m2)")
-                    setattr(self.dlg_water_quality, f"remobilized_label_{pesticide}", label)
-                    
-                    
-                    line = QLineEdit()
-                    setattr(self.dlg_water_quality, f"mass_{pesticide}", line)
-                    getattr(self.dlg_water_quality, f"mass_{pesticide}").setAlignment(Qt.AlignCenter)
-                    
-                    line = QLineEdit()
-                    setattr(self.dlg_water_quality, f"dispersion_{pesticide}", line)
-                    getattr(self.dlg_water_quality, f"dispersion_{pesticide}").setAlignment(Qt.AlignCenter)
-                    
-                    line = QLineEdit()
-                    setattr(self.dlg_water_quality, f"half_{pesticide}", line)
-                    getattr(self.dlg_water_quality, f"half_{pesticide}").setAlignment(Qt.AlignCenter)
-                    
-                    line = QLineEdit()
-                    setattr(self.dlg_water_quality, f"remobilized_{pesticide}", line)
-                    getattr(self.dlg_water_quality, f"remobilized_{pesticide}").setAlignment(Qt.AlignCenter)
-                    
                     
                     #Add widgets
-                    self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"pesticide_label_{pesticide}"), 3*pesticide-3, 0)
-                    self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"mass_label_{pesticide}"), 3*pesticide-2, 0)
-                    self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"mass_{pesticide}"), 3*pesticide-2, 1)
-                    self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"dispersion_label_{pesticide}"), 3*pesticide-1, 0)
-                    self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"dispersion_{pesticide}"), 3*pesticide-1, 1)
-                    self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"half_label_{pesticide}"), 3*pesticide-2, 2)
-                    self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"half_{pesticide}"), 3*pesticide-2, 3)
-                    self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"remobilized_label_{pesticide}"), 3*pesticide-1, 2)
-                    self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"remobilized_{pesticide}"), 3*pesticide-1, 3)
+                    #Direct inputs
+                    getattr(self.dlg_water_quality, f"pesticide_direct_label_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"label_kd_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"label_koc_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"line_kd_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"line_koc_{pesticide}").show()
+                    
+                    #Rest of the inputs
+                    getattr(self.dlg_water_quality, f"pesticide_label_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"mass_label_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"mass_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"dispersion_label_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"dispersion_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"half_label_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"half_life_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"remobilized_label_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"remobilized_{pesticide}").show()
                     
                 #Create variable to know how many pesticides there are
                 self.number_pesticides_dialog = number_pesticides
+                
+            self.enable_disable_water_quality_dialog() #update enabling/disabling direct input
                 
         except:
             pass
@@ -2030,6 +2138,7 @@ class qvfsmod:
             for row in range(num_rows):
                 item = QTableWidgetItem(str(row+1))
                 self.dlg_water_quality.tableWidget.setItem(row, 0, item) 
+
         except:
             pass
         
@@ -2676,7 +2785,7 @@ class qvfsmod:
             "osm":self.dlg_base.line_waterland,"osp":self.dlg_base.line_overall,"owq":self.dlg_base.line_quality}
         #Add text
         water_quality = False
-        if os.path.exists(path):  
+        if os.path.exists(path) and os.path.isfile(path):
             try:
                 with open(path, 'r') as file:
                     lineas = file.readlines() 
@@ -2684,10 +2793,9 @@ class qvfsmod:
                     if i[:3] in list(dictionary.keys()):
                         ikw = i.split("=")[-1]
                         if not os.path.isabs(ikw): #relative path
-                            ikw = os.path.join(os.path.dirname(ruta), ikw)
+                            ikw = os.path.join(os.path.dirname(path), ikw)
                         ikw = ikw.replace("\n", "") #take out the line jumps
-                        text = os.path.relpath(ikw, self.dlg_base.working_directory_vfsmod.text())
-                        dictionary[i[:3]].setText(text)
+                        dictionary[i[:3]].setText(ikw)
                     if i[:3] == "iwq":
                         water_quality = True
                         
@@ -2713,10 +2821,9 @@ class qvfsmod:
                     if i[:3] in list(dictionary.keys()):
                         ikw = i.split("=")[-1]
                         if not os.path.isabs(ikw): #relative path
-                            ikw = os.path.join(os.path.dirname(ruta), ikw)
+                            ikw = os.path.join(os.path.dirname(path), ikw)
                         ikw = ikw.replace("\n", "") #take out the line jumps
-                        text = os.path.relpath(ikw, self.dlg_base.working_directory_vfsmod.text())
-                        dictionary[i[:3]].setText(text)
+                        dictionary[i[:3]].setText(ikw)
             except:
                 pass
     
@@ -2805,7 +2912,7 @@ class qvfsmod:
     def dlg_overland_flow_show(self):
         """Method to add values of the ikw to the dialog"""
         path = self.obtain_direction_vfsmod(self.dlg_base.line_overland.text())
-        if os.path.exists(path):
+        if os.path.exists(path) and os.path.isfile(path):
             try:
                 with open(path, 'r') as file:
                     lineas = file.readlines()
@@ -2856,59 +2963,62 @@ class qvfsmod:
     def dlg_infiltration_soil_show(self):
         """Method to add values of the iso to the dialog"""
         path = self.obtain_direction_vfsmod(self.dlg_base.line_infiltration.text())
-        if os.path.exists(path):
-            with open(path, 'r') as file:
-                lineas = file.readlines()
-            
-            #K
-            self.add_values_dialog(lineas,0,0,self.dlg_infiltration_soil.line_vertical_ms)
-            #Average suction
-            self.add_values_dialog(lineas,0,1,self.dlg_infiltration_soil.line_average)
-            #Initial water content
-            self.add_values_dialog(lineas,0,3,self.dlg_infiltration_soil.line_initial)
-            #Saturated water content
-            self.add_values_dialog(lineas,0,2,self.dlg_infiltration_soil.line_saturated)
-            #Maximum surface storage
-            self.add_values_dialog(lineas,0,4,self.dlg_infiltration_soil.line_maximum)
-            #Fraction of the filter
-            self.add_values_dialog(lineas,0,5,self.dlg_infiltration_soil.line_fraction)
-            
-            #Shallow water table
+        if os.path.exists(path) and os.path.isfile(path):
             try:
-                float(lineas[1])
-                water_table = True
-            except:
-                water_table = False
-            if water_table:
-                try:
-                    self.dlg_infiltration_soil.check_water_table.setChecked(True)
-                    #Water table depth 
-                    self.add_values_dialog(lineas,1,0,self.dlg_infiltration_soil.line_water_depth)
-                    #Soil Characteristic
-                    soil = int(self.add_values_dialog(lineas,2,0,self.dlg_infiltration_soil.line_vertical_ms,True))
-                    if soil ==1: self.dlg_infiltration_soil.radioButton_3.setChecked(True)
-                    elif soil ==2: self.dlg_infiltration_soil.radioButton_4.setChecked(True)
-                    #Hydraulic conductivity
-                    hydraulic=int(self.add_values_dialog(lineas,3,0,self.dlg_infiltration_soil.line_vertical_ms,True))
-                    if hydraulic ==1: self.dlg_infiltration_soil.radioButton_5.setChecked(True)
-                    elif hydraulic ==2: self.dlg_infiltration_soil.radioButton_6.setChecked(True)
-                    elif hydraulic ==3: self.dlg_infiltration_soil.radioButton_7.setChecked(True)
-                    
-                    #Soil curve parameters
-                    self.add_values_dialog(lineas,2,1,self.dlg_soil_curves.lineEdit)
-                    self.add_values_dialog(lineas,2,2,self.dlg_soil_curves.lineEdit_2)
-                    self.add_values_dialog(lineas,2,3,self.dlg_soil_curves.lineEdit_3)
-                    self.add_values_dialog(lineas,2,4,self.dlg_soil_curves.lineEdit_4)
-                    self.add_values_dialog(lineas,3,1,self.dlg_soil_curves.lineEdit_5)
-                    self.add_values_dialog(lineas,3,1,self.dlg_soil_curves.lineEdit_5)
-                    self.add_values_dialog(lineas,3,2,self.dlg_soil_curves.lineEdit_6)
-                    #Ansiotropy
-                    self.add_values_dialog(lineas,4,0,self.dlg_infiltration_soil.line_input)
-                except:
-                    pass
+                with open(path, 'r') as file:
+                    lineas = file.readlines()
                 
-            else:
-                self.dlg_infiltration_soil.check_water_table.setChecked(False)
+                #K
+                self.add_values_dialog(lineas,0,0,self.dlg_infiltration_soil.line_vertical_ms)
+                #Average suction
+                self.add_values_dialog(lineas,0,1,self.dlg_infiltration_soil.line_average)
+                #Initial water content
+                self.add_values_dialog(lineas,0,3,self.dlg_infiltration_soil.line_initial)
+                #Saturated water content
+                self.add_values_dialog(lineas,0,2,self.dlg_infiltration_soil.line_saturated)
+                #Maximum surface storage
+                self.add_values_dialog(lineas,0,4,self.dlg_infiltration_soil.line_maximum)
+                #Fraction of the filter
+                self.add_values_dialog(lineas,0,5,self.dlg_infiltration_soil.line_fraction)
+                
+                #Shallow water table
+                try:
+                    float(lineas[1])
+                    water_table = True
+                except:
+                    water_table = False
+                if water_table:
+                    try:
+                        self.dlg_infiltration_soil.check_water_table.setChecked(True)
+                        #Water table depth 
+                        self.add_values_dialog(lineas,1,0,self.dlg_infiltration_soil.line_water_depth)
+                        #Soil Characteristic
+                        soil = int(self.add_values_dialog(lineas,2,0,self.dlg_infiltration_soil.line_vertical_ms,True))
+                        if soil ==1: self.dlg_infiltration_soil.radioButton_3.setChecked(True)
+                        elif soil ==2: self.dlg_infiltration_soil.radioButton_4.setChecked(True)
+                        #Hydraulic conductivity
+                        hydraulic=int(self.add_values_dialog(lineas,3,0,self.dlg_infiltration_soil.line_vertical_ms,True))
+                        if hydraulic ==1: self.dlg_infiltration_soil.radioButton_5.setChecked(True)
+                        elif hydraulic ==2: self.dlg_infiltration_soil.radioButton_6.setChecked(True)
+                        elif hydraulic ==3: self.dlg_infiltration_soil.radioButton_7.setChecked(True)
+                        
+                        #Soil curve parameters
+                        self.add_values_dialog(lineas,2,1,self.dlg_soil_curves.lineEdit)
+                        self.add_values_dialog(lineas,2,2,self.dlg_soil_curves.lineEdit_2)
+                        self.add_values_dialog(lineas,2,3,self.dlg_soil_curves.lineEdit_3)
+                        self.add_values_dialog(lineas,2,4,self.dlg_soil_curves.lineEdit_4)
+                        self.add_values_dialog(lineas,3,1,self.dlg_soil_curves.lineEdit_5)
+                        self.add_values_dialog(lineas,3,1,self.dlg_soil_curves.lineEdit_5)
+                        self.add_values_dialog(lineas,3,2,self.dlg_soil_curves.lineEdit_6)
+                        #Ansiotropy
+                        self.add_values_dialog(lineas,4,0,self.dlg_infiltration_soil.line_input)
+                    except:
+                        pass
+                    
+                else:
+                    self.dlg_infiltration_soil.check_water_table.setChecked(False)
+            except:
+                pass
             
             
         #Show dialog
@@ -2917,20 +3027,23 @@ class qvfsmod:
     def dlg_buffer_properties_show(self):
         """Method to add values of the igr to the dialog"""
         path = self.obtain_direction_vfsmod(self.dlg_base.line_buffer.text())
-        if os.path.exists(path):
-            with open(path, 'r') as file:
-                lineas = file.readlines()
-            
-            #Spacing
-            self.add_values_dialog(lineas,0,0,self.dlg_buffer_properties.spacing_grass)
-            #Height
-            self.add_values_dialog(lineas,0,2,self.dlg_buffer_properties.height_grass)
-            #Feedback
-            self.add_values_dialog(lineas,0,4,self.dlg_buffer_properties.feedback)
-            #Roughness-Grass
-            self.add_values_dialog(lineas,0,1,self.dlg_buffer_properties.roughness_grass)
-            #Roughness-Bare
-            self.add_values_dialog(lineas,0,3,self.dlg_buffer_properties.roughness_bare)
+        if os.path.exists(path) and os.path.isfile(path):
+            try:
+                with open(path, 'r') as file:
+                    lineas = file.readlines()
+                
+                #Spacing
+                self.add_values_dialog(lineas,0,0,self.dlg_buffer_properties.spacing_grass)
+                #Height
+                self.add_values_dialog(lineas,0,2,self.dlg_buffer_properties.height_grass)
+                #Feedback
+                self.add_values_dialog(lineas,0,4,self.dlg_buffer_properties.feedback)
+                #Roughness-Grass
+                self.add_values_dialog(lineas,0,1,self.dlg_buffer_properties.roughness_grass)
+                #Roughness-Bare
+                self.add_values_dialog(lineas,0,3,self.dlg_buffer_properties.roughness_bare)
+            except:
+                pass
             
         
         #Show dialog
@@ -2939,64 +3052,103 @@ class qvfsmod:
     def dlg_incoming_sediment_show(self):
         """Method to add values of the isd to the dialog"""
         path = self.obtain_direction_vfsmod(self.dlg_base.line_incoming.text())
-        if os.path.exists(path):
-            with open(path, 'r') as file:
-                lineas = file.readlines()
-            #Concentration
-            self.add_values_dialog(lineas,0,2,self.dlg_incoming_sediment.line_concentration)
-            #Class
-            self.add_values_dialog(lineas,0,0,self.dlg_incoming_sediment.line_class)
-            #Diameter
-            self.add_values_dialog(lineas,1,0,self.dlg_incoming_sediment.line_size)
-            #Porosity
-            self.add_values_dialog(lineas,0,3,self.dlg_incoming_sediment.line_porosity)
-            #Portion
-            self.add_values_dialog(lineas,0,1,self.dlg_incoming_sediment.line_portion)
-            #Density
-            self.add_values_dialog(lineas,1,1,self.dlg_incoming_sediment.line_sediment)
+        if os.path.exists(path) and os.path.isfile(path):
+            try:
+                with open(path, 'r') as file:
+                    lineas = file.readlines()
+                #Concentration
+                self.add_values_dialog(lineas,0,2,self.dlg_incoming_sediment.line_concentration)
+                #Class
+                self.add_values_dialog(lineas,0,0,self.dlg_incoming_sediment.line_class)
+                #Diameter
+                self.add_values_dialog(lineas,1,0,self.dlg_incoming_sediment.line_size)
+                #Porosity
+                self.add_values_dialog(lineas,0,3,self.dlg_incoming_sediment.line_porosity)
+                #Portion
+                self.add_values_dialog(lineas,0,1,self.dlg_incoming_sediment.line_portion)
+                #Density
+                self.add_values_dialog(lineas,1,1,self.dlg_incoming_sediment.line_sediment)
+            except:
+                pass
         
         #Show dialog
         self.dlg_incoming_sediment.show()
     
-    def dlg_water_quality_show(self):
+    def dlg_water_quality_show(self,show=True):
         """Method to add values of thw iwq file to dialog"""
         path = self.obtain_direction_vfsmod(self.dlg_base.line_water.text())
-        if os.path.exists(path):
-            with open(path, 'r') as file:
-                lineas = file.readlines()
-            #Direct input
-            direct = int(self.add_values_dialog(lineas,1,0,self.dlg_water_quality.line_kd, True))
-            if direct == 1: self.dlg_water_quality.check_direct.setChecked(False)
-            else: self.dlg_water_quality.check_direct.setChecked(True)
-            #Kd
-            if direct == 0:
-                self.add_values_dialog(lineas,1,1,self.dlg_water_quality.line_kd)
-            #KOC
-            if direct == 1:
-                self.add_values_dialog(lineas,1,1,self.dlg_water_quality.line_koc)
-                #OC
-                self.add_values_dialog(lineas,1,2,self.dlg_water_quality.line_oc)
-            #Clay content
-            self.add_values_dialog(lineas,2,0,self.dlg_water_quality.line_clay)
-            try: #if igr line does not exist
+        if os.path.exists(path) and os.path.isfile(path):
+            try: #if igr line does not exist among others
+                with open(path, 'r') as file:
+                    lineas = file.readlines()
+                #Obtain number of pesticides
+                number_elements = lineas[4].split(";")[0].split()
+                number_pesticides = int((len(number_elements) - 7)/4+1)
+                #Direct input
+                direct = int(self.add_values_dialog(lineas,1,0,self.dlg_water_quality.line_kd_1, True))
+                if direct == 1: self.dlg_water_quality.check_direct.setChecked(False)
+                else: self.dlg_water_quality.check_direct.setChecked(True)
+                #Kd
+                if direct == 0: 
+                    #FIRST PESTICIDE
+                    self.add_values_dialog(lineas,1,1,self.dlg_water_quality.line_kd_1)
+                    #REST OF PESTICIDES
+                    for p in range(number_pesticides-1):
+                        pesticide = p+2
+                        #Pesticide half life
+                        self.add_values_dialog(lineas,1,p+2,getattr(self.dlg_water_quality, f"line_kd_{pesticide}"))
+                #KOC
+                if direct == 1:
+                    #FIRST PESTICIDE
+                    self.add_values_dialog(lineas,1,1,self.dlg_water_quality.line_koc_1)
+                    #OC
+                    self.add_values_dialog(lineas,1,2,self.dlg_water_quality.line_oc_1)
+                    #REST OF PESTICIDES
+                    for p in range(number_pesticides-1):
+                        pesticide = p+2
+                        #Pesticide half life
+                        self.add_values_dialog(lineas,1,p+3,getattr(self.dlg_water_quality, f"line_koc_{pesticide}"))
+
+                #Clay content
+                self.add_values_dialog(lineas,2,0,self.dlg_water_quality.line_clay)
+            
                 #Pesticide mass balance
                 igr = self.add_values_dialog(lineas,3,0,self.dlg_water_quality.calculation, True)
                 self.dlg_water_quality.calculation.setCurrentIndex(int(igr))
+                
+                self.dlg_water_quality.number_pesticides.setText(str(number_pesticides))
                 if int(igr)>0:
                     #Days
                     self.add_values_dialog(lineas,4,0,self.dlg_water_quality.days)
-                    #Pesticide half life
-                    self.add_values_dialog(lineas,4,1,self.dlg_water_quality.half_life)
                     #Top soil field capacity
                     self.add_values_dialog(lineas,4,2,self.dlg_water_quality.field_capacity)
-                    #Pesticide mass entering filter
-                    self.add_values_dialog(lineas,4,3,self.dlg_water_quality.mass)
                     #Surface mixing
                     self.add_values_dialog(lineas,4,4,self.dlg_water_quality.thickness)
+                    
+                    #FIRST PESTICIDE
+                    #Pesticide half life
+                    self.add_values_dialog(lineas,4,1,self.dlg_water_quality.half_life_1)
+                    #Pesticide mass entering filter
+                    self.add_values_dialog(lineas,4,3,self.dlg_water_quality.mass_1)
                     #Dispersion length of chemical (m)
-                    self.add_values_dialog(lineas,4,5,self.dlg_water_quality.dispersion)
+                    self.add_values_dialog(lineas,4,5,self.dlg_water_quality.dispersion_1)
                     #Runoff remobilized VFS residue \nfrom last event (mg/m2)
-                    self.add_values_dialog(lineas,4,6,self.dlg_water_quality.remobilised)
+                    self.add_values_dialog(lineas,4,6,self.dlg_water_quality.remobilized_1)
+                    
+                    #REST OF PESTICIDES
+                    for p in range(number_pesticides-1):
+                        pesticide = p+2
+                        #Pesticide half life
+                        self.add_values_dialog(lineas,4,6+(4*p)+1,getattr(self.dlg_water_quality, f"half_life_{pesticide}"))
+                        #Pesticide mass entering filter
+                        self.add_values_dialog(lineas,4,6+(4*p)+2,getattr(self.dlg_water_quality, f"mass_{pesticide}"))
+                        #Dispersion length of chemical (m)
+                        self.add_values_dialog(lineas,4,6+(4*p)+3,getattr(self.dlg_water_quality, f"dispersion_{pesticide}"))
+                        #Runoff remobilized VFS residue \nfrom last event (mg/m2)
+                        self.add_values_dialog(lineas,4,6+(4*p)+4,getattr(self.dlg_water_quality, f"remobilized_{pesticide}"))
+                        
+                        
+                    
                     #Flag for remobilization of residues
                     imob = self.add_values_dialog(lineas,7,0,self.dlg_water_quality.imob,True)
                     self.dlg_water_quality.imob.setCurrentIndex(int(imob)-1)
@@ -3021,7 +3173,8 @@ class qvfsmod:
                 pass
     
         #Show dialog
-        self.dlg_water_quality.show()
+        if show:
+            self.dlg_water_quality.show()
         
     def add_values_dialog(self,lineas,row, column, lineEdit,retrieve =False):
         """Method to add values from the files to the dialog"""
@@ -10089,21 +10242,30 @@ class qvfsmod:
         
     def enable_disable_water_quality_dialog(self):
         """Method to enable/disable widgets in the water quality dialog"""
-        if self.dlg_water_quality.check_direct.isChecked():
-            self.dlg_water_quality.line_koc.setReadOnly(True)
-            self.dlg_water_quality.line_oc.setReadOnly(True)
-            self.dlg_water_quality.line_kd.setReadOnly(False)
-            self.dlg_water_quality.line_koc.setStyleSheet("background-color: #d9d9d9;")
-            self.dlg_water_quality.line_oc.setStyleSheet("background-color: #d9d9d9;")
-            self.dlg_water_quality.line_kd.setStyleSheet("background-color: #f0f0f0;")
-            
-        else:
-            self.dlg_water_quality.line_koc.setReadOnly(False)
-            self.dlg_water_quality.line_oc.setReadOnly(False)
-            self.dlg_water_quality.line_kd.setReadOnly(True)
-            self.dlg_water_quality.line_koc.setStyleSheet("background-color: #f0f0f0;")
-            self.dlg_water_quality.line_oc.setStyleSheet("background-color: #f0f0f0;")
-            self.dlg_water_quality.line_kd.setStyleSheet("background-color: #d9d9d9;")
+        try: #if number of pesticides is not added correctly
+            if self.dlg_water_quality.number_pesticides.text() =="": number_pesticides =1
+            else:
+                number_pesticides = int(self.dlg_water_quality.number_pesticides.text())
+            if self.dlg_water_quality.check_direct.isChecked():
+                for p in range(number_pesticides):
+                    pesticide = p+1
+                    getattr(self.dlg_water_quality, f"line_koc_{pesticide}").setReadOnly(True)
+                    getattr(self.dlg_water_quality, f"line_kd_{pesticide}").setReadOnly(False)
+                    getattr(self.dlg_water_quality, f"line_koc_{pesticide}").setStyleSheet("background-color: #d9d9d9;")
+                    getattr(self.dlg_water_quality, f"line_kd_{pesticide}").setStyleSheet("background-color: #f0f0f0;")
+                    self.dlg_water_quality.line_oc_1.setReadOnly(True)
+                    self.dlg_water_quality.line_oc_1.setStyleSheet("background-color: #d9d9d9;")
+            else:
+                for p in range(number_pesticides):
+                    pesticide = p+1
+                    getattr(self.dlg_water_quality, f"line_koc_{pesticide}").setReadOnly(False)
+                    getattr(self.dlg_water_quality, f"line_kd_{pesticide}").setReadOnly(True)
+                    getattr(self.dlg_water_quality, f"line_koc_{pesticide}").setStyleSheet("background-color: #f0f0f0;")
+                    getattr(self.dlg_water_quality, f"line_kd_{pesticide}").setStyleSheet("background-color: #d9d9d9;")
+                    self.dlg_water_quality.line_oc_1.setReadOnly(False)
+                    self.dlg_water_quality.line_oc_1.setStyleSheet("background-color: #f0f0f0;")
+        except:
+            pass
             
             
     
@@ -10379,11 +10541,8 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select UH Project File",working_directory , "LIS files (*.lis)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.uh_file.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.uh_file.setText(fname[0])
+            #Put the absolute path
+            self.dlg_base.uh_file.setText(fname[0])
             #Update filepaths
             self.add_values_uh_outputs_dialog()
             
@@ -10392,11 +10551,8 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select UH Input File", working_directory, "INP files (*.inp)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.uh_input.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.uh_input.setText(fname[0])
+            #Put the absolute path
+            self.dlg_base.uh_input.setText(fname[0])
 
 
     def select_iro(self):
@@ -10404,11 +10560,8 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Hydrograph File", working_directory, "IRO files (*.iro)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.line_hydrograph.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.line_hydrograph.setText(fname[0])
+            #Put the absolute path
+            self.dlg_base.line_hydrograph.setText(fname[0])
         #Check if UH outputs exist
         self.check_uh_output_exist()
     
@@ -10417,11 +10570,8 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Hyetograph File", working_directory, "IRN files (*.irn)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.line_hyetograph.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.line_hyetograph.setText(fname[0])
+            #Put the absolute path
+            self.dlg_base.line_hyetograph.setText(fname[0])
         #Check if UH outputs exist
         self.check_uh_output_exist()
                 
@@ -10430,11 +10580,8 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Incoming Sedimentograph File", working_directory, "ISD files (*.isd)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.line_sedimentograph.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.line_sedimentograph.setText(fname[0])
+            #Put the absolute path
+            self.dlg_base.line_sedimentograph.setText(fname[0])
         #Check if UH outputs exist
         self.check_uh_output_exist()
                 
@@ -10443,11 +10590,8 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Output Information Part 1 File", working_directory, "OUT files (*.out)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.line_output_1.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.line_output_1.setText(fname[0])
+            #Put the absolute path
+            self.dlg_base.line_output_1.setText(fname[0])
         #Check if UH outputs exist
         self.check_uh_output_exist()
                 
@@ -10456,11 +10600,8 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Output Information Part 2 File", working_directory, "HYT files (*.hyt)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.line_output_2.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.line_output_2.setText(fname[0])
+            #Put the absolute path
+            self.dlg_base.line_output_2.setText(fname[0])
         #Check if UH outputs exist
         self.check_uh_output_exist()  
     
@@ -10470,11 +10611,8 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Filter Strip Project File", working_directory, "PRJ files (*.prj)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.line_project_vfsmod.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.line_project_vfsmod.setText(fname[0])
+            #Put absolute path if the file is inside the folder
+            self.dlg_base.line_project_vfsmod.setText(fname[0])
             #Update filepaths
             self.add_values_vfs_outputs_dialog()
             
@@ -10483,11 +10621,10 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Overland Flow Inputs File", working_directory, "IKW files (*.ikw)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.line_overland.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.line_overland.setText(fname[0])
+            #Put absolute path
+            self.dlg_base.line_overland.setText(fname[0])
+            #Update ikw pesticide
+            self.update_ikw_pesticide()
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
     
@@ -10496,11 +10633,8 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Infiltration - Soil Properties File", working_directory, "ISO files (*.iso)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.line_infiltration.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.line_infiltration.setText(fname[0])
+            #Put the absolute path
+            self.dlg_base.line_infiltration.setText(fname[0])
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
     
@@ -10509,11 +10643,8 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Buffer Vegetation Properties File", working_directory, "IGR files (*.igr)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.line_buffer.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.line_buffer.setText(fname[0])
+            #Put the absolute path
+            self.dlg_base.line_buffer.setText(fname[0])
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
     
@@ -10522,11 +10653,8 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Incoming Sediment Characteristics File", working_directory, "ISD files (*.isd)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.line_incoming.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.line_incoming.setText(fname[0])
+            #Put the absolute path
+            self.dlg_base.line_incoming.setText(fname[0])
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
     
@@ -10535,11 +10663,8 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Storm Hyetograph File", working_directory, "IRN files (*.irn)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.line_storm.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.line_storm.setText(fname[0])
+            #Put the absolute path
+            self.dlg_base.line_storm.setText(fname[0])
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
     
@@ -10548,11 +10673,8 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Source Area Storm Runoff File", working_directory, "IRO files (*.iro)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.line_source.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.line_source.setText(fname[0])
+            #Put the absolute path
+            self.dlg_base.line_source.setText(fname[0])
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
     
@@ -10561,11 +10683,13 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Water Quality Properties File", working_directory, "IWQ files (*.iwq)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.line_water.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.line_water.setText(fname[0])
+            #Put the absolute path
+            self.dlg_base.line_water.setText(fname[0])
+            #Put data in dialog
+            self.dlg_water_quality_show(show= False)
+            #Update ikw file
+            self.update_ikw_pesticide()
+            
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
     
@@ -10574,11 +10698,8 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Sediment Transport File", working_directory, "OG1 files (*.og1)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.line_sediment.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.line_sediment.setText(fname[0])
+            #Put the absolute path
+            self.dlg_base.line_sediment.setText(fname[0])
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
     
@@ -10587,11 +10708,8 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Flow throug FVS File", working_directory, "OG2 files (*.og2)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.line_flow.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.line_flow.setText(fname[0])
+            #Put the absolute path
+            self.dlg_base.line_flow.setText(fname[0])
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
         
@@ -10600,11 +10718,8 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Detailed Hydrograph File", working_directory, "OHY files (*.ohy)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.line_hydrograph_2.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.line_hydrograph_2.setText(fname[0])
+            #Put the absolute path
+            self.dlg_base.line_hydrograph_2.setText(fname[0])
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
     
@@ -10613,11 +10728,8 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Water and Sediment Balances File", working_directory, "OSM files (*.osm)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.line_waterland.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.line_waterland.setText(fname[0])
+            #Put the absolute path
+            self.dlg_base.line_waterland.setText(fname[0])
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
     
@@ -10626,11 +10738,8 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Overall Summary File", working_directory, "OSP files (*.osp)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.line_overall.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.line_overall.setText(fname[0])
+            #Put the absolute path
+            self.dlg_base.line_overall.setText(fname[0])
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
 
@@ -10639,11 +10748,8 @@ class qvfsmod:
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Water Quality Summary File", working_directory, "OWQ files (*.owq)")
         if fname[0]!="":
-            #Put the relative path if the file is inside the folder
-            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.line_quality.setText(os.path.relpath(fname[0], working_directory))
-            else: #absolute path
-                self.dlg_base.line_quality.setText(fname[0])
+            #Put the absolute path
+            self.dlg_base.line_quality.setText(fname[0])
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
  
@@ -10811,10 +10917,14 @@ class qvfsmod:
             "Roughness":[table.item(row, 1).text() for row in range(rows)],
             "Slope":[table.item(row, 2).text() for row in range(rows)]})
         #Water quality
-        if self.dlg_base.water_quality.isChecked(): water_quality =1
+        if self.dlg_base.water_quality.isChecked(): water_quality = int(self.dlg_water_quality.number_pesticides.text())
         else: water_quality = 0
         
         ikw_file =self.obtain_direction_vfsmod(self.dlg_base.line_overland.text())
+        #If directory doesn't exist then create it
+        directory = os.path.dirname(ikw_file)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
         with open(ikw_file, 'w') as archivo:
             linea_uno = f"{simulation_title}                      "
             linea_dos = f" {width_strip}"
@@ -10867,6 +10977,10 @@ class qvfsmod:
         
         #We create the file
         iso_file =self.obtain_direction_vfsmod(self.dlg_base.line_infiltration.text())
+        #If directory doesn't exist then create it
+        directory = os.path.dirname(iso_file)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
         #If no water table
         if not self.dlg_infiltration_soil.check_water_table.isChecked():
             with open(iso_file, 'w') as archivo:
@@ -10920,6 +11034,10 @@ class qvfsmod:
         feedback = float(self.dlg_buffer_properties.feedback.text())
         #We create the file
         igr_file =self.obtain_direction_vfsmod(self.dlg_base.line_buffer.text())
+        #If directory doesn't exist then create it
+        directory = os.path.dirname(igr_file)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
         with open(igr_file, 'w') as archivo:
             linea_uno = f" {spacing}   {roughness_grass}   {height_grass}   {roughness_bare}   {feedback}"
             linea_dos = "--------------------------------------------\n SS(cm)  Vn(s/cm^1/3)  H(cm)  Vn2(s/m^1/3)  ICO(0 or 1)"
@@ -10944,31 +11062,47 @@ class qvfsmod:
         c = self.dlg_water_quality.equation_c.text()
         d = self.dlg_water_quality.equation_d.text()
         e = self.dlg_water_quality.equation_e.text()
-        vkoc = self.dlg_water_quality.line_koc.text()
-        vkd = self.dlg_water_quality.line_kd.text()
-        oc = self.dlg_water_quality.line_oc.text()
+        vkoc = self.dlg_water_quality.line_koc_1.text()
+        vkd = self.dlg_water_quality.line_kd_1.text()
+        oc = self.dlg_water_quality.line_oc_1.text()
         clay = self.dlg_water_quality.line_clay.text()
         days = self.dlg_water_quality.days.text()
-        half_life = self.dlg_water_quality.half_life.text()
+        half_life = self.dlg_water_quality.half_life_1.text()
         field_capacity = self.dlg_water_quality.field_capacity.text()
-        mass = self.dlg_water_quality.mass.text()
+        mass = self.dlg_water_quality.mass_1.text()
         thickness = self.dlg_water_quality.thickness.text()
-        dgld = self.dlg_water_quality.dispersion.text()
-        dgmres0 = self.dlg_water_quality.remobilised.text()
+        dgld = self.dlg_water_quality.dispersion_1.text()
+        dgmres0 = self.dlg_water_quality.remobilized_1.text()
         idg = int(self.dlg_water_quality.calculation.currentIndex())
         imob = self.dlg_water_quality.imob.currentIndex()+1
+        number_pesticides = int(self.dlg_water_quality.number_pesticides.text())
         
         #Create file
         iwq_file =self.obtain_direction_vfsmod(self.dlg_base.line_water.text())
+        #If directory doesn't exist then create it
+        directory = os.path.dirname(iwq_file)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
         with open(iwq_file, 'w') as archivo:
             linea_uno = f"{IWQPRO} {a} {b} {c} {d} {e} ;IWQPRO CSAB(I)"
             if direct_input == 1:
-                linea_dos = f"{direct_input}	{vkoc}	{oc}	; Kd proc.:0= Kd(L/Kg); 1=Koc (Koc L/Kg),%OC)"
+                linea_dos = f"{direct_input} {vkoc} {oc} "
+                for p in range(number_pesticides-1):
+                    linea_dos += f"{getattr(self.dlg_water_quality, f'line_koc_{p+2}').text()} "
+                linea_dos += "                     ; IKD (Kd or Koc) (%OC) (repeat Koc or Kd for j species)"
             else:
-                linea_dos = f"{direct_input}	{vkd}; Kd proc.:0= Kd(L/Kg); 1=Koc (Koc L/Kg),%OC)"
+                linea_dos = f"{direct_input} {vkd} "
+                for p in range(number_pesticides-1):
+                    linea_dos += f"{getattr(self.dlg_water_quality, f'line_kd_{p+2}').text()} "
+                linea_dos += "                     ; IKD (Kd or Koc) (%OC) (repeat Koc or Kd for j species)"
+                    
             linea_tres = f"{clay}			; %Clay content (in sediment?)"
             linea_cuatro = f"{idg} IDG"
-            linea_cinco = f"{days} {half_life} {field_capacity} {mass} {thickness} {dgld} {dgmres0}     ; ndgday dgHalf FC dgPin dgML dgLD dgmres0"
+            
+            linea_cinco = f"{days} {half_life} {field_capacity} {mass} {thickness} {dgld} {dgmres0} "
+            for p in range(number_pesticides-1):
+                linea_cinco += f"{getattr(self.dlg_water_quality, f'half_life_{p+2}').text()} {getattr(self.dlg_water_quality, f'mass_{p+2}').text()} {getattr(self.dlg_water_quality, f'dispersion_{p+2}').text()} {getattr(self.dlg_water_quality, f'remobilized_{p+2}').text()} "
+            linea_cinco += "; ndgday dgHalf FC dgPin dgML dgLD dgmres0 (repeat {dgHalf,dgPIN,dgLD,dgmres0}_j for j species)"
             linea_seis = ""
             rows = self.dlg_water_quality.tableWidget.rowCount()
             for row in range(rows):
@@ -10984,6 +11118,7 @@ class qvfsmod:
                 linea_siete += f"{value} "
             linea_siete += "(dgTheta(i),i=1,ndgday (-)"
             linea_ocho = f"{imob}                                       ; IMOB"
+            linea_nueve = "\n------------------------------------------------------------------\nIWQPRO    : Pesticide trapping: 1=Sabbagh;2= Sabbagh(refit);3=mech.mass bal.;4=Chen\nCSAB(I)   : Coefficients for refitted Sabbagh equation (used when IWQPRO=2)\nIKD       : Sorption type: 0, Kd(L/Kg); 1, Koc (L/Kg)\nKd(j) Koc(j): Sorption coefficient (j species) as distribution Kd (IKD= 0) or Koc (IKD=1) (L/Kg)\n%OC       : Source soil organic carbon, only read when IKD=1 (Koc) (%)\nIDG       : Degradation type: 1: EU-FOCUS k=Kref.k(T).k(theta); 2: US-EPA k=Kref;\n            3: k=Kref.k(T);4: k=Kref.k(1theta; 0: No degradation\nndgday    : no. of days (i) between events (d)\ndgHalf(j) : t0.5, pesticide half-life (d), kref=Ln2/t0.5\nFC        : top soil field capacity (m3/m3). This can be taken from FOCUS R1-R4 scenario\n            parameters used by the PRZM model\ndgPin(j)  : Pin, pesticide mass entering filter for event over source area (mg/m2)\ndgML      : Surface mixing layer thickness (cm, standard= 2cm PRZM)\ndgLD(j)   : lambda, dispersion length of chemical (m). This can be taken as  \n            0.05m from FOCUS-Pearl (Default)\ndgmres0(j): Pesticide residues (i species) on VFS surface (mixing layer) when event starts (mg/m2)\ndgT(i)    : T, daily air temperatures (C) for period between events, PRZM weather\ndgTheta(i): theta, Topsoil daily volumetric moisture (-) for period between events\nIMOB      : Residues remobilization: 1(or none): partial (recomm); 2:full; 3:no remob."
             
             archivo.write(f"{linea_uno}\n")
             archivo.write(f"{linea_dos}\n")
@@ -10995,6 +11130,7 @@ class qvfsmod:
                 archivo.write(f"{linea_seis}\n")
                 archivo.write(f"{linea_siete}\n")
                 archivo.write(f"{linea_ocho}\n")
+            archivo.write(f"{linea_nueve}\n")
         
         #Update ikw file to run pesticide module
         self.update_ikw_pesticide()
@@ -11008,7 +11144,7 @@ class qvfsmod:
         ikw_file =self.obtain_direction_vfsmod(self.dlg_base.line_overland.text())
         if os.path.exists(ikw_file):
             #See if pesticide option is selected
-            if self.dlg_base.water_quality.isChecked():execute_pesticide = 1
+            if self.dlg_base.water_quality.isChecked():execute_pesticide = int(self.dlg_water_quality.number_pesticides.text())
             else: execute_pesticide = 0
             with open(ikw_file, 'r') as file:
                 lineas = file.readlines()
@@ -11035,6 +11171,10 @@ class qvfsmod:
         density = float(self.dlg_incoming_sediment.line_sediment.text())
         #Create file
         isd_file =self.obtain_direction_vfsmod(self.dlg_base.line_incoming.text())
+        #If directory doesn't exist then create it
+        directory = os.path.dirname(isd_file)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
         with open(isd_file, 'w') as archivo:
             linea_uno = f"   {particle_class}   {portion}   {concentration}   {porosity}     Npart, Coarse, Ci(g/cm3), Por"
             linea_dos = f"   {size}   {density}           Dp(cm), SG(g/cm3)"
@@ -11056,19 +11196,24 @@ class qvfsmod:
         number_steps = rows
         #Create file
         irn_file =self.obtain_direction_vfsmod(self.dlg_base.line_storm.text())
-        if os.path.exists(irn_file) and os.path.isfile(irn_file):
-            with open(irn_file, 'w') as archivo:
-                linea_uno = f"  {number_steps}   {maximum}                     NRAIN, RPEAK(m/s)"
-                
-                linea_dos = f"   {hyetograph.iloc[0,0]}    {hyetograph.iloc[0,1]}          time(s), rainfall rate (m/s)"
-                linea_tres = ""
-                for row in range(1,len(hyetograph)):
-                    linea_tres += f"   {hyetograph.iloc[row,0]}    {hyetograph.iloc[row,1]}\n"
-                linea_cuatro = "------------------------------"
-                archivo.write(f"{linea_uno}\n")
-                archivo.write(f"{linea_dos}\n")
-                archivo.write(f"{linea_tres}")
-                archivo.write(f"{linea_cuatro}\n")
+        #If directory doesn't exist then create it
+        directory = os.path.dirname(irn_file)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        print(irn_file)
+        print(os.path.isfile(irn_file))
+        with open(irn_file, 'w') as archivo:
+            linea_uno = f"  {number_steps}   {maximum}                     NRAIN, RPEAK(m/s)"
+            
+            linea_dos = f"   {hyetograph.iloc[0,0]}    {hyetograph.iloc[0,1]}          time(s), rainfall rate (m/s)"
+            linea_tres = ""
+            for row in range(1,len(hyetograph)):
+                linea_tres += f"   {hyetograph.iloc[row,0]}    {hyetograph.iloc[row,1]}\n"
+            linea_cuatro = "------------------------------"
+            archivo.write(f"{linea_uno}\n")
+            archivo.write(f"{linea_dos}\n")
+            archivo.write(f"{linea_tres}")
+            archivo.write(f"{linea_cuatro}\n")
         
         if close:
             self.dlg_vfsmod_hyetograph.close()
@@ -11085,18 +11230,21 @@ class qvfsmod:
             "Discharge":[table.item(row, 1).text() for row in range(rows)]})
         #Create file
         iro_file =self.obtain_direction_vfsmod(self.dlg_base.line_source.text())
-        if os.path.exists(iro_file) and os.path.isfile(iro_file):
-            with open(iro_file, 'w') as archivo:
-                linea_uno = f"     {width}    {length}                     Swidth(m), Slength(m)"
-                linea_dos = f"    {rows}   {peak}                   nbcroff, bcropeak (m3/s)"
-                linea_tres = f"   {hydrograph.iloc[0,0]}   {hydrograph.iloc[0,1]}           time(s), ro(m3/s)\n"
-                for row in range(1,len(hydrograph)):
-                    linea_tres += f"   {hydrograph.iloc[row,0]}   {hydrograph.iloc[row,1]}\n"
-                linea_cuatro = "------------------------------"
-                archivo.write(f"{linea_uno}\n")
-                archivo.write(f"{linea_dos}\n")
-                archivo.write(f"{linea_tres}")
-                archivo.write(f"{linea_cuatro}\n")
+        #If directory doesn't exist then create it
+        directory = os.path.dirname(iro_file)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        with open(iro_file, 'w') as archivo:
+            linea_uno = f"     {width}    {length}                     Swidth(m), Slength(m)"
+            linea_dos = f"    {rows}   {peak}                   nbcroff, bcropeak (m3/s)"
+            linea_tres = f"   {hydrograph.iloc[0,0]}   {hydrograph.iloc[0,1]}           time(s), ro(m3/s)\n"
+            for row in range(1,len(hydrograph)):
+                linea_tres += f"   {hydrograph.iloc[row,0]}   {hydrograph.iloc[row,1]}\n"
+            linea_cuatro = "------------------------------"
+            archivo.write(f"{linea_uno}\n")
+            archivo.write(f"{linea_dos}\n")
+            archivo.write(f"{linea_tres}")
+            archivo.write(f"{linea_cuatro}\n")
         if close:
             self.dlg_vfsmod_hydrograph.close()
             
@@ -11492,6 +11640,61 @@ class qvfsmod:
         add_image_button("images/remove.svg",self.dlg_vfsmod_hyetograph.remove)
         add_image_button("images/add.svg",self.dlg_vfsmod_hydrograph.add)
         add_image_button("images/remove.svg",self.dlg_vfsmod_hydrograph.remove)
+        add_image_button("images/add.svg",self.dlg_calibration_sensitivity_hydrograph.add)
+        add_image_button("images/remove.svg",self.dlg_calibration_sensitivity_hydrograph.remove)
+        add_image_button("images/add.svg",self.dlg_base.add)
+        add_image_button("images/remove.svg",self.dlg_base.remove)
+        add_image_button("images/add.svg",self.dlg_base.add_uncertainity)
+        add_image_button("images/remove.svg",self.dlg_base.remove_uncertainity)
+        
+        #Add search 
+        add_image_button(search_path,self.dlg_base.select_directory_vfsmod)
+        add_image_button(search_path,self.dlg_base.select_lis)
+        add_image_button(search_path,self.dlg_base.select_inp)
+        add_image_button(search_path,self.dlg_base.browse_hydrograph)
+        add_image_button(search_path,self.dlg_base.browse_hyetograph)
+        add_image_button(search_path,self.dlg_base.browse_sedimentograph)
+        add_image_button(search_path,self.dlg_base.browse_output1)
+        add_image_button(search_path,self.dlg_base.browse_output2)
+        add_image_button(search_path,self.dlg_base.browse_vfsmod_project)
+        add_image_button(search_path,self.dlg_base.browse_overland)
+        add_image_button(search_path,self.dlg_base.browse_infiltration)
+        add_image_button(search_path,self.dlg_base.browse_buffer)
+        add_image_button(search_path,self.dlg_base.browse_incoming)
+        add_image_button(search_path,self.dlg_base.browse_storm)
+        add_image_button(search_path,self.dlg_base.browse_source)
+        add_image_button(search_path,self.dlg_base.browse_water)
+        add_image_button(search_path,self.dlg_base.browse_sediment)
+        add_image_button(search_path,self.dlg_base.browse_flow)
+        add_image_button(search_path,self.dlg_base.browse_hydrograph_2)
+        add_image_button(search_path,self.dlg_base.browse_waterland)
+        add_image_button(search_path,self.dlg_base.browse_overall)
+        add_image_button(search_path,self.dlg_base.browse_quality)
+        add_image_button(search_path,self.dlg_base.browse_design_uh)
+        add_image_button(search_path,self.dlg_base.browse_design_vfs)
+        add_image_button(search_path,self.dlg_base.browse_project)
+        add_image_button(search_path,self.dlg_base.browse_hydrograph_calibration)
+        add_image_button(search_path,self.dlg_base.browse_project_sedimentograph)
+        add_image_button(search_path,self.dlg_base.browse_sedimentograph_calibration)
+        add_image_button(search_path,self.dlg_base.browse_single_lines)
+        add_image_button(search_path,self.dlg_base.browse_uh)
+        add_image_button(search_path,self.dlg_base.browse_vfs)
+        add_image_button(search_path,self.dlg_base.browse_file)
+        add_image_button(search_path,self.dlg_base.browse)
+        add_image_button(search_path,self.dlg_base.browse_fast_csv)
+        add_image_button(search_path,self.dlg_base.browse_2)
+        add_image_button(search_path,self.dlg_base.browse_oat_csv)
+        add_image_button(search_path,self.dlg_base.browse_uh_uncertainity)
+        add_image_button(search_path,self.dlg_base.browse_vfs_uncertainity)
+        add_image_button(search_path,self.dlg_base.browse_file_uncertainity)
+        add_image_button(search_path,self.dlg_base.browse_uncertainity_csv)
+        add_image_button(search_path,self.dlg_design_results.browse_design)
+        add_image_button(search_path,self.dlg_sensitivity_calibration_results_hydrograph.browse_file)
+        add_image_button(search_path,self.dlg_calibration_sensitivity_hydrograph.browse_vfs)
+        add_image_button(search_path,self.dlg_calibration_sensitivity_hydrograph.browse_file)
+        add_image_button(search_path,self.dlg_calibration_results_hydrograph.browse)
+        add_image_button(search_path,self.dlg_calibration_results_sedimentograph.browse)
+        add_image_button(search_path,self.dlg_calibration_results_single.browse)
         
         
     def add_functions_outputs_hydrograph(self,dialog):
