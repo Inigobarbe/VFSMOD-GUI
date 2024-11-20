@@ -314,6 +314,7 @@ class qvfsmod:
         self.dlg_base.actionSource_Area_UH.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_uh))
         self.dlg_base.actionVegetative_Strip_VFS.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_vfs))
         self.dlg_base.actionSimple_Design.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design_simple))
+        self.dlg_base.actionDesign_with_Uncertainity.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design_uncertainity))
         self.dlg_base.actionComplete_Calibration.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration_hydrograph))
         self.dlg_base.actionExecution.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sensitivity_analysis))
         self.dlg_base.actionGlobal_Results.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sobol_results))
@@ -500,7 +501,10 @@ class qvfsmod:
         self.dlg_base.edit_storm.clicked.connect(lambda _, b = True:self.add_hyetograph_to_dialog(b))
         self.dlg_base.edit_source.clicked.connect(lambda _, b = True:self.add_hydrograph_to_dialog(b))
         
-
+        
+        #Add information of iwq to dialog
+        self.dlg_base.line_water.textChanged.connect(lambda _, b = False:self.dlg_water_quality_show(b))
+        
         #Enable/disable edition in water quality dialog
         self.enable_disable_water_quality_dialog()
         self.dlg_water_quality.check_direct.stateChanged.connect(self.enable_disable_water_quality_dialog)
@@ -578,10 +582,12 @@ class qvfsmod:
         
         #Button to add information to the sensitivity table and to uncertainity
         self.dlg_base.add.clicked.connect(self.add_sensitivity_table)
+        self.dlg_base.add_design.clicked.connect(self.add_sensitivity_table_design)
         self.dlg_base.add_uncertainity.clicked.connect(self.add_uncertainity_table)
         self.dlg_calibration_sensitivity_hydrograph.add.clicked.connect(self.add_sensitivity_table_calibration)
         #Button to delete information of the sensitivity table an to uncertainity
         self.dlg_base.remove.clicked.connect(self.delete_sensitivity_table)
+        self.dlg_base.remove_design.clicked.connect(self.delete_sensitivity_table_design)
         self.dlg_base.remove_uncertainity.clicked.connect(self.delete_uncertainity_table)
         self.dlg_calibration_sensitivity_hydrograph.remove.clicked.connect(self.delete_sensitivity_table_calibration)
         
@@ -726,6 +732,7 @@ class qvfsmod:
         
         #Add distributions to combobox
         self.dlg_base.distributions.addItems(["Uniform","Logaritmic uniform","Triangular","Normal","Lognormal","Normal truncated"])
+        self.dlg_base.distributions_design.addItems(["Uniform","Logaritmic uniform","Triangular","Normal","Lognormal","Normal truncated"])
         self.dlg_base.distributions_uncertainity.addItems(["Uniform","Logaritmic uniform","Triangular","Normal","Lognormal","Normal truncated"])
         self.dlg_calibration_sensitivity_hydrograph.distributions.addItems(["Uniform","Logaritmic uniform","Triangular","Normal","Lognormal","Normal truncated"])
         
@@ -740,6 +747,10 @@ class qvfsmod:
         self.dlg_base.distributions_uncertainity.currentIndexChanged.connect(self.change_bounds_uncertainity)
         self.dlg_base.distributions_uncertainity.currentIndexChanged.connect(self.distribution_parameters_uncertainity)
         
+        #Same for sensitivity analysis for design
+        self.dlg_base.distributions_design.currentIndexChanged.connect(self.change_bounds_sensitivity_design)
+        self.dlg_base.distributions_design.currentIndexChanged.connect(self.distribution_parameters_design)
+        
         #Same for sensitivity analysis for calibration
         self.dlg_calibration_sensitivity_hydrograph.distributions.currentIndexChanged.connect(self.change_bounds_sensitivity_calibration)
         self.dlg_calibration_sensitivity_hydrograph.distributions.currentIndexChanged.connect(self.distribution_parameters_sensitivity_calibration)
@@ -749,7 +760,17 @@ class qvfsmod:
         self.dlg_base.morris.toggled.connect(self.change_sensitivity_method)
         self.dlg_base.fast.toggled.connect(self.change_sensitivity_method)
         self.dlg_base.trajectories.textChanged.connect(self.change_sensitivity_method)
+        
+        self.dlg_base.sobol_design.toggled.connect(self.change_sensitivity_method_design)
+        self.dlg_base.morris_design.toggled.connect(self.change_sensitivity_method_design)
+        self.dlg_base.fast_design.toggled.connect(self.change_sensitivity_method_design)
+        self.dlg_base.trajectories_design.textChanged.connect(self.change_sensitivity_method_design)
         self.dlg_calibration_sensitivity_hydrograph.trajectories.textChanged.connect(self.change_sensitivity_method_calibration)
+        
+        self.dlg_base.samples_design.textChanged.connect(self.calculate_total_executions_sensitivity_design)
+        self.dlg_base.lower_sensitivity_design.textChanged.connect(self.calculate_total_executions_sensitivity_design)
+        self.dlg_base.upper_sensitivity_design.textChanged.connect(self.calculate_total_executions_sensitivity_design)
+        self.dlg_base.increment_sensitivity_design.textChanged.connect(self.calculate_total_executions_sensitivity_design)
         
         #Set checked true OAT
         self.dlg_base.oat.setChecked(True)
@@ -780,8 +801,19 @@ class qvfsmod:
         for i in buttons:
             i.clicked.connect(lambda _, b = i:self.show_buttons_uncertainity_dialog(b))
         
+        #Same for sensitivity analysis for design
+        buttons = [self.dlg_base.all_parameters_design,self.dlg_base.rainfall_event_design,
+            self.dlg_base.source_area_design,self.dlg_base.erosion_parameters_design,
+            self.dlg_base.buffer_dimensions_design,self.dlg_base.kinematic_wave_design,
+            self.dlg_base.infiltration_design,self.dlg_base.buffer_vegetation_design,self.dlg_base.incoming_sediment_design, self.dlg_base.water_quality_button_design]
+        for i in buttons:
+            i.clicked.connect(lambda _, b = i:self.show_buttons_sensitivity_dialog_design(b))
+        
         #Search sensitivity parameter
         self.dlg_base.search.textChanged.connect(self.search_sensitivity_parameter)
+        
+        #Search sensitivity parameter for design
+        self.dlg_base.search_design.textChanged.connect(self.search_sensitivity_parameter_design)
         
         #Search uncertainity parameter
         self.dlg_base.search_uncertainity.textChanged.connect(self.search_uncertainity_parameter)
@@ -791,6 +823,9 @@ class qvfsmod:
         
         #Run uncertainity analysis
         self.dlg_base.run_uncertainity.clicked.connect(self.run_uncertainity_analysis_part_one)
+        
+        #Run sensitivity analysis for design
+        self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
         
         #Run sensitivity analysis for calibration
         self.dlg_calibration_sensitivity_hydrograph.accept.clicked.connect(self.run_sensitivity_analysis_calibration_part_one)
@@ -833,6 +868,11 @@ class qvfsmod:
         self.dlg_base.browse_uh.clicked.connect(lambda _, b = "lis":self.browse_files_sensitivity(b))
         self.dlg_base.browse_vfs.clicked.connect(lambda _, b = "prj":self.browse_files_sensitivity(b))
         self.dlg_base.browse_file.clicked.connect(lambda _, b = "csv":self.browse_files_sensitivity(b))
+        
+        #Browse files in sensitivity analysis for design
+        self.dlg_base.browse_uh_design.clicked.connect(lambda _, b = "lis":self.browse_files_sensitivity_design(b))
+        self.dlg_base.browse_vfs_design.clicked.connect(lambda _, b = "prj":self.browse_files_sensitivity_design(b))
+        self.dlg_base.browse_file_design.clicked.connect(lambda _, b = "csv":self.browse_files_sensitivity_design(b))
         
         #Browse files in uncertainity analysis
         self.dlg_base.browse_uh_uncertainity.clicked.connect(lambda _, b = "lis":self.browse_files_uncertainity(b))
@@ -886,6 +926,22 @@ class qvfsmod:
         #Update uncertainity graph
         self.dlg_base.csv_results_uncertainity.textChanged.connect(self.show_graph_sensitivity_uncertainity)
     
+    def calculate_total_executions_sensitivity_design(self):
+        """Method to calculate total executions for the sensitivity analysis of the design"""
+        try:
+            start = float(self.dlg_base.lower_sensitivity_design.text())
+            end = float(self.dlg_base.upper_sensitivity_design.text())
+            increment = float(self.dlg_base.increment_sensitivity_design.text())
+            vl = [start]
+            if increment!=float(0):
+                while True:
+                    if vl[-1]+increment>end:
+                        break
+                    else:
+                        vl.append(vl[-1]+increment)
+            self.dlg_base.total_executions_design.setText(str(int(len(vl)*float(self.dlg_base.samples_design.text()))))
+        except:
+            pass
     
     def create_pesticides_widgets(self):
         """Method to create the widgets for all the species of pesticides that then can be deleted"""
@@ -3361,105 +3417,168 @@ class qvfsmod:
             
     def show_owq_graph(self):
         """Method to show the dialog with water quality graph"""
-        #Obtain results
+        #Delete radio buttons of pesticides
+        if self.dlg_owq_graph.frame_3.layout() is not None:
+            # Obtén el layout actual
+            layout = self.dlg_owq_graph.frame_3.layout()
+            
+            # Elimina todos los widgets y elementos del layout (incluyendo espaciadores)
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.deleteLater()  # Elimina el widget
+                elif item.spacerItem() is not None:
+                    layout.removeItem(item)  # Elimina el espaciador
+
+        else:
+            # Si no hay un layout, crea uno nuevo
+            layout = QVBoxLayout()
+            self.dlg_owq_graph.frame_3.setLayout(layout)
+        
+        
+        #Obtain number of pesticides
         ruta = self.obtain_direction_vfsmod(self.dlg_base.line_quality.text())
         if os.path.exists(ruta):
             #Obtain values
             with open(ruta, "r") as archivo:
                 lineas = archivo.readlines()
-            valores = []
+            self.data_owq_graph = {}
+            pesticide = 1
             for i in range(len(lineas)):
+                if lineas[i] == f"PRODUCT  {pesticide}- Soil leaching and mixing layer calculations (CDE)\n":
+                        self.data_owq_graph[pesticide] = []
+                        pesticide += 1
                 if lineas[i] == "      Z(m)      C(mg/L)      S(mg/mg)\n":
+                    valores = []
                     for k in range(i+2,len(lineas)):
                         if len(lineas[k].split())==0 or (float(lineas[k].split()[1])==float(0)) and (float(lineas[k].split()[2])==float(0)):
+                            self.data_owq_graph[pesticide-1] = valores
                             break
                         else:
                             valores.append([float(x) for x in lineas[k].split()])
-
-            df = pd.DataFrame(valores, columns=["z","c","s"])
-            
-            #Create graph
-            #Add layout
-            #If canvas exist then clear. If not then create it. 
-            if not hasattr(self, 'canvas_owq_graph'):
-                # Si no existe, crear el canvas y añadirlo al layout
-                self.canvas_owq_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
-                
-                # Asignar un layout al QFrame si no tiene uno
-                layout = QVBoxLayout(self.dlg_owq_graph.frame)
-                self.dlg_owq_graph.frame.setLayout(layout)
-                
-                # Añadir el canvas al layout
-                layout.addWidget(self.canvas_owq_graph)
-                
-            else:
-                # Si ya existe, simplemente limpiar el canvas
-                self.canvas_owq_graph.figure.clear()
         
-            self.ax_owq_graph= self.canvas_owq_graph.figure.subplots(1,2)
-        
-            # Clear canvas
-            self.ax_owq_graph[0].clear()
-            self.ax_owq_graph[1].clear()
-            
-            #Create graph
+            #Add pesticides
+            # Agrega el QLabel
+            label = QLabel("Select pesticide")
+            layout.addWidget(label)
 
-            # Crear el gráfico de barras
-            profundidad = df["z"]
-            concentracion = df["c"]
-            ratio = df["s"]
-            # Invertir el eje y para que 0 esté arriba y aumentar hacia abajo
-            self.ax_owq_graph[0].invert_yaxis()
-            self.ax_owq_graph[1].invert_yaxis()
+            # Lista de nombres para los QRadioButtons
+            pesticides = [f"Pesticide {x}" for x in self.data_owq_graph.keys()]
+            self.dictionary_radio_inputs_pesticides = {}
 
-            # Graficar concentración vs. profundidad
-            self.ax_owq_graph[0].plot(concentracion, profundidad, marker='o', color='b')
-            self.ax_owq_graph[1].plot(ratio, profundidad, marker='o', color='b')
+            # Crear y añadir varios QRadioButton
+            for opcion in pesticides:
+                radio_button = QRadioButton(opcion)
+                # Conectar la función solo una vez
+                radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_owq_graph(rb.text()) if checked else None)
+                self.dictionary_radio_inputs_pesticides[radio_button] = opcion
+                layout.addWidget(radio_button)
 
-            # Etiquetas de los ejes
-            self.ax_owq_graph[0].set_xlabel('Pore water concentration (mg/L)', color='black',weight = "bold")
-            self.ax_owq_graph[1].set_xlabel('Solid phase/liquid phase (mg/mg)', color='black',weight = "bold")
-            self.ax_owq_graph[0].set_ylabel('Depth (m)', color='black',weight = "bold")
+            # Añade un espaciador para ajustar la posición
+            spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+            layout.addItem(spacer)
 
-            # Colorear el área entre profundidad 0 y 0.06
-            self.ax_owq_graph[0].axhspan(0, 0.02, facecolor='gray', alpha=0.3)  # Opacidad del rectángulo
-            self.ax_owq_graph[1].axhspan(0, 0.02, facecolor='gray', alpha=0.3)  # Opacidad del rectángulo
-            
-            # Añadir texto "mixing layer" dentro del rectángulo con flechas más a la derecha
-            self.ax_owq_graph[0].text(max(concentracion)*0.83, 0.01, 'Mixing Layer', fontsize=10, ha='center', va='center')
-            self.ax_owq_graph[1].text(max(ratio)*0.83, 0.01, 'Mixing Layer', fontsize=10, ha='center', va='center')
-
-            # Colorear los ejes en negro
-            self.ax_owq_graph[0].spines['bottom'].set_color('black')
-            self.ax_owq_graph[1].spines['bottom'].set_color('black')
-            self.ax_owq_graph[0].spines['top'].set_color('black')
-            self.ax_owq_graph[1].spines['top'].set_color('black')
-            self.ax_owq_graph[0].spines['left'].set_color('black')
-            self.ax_owq_graph[1].spines['left'].set_color('black')
-            self.ax_owq_graph[0].spines['right'].set_color('black')
-            self.ax_owq_graph[1].spines['right'].set_color('black')
-            
-            #Add line with value 1 
-            ticks1 = self.ax_owq_graph[1].get_xticks()
-            for tick in self.ax_owq_graph[1].get_xticklabels():
-                if tick.get_text() == '1':
-                    tick.set_color('red')
-            self.ax_owq_graph[1].axvline(x=1, color='red', linestyle='--')
-            
-            #Title
-            self.ax_owq_graph[0].set_title("Pore water concentration (mg/L)")
-            self.ax_owq_graph[1].set_title("Solid phase/liquid phase (mg/mg)")
-            
-            #Space beteween two graphs
-            self.canvas_owq_graph.figure.subplots_adjust(wspace=0.6) #spacing beteween two graphs
-            # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
-            self.canvas_owq_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
-
-            # Redraw the canvas
-            self.canvas_owq_graph.draw()
-            
+            # Selecciona el primer QRadioButton
+            if self.dictionary_radio_inputs_pesticides:
+                list(self.dictionary_radio_inputs_pesticides.keys())[0].setChecked(True)
+                    
             #Show dialog
             self.dlg_owq_graph.show()
+
+    def update_owq_graph(self,pesticide):
+        """Method to update the dialog with water quality graph"""
+        #Obtain data
+        number_pesticide = int(pesticide.split()[-1])
+        valores = self.data_owq_graph[number_pesticide]
+        df = pd.DataFrame(valores, columns=["z","c","s"])
+        
+        #Create graph
+        #Add layout
+        #If canvas exist then clear. If not then create it. 
+        if not hasattr(self, 'canvas_owq_graph'):
+            # Si no existe, crear el canvas y añadirlo al layout
+            self.canvas_owq_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
+            
+            # Asignar un layout al QFrame si no tiene uno
+            layout = QVBoxLayout(self.dlg_owq_graph.frame)
+            self.dlg_owq_graph.frame.setLayout(layout)
+            
+            # Añadir el canvas al layout
+            layout.addWidget(self.canvas_owq_graph)
+            
+        else:
+            # Si ya existe, simplemente limpiar el canvas
+            self.canvas_owq_graph.figure.clear()
+    
+        self.ax_owq_graph= self.canvas_owq_graph.figure.subplots(1,2)
+    
+        # Clear canvas
+        self.ax_owq_graph[0].clear()
+        self.ax_owq_graph[1].clear()
+        
+        #Create graph
+
+        # Crear el gráfico de barras
+        profundidad = df["z"]
+        concentracion = df["c"]
+        ratio = df["s"]
+        # Invertir el eje y para que 0 esté arriba y aumentar hacia abajo
+        self.ax_owq_graph[0].invert_yaxis()
+        self.ax_owq_graph[1].invert_yaxis()
+
+        # Graficar concentración vs. profundidad
+        self.ax_owq_graph[0].plot(concentracion, profundidad, marker='o', color='b')
+        self.ax_owq_graph[1].plot(ratio, profundidad, marker='o', color='b')
+
+        # Etiquetas de los ejes
+        self.ax_owq_graph[0].set_xlabel('Pore water concentration (mg/L)', color='black',weight = "bold")
+        self.ax_owq_graph[1].set_xlabel('Solid phase/liquid phase (mg/mg)', color='black',weight = "bold")
+        self.ax_owq_graph[0].set_ylabel('Depth (m)', color='black',weight = "bold")
+
+        # Colorear el área entre profundidad 0 y 0.06
+        self.ax_owq_graph[0].axhspan(0, 0.02, facecolor='gray', alpha=0.3)  # Opacidad del rectángulo
+        self.ax_owq_graph[1].axhspan(0, 0.02, facecolor='gray', alpha=0.3)  # Opacidad del rectángulo
+        
+        # Añadir texto "mixing layer" dentro del rectángulo con flechas más a la derecha
+        self.ax_owq_graph[0].text(max(concentracion)*0.83, 0.01, 'Mixing Layer', fontsize=10, ha='center', va='center')
+        self.ax_owq_graph[1].text(max(ratio)*0.83, 0.01, 'Mixing Layer', fontsize=10, ha='center', va='center')
+
+        # Colorear los ejes en negro
+        self.ax_owq_graph[0].spines['bottom'].set_color('black')
+        self.ax_owq_graph[1].spines['bottom'].set_color('black')
+        self.ax_owq_graph[0].spines['top'].set_color('black')
+        self.ax_owq_graph[1].spines['top'].set_color('black')
+        self.ax_owq_graph[0].spines['left'].set_color('black')
+        self.ax_owq_graph[1].spines['left'].set_color('black')
+        self.ax_owq_graph[0].spines['right'].set_color('black')
+        self.ax_owq_graph[1].spines['right'].set_color('black')
+        
+        #Add line with value 1 
+        ticks1 = self.ax_owq_graph[1].get_xticks()
+        for tick in self.ax_owq_graph[1].get_xticklabels():
+            if tick.get_text() == '1':
+                tick.set_color('red')
+        self.ax_owq_graph[1].axvline(x=1, color='red', linestyle='--')
+        
+        #Title
+        self.ax_owq_graph[0].set_title("Pore water concentration (mg/L)")
+        self.ax_owq_graph[1].set_title("Solid phase/liquid phase (mg/mg)")
+        
+        #Change background color
+        self.canvas_owq_graph.figure.set_facecolor('#f0f0f0')
+        self.ax_owq_graph[0].set_facecolor('#f0f0f0')
+        self.ax_owq_graph[1].set_facecolor('#f0f0f0')
+        
+        #Space beteween two graphs
+        self.canvas_owq_graph.figure.subplots_adjust(wspace=0.6) #spacing beteween two graphs
+        # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
+        self.canvas_owq_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
+
+        # Redraw the canvas
+        self.canvas_owq_graph.draw()
+        
+        
     
     def show_runoff_results(self):
         """Method to show the dialog with runoff graph"""
@@ -4603,6 +4722,34 @@ class qvfsmod:
         else:
             self.dlg_base.file_save.setText(text)
     
+    
+    def browse_files_sensitivity_design(self,information):
+        """Method to select the file for sensitivity analysis between the local files"""
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        if information=="prj": 
+            select = "Select VFS Project File"
+            types = "PRJ files (*.prj)"
+        elif information == "lis": 
+            select = "Select UH Project File"
+            types = "LIS files (*.lis)"
+        else:
+            select = "Select CSV File"
+            types = "CSV files (*.csv)"
+        fname = QFileDialog.getOpenFileName(self.dlg_base, select,working_directory , types)
+        if fname[0]!="":
+            #Put the relative path if the file is inside the folder
+            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
+                text = os.path.relpath(fname[0], working_directory)
+            else: #absolute path
+                text = fname[0]
+        if information == "prj":
+            self.dlg_base.vfs_file_sensitivity_design.setText(text)
+        elif information == "lis":
+            self.dlg_base.uh_file_sensitivity_design.setText(text)
+        else:
+            self.dlg_base.file_save_design.setText(text)
+    
+    
     def start_analysis_design(self):
         """Method to execute the class to paralelization of design analysis. A class like that 
         has to be used because we need QTrhead to add progress bar"""
@@ -4611,7 +4758,8 @@ class qvfsmod:
         args_list = [(i, i % (self.number_cores*5), 
           self.combinations_design,self.working_directory,
           self.dlg_base.design_length.isChecked(),self.dlg_base.design_spacing.isChecked(),
-          self.obtain_direction_vfsmod(self.dlg_base.design_vfs_file.text()),self.water_quality) for i in range(len(self.combinations_design))]
+          self.obtain_direction_vfsmod(self.dlg_base.design_vfs_file.text()),
+          self.water_quality,self.number_pesticides) for i in range(len(self.combinations_design))]
         self.progress_dialog = QProgressDialog("Starting design...", "Cancel", 0, len(args_list))
         self.progress_dialog.setWindowModality(Qt.WindowModal)
         self.progress_dialog.setWindowTitle("Progress")
@@ -4665,6 +4813,25 @@ class qvfsmod:
         self.progress_dialog.setWindowTitle("Progress")
         self.progress_dialog.show()
         self.sensitivity_thread = SensitivityAnalysisThread(args_list)
+        self.sensitivity_thread.update_progress.connect(self.update_progress_dialog_sensitivity)
+        self.sensitivity_thread.start()
+    
+    def start_analysis_sensitivity_design(self):
+        """Method to execute the class to paralelization of sensitivity analysis for design. A class like that 
+        has to be used because we need QTrhead to add progress bar"""
+        self.number_execution = 0
+        self.results = []
+        rows_execute = [i for i in range(len(self.param_values)) for _ in range(len(self.buffer_lengths_sensitivity_design))] #each row(sample in sensitivity analysis) is going to be executed as many times as combinations of buffer lengths are
+        args_list = [(i, i % (self.number_cores*5), 
+          self.param_values, self.dic_data, 
+          self.sensitivity_parameters, self.working_directory, 
+          self.obtain_direction_vfsmod(self.vfs_sensitivity_file),self.water_quality,
+          self.buffer_lengths_sensitivity_design,rows_execute) for i in range(int(self.dlg_base.total_executions_design.text()))]
+        self.progress_dialog = QProgressDialog("Starting sensitivity analysis...", "Cancel", 0, len(args_list))
+        self.progress_dialog.setWindowModality(Qt.WindowModal)
+        self.progress_dialog.setWindowTitle("Progress")
+        self.progress_dialog.show()
+        self.sensitivity_thread = SensitivityAnalysisThreadDesign(args_list)
         self.sensitivity_thread.update_progress.connect(self.update_progress_dialog_sensitivity)
         self.sensitivity_thread.start()
 
@@ -4763,7 +4930,85 @@ class qvfsmod:
         
         #Method were the paralelization is achieved
         self.start_analysis_sensitivity_calibration()
+    
+    
+    def run_sensitivity_analysis_part_one_design(self):
+        """Method to run whole sensitivity analysis"""
+        #Create the dictionary for the sensitivity analysis
+        self.dic_data = self.create_dictionary_sensitivity_analysis_design()
         
+        self.vfs_sensitivity_file = self.dlg_base.vfs_file_sensitivity_design.text()
+        
+        #Create problem variable
+        self.problem = {'num_vars': len(self.dic_data),'names': list(self.dic_data.keys()),'bounds': [x[1] for x in self.dic_data.values()],"dists":[x[0] for x in self.dic_data.values()]}
+        #Create samples
+        if self.dlg_base.sobol_design.isChecked():
+            if int(self.dlg_base.trajectories_design.text())<256:
+                self.warning_message("Number of samples must be 256 or higher when executing Sobol")
+                return
+            self.param_values = saltelli.sample(self.problem, int(self.dlg_base.trajectories_design.text()))
+        elif self.dlg_base.morris_design.isChecked():
+            #Warnings
+            if int(self.dlg_base.trajectories_design.text())<8:
+                self.warning_message("N value must be 8 or higher when executing Morris")
+                return
+            if self.dlg_base.table_2.rowCount()<2:
+                self.warning_message("Select at least 2 parameters for Morris sensitivity analysis")
+                return
+                
+            self.param_values = sample_morris(self.problem, int(self.dlg_base.trajectories_design.text()))
+        elif self.dlg_base.fast_design.isChecked():
+            if int(self.dlg_base.trajectories_design.text())<256:
+                self.warning_message("N value must be 256 or higher when executing FAST")
+                return
+            self.param_values = sample_fast(self.problem, int(self.dlg_base.trajectories_design.text()), M = 1)
+        
+        #We start obtaining the results
+        #Create folders of sensitivity analysis
+        self.create_folder_sensitivity_analysis_design()
+        
+        #Move files to sensitivity analysis folder
+        self.move_files_sensitivity_analysis_design()
+        
+        
+        #Create dataframe to save the results
+        self.results_sensitivity = pd.DataFrame(columns=["Error"])
+        #Add water quality parameters if present
+        if self.dlg_base.runoff_sensitivity_design.isChecked():
+            self.results_sensitivity.insert(len(self.results_sensitivity.columns),"RDR",None)
+        if self.dlg_base.sediment_sensitivity_design.isChecked():
+            self.results_sensitivity.insert(len(self.results_sensitivity.columns),"SDR",None)
+        if self.dlg_base.pesticide_sensitivity_design.isChecked():
+            self.results_sensitivity.insert(len(self.results_sensitivity.columns),"PDR",None)
+            
+        
+        self.number_outputs = len(self.results_sensitivity.columns)-1
+        #Add vfs length column
+        self.results_sensitivity.insert(0,"Buffer length (m)",None)
+        
+        #Add the parameters names 
+        for i in self.dic_data.keys():
+            self.results_sensitivity.insert(0,i,None)
+        
+        #Obtain the list with the buffer lengths that are going to be used to obtain the curves
+        self.buffer_lengths_sensitivity_design = self.obtain_buffer_lengths_sensitivity_design()
+        
+        #Method were the paralelization is achieved
+        self.start_analysis_sensitivity_design()
+    
+    def obtain_buffer_lengths_sensitivity_design(self):
+        """Method to btain the buffer lengths for the sensitivity design"""
+        start = float(self.dlg_base.lower_sensitivity_design.text())
+        end = float(self.dlg_base.upper_sensitivity_design.text())
+        increment = float(self.dlg_base.increment_sensitivity_design.text())
+        vl = [start]
+        if increment!=float(0):
+            while True:
+                if vl[-1]+increment>end:
+                    break
+                else:
+                    vl.append(vl[-1]+increment)
+        return vl
     
     def run_sensitivity_analysis_part_one(self):
         """Method to run whole sensitivity analysis"""
@@ -5462,6 +5707,141 @@ class qvfsmod:
             f.close()
     
     
+    def move_files_sensitivity_analysis_design(self):
+        """Method to move files to the corresponding folders for sensitiviy analysis for design"""
+        #Prj
+        prj_file = self.dlg_base.working_directory_vfsmod.text()+"\\design\\design.prj"
+        #Check if water quality is simulated
+        with open(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity_design.text()), "r") as archivo:
+            lineas = archivo.readlines()
+        self.water_quality = False
+        for i in lineas:
+            if i[:3]=="iwq":
+                self.water_quality = True
+            
+        #Create file
+        with open(prj_file, 'w') as archivo:
+            archivo.write(f"ikw=inputs\\design.ikw  \n")
+            archivo.write(f"iso=inputs\\design.iso  \n")
+            archivo.write(f"igr=inputs\\design.igr  \n")
+            archivo.write(f"isd=inputs\\design.isd  \n")
+            archivo.write(f"irn=inputs\\design.irn  \n")
+            archivo.write(f"iro=inputs\\design.iro  \n")
+            if self.water_quality:
+                archivo.write(f"iwq=inputs\\design.iwq  \n")
+            archivo.write(f"og1=output\\design.og1  \n")
+            archivo.write(f"og2=output\\design.og2  \n")
+            archivo.write(f"ohy=output\\design.ohy  \n")
+            archivo.write(f"osm=output\\design.osm  \n")
+            archivo.write(f"osp=output\\design.osp  \n")
+            if self.water_quality:
+                archivo.write(f"owq=output\\design.owq  \n")
+        
+        #UH
+        lis_file = self.dlg_base.working_directory_vfsmod.text()+"\\design\\design.lis"
+        #Create file
+        with open(lis_file, 'w') as archivo:
+            archivo.write(f"inp=inputs\\design.inp  \n")
+            archivo.write(f"iro=inputs\\design.iro  \n")
+            archivo.write(f"irn=inputs\\design.irn  \n")
+            archivo.write(f"isd=inputs\\design.isd  \n")
+            archivo.write(f"out=inputs\\design.out  \n")
+            archivo.write(f"hyt=inputs\\design.hyt  \n")
+        
+        #REST OF THE FILES
+        #Function to copy and paste the inputs to create the files to use in the sensitivity analysis
+        def copy_paste(process,type_input):
+            ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\design\\inputs\\design.{type_input}" 
+            if process == "UH":
+                ruta = self.obtain_direction_vfsmod(self.dlg_base.uh_file_sensitivity_design.text())
+            elif process == "VFS":
+                ruta = self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity_design.text())
+            if os.path.exists(ruta) and os.path.isfile(ruta):
+                #First we open .prj and obtain the direction of the copying file
+                with open(ruta, "r") as archivo:
+                    lineas = archivo.readlines()
+                for i in lineas:
+                    if i[:3]==type_input:
+                        ikw = i.split("=")[-1]
+                if not os.path.isabs(ikw): #relative path
+                    ikw = os.path.join(os.path.dirname(ruta), ikw)
+                ikw = ikw.replace("\n", "") #take out the line jumps
+                shutil.copyfile(ikw, ruta_pegar)
+        #INP
+        copy_paste("UH","inp")
+        #OUT
+        copy_paste("UH","out")
+        #HYT
+        copy_paste("UH","hyt")
+        
+        #IKW
+        copy_paste("VFS","ikw")
+        #ISO
+        copy_paste("VFS","iso")
+        #IGR
+        copy_paste("VFS","igr")
+        #ISD
+        copy_paste("VFS","isd")
+        #IRN
+        copy_paste("VFS","irn")
+        #IRO
+        copy_paste("VFS","iro")
+        #IWQ
+        if self.water_quality:
+            copy_paste("VFS","iwq")
+        
+        #NOW WE REPLICATE THE FILES AS MUCH AS CORES ARE IN THE COMPUTER
+        self.number_cores = psutil.cpu_count(logical=False)
+        
+        #Replicate prj as much as cores are
+        for core in range(self.number_cores*5):#we do *5 because if not there can be problems of overlapping:processes executing files that are already executing
+            with open(prj_file, 'r') as file:
+                lineas = file.readlines()
+            lineas = [linea.replace("design",f"design_{core}") for linea in lineas]
+            new_filepath = prj_file.replace("design.prj",f"design_{core}.prj")
+            with open(new_filepath, 'w') as archivo:
+                for i in lineas:
+                    archivo.write(i)
+        #Replicate lis as much as cores are
+        for core in range(self.number_cores*5):
+            with open(lis_file, 'r') as file:
+                lineas = file.readlines()
+            lineas = [linea.replace("design",f"design_{core}") for linea in lineas]
+            new_filepath = lis_file.replace("design.lis",f"design_{core}.lis")
+            with open(new_filepath, 'w') as archivo:
+                for i in lineas:
+                    archivo.write(i)
+        #Move replicated input files 
+        carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\design"
+        folder_path = Path(carpeta+"\\inputs")
+        files = [f.name for f in folder_path.iterdir() if f.is_file() and "_" not in f.name]
+        for i in range(self.number_cores*5):
+            for k in files:
+                shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("design",f"design_{i}"))
+        #Replicate executables
+        carpeta_bat = self.plugin_directory+"\\executables"
+        for core in range(self.number_cores*5):
+            #Execution UH
+            shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_uh_{core}.bat")
+            f = open(carpeta_bat+"\\"+f"execution_uh_{core}.bat","w+")
+            linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\design\\"')
+            linea_dos = f'"{self.plugin_directory}\\executables\\uh" design_{core}.lis'
+            linea_tres = "Pause"
+            f.write("{} \n".format(linea_uno))
+            f.write("{} \n".format(linea_dos))
+            f.write("{} \n".format(linea_tres))
+            f.close()
+            #Execution VFS
+            shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_vfs_{core}.bat")
+            f = open(carpeta_bat+"\\"+f"execution_vfs_{core}.bat","w+")
+            linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\design\\"')
+            linea_dos = f'"{self.plugin_directory}\\executables\\vfsm" design_{core}.prj'
+            linea_tres = "Pause"
+            f.write("{} \n".format(linea_uno))
+            f.write("{} \n".format(linea_dos))
+            f.write("{} \n".format(linea_tres))
+            f.close()
+    
     
     def move_files_sensitivity_analysis_calibration(self):
         """Method to move files to the corresponding folders for sensitiviy analysis for calibration"""
@@ -5757,6 +6137,24 @@ class qvfsmod:
             create_folder("sensitivity\inputs")
         if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\sensitivity\output"):
             create_folder("sensitivity\output")
+        
+    def create_folder_sensitivity_analysis_design(self):
+        """Method to create the folder needed to sensitivity analysis for design"""
+        def create_folder(name_folder): #function to create a folder
+            parent_dir = self.dlg_base.working_directory_vfsmod.text()
+            path_file = os.path.join(parent_dir, name_folder)
+            mode = 0o666
+            try:
+                os.mkdir(path_file, mode)
+            except:
+                pass
+            
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\design"):
+            create_folder("design")
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\design\inputs"):
+            create_folder("design\inputs")
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\design\output"):
+            create_folder("design\output")
     
     def create_folder_sensitivity_analysis_calibration(self):
         """Method to create the folder needed to sensitivity analysis for calibration"""
@@ -5939,6 +6337,48 @@ class qvfsmod:
             
             return dic_data
     
+    
+    def create_dictionary_sensitivity_analysis_design(self):
+        """Method to create the dictionary that will contain the parameters of the sensitivity analysis for design"""
+        #Functions to convert user specified inputs into inputs that SALib can read
+        def distribution_parameters_fun(row):
+            if str(self.dlg_base.table_2.item(row, 1).text()) == "Uniform":
+                distribution = "unif"
+                texto = str(self.dlg_base.table_2.item(row, 2).text())
+                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+            elif str(self.dlg_base.table_2.item(row, 1).text()) == "Logaritmic uniform":
+                distribution = "logunif"
+                texto = str(self.dlg_base.table_2.item(row, 2).text())
+                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+            elif str(self.dlg_base.table_2.item(row, 1).text()) == "Triangular":
+                distribution = "triang"
+                texto = str(self.dlg_base.table_2.item(row, 2).text())
+                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+            elif str(self.dlg_base.table_2.item(row, 1).text()) == "Normal":
+                distribution = "norm"
+                texto = str(self.dlg_base.table_2.item(row, 2).text())
+                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+            elif str(self.dlg_base.table_2.item(row, 1).text()) == "Normal truncated":
+                distribution = "truncnorm"
+                texto = str(self.dlg_base.table_2.item(row, 2).text())
+                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+            elif str(self.dlg_base.table_2.item(row, 1).text()) == "Lognormal":
+                distribution = "lognorm"
+                texto = str(self.dlg_base.table_2.item(row, 2).text())
+                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+            return distribution, parameters
+        
+        #Diccionario nombre en el diálogo - [parametros del análisis de sensibilidad]
+        dic_data = {}
+        for i in range(self.dlg_base.table_2.rowCount()):
+            #Diccionario [Parametro] = (Distribucion, Parametros)
+            name = self.dlg_base.table_2.item(i, 0).text()
+            #Obtain name of distribution and parameters
+            dis,param = distribution_parameters_fun(i)
+            dic_data[name] = [dis,param]
+        
+        return dic_data
+    
     def create_dictionary_sensitivity_analysis_calibration(self):
         """Method to create the dictionary that will contain the parameters of the sensitivity analysis for calibration"""
         #Functions to convert user specified inputs into inputs that SALib can read
@@ -6075,6 +6515,83 @@ class qvfsmod:
                 # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
                 self.dlg_base.gridLayout_81.addWidget(self.dlg_base.fourth_label, 5, 0)
                 self.dlg_base.gridLayout_81.addWidget(self.dlg_base.fourth, 5, 1)
+    
+    def distribution_parameters_design(self):
+        """Method to add/delete new labels depending on choosed distribution for design"""
+        distribution = [self.dlg_base.distributions_design.itemText(i) for i in range(self.dlg_base.distributions_design.count())][self.dlg_base.distributions_design.currentIndex()]
+        
+        # Obtén el número de filas actual en el GridLayout
+        numRows = self.dlg_base.gridLayout_93.rowCount()
+        
+        def delete_elements():
+            try:
+                widget = self.dlg_base.third_design
+                self.dlg_base.gridLayout_93.removeWidget(widget)
+                widget.deleteLater()
+                widget = self.dlg_base.third_label_design
+                self.dlg_base.gridLayout_93.removeWidget(widget)
+                widget.deleteLater()
+            except:
+                pass
+            try:
+                widget = self.dlg_base.fourth_design
+                self.dlg_base.gridLayout_93.removeWidget(widget)
+                widget.deleteLater()
+                widget = self.dlg_base.fourth_label_design
+                self.dlg_base.gridLayout_93.removeWidget(widget)
+                widget.deleteLater()
+            except:
+                pass
+
+        if distribution=="Uniform":
+            #Primero se borra
+            delete_elements()
+            
+        elif distribution=="Logaritmic uniform":
+            #Primero se borra
+            delete_elements()
+ 
+        elif distribution=="Triangular":
+            #Primero se borra
+            delete_elements()
+
+            #Luego se añade
+            # Crea un nuevo QLabel y QLineEdit
+            self.dlg_base.third_label_design = QLabel("Peak")
+            self.dlg_base.third_design = QLineEdit()
+            self.dlg_base.third_design.setAlignment(Qt.AlignCenter)
+            # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
+            self.dlg_base.gridLayout_93.addWidget(self.dlg_base.third_label_design, 4, 0)
+            self.dlg_base.gridLayout_93.addWidget(self.dlg_base.third_design, 4, 1)
+
+        elif distribution=="Normal":
+            #Primero se borra
+            delete_elements()
+        
+        if distribution=="Lognormal":
+            #Primero se borra
+            delete_elements()
+        
+        if distribution=="Normal truncated":
+            #Primero se borra
+            delete_elements()
+            
+            #Luego se añade
+            # Crea un nuevo QLabel y QLineEdit
+            self.dlg_base.third_label_design = QLabel("Mean")
+            self.dlg_base.third_design = QLineEdit()
+            self.dlg_base.third_design.setAlignment(Qt.AlignCenter)
+            # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
+            self.dlg_base.gridLayout_93.addWidget(self.dlg_base.third_label_design, 4, 0)
+            self.dlg_base.gridLayout_93.addWidget(self.dlg_base.third_design, 4, 1)
+            
+            # Crea un nuevo QLabel y QLineEdit
+            self.dlg_base.fourth_label_design = QLabel("Standard deviation")
+            self.dlg_base.fourth_design = QLineEdit()
+            self.dlg_base.fourth_design.setAlignment(Qt.AlignCenter)
+            # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
+            self.dlg_base.gridLayout_93.addWidget(self.dlg_base.fourth_label_design, 5, 0)
+            self.dlg_base.gridLayout_93.addWidget(self.dlg_base.fourth_design, 5, 1)
     
     def distribution_parameters_uncertainity(self):
         """Method to add/delete new labels depending on choosed distribution"""
@@ -6252,6 +6769,25 @@ class qvfsmod:
             if distribution=="Normal truncated":
                 change_lines("Minimum","Maximum","Mean","Standard deviation")
     
+    def change_bounds_sensitivity_design(self):
+        """Metod to change bounds labels if distribution changed for design"""
+        def change_lines(bound1,bound2,bound3=None,bound4=None):
+            self.dlg_base.label_152.setText(bound1)
+            self.dlg_base.label_150.setText(bound2)
+        distribution = [self.dlg_base.distributions_design.itemText(i) for i in range(self.dlg_base.distributions_design.count())][self.dlg_base.distributions_design.currentIndex()]
+        if distribution=="Uniform":
+            change_lines("Minimum","Maximum")
+        if distribution=="Logaritmic uniform":
+            change_lines("Minimum","Maximum")
+        if distribution=="Triangular":
+            change_lines("Minimum","Maximum","Peak")
+        if distribution=="Normal":
+            change_lines("Mean","Standard deviation")
+        if distribution=="Lognormal":
+            change_lines("Mean","Standard deviation")
+        if distribution=="Normal truncated":
+            change_lines("Minimum","Maximum","Mean","Standard deviation")
+    
     def change_bounds_uncertainity(self):
         """Metod to change bounds labels if distribution changed"""
         def change_lines(bound1,bound2,bound3=None,bound4 = None):
@@ -6304,6 +6840,18 @@ class qvfsmod:
         
         #Update number of samples
         self.change_sensitivity_method()
+    
+    def delete_sensitivity_table_design(self):
+        """Method to delete sensitivity analysis parameters to table for design"""
+        table = self.dlg_base.table_2
+        numero_filas = table.rowCount()
+        if numero_filas > 0:
+            table.removeRow(numero_filas - 1)
+        if numero_filas == 1:
+            table.setColumnCount(0)
+        
+        #Update number of samples
+        self.change_sensitivity_method_design()
     
     def delete_sensitivity_table_calibration(self):
         """Method to delete sensitivity analysis parameters to table for calibration"""
@@ -6378,6 +6926,49 @@ class qvfsmod:
             
             #Update number of samples
             self.change_sensitivity_method()
+    
+    def add_sensitivity_table_design(self):
+        """Method to add information to the sensitivity analysis table for design"""
+        #Method to add sensitivity analysis parameters to table
+        table = self.dlg_base.table_2
+        
+        
+        if table.columnCount() == 0:
+            #Añadir columnas
+            nombres_columnas = ["Parameter","Distribution","Distribution parameters"]
+            
+            table.setColumnCount(len(nombres_columnas))
+            table.setHorizontalHeaderLabels(nombres_columnas)
+            #Cambiar el ancho de las columnas
+            table.setColumnWidth(nombres_columnas.index("Parameter"), 180)
+            table.setColumnWidth(nombres_columnas.index("Distribution parameters"), 200)
+            
+        #Añadir filas
+        def add_element(columna,texto):
+            item = QTableWidgetItem(texto)
+            table.setItem(numero_filas, columna, item)
+            item.setTextAlignment(Qt.AlignCenter)
+        
+        #Primero la información de los lineEdits
+        numero_filas = table.rowCount()
+        table.setRowCount(numero_filas + 1)
+        #Add parameter
+        add_element(0,self.dlg_base.parameter_name_design.text())
+        #Add distribution
+        distribution = [self.dlg_base.distributions_design.itemText(i) for i in range(self.dlg_base.distributions_design.count())][self.dlg_base.distributions_design.currentIndex()]
+        add_element(1,distribution)
+        #Add distribution parameters
+        if distribution=="Uniform" or distribution=="Logaritmic uniform":
+            add_element(2,f"min:{self.dlg_base.first_design.text()},max:{self.dlg_base.second_design.text()}")
+        elif distribution == "Triangular":
+            add_element(2,f"min:{self.dlg_base.first_design.text()},max:{self.dlg_base.second_design.text()},peak:{self.dlg_base.third_design.text()}")
+        elif distribution == "Normal" or distribution == "Lognormal":
+            add_element(2,f"mean:{self.dlg_base.first_design.text()},stdv:{self.dlg_base.second_design.text()}")
+        elif distribution == "Normal truncated":
+            add_element(2,f"min:{self.dlg_base.first_design.text()},max:{self.dlg_base.second_design.text()},mean:{self.dlg_base.third_design.text()},stdv:{self.dlg_base.fourth_design.text()}")
+        
+        #Update number of samples
+        self.change_sensitivity_method_design()
     
     def add_sensitivity_table_calibration(self):
         """Method to add information to the sensitivity analysis table for calibration"""
@@ -6491,6 +7082,36 @@ class qvfsmod:
             except:
                 pass
     
+    def change_sensitivity_method_design(self):
+        """Method to change sensitivity inputs depending on selected senstitivity method for design"""
+        if self.dlg_base.sobol_design.isChecked():
+            self.dlg_base.label_155.setText("M")
+            try:
+                if self.dlg_base.trajectories_design.text()=="" or self.dlg_base.table_2.rowCount()==0:
+                    self.dlg_base.samples_design.setText("")
+                else:
+                    self.dlg_base.samples_design.setText(str(int(self.dlg_base.trajectories_design.text())*(2*self.dlg_base.table_2.rowCount()+2)))
+            except:
+                pass
+        elif self.dlg_base.morris_design.isChecked():
+            self.dlg_base.label_155.setText("Trajectories")
+            try:
+                if self.dlg_base.trajectories_design.text()=="" or self.dlg_base.table_2.rowCount()==0:
+                    self.dlg_base.samples_design.setText("")
+                else:
+                    self.dlg_base.samples_design.setText(str(int(self.dlg_base.trajectories_design.text())*(self.dlg_base.table_2.rowCount()+1)))
+            except:
+                pass
+        elif self.dlg_base.fast_design.isChecked():
+            self.dlg_base.label_155.setText("N")
+            try:
+                if self.dlg_base.trajectories_design.text()=="" or self.dlg_base.table_2.rowCount()==0:
+                    self.dlg_base.samples_design.setText("")
+                else:
+                    self.dlg_base.samples_design.setText(str(int(self.dlg_base.trajectories_design.text())*(self.dlg_base.table_2.rowCount())))
+            except:
+                pass
+    
     def change_sensitivity_method_calibration(self):
         """Method to change sensitivity inputs depending on selected senstitivity method for calibration"""
         self.dlg_calibration_sensitivity_hydrograph.label_125.setText("Trajectories")
@@ -6528,6 +7149,38 @@ class qvfsmod:
                     boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
                     boton.setObjectName(nombre)
                     self.dlg_base.verticalLayout_19.addWidget(boton)
+                    política_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                    boton.setSizePolicy(política_tamaño)
+                    boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
+            except:
+                pass
+        
+    def search_sensitivity_parameter_design(self):
+        """Method to search sensitivity for design parameter in the dialog"""
+        #Metod to search a sensitiviy input
+        texto = str(self.dlg_base.search_design.text())
+        #If text == "" then delete every button
+        if texto =="":
+            while self.dlg_base.verticalLayout_27.count():
+                child = self.dlg_base.verticalLayout_27.takeAt(0)
+                if child.widget():
+                    child.widget().deleteLater()
+        else:
+            elementos = []
+            for i in self.sensitivity_parameters.keys(): 
+                if texto.lower() in i.lower() and (i!="Rainfall (mm)" and i!="Buffer length (m)"):#eliminate rainfall and vfs length
+                    elementos.append(i)
+            try: #if it doesnt find a name
+                #Delete all elements of vertical layout of scroll area
+                while self.dlg_base.verticalLayout_27.count():
+                    child = self.dlg_base.verticalLayout_27.takeAt(0)
+                    if child.widget():
+                        child.widget().deleteLater()
+                #Add new button to the scroll area
+                for nombre in elementos:
+                    boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                    boton.setObjectName(nombre)
+                    self.dlg_base.verticalLayout_27.addWidget(boton)
                     política_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                     boton.setSizePolicy(política_tamaño)
                     boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
@@ -6673,6 +7326,113 @@ class qvfsmod:
                 boton.setSizePolicy(politica_tamaño)
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
     
+    def show_buttons_sensitivity_dialog_design(self,button):
+        """Method to add buttons to sensitivity dialog for design"""
+        #Delete all elements of vertical layout of scroll area
+        while self.dlg_base.verticalLayout_27.count():
+            child = self.dlg_base.verticalLayout_27.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+        #Add element
+        if button == self.dlg_base.all_parameters_design:
+            for nombre in self.sensitivity_parameters.keys():
+                if nombre!="Rainfall (mm)" and nombre!="Buffer length (m)":#eliminate rainfall and vfs length
+                    boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                    boton.setObjectName(nombre)
+                    self.dlg_base.verticalLayout_27.addWidget(boton)
+                    politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                    boton.setSizePolicy(politica_tamaño)
+                    boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity_desing(b))
+        if button == self.dlg_base.rainfall_event_design:
+            parameters = ["Storm duration (h)","Curve number"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_27.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity_desing(b))
+                
+        if button == self.dlg_base.source_area_design:
+            parameters = ["Source Area Length along the slope (m)", "Source Area Slope as a fraction","Source Area (ha)"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_27.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity_desing(b))
+                
+        if button == self.dlg_base.erosion_parameters_design:
+            parameters = ["Soil erodibility (K)","Percent organic matter","Crop factor","Particle Class Diameter","Practice Factor"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_27.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity_desing(b))
+                
+        if button == self.dlg_base.buffer_dimensions_design:
+            parameters = ["Width of the Strip (m)","Filter Manning n (RNA s/m^1/3)","Average Filter Slope"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_27.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity_desing(b))
+                
+        if button == self.dlg_base.kinematic_wave_design:
+            parameters = ["Number of Nodes","Time Weight Factor","Number of Elemental Nodal Points","Courant Number","Maximum Iterations"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_27.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity_desing(b))
+                
+        if button == self.dlg_base.infiltration_design:
+            parameters = ["Vertical Saturated K","Average Suction at the Wetting Front","Initial Water Content","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked","Water table depth","Soil saturated hydraulic\nconductivity ansiotropy ratio","Soil water characteristic OR","Soil water characteristic VGALPHA","Soil water characteristic VGN","Soil water characteristic VGM","Soil water characteristic BCALPHA","Soil water characteristic BCLAMDA","Unsaturated hydraulic \nconductivity curve VGM","Unsaturated hydraulic \nconductivity curve BCETA","Unsaturated hydraulic \nconductivity curve BCALPHA","Unsaturated hydraulic \nconductivity curve GDALPHA"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_27.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity_desing(b))
+                
+        if button == self.dlg_base.buffer_vegetation_design:
+            parameters = ["Spacing for grass stems (cm)","Roughness-Grass Mannings n VN","Height of grass (cm)","Roughness-Bare surface Mannings n (Vn2)"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_27.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity_desing(b))
+                
+        if button == self.dlg_base.incoming_sediment_design:
+            parameters = ["Incoming flow sediment concentration (g/cm^3)","Sediment particle size diameter d50 (cm)","Porosity of deposited sediment as a fraction","Portion of Particles from incoming sediment \nwith diameter >0.0037 cm","Sediment particle density (g/cm^3)"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_27.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity_desing(b))
+        
+        if button == self.dlg_base.water_quality_button_design:
+            parameters = ["Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Organic Carbon (%)","Clay in incoming sediment (%)","Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)","Dispersion length of chemical (m)","Runoff remobilized VFS residue \nfrom last event (mg/m2)"]
+            for nombre in parameters:
+                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                boton.setObjectName(nombre)
+                self.dlg_base.verticalLayout_27.addWidget(boton)
+                politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+                boton.setSizePolicy(politica_tamaño)
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity_desing(b))
+    
     def show_buttons_uncertainity_dialog(self,button):
         """Method to add buttons to uncertainity dialog"""
         #Delete all elements of vertical layout of scroll area
@@ -6782,6 +7542,10 @@ class qvfsmod:
     def add_parameter_name_sensitivity(self,name):
         """Method to add the parameter name to the lineEdit in sensitivity analysis dialog"""
         self.dlg_base.parameter_name.setText(name)
+    
+    def add_parameter_name_sensitivity_desing(self,name):
+        """Method to add the parameter name to the lineEdit in sensitivity analysis dialog for design"""
+        self.dlg_base.parameter_name_design.setText(name)
     
     def add_parameter_name_uncertainity(self,name):
         """Method to add the parameter name to the lineEdit in sensitivity analysis dialog"""
@@ -9377,7 +10141,7 @@ class qvfsmod:
             contenido+=f"{i}"
         for i in range(len(df)):
             contenido +=f" {df.iloc[i,0]}   {df.iloc[i,1]}   {df.iloc[i,2]}\n"
-        for i in lineas[-8:]:    
+        for i in lineas_ikw_original[-8:]:    
             contenido+=f"{i}"
         with open(ikw, 'w') as archivo:
             archivo.write(contenido)
@@ -9443,7 +10207,7 @@ class qvfsmod:
             contenido+=f"{i}"
         for i in range(len(df)):
             contenido +=f" {df.iloc[i,0]}   {df.iloc[i,1]}   {df.iloc[i,2]}\n"
-        for i in lineas[-8:]:    
+        for i in lineas_ikw_original[-8:]:    
             contenido+=f"{i}"
         with open(ikw, 'w') as archivo:
             archivo.write(contenido)
@@ -9690,7 +10454,26 @@ class qvfsmod:
         #Show the dialog
         self.dlg_warning_message_calibration.show()
     
-                
+    
+    def obtain_number_pestidides(self,direction):
+        """Method to obtain the number of pesticides from a prj"""
+        prj_file = direction
+        #Obtain direction iwq
+        with open(prj_file, "r") as archivo:
+            lineas = archivo.readlines()
+            
+        for i in lineas:
+            if i[:3]=="iwq":
+                ikw = i.split("=")[-1]
+        if not os.path.isabs(ikw): #relative path
+            ikw = os.path.join(os.path.dirname(prj_file), ikw)
+        ikw = ikw.replace("\n", "") #take out the line jumps
+        with open(ikw, 'r') as file:
+            lineas = file.readlines()
+        #Obtain number of pesticides
+        number_elements = lineas[4].split(";")[0].split()
+        number_pesticides = int((len(number_elements) - 7)/4+1)
+        return number_pesticides
     
     def run_design_part_one(self):
         """Method to run the design"""
@@ -9710,6 +10493,9 @@ class qvfsmod:
         #Move files to design folder
         self.move_files_design_analysis()
         
+        #Obtain number of pesticides 
+        if self.water_quality:
+            self.number_pesticides = self.obtain_number_pestidides(self.obtain_direction_vfsmod(self.dlg_base.design_vfs_file.text()))
         
         #We add the information of the loops to the files and we execute the file
         self.df_results_design = pd.DataFrame(columns=["Total Runoff from source (mm)","Total Runoff from Source (m3)",
@@ -9916,7 +10702,7 @@ class qvfsmod:
                 contenido+=f"{i}"
             for i in range(len(df)):
                 contenido +=f" {df.iloc[i,0]}   {df.iloc[i,1]}   {df.iloc[i,2]}\n"
-            for i in lineas[-8:]:    
+            for i in lineas_ikw_original[-8:]:    
                 contenido+=f"{i}"
             with open(self.dlg_base.working_directory_vfsmod.text()+"\\design\\inputs\\design.ikw", 'w') as archivo:
                 archivo.write(contenido)
@@ -10065,6 +10851,9 @@ class qvfsmod:
         #Add paths to uncertainity analysis
         add_text(self.dlg_base.uh_file_uncertainity,"uh")
         add_text(self.dlg_base.vfs_file_uncertainity,"vfs")
+        #Add paths to uncertainity analysis
+        add_text(self.dlg_base.uh_file_sensitivity_design,"uh")
+        add_text(self.dlg_base.vfs_file_sensitivity_design,"vfs")
     
     def folder_creation_vfsmod(self):
         """Method to create folders if they not exist for the output"""
@@ -11646,6 +12435,8 @@ class qvfsmod:
         add_image_button("images/remove.svg",self.dlg_base.remove)
         add_image_button("images/add.svg",self.dlg_base.add_uncertainity)
         add_image_button("images/remove.svg",self.dlg_base.remove_uncertainity)
+        add_image_button("images/add.svg",self.dlg_base.add_design)
+        add_image_button("images/remove.svg",self.dlg_base.remove_design)
         
         #Add search 
         add_image_button(search_path,self.dlg_base.select_directory_vfsmod)
@@ -12135,13 +12926,13 @@ class qvfsmod:
 #PARALELIZATION OF DESIGN
 def wrapper_design_paralelization(args, processer):
     """Esta función envuelve la función original para manejar múltiples argumentos"""
-    i, core_id, param_values,working_directory,length_checked,spacing_checked, vfs_file_design, water_quality= args
+    i, core_id, param_values,working_directory,length_checked,spacing_checked, vfs_file_design, water_quality,number_pesticides= args
     try:
-        return design_paralelization(i, core_id, param_values,working_directory,length_checked,spacing_checked,vfs_file_design,water_quality)
+        return design_paralelization(i, core_id, param_values,working_directory,length_checked,spacing_checked,vfs_file_design,water_quality,number_pesticides)
     except:
-        return save_outputs_design(working_directory,True,length_checked,spacing_checked,i,param_values,core_id,water_quality)
+        return save_outputs_design(working_directory,True,length_checked,spacing_checked,i,param_values,core_id,water_quality,number_pesticides)
 
-def design_paralelization(number_execution,core,combinations_design,working_directory,length_checked,spacing_checked,vfs_file_design,water_quality):
+def design_paralelization(number_execution,core,combinations_design,working_directory,length_checked,spacing_checked,vfs_file_design,water_quality,number_pesticides):
     '''Function to run in paralell design analysis'''
     error = False
     #We change the values
@@ -12174,7 +12965,7 @@ def design_paralelization(number_execution,core,combinations_design,working_dire
         error = True
     
     #Save outputs
-    return save_outputs_design(working_directory,error,length_checked,spacing_checked,number_execution,combinations_design,core,water_quality)
+    return save_outputs_design(working_directory,error,length_checked,spacing_checked,number_execution,combinations_design,core,water_quality,number_pesticides)
     
 
 
@@ -12311,14 +13102,14 @@ def modify_ikw_file_design(vfs_file_design,working_directory,value_change,core):
             contenido+=f"{i}"
         for i in range(len(df_a)):
             contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
-        for i in lineas[-8:]:    
+        for i in lineas_ikw_original[-8:]:    
             contenido+=f"{i}"
 
         with open(working_directory+f"\\design\\inputs\\design_{core}.ikw", 'w') as archivo:
             archivo.write(contenido)
 
 
-def save_outputs_design(working_directory,error,length_checked,spacing_checked,number_execution,combinations_design,core,water_quality):
+def save_outputs_design(working_directory,error,length_checked,spacing_checked,number_execution,combinations_design,core,water_quality,number_pesticides):
     """Function to save outputs in the design process"""
     #Obtain the values
     if error:
@@ -12387,23 +13178,29 @@ def save_outputs_design(working_directory,error,length_checked,spacing_checked,n
             #Obtain results water quality
             with open(working_directory+f"\\design\\output\\design_{core}.owq", "r") as archivo:
                 lineas_owq = archivo.readlines()
-            def obtain_result_owq(string):
+            def obtain_result_owq(string,number_pesticide):
+                condition = False
                 for i in lineas_owq:
-                    if i.split("=")[-1]==string:
+                    if i == f"PRODUCT  {number_pesticide}- Soil leaching and mixing layer calculations (CDE)\n":
+                        condition = True
+                    if i.split("=")[-1]==string and condition:
                         for k in i.split("=")[0].split(" "):
                             try:
                                 output = float(k)
                                 return output
                             except:
                                 pass
-            pesticide_input = obtain_result_owq(" Pesticide input (mi)\n")
-            pesticide_output = obtain_result_owq(" Pesticide output (mo)\n")
-            try:
-                pesticide_delivery = pesticide_output/pesticide_input
-            except ZeroDivisionError:
-                pesticide_delivery = np.nan
+            
+            #Iterate through all the pesticides
+            for p in range(number_pesticides):
+                pesticide_input = obtain_result_owq(" Pesticide input (mi)\n",p+1)
+                pesticide_output = obtain_result_owq(" Pesticide output (mo)\n",p+1)
+                try:
+                    pesticide_delivery = pesticide_output/pesticide_input
+                except ZeroDivisionError:
+                    pesticide_delivery = np.nan
                 
-            df_conc["Pesticide Delivery Ratio"]=pesticide_delivery
+                df_conc[f"Pesticide Delivery Ratio Pesticide {p+1}"]=pesticide_delivery
         
         if length_checked:
             df_conc.insert(0,"VFS Length (m)",[combinations_design[number_execution][1]])
@@ -12613,7 +13410,7 @@ def change_buffer_length_uncertainity(value_change,core,vfs_uncertainity_file,wo
         contenido+=f"{i}"
     for i in range(len(df_a)):
         contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
-    for i in lineas[-8:]:    
+    for i in lineas_ikw_original[-8:]:    
         contenido+=f"{i}"
     with open(working_directory+f"\\uncertainity\\inputs\\uncertainity_{core}.ikw", 'w') as archivo:
         archivo.write(contenido)
@@ -12741,6 +13538,357 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
         
     return df_conc
     
+
+
+
+
+#PARALELIZATION OF SENSITIVITY FOR DESIGN
+def wrapper_sensitivity_paralelization_design(args):
+    """Esta función envuelve la función original para manejar múltiples argumentos"""
+    i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality, buffer_lengths,rows_execute = args
+    return sensitivity_paralelization_design(i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality,buffer_lengths,rows_execute)
+
+
+def sensitivity_paralelization_design(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file,water_quality,buffer_lengths,rows_execute):
+    '''Function to run in paralell sensitivity analysis'''
+    try: #if there is an error execution then return a dataframe with error
+        execution = execution_sensitivity_analysis_design(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file,buffer_lengths,rows_execute)
+        #Save results
+        if execution == "error":
+            return save_results_sensitivity_analysis_design(number_execution,core,working_directory,dic_data,param_values,water_quality ,buffer_lengths,rows_execute,error = True)
+            
+        else:
+            return save_results_sensitivity_analysis_design(number_execution,core,working_directory,dic_data,param_values,water_quality ,buffer_lengths,rows_execute,error = False)
+    except:
+        return save_results_sensitivity_analysis_design(number_execution,core,working_directory,dic_data,param_values,water_quality ,buffer_lengths,rows_execute,error = True)
+        
+    
+    
+
+def execution_sensitivity_analysis_design(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file,buffer_lengths,rows_execute):
+    """Function for the each execution of the sensitivity analysis"""
+    #We change the values of the inputs
+    execute_uh = False
+    for k,i in enumerate(dic_data.keys()):
+        #Change inputs
+        value_change = param_values[rows_execute[number_execution]][k]
+        #If rougheness or slope is selected then change in another way
+        
+        if i == "Filter Manning n (RNA s/m^1/3)":
+            change_filter_manning_sensitivity_design(value_change,1,core,working_directory)
+        elif i == "Average Filter Slope":
+            change_filter_manning_sensitivity_design(value_change,2,core,working_directory)
+        else:
+            information_parameter = sensitivity_parameters[i]
+            modify_inputs_sensitivity_design(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3],core,working_directory)
+        #Check if there is the need to execute UH
+        if information_parameter[3]=="uh":
+            execute_uh = True
+           
+    #Change value of buffer length
+    if i == "Buffer length (m)":
+        information_parameter = "Buffer length (m)"
+        value_change = buffer_lengths[number_execution%len(buffer_lengths)]
+        modify_inputs_sensitivity_design(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3],core,working_directory)
+        change_buffer_length_sensitivity_design(value_change,core,vfs_sensitivity_file,working_directory)
+    
+    #We execute
+    #Only execute UH if there are parameters that need to be executed in UH
+    if execute_uh:
+        resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_uh_{core}.bat"],
+            capture_output=True, 
+            text=True, 
+            shell=True)
+        #Put warning
+        if not "...FINISHED..." in resultado.stdout:            
+            return "error"
+    
+    
+        #Correct hietograph file
+        #correct_irn_file(working_directory+f"\\design\\inputs\\design_{core}.irn") 
+    
+    #VFS
+    resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_vfs_{core}.bat"],
+            capture_output=True, 
+            text=True, 
+            shell=True)
+    
+    #Put warning
+    if not "...FINISHED..." in resultado.stdout:
+        return "error"
+
+def modify_inputs_sensitivity_design(extension, row, column, new_value, process,core,working_directory):
+    """Function to modfiy inputs in sensitivity analysis"""
+    if process == "uh":
+        ruta = os.path.normpath(working_directory+f"\design\design_{core}.lis")
+    else:
+        ruta = os.path.normpath(working_directory+f"\design\design_{core}.prj")
+    with open(ruta, "r") as archivo:
+        lineas_prj = archivo.readlines()
+    for i in lineas_prj:
+        if i.split(".")[-1].replace("\n", "").replace(" ","") == extension:
+            filepath = i.split("=")[-1]
+            break
+    if not os.path.isabs(filepath): #relative path
+        filepath = os.path.join(os.path.dirname(ruta), filepath)
+    filepath = filepath.replace("\n", "")
+
+    with open(filepath, 'r') as file:
+        lineas = file.readlines()
+    numbers_str = lineas[row]
+    # Use regex to find all numbers in the string
+    matches = re.findall(r'\S+', numbers_str)
+    # Replace the specific number at the given index
+    matches[column] = str(new_value)
+    # Rebuild the string by replacing only the specific number
+    lineas[row] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+    with open(filepath, 'w') as archivo:
+        for i in lineas:
+            archivo.write(i)
+
+    
+def change_buffer_length_sensitivity_design(value_change,core,vfs_sensitivity_file,working_directory):
+    """Function to modifi length of buffer in sensitivity analysis"""
+    #First we save the .ikw file path
+    ruta = vfs_sensitivity_file
+    ikw = working_directory+f"\\design\\inputs\\design_{core}.ikw"
+    #We substitute value of length
+    with open(ikw, "r") as archivo:
+        lineas = archivo.readlines()
+    
+    def modify_number_in_string(numbers_str, index, new_value):
+        # Use regex to find all numbers in the string
+        matches = re.findall(r'\S+', numbers_str)
+        # Replace the specific number at the given index
+        matches[index] = str(new_value)
+        # Rebuild the string by replacing only the specific number
+        return re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+    lineas[2] = modify_number_in_string(lineas[2],0,value_change)
+    
+    #Then we update the segments
+    number_segments = int(lineas[3])
+    length = list(map(float, lineas[2].split()))[0]
+    new_interval = length/number_segments
+
+    #Data frame, but we take it from the original, not from the last execution
+    #We import dataframe of segments from the original file
+    with open(ruta, "r") as archivo:
+        lineas_prj = archivo.readlines()
+    ikw = lineas_prj[0].split("=")[-1]
+    if not os.path.isabs(ikw): #relative path
+        ikw = os.path.join(os.path.dirname(ruta), ikw)
+    ikw = ikw.replace("\n", "")
+    with open(ikw, "r") as archivo:
+        lineas_ikw_original = archivo.readlines()
+        
+    df = pd.DataFrame(data = {"Distance":[list(map(float, lineas_ikw_original[x].split()))[0] for x in range(4,4+number_segments)],
+                         "Manning":[list(map(float, lineas_ikw_original[x].split()))[1] for x in range(4,4+number_segments)],
+                         "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
+    
+    #We update the dataframe
+    df_a = df.copy()
+    actual_length = max(df["Distance"])
+    length_to_change = value_change
+    if length_to_change <= actual_length:
+        if length_to_change<min(df["Distance"]): #when distance is smaller than the first interval
+            df = df.head(1)
+        else:
+            df = df[df["Distance"]<=length_to_change]
+            df.loc[df.index[-1], "Distance"] = length_to_change
+    else:
+        df_a.loc[df.index[-1], "Distance"] = length_to_change
+    
+    
+    #Add to the file information 
+    lineas[3] = modify_number_in_string(lineas[3],0,len(df_a)) #change number of segments
+    
+    
+    
+    #THIS PART OF THE EXECUTION APPARENTLY DOESNT DO NOTHING BUT IF I DELETE I HAVE ERROR IN THE LAS EXECUTION OF THE PARALELIZATION
+    #We update the dataframe
+    new_distances = np.linspace(new_interval, new_interval * number_segments, number_segments)
+    def weighted_average(df, new_distances, new_interval, column):
+        averages = []
+        for dist in new_distances:
+            start, end = dist - new_interval, dist
+            
+            # Calcular el solapamiento entre los intervalos originales y el nuevo intervalo
+            overlap = np.minimum(df["Distance"], end) - np.maximum(df["Distance"].shift(fill_value=0), start)
+            
+            # Asegurarse de que el solapamiento sea positivo o al menos cero
+            overlap = np.clip(overlap, 0, new_interval)
+            
+            # Calcular los pesos basados en el solapamiento
+            weights = overlap / new_interval
+            
+            # Verificar si la suma de los pesos es mayor que cero para evitar NaN
+            total_weight = np.sum(weights)
+            if total_weight > 0:
+                avg = np.sum(weights * df[column]) / total_weight
+                averages.append(round(avg, 6))
+            else:
+                # Si no hay pesos válidos, usar el valor del intervalo anterior o un valor predeterminado
+                averages.append(df[column].iloc[0])  # o cualquier otro valor predeterminado
+        return averages
+
+    new_df = pd.DataFrame({
+        "Distance": new_distances,
+        "Manning": weighted_average(df, new_distances, new_interval, "Manning"),
+        "Slope": weighted_average(df, new_distances, new_interval, "Slope")
+    })
+    
+    
+    
+    
+    
+    
+    contenido = ""
+    for i in lineas[:4]:    
+        contenido+=f"{i}"
+    for i in range(len(df_a)):
+        contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
+    for i in lineas_ikw_original[-8:]:    
+        contenido+=f"{i}"
+    with open(working_directory+f"\\design\\inputs\\design_{core}.ikw", 'w') as archivo:
+        archivo.write(contenido)
+    
+def change_filter_manning_sensitivity_design(value_change,column,core,working_directory):
+    """Function to change the manning and slope value of the buffer in sensitivity analysis"""
+    #We obtain information of ikw file
+    ikw = working_directory+f"\\design\\inputs\\design_{core}.ikw"
+    
+    with open(ikw, "r") as archivo:
+        lineas = archivo.readlines()
+    
+    for row in range(4,len(lineas)):
+        numbers_str = lineas[row]
+        # Use regex to find all numbers in the string
+        matches = re.findall(r'\S+', numbers_str)
+        # Replace the specific number at the given index
+        if len(matches)==1:
+            break
+        matches[column] = str(value_change)
+        # Rebuild the string by replacing only the specific number
+        lineas[row] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+        
+        with open(ikw, 'w') as archivo:
+            for i in lineas:
+                archivo.write(i)
+
+
+def save_results_sensitivity_analysis_design(number_execution,core,working_directory,dic_data,param_values,water_quality,buffer_lengths,error,rows_execute):
+    """Function to save sensitivity results"""
+    #Obtain the values
+    if error:
+        #Dataframe to concatenate to the sensitivity results
+        df_conc = pd.DataFrame(data = {"Error":[1],"Total Runoff from source (mm)":[-1.0],
+            "Total Runoff from Source (m3)":[-1.0],"Total Runoff out from Filter (mm)":[-1.0],
+            "Total Runoff out from Filter (m3)":[-1.0],"Total Infiltration in Filter (m3)":[-1.0],
+            "Mass Sediment Input to Filter (kg)":[-1.0],"Concentration Sediment in Runoff from source Area (g/L)":[-1.0],
+            "Mass Sediment Output from Filter (kg)":[-1.0],"Concentration Sediment in Runoff exiting the Filter (g/L)":[-1.0],
+            "Sediment Delivery Ratio":[-1.0],"Runoff Delivery Ratio":[-1.0],"Water Front Depth (m)":[-1.0]})
+        #Add water quality parameters if present
+        if water_quality:
+            df_conc["Leachate depth (m)"]=[-1.0]
+            df_conc["Pesticide Delivery Ratio"]=[-1.0]
+
+    else:
+        ruta = working_directory+f"\\design\\output\\design_{core}.osp"
+        with open(ruta, "r") as archivo:
+            lineas = archivo.readlines()
+            
+        #Function to obtain specific results form .osp file
+        def obtain_result(string):
+            try:
+                for i in lineas:
+                    if i.split("=")[-1]==string:
+                        for k in i.split("=")[0].split(" "):
+                            try:
+                                output = float(k)
+                                break
+                            except:
+                                pass
+                return output
+                
+            except UnboundLocalError:
+                return -1.0
+                
+        
+        #Obtain results osp
+        runoff_from_source_mm = obtain_result(" Total Runoff from Source (mm depth over Source Area)\n")  
+        runoff_from_source_m3 = obtain_result(" Total Runoff from Source\n")
+        runoff_out_filter_mm = obtain_result(" Total Runoff out from Filter (mm depth over Source+Filter)\n")
+        runoff_out_filter_m3 = obtain_result(" Total Runoff out from Filter\n")
+        infiltration_filter = obtain_result(" Total Infiltration in Filter\n")
+        mass_sediment_input_filter = obtain_result(" Mass Sediment Input to Filter\n")
+        concentration_sediment_source = obtain_result(" Concentration Sediment in Runoff from source Area\n")
+        sediment_out_filter = obtain_result(" Mass Sediment Output from Filter\n")
+        concentration_sediment_filter = obtain_result(" Concentration Sediment in Runoff exiting the Filter\n")
+        sdr = obtain_result(" Sediment Delivery Ratio\n")
+        rdr = obtain_result(" Runoff Delivery Ratio\n")
+
+            
+        
+        #Obtain results ohy
+        ruta = working_directory+f"\\design\\output\\design_{core}.ohy"
+        with open(ruta, "r") as archivo:
+            lineas_ohy = archivo.readlines()
+        water_front_depth =float(lineas_ohy[-1].split()[-2])
+        
+
+        
+        #Dataframe to concatenate results
+        df_conc = pd.DataFrame(data = {"Error":[0],"Total Runoff from source (mm)":[runoff_from_source_mm],
+            "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm)":[runoff_out_filter_mm],
+            "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter (m3)":[infiltration_filter],
+            "Mass Sediment Input to Filter (kg)":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area (g/L)":[concentration_sediment_source],
+            "Mass Sediment Output from Filter (kg)":[sediment_out_filter],"Concentration Sediment in Runoff exiting the Filter (g/L)":[concentration_sediment_filter],
+            "Sediment Delivery Ratio":[sdr],"Runoff Delivery Ratio":[rdr],"Water Front Depth (m)":[water_front_depth]})
+        #Add water quality parameters if present
+        if water_quality:
+            #Obtain results water quality
+            with open(working_directory+f"\\design\\output\\design_{core}.owq", "r") as archivo:
+                lineas_owq = archivo.readlines()
+            valores = []
+            for i in range(len(lineas_owq)):
+                if lineas_owq[i] == "      Z(m)      C(mg/L)      S(mg/mg)\n":
+                    for k in range(i+2,len(lineas_owq)):
+                        if len(lineas_owq[k].split())==0 or (float(lineas_owq[k].split()[1])==float(0)) and (float(lineas_owq[k].split()[2])==float(0)):
+                            profundidad_lixiviado = float(lineas_owq[k].split()[0])
+                            break
+            
+            def obtain_result_owq(string):
+                for i in lineas_owq:
+                    if i.split("=")[-1]==string:
+                        for k in i.split("=")[0].split(" "):
+                            try:
+                                output = float(k)
+                                return output
+                            except:
+                                pass
+            pesticide_input = obtain_result_owq(" Pesticide input (mi)\n")
+            pesticide_output = obtain_result_owq(" Pesticide output (mo)\n")
+            try:
+                pesticide_delivery = pesticide_output/pesticide_input
+            except ZeroDivisionError:
+                pesticide_delivery = np.nan
+                
+            df_conc["Pesticide Delivery Ratio"]=pesticide_delivery    
+            df_conc["Leachate depth (m)"]=profundidad_lixiviado
+        
+    #Add the values of inputs 
+    for k,i in enumerate(dic_data.keys()):
+        df_conc.insert(0,i,[param_values[number_execution][k]])
+    
+    return df_conc
+
+
+
+
+
+
+
+
 
 
 #PARALELIZATION OF SENSITIVITY
@@ -12945,7 +14093,7 @@ def change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file,work
         contenido+=f"{i}"
     for i in range(len(df_a)):
         contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
-    for i in lineas[-8:]:    
+    for i in lineas_ikw_original[-8:]:    
         contenido+=f"{i}"
     with open(working_directory+f"\\sensitivity\\inputs\\sensitivity_{core}.ikw", 'w') as archivo:
         archivo.write(contenido)
@@ -13302,7 +14450,7 @@ def change_buffer_length_sensitivity_calibration(value_change,core,vfs_sensitivi
         contenido+=f"{i}"
     for i in range(len(df_a)):
         contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
-    for i in lineas[-8:]:    
+    for i in lineas_ikw_original[-8:]:    
         contenido+=f"{i}"
     with open(working_directory+f"\\inverse\\inputs\\inverse_{core}.ikw", 'w') as archivo:
         archivo.write(contenido)
@@ -13655,6 +14803,36 @@ class SensitivityAnalysisThread(QThread):
 
     def callback(self, execution_num,result):  # Cambiado para recibir solo execution_num
         self.update_progress.emit([execution_num,result])
+
+class SensitivityAnalysisThreadDesign(QThread):
+    """Class to run parallelization of sensitivity analysis for design with QThread so we can se the progress bar"""
+    update_progress = pyqtSignal(list)
+    def __init__(self, args_list):
+        super().__init__()
+        self.args_list = args_list
+    def run(self):
+        with Pool(processes=psutil.cpu_count(logical=False)) as pool:
+            async_results = [
+                pool.apply_async(
+                    wrapper_sensitivity_paralelization_design,
+                    args=(args,),
+                    callback=lambda result, idx=i: self.callback(idx, result)  # Cambiado aquí
+                ) for i, args in enumerate(self.args_list)
+            ]
+            pool.close()
+            pool.join()  # Espera a que todos los procesos terminen
+        
+            # Captura y maneja las excepciones
+            for i, async_result in enumerate(async_results):
+                try:
+                    async_result.get()  # Esto lanzará la excepción si ocurrió alguna
+                except Exception as e:
+                    print(f"Error en proceso {i}: {e}")
+        
+
+    def callback(self, execution_num,result):  # Cambiado para recibir solo execution_num
+        self.update_progress.emit([execution_num,result])
+
 
 class SensitivityAnalysisThreadCalibration(QThread):
     """Class to run parallelization of sensitivity analysis for calibration with QThread so we can se the progress bar"""
