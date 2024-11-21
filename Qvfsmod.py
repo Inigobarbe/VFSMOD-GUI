@@ -16,7 +16,7 @@
 from PyQt5 import QtWidgets,QtGui
 from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QThread,pyqtSignal
 from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtWidgets import QAction, QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy,QAction, QMenu,QCheckBox, QFrame,QGridLayout
+from PyQt5.QtWidgets import QAction, QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy,QAction, QMenu,QCheckBox, QFrame,QGridLayout,QHBoxLayout
 # Initialize Qt resources from file resources.py
 from resources import *
 # Import the code for the dialog
@@ -307,6 +307,9 @@ class qvfsmod:
         self.dlg_base.single_values_line.textChanged.connect(self.direct_input_calibration_pesticide)
         self.dlg_base.inputs_pesticide_single.clicked.connect(self.direct_input_calibration_pesticide)
         
+        #When prj in single calibration change then add all the pesticides
+        self.dlg_base.single_values_line.textChanged.connect(self.add_pesticides_dialog_single_calibration)
+        
         #Stacked widget
         
         # Conectar la acción a la función deseada
@@ -367,6 +370,12 @@ class qvfsmod:
         self.dlg_design_results.graph.clicked.connect(self.dlg_design_results_graph.show)
         self.dlg_design_results.design_file.textChanged.connect(self.update_design_results)
         
+        #Add pesticides to sensitivity for design 
+        self.dlg_base.vfs_file_sensitivity_design.textChanged.connect(self.add_pesticides_dialog_sensitivity_design)
+        
+        #Enable or disable the lines where the user puts the delivery ratios
+        self.dlg_base.sensitivity_design_runoff_check.stateChanged.connect(self.enable_disable_delivery_ratio_lines)
+        self.dlg_base.sensitivity_design_sediment_check.stateChanged.connect(self.enable_disable_delivery_ratio_lines)
         
         #Execution button
         self.dlg_base.execute.clicked.connect(self.uh_execution)
@@ -925,6 +934,132 @@ class qvfsmod:
         
         #Update uncertainity graph
         self.dlg_base.csv_results_uncertainity.textChanged.connect(self.show_graph_sensitivity_uncertainity)
+    
+    def add_pesticides_dialog_sensitivity_design(self):
+        """Method to add pesticides to the dialog of sensitivity analysis for design"""
+        #Delete previous elements
+        num_rows= self.dlg_base.gridLayout_53.rowCount()
+        if num_rows>6:
+            for i in range(6,num_rows):
+                try:
+                    widget = self.dlg_base.gridLayout_53.itemAtPosition(i, 0).widget()
+                    widget.deleteLater()
+                    widget = self.dlg_base.gridLayout_53.itemAtPosition(i, 1).widget()
+                    widget.deleteLater()
+                except:
+                    pass
+        
+        #Add pesticides
+        prj_path = self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity_design.text())
+        if os.path.exists(prj_path) and os.path.isfile(prj_path):
+        
+            #Obtain number of pesticides
+            number_pesticides = self.obtain_number_pestidides(prj_path)
+            
+            self.sensitivity_design_pesticides_present = []
+            for i in range(number_pesticides):
+                pesticide = i+1
+                checkbox = QCheckBox(f"Pesticide {pesticide}")
+                setattr(self.dlg_base, f"sensitivity_design_pesticide_check_{pesticide}", checkbox)
+                self.dlg_base.gridLayout_53.addWidget(checkbox, pesticide+5, 0)
+                #Connect to function
+                getattr(self.dlg_base, f"sensitivity_design_pesticide_check_{pesticide}").stateChanged.connect(self.enable_disable_delivery_ratio_lines)
+                
+
+                # Crear un QLineEdit
+                line_edit = QLineEdit()
+                setattr(self.dlg_base, f"sensitivity_design_pesticide_line_{pesticide}", line_edit)
+                getattr(self.dlg_base, f"sensitivity_design_pesticide_line_{pesticide}").setAlignment(Qt.AlignCenter)
+                self.dlg_base.gridLayout_53.addWidget(line_edit, pesticide+5, 1)
+                
+                #Disable
+                getattr(self.dlg_base, f"sensitivity_design_pesticide_line_{pesticide}").setEnabled(False)
+                getattr(self.dlg_base, f"sensitivity_design_pesticide_line_{pesticide}").setStyleSheet("background-color: #d9d9d9;")
+                
+                #Save the results
+                self.sensitivity_design_pesticides_present.append(pesticide) 
+                
+    
+    def enable_disable_delivery_ratio_lines(self):
+        """Method to enable or disable the lines where the user puts the delivery ratios"""
+        #Runoff
+        if self.dlg_base.sensitivity_design_runoff_check.isChecked():
+            self.dlg_base.sensitivity_design_runoff_line.setEnabled(True)
+            self.dlg_base.sensitivity_design_runoff_line.setStyleSheet("background-color: #f0f0f0;")
+        else:
+            self.dlg_base.sensitivity_design_runoff_line.setEnabled(False)
+            self.dlg_base.sensitivity_design_runoff_line.setStyleSheet("background-color: #d9d9d9;")
+        
+        #Sediment
+        if self.dlg_base.sensitivity_design_sediment_check.isChecked():
+            self.dlg_base.sensitivity_design_sediment_line.setEnabled(True)
+            self.dlg_base.sensitivity_design_sediment_line.setStyleSheet("background-color: #f0f0f0;")
+        else:
+            self.dlg_base.sensitivity_design_sediment_line.setEnabled(False)
+            self.dlg_base.sensitivity_design_sediment_line.setStyleSheet("background-color: #d9d9d9;")
+            
+        #Pesticide
+        for pesticide in self.sensitivity_design_pesticides_present:
+            if getattr(self.dlg_base, f"sensitivity_design_pesticide_check_{pesticide}").isChecked():
+                getattr(self.dlg_base, f"sensitivity_design_pesticide_line_{pesticide}").setEnabled(True)
+                getattr(self.dlg_base, f"sensitivity_design_pesticide_line_{pesticide}").setStyleSheet("background-color: #f0f0f0;")
+            else:
+                getattr(self.dlg_base, f"sensitivity_design_pesticide_line_{pesticide}").setEnabled(False)
+                getattr(self.dlg_base, f"sensitivity_design_pesticide_line_{pesticide}").setStyleSheet("background-color: #d9d9d9;")
+        
+            
+            
+    
+    def add_pesticides_dialog_single_calibration(self):
+        """Method to put the peticides when selecting prj in single calibration"""
+        if self.dlg_base.frame_35.layout() is not None:
+            # Obtén el layout actual
+            layout = self.dlg_base.frame_35.layout()
+            
+            # Elimina todos los widgets y elementos del layout (incluyendo espaciadores)
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.deleteLater()  # Elimina el widget
+                elif item.spacerItem() is not None:
+                    layout.removeItem(item)  # Elimina el espaciador
+
+        else:
+            # Si no hay un layout, crea uno nuevo
+            layout = QVBoxLayout()
+            self.dlg_base.frame_35.setLayout(layout)
+        
+        prj_path = self.obtain_direction_vfsmod(self.dlg_base.single_values_line.text())
+        if os.path.exists(prj_path) and os.path.isfile(prj_path):
+            #Obtain number of pesticides
+            number_pesticides = self.obtain_number_pestidides(prj_path)
+            
+            
+            #Add pesticides
+            # Agrega el QLabel
+            label = QLabel("Select pesticide")
+            layout.addWidget(label)
+            
+            # Lista de nombres para los QRadioButtons
+            pesticides = [f"Pesticide {x+1}" for x in range(number_pesticides)]
+            self.dictionary_radio_inputs_pesticides_single_calibration = {}
+            
+            # Crear y añadir varios QRadioButton
+            for k,opcion in enumerate(pesticides):
+                radio_button = QRadioButton(opcion)
+                setattr(self.dlg_base, f"single_calibration_pesticide_{k}", radio_button)
+                self.dictionary_radio_inputs_pesticides_single_calibration[getattr(self.dlg_base, f"single_calibration_pesticide_{k}")] = opcion
+                layout.addWidget(radio_button)
+
+            # Añade un espaciador para ajustar la posición
+            spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+            layout.addItem(spacer)
+
+            # Selecciona el primer QRadioButton
+            if self.dictionary_radio_inputs_pesticides_single_calibration:
+                list(self.dictionary_radio_inputs_pesticides_single_calibration.keys())[0].setChecked(True)
+        
     
     def calculate_total_executions_sensitivity_design(self):
         """Method to calculate total executions for the sensitivity analysis of the design"""
@@ -2688,7 +2823,10 @@ class qvfsmod:
                 item = QTableWidgetItem(str(round(i,2)))
                 table.setItem(0,k,item)
                 item.setTextAlignment(Qt.AlignCenter)
-            
+            #Change background color
+            self.canvas_uncertainity_graph.figure.set_facecolor('#f0f0f0')
+            self.ax_uncertainity[0].set_facecolor('#f0f0f0')
+            self.ax_uncertainity[1].set_facecolor('#f0f0f0')
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
             self.canvas_uncertainity_graph.figure.subplots_adjust(wspace=0.7) #spacing beteween two graphs
             self.canvas_uncertainity_graph.figure.subplots_adjust(left=0.1, bottom=0.2)
@@ -4742,12 +4880,14 @@ class qvfsmod:
                 text = os.path.relpath(fname[0], working_directory)
             else: #absolute path
                 text = fname[0]
-        if information == "prj":
-            self.dlg_base.vfs_file_sensitivity_design.setText(text)
-        elif information == "lis":
-            self.dlg_base.uh_file_sensitivity_design.setText(text)
-        else:
-            self.dlg_base.file_save_design.setText(text)
+            if information == "prj":
+                self.dlg_base.vfs_file_sensitivity_design.setText(text)
+                #Add pesticides to dialog
+                self.add_pesticides_dialog_sensitivity_design()
+            elif information == "lis":
+                self.dlg_base.uh_file_sensitivity_design.setText(text)
+            else:
+                self.dlg_base.file_save_design.setText(text)
     
     
     def start_analysis_design(self):
@@ -4790,7 +4930,7 @@ class qvfsmod:
           self.param_values, self.dic_data, 
           self.sensitivity_parameters, self.working_directory, 
           self.obtain_direction_vfsmod(self.vfs_sensitivity_file),self.water_quality,
-          self.observed_data,self.type_calibration_sensitivity) for i in range(len(self.param_values))]
+          self.observed_data,self.type_calibration_sensitivity,self.pesticide) for i in range(len(self.param_values))]
         self.progress_dialog = QProgressDialog("Starting sensitivity analysis...", "Cancel", 0, len(args_list))
         self.progress_dialog.setWindowModality(Qt.WindowModal)
         self.progress_dialog.setWindowTitle("Progress")
@@ -4807,7 +4947,7 @@ class qvfsmod:
         args_list = [(i, i % (self.number_cores*5), 
           self.param_values, self.dic_data, 
           self.sensitivity_parameters, self.working_directory, 
-          self.obtain_direction_vfsmod(self.vfs_sensitivity_file),self.water_quality) for i in range(len(self.param_values))]
+          self.obtain_direction_vfsmod(self.vfs_sensitivity_file),self.water_quality,self.number_pesticides) for i in range(len(self.param_values))]
         self.progress_dialog = QProgressDialog("Starting sensitivity analysis...", "Cancel", 0, len(args_list))
         self.progress_dialog.setWindowModality(Qt.WindowModal)
         self.progress_dialog.setWindowTitle("Progress")
@@ -4821,20 +4961,34 @@ class qvfsmod:
         has to be used because we need QTrhead to add progress bar"""
         self.number_execution = 0
         self.results = []
-        rows_execute = [i for i in range(len(self.param_values)) for _ in range(len(self.buffer_lengths_sensitivity_design))] #each row(sample in sensitivity analysis) is going to be executed as many times as combinations of buffer lengths are
+        self.rows_execute = [i for i in range(len(self.param_values)) for _ in range(len(self.buffer_lengths_sensitivity_design))] #each row(sample in sensitivity analysis) is going to be executed as many times as combinations of buffer lengths are
         args_list = [(i, i % (self.number_cores*5), 
           self.param_values, self.dic_data, 
           self.sensitivity_parameters, self.working_directory, 
           self.obtain_direction_vfsmod(self.vfs_sensitivity_file),self.water_quality,
-          self.buffer_lengths_sensitivity_design,rows_execute) for i in range(int(self.dlg_base.total_executions_design.text()))]
+          self.buffer_lengths_sensitivity_design,self.rows_execute,self.outputs_sensitivity_design) for i in range(int(self.dlg_base.total_executions_design.text()))]
         self.progress_dialog = QProgressDialog("Starting sensitivity analysis...", "Cancel", 0, len(args_list))
         self.progress_dialog.setWindowModality(Qt.WindowModal)
         self.progress_dialog.setWindowTitle("Progress")
         self.progress_dialog.show()
         self.sensitivity_thread = SensitivityAnalysisThreadDesign(args_list)
-        self.sensitivity_thread.update_progress.connect(self.update_progress_dialog_sensitivity)
+        self.sensitivity_thread.update_progress.connect(self.update_progress_dialog_sensitivity_design)
         self.sensitivity_thread.start()
-
+    
+    
+    def update_progress_dialog_sensitivity_design(self,data):
+        """Method to update progress bar in sensitivity paralelization for design"""
+        self.number_execution +=1
+        self.results.append(data[1])
+        text = f"Execution {self.rows_execute[self.number_execution][k]}/{len(self.param_values)}\n{self.buffer_lengths_sensitivity_design[self.number_execution%len(self.buffer_lengths_sensitivity_design)]}\n"
+        self.progress_dialog.setLabelText(text)
+        self.progress_dialog.setValue(int(self.progress_dialog.maximum()*((self.number_execution / (len(self.param_values)*len(self.buffer_lengths_sensitivity_design))))))
+        QCoreApplication.processEvents()  # Permitir que la interfaz gráfica responda
+        
+        if self.number_execution == len(self.param_values)*len(self.buffer_lengths_sensitivity_design):
+            self.run_sensitivity_analysis_part_two_design()
+    
+    
     def update_progress_dialog_sensitivity(self,data):
         """Method to update progress bar in sensitivity paralelization"""
         self.number_execution +=1
@@ -4867,7 +5021,7 @@ class qvfsmod:
         args_list = [(i, i % (self.number_cores*5), 
           self.param_values, self.dic_data, 
           self.sensitivity_parameters, self.working_directory, 
-          self.obtain_direction_vfsmod(self.vfs_uncertainity_file),self.water_quality) for i in range(len(self.param_values))]
+          self.obtain_direction_vfsmod(self.vfs_uncertainity_file),self.water_quality,self.number_pesticides) for i in range(len(self.param_values))]
         self.progress_dialog = QProgressDialog("Starting uncertainity analysis...", "Cancel", 0, len(args_list))
         self.progress_dialog.setWindowModality(Qt.WindowModal)
         self.progress_dialog.setWindowTitle("Progress")
@@ -4927,6 +5081,12 @@ class qvfsmod:
         #Move files to sensitivity analysis folder
         self.move_files_sensitivity_analysis_calibration()
         
+        #Obtain the pesticide to save results
+        if self.water_quality:
+            for i in self.dictionary_radio_inputs_pesticides_single_calibration:
+                if i.isChecked():
+                    self.pesticide = self.dictionary_radio_inputs_pesticides_single_calibration[i].split()[-1]
+                    break
         
         #Method were the paralelization is achieved
         self.start_analysis_sensitivity_calibration()
@@ -4973,13 +5133,18 @@ class qvfsmod:
         
         #Create dataframe to save the results
         self.results_sensitivity = pd.DataFrame(columns=["Error"])
-        #Add water quality parameters if present
-        if self.dlg_base.runoff_sensitivity_design.isChecked():
+        
+        #Add columns where data is going to be saved
+        self.outputs_sensitivity_design = []
+        if self.dlg_base.sensitivity_design_runoff_check.isChecked():
             self.results_sensitivity.insert(len(self.results_sensitivity.columns),"RDR",None)
-        if self.dlg_base.sediment_sensitivity_design.isChecked():
+            self.outputs_sensitivity_design.append("Runoff")
+        if self.dlg_base.sensitivity_design_sediment_check.isChecked():
             self.results_sensitivity.insert(len(self.results_sensitivity.columns),"SDR",None)
-        if self.dlg_base.pesticide_sensitivity_design.isChecked():
-            self.results_sensitivity.insert(len(self.results_sensitivity.columns),"PDR",None)
+            self.outputs_sensitivity_design.append("Sediment")
+        for i in self.sensitivity_design_pesticides_present:
+            self.results_sensitivity.insert(len(self.results_sensitivity.columns),f"PDR {i}",None)
+            self.outputs_sensitivity_design.append(f"Pesticide {i}")
             
         
         self.number_outputs = len(self.results_sensitivity.columns)-1
@@ -4992,7 +5157,7 @@ class qvfsmod:
         
         #Obtain the list with the buffer lengths that are going to be used to obtain the curves
         self.buffer_lengths_sensitivity_design = self.obtain_buffer_lengths_sensitivity_design()
-        
+
         #Method were the paralelization is achieved
         self.start_analysis_sensitivity_design()
     
@@ -5081,6 +5246,10 @@ class qvfsmod:
         #Add the parameters names 
         for i in self.dic_data.keys():
             self.results_sensitivity.insert(0,i,None)
+        
+        #Obtain number of pesticides 
+        if self.water_quality:
+            self.number_pesticides = self.obtain_number_pestidides(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity.text()))
         
         #Method were the paralelization is achieved
         self.start_analysis_sensitivity()
@@ -5387,6 +5556,12 @@ class qvfsmod:
         #Add the parameters names 
         for i in self.dic_data.keys():
             self.results_sensitivity.insert(0,i,None)
+        
+        
+        #Obtain number of pesticides 
+        if self.water_quality:
+            self.number_pesticides = self.obtain_number_pestidides(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_uncertainity.text()))
+        
         #Method were the paralelization is achieved
         self.start_analysis_uncertainity()
         
@@ -5789,6 +5964,21 @@ class qvfsmod:
         #IWQ
         if self.water_quality:
             copy_paste("VFS","iwq")
+        
+        #Change storm value (Rainfall mm) before replicating
+        inp_file = self.dlg_base.working_directory_vfsmod.text()+f"\\design\\inputs\\design.inp"
+        with open(inp_file, 'r') as file:
+            lineas = file.readlines()
+        numbers_str = lineas[0]
+        matches = re.findall(r'\S+', numbers_str)
+        matches[0] = str(self.dlg_base.sensitivity_design_rainfall.text())
+        # Rebuild the string by replacing only the specific number
+        lineas[0] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
+        with open(inp_file, 'w') as archivo:
+            for i in lineas:
+                archivo.write(i)
+            
+            
         
         #NOW WE REPLICATE THE FILES AS MUCH AS CORES ARE IN THE COMPUTER
         self.number_cores = psutil.cpu_count(logical=False)
@@ -7572,6 +7762,10 @@ class qvfsmod:
                 information[2].setText(os.path.relpath(fname[0], working_directory))
             else: #absolute path
                 information[2].setText(fname[0])
+            #If single value prj is selected then update the number of pesticides
+            if information[2]==self.dlg_base.single_values_line:
+                self.add_pesticides_dialog_single_calibration()
+                
     
     def obtain_outputs_to_calibrate_single(self):   
         """Method to obtain the outputs that are going to be calibrated in single values calibration"""
@@ -8601,16 +8795,26 @@ class qvfsmod:
             except FileNotFoundError:
                 return 1e20
                 
-            def obtain_result_owq(string):
+            def obtain_result_owq(string,number_pesticide):
+                condition = False
                 for i in lineas_owq:
-                    if i.split("=")[-1]==string:
+                    if i == f"PRODUCT  {number_pesticide}- Soil leaching and mixing layer calculations (CDE)\n":
+                        condition = True
+                    if i.split("=")[-1]==string and condition:
                         for k in i.split("=")[0].split(" "):
                             try:
                                 output = float(k)
                                 return output
                             except:
                                 pass
-        
+                                
+            #Obtain the pesticide to save results
+            for i in self.dictionary_radio_inputs_pesticides_single_calibration:
+                if i.isChecked():
+                    pesticide = self.dictionary_radio_inputs_pesticides_single_calibration[i].split()[-1]
+                    break
+            
+            
         self.calibration_single_results = {}
         #Obtain results
         if "Total discharge" in self.output_calibrate_single.keys():
@@ -8640,27 +8844,27 @@ class qvfsmod:
             self.calibration_single_results["Filtered sediment"] = filtered_sediment
         
         if "Filtered pesticide" in self.output_calibrate_single.keys():
-            pesticide_input = obtain_result_owq(" Pesticide input (mi)\n")
-            pesticide_output = obtain_result_owq(" Pesticide output (mo)\n")
+            pesticide_input = obtain_result_owq(" Pesticide input (mi)\n",pesticide)
+            pesticide_output = obtain_result_owq(" Pesticide output (mo)\n",pesticide)
             filtered_pesticide = (pesticide_input-pesticide_output)/(pesticide_input)
             normalized = (filtered_pesticide - float(self.dlg_base.line_filtered_pesticide.text()))/float(self.dlg_base.line_filtered_pesticide.text())
             objective_function.append(normalized)
             self.calibration_single_results["Filtered pesticide"] = filtered_pesticide
             
         if "Pesticide out the filter" in self.output_calibrate_single.keys():
-            pesticide_output = obtain_result_owq(" Pesticide output (mo)\n")
+            pesticide_output = obtain_result_owq(" Pesticide output (mo)\n",pesticide)
             normalized = (pesticide_output - float(self.dlg_base.line_pesticide_out.text()))/float(self.dlg_base.line_pesticide_out.text())
             objective_function.append(normalized)
             self.calibration_single_results["Pesticide out the filter"] = pesticide_output
         
         if "Pesticide outflow in solid phase" in self.output_calibrate_single.keys():
-            pesticide_solid = obtain_result_owq(" Pesticide outflow in solid phase (mop)\n")
+            pesticide_solid = obtain_result_owq(" Pesticide outflow in solid phase (mop)\n",pesticide)
             normalized = (pesticide_solid - float(self.dlg_base.line_pesticide_solid.text()))/float(self.dlg_base.line_pesticide_solid.text())
             objective_function.append(normalized)
             self.calibration_single_results["Pesticide outflow in solid phase"] = pesticide_solid
         
         if "Pesticide outflow in liquid phase" in self.output_calibrate_single.keys():
-            pesticide_liquid = obtain_result_owq(" Pesticide outflow in liquid phase (mod)\n")
+            pesticide_liquid = obtain_result_owq(" Pesticide outflow in liquid phase (mod)\n",pesticide)
             normalized = (pesticide_liquid - float(self.dlg_base.line_pesticide_liquid.text()))/float(self.dlg_base.line_pesticide_liquid.text())
             objective_function.append(normalized)
             self.calibration_single_results["Pesticide outflow in liquid phase"] = pesticide_liquid
@@ -8724,6 +8928,10 @@ class qvfsmod:
             #X ticks
             self.ax_calibration_progress.tick_params(axis = "both",colors = "black",labelsize = 9)
             
+            #Change background color
+            self.canvas_calibration_graph.figure.set_facecolor('#f0f0f0')
+            self.ax_calibration_progress.set_facecolor('#f0f0f0')
+            
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
             self.canvas_calibration_graph.figure.subplots_adjust(wspace=0.7) #spacing beteween two graphs
             self.canvas_calibration_graph.figure.subplots_adjust(left=0.3, bottom=0.2)
@@ -8764,6 +8972,10 @@ class qvfsmod:
                 self.ax_calibration_progress.tick_params(axis = "both",colors = "black",labelsize = 9)
                 # Add legend
                 self.ax_calibration_progress.legend()
+                
+                #Change background color
+                self.canvas_calibration_graph.figure.set_facecolor('#f0f0f0')
+                self.ax_calibration_progress.set_facecolor('#f0f0f0')
                 
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_calibration_graph.figure.subplots_adjust(wspace=0.7) #spacing beteween two graphs
@@ -8820,6 +9032,10 @@ class qvfsmod:
             #X ticks
             self.ax_calibration_progress.tick_params(axis = "both",colors = "black",labelsize = 9)
             
+            #Change background color
+            self.canvas_calibration_graph.figure.set_facecolor('#f0f0f0')
+            self.ax_calibration_progress.set_facecolor('#f0f0f0')
+            
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
             self.canvas_calibration_graph.figure.subplots_adjust(wspace=0.7) #spacing beteween two graphs
             self.canvas_calibration_graph.figure.subplots_adjust(left=0.3, bottom=0.2)
@@ -8859,7 +9075,9 @@ class qvfsmod:
                 self.ax_calibration_progress.tick_params(axis = "both",colors = "black",labelsize = 9)
                 # Add legend
                 self.ax_calibration_progress.legend()
-                
+                #Change background color
+                self.canvas_calibration_graph.figure.set_facecolor('#f0f0f0')
+                self.ax_calibration_progress.set_facecolor('#f0f0f0')
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_calibration_graph.figure.subplots_adjust(wspace=0.7) #spacing beteween two graphs
                 self.canvas_calibration_graph.figure.subplots_adjust(left=0.25, bottom=0.2)
@@ -8920,6 +9138,12 @@ class qvfsmod:
                 self.ax_calibration_progress[i].text(0, value + (value * 0.05), f'{value}', ha='center')
                 #Add title y axis
                 self.ax_calibration_progress[i].set_ylabel(label)
+                self.ax_calibration_progress[i].set_facecolor('#f0f0f0')
+                
+            
+            #Change background color
+            self.canvas_calibration_graph.figure.set_facecolor('#f0f0f0')
+            
             
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
             self.canvas_calibration_graph.figure.subplots_adjust(wspace=1) #spacing beteween two graphs
@@ -8967,7 +9191,10 @@ class qvfsmod:
                     self.ax_calibration_progress[i].text("Simulated", values_simulated[i] + (values_simulated[i] * 0.05), f'{round(values_simulated[i],3)}', ha='center',family="arial",weight = "bold",color = "black")
                     #Add title x and y axis
                     self.ax_calibration_progress[i].set_ylabel(labels_simulated[i],family="arial",weight = "bold",color = "black")
+                    self.ax_calibration_progress[i].set_facecolor('#f0f0f0')
                 
+                #Change background color
+                self.canvas_calibration_graph.figure.set_facecolor('#f0f0f0')
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_calibration_graph.figure.subplots_adjust(wspace=1) #spacing beteween two graphs
                 self.canvas_calibration_graph.figure.subplots_adjust(left=0.1, bottom=0.2)
@@ -9263,6 +9490,10 @@ class qvfsmod:
                 self.ax_calibration_graph_hydrograph.set_ylabel("Discharge (m3/s)",size = 12,family="arial",weight = "bold",color = "black")
                 self.ax_calibration_graph_hydrograph.tick_params(axis = "both",colors = "black",labelsize = 9)
             
+            #Change background color
+            self.canvas_calibration_graph_hydrograph.figure.set_facecolor('#f0f0f0')
+            self.ax_calibration_graph_hydrograph.set_facecolor('#f0f0f0')
+                
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
             self.canvas_calibration_graph_hydrograph.figure.subplots_adjust(wspace=0.7) #spacing beteween two graphs
             self.canvas_calibration_graph_hydrograph.figure.subplots_adjust(left=0.2, bottom=0.2)
@@ -9334,6 +9565,10 @@ class qvfsmod:
                 self.ax_calibration_graph_sedimentograph.set_ylabel("Sediment (g/s)",size = 12,family="arial",weight = "bold",color = "black")
                 self.ax_calibration_graph_sedimentograph.tick_params(axis = "both",colors = "black",labelsize = 9)
             
+            #Change background color
+            self.canvas_calibration_graph_sedimentograph.figure.set_facecolor('#f0f0f0')
+            self.ax_calibration_graph_sedimentograph.set_facecolor('#f0f0f0')
+            
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
             self.canvas_calibration_graph_sedimentograph.figure.subplots_adjust(wspace=0.7) #spacing beteween two graphs
             self.canvas_calibration_graph_sedimentograph.figure.subplots_adjust(left=0.2, bottom=0.2)
@@ -9393,6 +9628,12 @@ class qvfsmod:
                 self.ax_calibration_results_single[i].set_ylabel(k)
                 #Y limit
                 self.ax_calibration_results_single[i].set_ylim(0, max(data[k][0],data[k][1])*1.1)
+                #Change background color
+                self.ax_calibration_results_single[i].set_facecolor('#f0f0f0')
+            
+            #Change background color
+            self.canvas_calibration_graph_single.figure.set_facecolor('#f0f0f0')
+            
             
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
             self.canvas_calibration_graph_single.figure.subplots_adjust(wspace=1) #spacing beteween two graphs
@@ -10460,10 +10701,10 @@ class qvfsmod:
         prj_file = direction
         #Obtain direction iwq
         with open(prj_file, "r") as archivo:
-            lineas = archivo.readlines()
+            lineas = archivo.readlines() 
             
         for i in lineas:
-            if i[:3]=="iwq":
+            if i[:3]=="ikw":
                 ikw = i.split("=")[-1]
         if not os.path.isabs(ikw): #relative path
             ikw = os.path.join(os.path.dirname(prj_file), ikw)
@@ -10471,9 +10712,14 @@ class qvfsmod:
         with open(ikw, 'r') as file:
             lineas = file.readlines()
         #Obtain number of pesticides
-        number_elements = lineas[4].split(";")[0].split()
-        number_pesticides = int((len(number_elements) - 7)/4+1)
-        return number_pesticides
+        condicion = False
+        for i in lineas[4:]:
+            if len(i.split())==3:
+                condicion = True
+            if condicion and len(i.split())!=3:
+                pesticides = int(i.replace("\n", ""))
+                break
+        return pesticides
     
     def run_design_part_one(self):
         """Method to run the design"""
@@ -11989,8 +12235,6 @@ class qvfsmod:
         directory = os.path.dirname(irn_file)
         if not os.path.exists(directory):
             os.makedirs(directory)
-        print(irn_file)
-        print(os.path.isfile(irn_file))
         with open(irn_file, 'w') as archivo:
             linea_uno = f"  {number_steps}   {maximum}                     NRAIN, RPEAK(m/s)"
             
@@ -12221,6 +12465,7 @@ class qvfsmod:
         self.dlg_pesticide_calibration.no_linear.setChecked(True)
         self.dlg_pesticide_calibration.no_adsorption.setChecked(True)
         self.dlg_pesticide_calibration.no_organic.setChecked(True)
+        
         
         #Set invisible hydrograph calibration
         #Hydrograph
@@ -12520,7 +12765,7 @@ class qvfsmod:
             self.canvas_design_graph.figure.clear()
         
         #Then we create the graph
-        self.ax = self.canvas_design_graph.figure.subplots()
+        self.ax_design_graph = self.canvas_design_graph.figure.subplots()
         self.line = None
         
         
@@ -12576,7 +12821,7 @@ class qvfsmod:
         #Select only rows with no errors
         df = df[df.Error == 0]
         #Create graph
-        self.ax.clear()
+        self.ax_design_graph.clear()
         column_y = [self.dlg_design_results_graph.column.itemText(i) for i in range(self.dlg_design_results_graph.column.count())][self.dlg_design_results_graph.column.currentIndex()]
         column_x = df.columns[1]
         
@@ -12584,17 +12829,17 @@ class qvfsmod:
             mask = df["Rainfall (mm)"]==i
             x = df[mask][column_x]
             y = df[mask][column_y]
-            self.ax.plot(x,y, linewidth=2, marker='o', markersize=4,label = f"{i} mm")
+            self.ax_design_graph.plot(x,y, linewidth=2, marker='o', markersize=4,label = f"{i} mm")
             
         #Limits
         #self.ax.set_ylim([0, 1])
         #Labels
-        self.ax.set_xlabel(column_x,size = 10,family="arial",weight = "bold",color = "black")
-        self.ax.set_ylabel(column_y,size = 10,family="arial",weight = "bold",color = "black")
+        self.ax_design_graph.set_xlabel(column_x,size = 10,family="arial",weight = "bold",color = "black")
+        self.ax_design_graph.set_ylabel(column_y,size = 10,family="arial",weight = "bold",color = "black")
         #X ticks
-        self.ax.tick_params(axis = "both",colors = "black",labelsize = 9)
+        self.ax_design_graph.tick_params(axis = "both",colors = "black",labelsize = 9)
         # Add legend
-        self.ax.legend()
+        self.ax_design_graph.legend()
         
         #Remove previous line
         try:
@@ -12606,7 +12851,7 @@ class qvfsmod:
         value = self.dlg_design_results_graph.threshold.text()
         try:
             value = float(value)
-            self.line = self.ax.axhline(y=value, color='r', linestyle='--', linewidth=2, zorder=1)
+            self.line = self.ax_design_graph.axhline(y=value, color='r', linestyle='--', linewidth=2, zorder=1)
         except ValueError:
             value = 0
         
@@ -12647,7 +12892,11 @@ class qvfsmod:
         elif column_x == "Vegetation Spacing (cm)":
             self.dlg_design_results_graph.tableWidget.setVerticalHeaderLabels(["Vegetation Spacing (cm)"])
         
-       # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+        #Change background color
+        self.canvas_design_graph.figure.set_facecolor('#f0f0f0')
+        self.ax_design_graph.set_facecolor('#f0f0f0')
+        
+        #Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
         self.canvas_design_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
         #Draw canvas
         self.canvas_design_graph.draw()
@@ -13216,21 +13465,21 @@ def save_outputs_design(working_directory,error,length_checked,spacing_checked,n
 #PARALELIZATION OF UNCERTAINITY
 def wrapper_uncertainity_paralelization(args):
     """Esta función envuelve la función original para manejar múltiples argumentos"""
-    i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_uncertainity_file_file,water_quality = args
-    return uncertainity_paralelization(i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_uncertainity_file_file,water_quality)
+    i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_uncertainity_file_file,water_quality,number_pesticides = args
+    return uncertainity_paralelization(i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_uncertainity_file_file,water_quality,number_pesticides)
 
 
-def uncertainity_paralelization(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_uncertainity_file_file,water_quality):
+def uncertainity_paralelization(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_uncertainity_file_file,water_quality,number_pesticides):
     '''Function to run in paralell uncertainity analysis'''
     try: #if there is an error in the execution then return a dataframe with error
         execution = execution_uncertainity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_uncertainity_file_file)
         #Save results
         if execution == "error":
-            return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = True)
+            return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,number_pesticides,error = True)
         else:
-            return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = False)
+            return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,number_pesticides,error = False)
     except:
-        return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = True)
+        return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality,number_pesticides ,error = True)
 
 def execution_uncertainity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_uncertainity_file):
     """Function for the each execution of the uncertainity analysis"""
@@ -13439,7 +13688,7 @@ def change_filter_manning_uncertainity(value_change,column,core,working_director
                 archivo.write(i)
 
 
-def save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality,error):
+def save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality,number_pesticides,error):
     """Method to save uncertainity results"""
     #Obtain the values
     if error:
@@ -13513,23 +13762,30 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
                             profundidad_lixiviado = float(lineas_owq[k].split()[0])
                             break
             
-            def obtain_result_owq(string):
+            def obtain_result_owq(string,number_pesticide):
+                condition = False
                 for i in lineas_owq:
-                    if i.split("=")[-1]==string:
+                    if i == f"PRODUCT  {number_pesticide}- Soil leaching and mixing layer calculations (CDE)\n":
+                        condition = True
+                    if i.split("=")[-1]==string and condition:
                         for k in i.split("=")[0].split(" "):
                             try:
                                 output = float(k)
                                 return output
                             except:
                                 pass
-            pesticide_input = obtain_result_owq(" Pesticide input (mi)\n")
-            pesticide_output = obtain_result_owq(" Pesticide output (mo)\n")
-            try:
-                pesticide_delivery = pesticide_output/pesticide_input
-            except ZeroDivisionError:
-                pesticide_delivery = np.nan
+            
+            #Iterate through all the pesticides
+            for p in range(number_pesticides):
+                pesticide_input = obtain_result_owq(" Pesticide input (mi)\n",p+1)
+                pesticide_output = obtain_result_owq(" Pesticide output (mo)\n",p+1)
+                try:
+                    pesticide_delivery = pesticide_output/pesticide_input
+                except ZeroDivisionError:
+                    pesticide_delivery = np.nan
                 
-            df_conc["Pesticide Delivery Ratio"]=pesticide_delivery  
+                df_conc[f"Pesticide Delivery Ratio Pesticide {p+1}"]=pesticide_delivery
+                 
             df_conc["Leachate depth (m)"]=profundidad_lixiviado
     
     #Add the values of inputs 
@@ -13545,22 +13801,22 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
 #PARALELIZATION OF SENSITIVITY FOR DESIGN
 def wrapper_sensitivity_paralelization_design(args):
     """Esta función envuelve la función original para manejar múltiples argumentos"""
-    i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality, buffer_lengths,rows_execute = args
-    return sensitivity_paralelization_design(i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality,buffer_lengths,rows_execute)
+    i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality, buffer_lengths,rows_execute, outputs_to_save = args
+    return sensitivity_paralelization_design(i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality,buffer_lengths,rows_execute,outputs_to_save)
 
 
-def sensitivity_paralelization_design(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file,water_quality,buffer_lengths,rows_execute):
+def sensitivity_paralelization_design(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file,water_quality,buffer_lengths,rows_execute,outputs_to_save):
     '''Function to run in paralell sensitivity analysis'''
     try: #if there is an error execution then return a dataframe with error
         execution = execution_sensitivity_analysis_design(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file,buffer_lengths,rows_execute)
         #Save results
         if execution == "error":
-            return save_results_sensitivity_analysis_design(number_execution,core,working_directory,dic_data,param_values,water_quality ,buffer_lengths,rows_execute,error = True)
+            return save_results_sensitivity_analysis_design(number_execution,core,working_directory,dic_data,param_values,water_quality ,buffer_lengths,rows_execute,outputs_to_save,error = True)
             
         else:
-            return save_results_sensitivity_analysis_design(number_execution,core,working_directory,dic_data,param_values,water_quality ,buffer_lengths,rows_execute,error = False)
+            return save_results_sensitivity_analysis_design(number_execution,core,working_directory,dic_data,param_values,water_quality ,buffer_lengths,rows_execute,outputs_to_save,error = False)
     except:
-        return save_results_sensitivity_analysis_design(number_execution,core,working_directory,dic_data,param_values,water_quality ,buffer_lengths,rows_execute,error = True)
+        return save_results_sensitivity_analysis_design(number_execution,core,working_directory,dic_data,param_values,water_quality ,buffer_lengths,rows_execute,outputs_to_save,error = True)
         
     
     
@@ -13776,21 +14032,20 @@ def change_filter_manning_sensitivity_design(value_change,column,core,working_di
                 archivo.write(i)
 
 
-def save_results_sensitivity_analysis_design(number_execution,core,working_directory,dic_data,param_values,water_quality,buffer_lengths,error,rows_execute):
+def save_results_sensitivity_analysis_design(number_execution,core,working_directory,dic_data,param_values,water_quality,buffer_lengths,rows_execute,outputs_to_save,error):
     """Function to save sensitivity results"""
     #Obtain the values
     if error:
         #Dataframe to concatenate to the sensitivity results
-        df_conc = pd.DataFrame(data = {"Error":[1],"Total Runoff from source (mm)":[-1.0],
-            "Total Runoff from Source (m3)":[-1.0],"Total Runoff out from Filter (mm)":[-1.0],
-            "Total Runoff out from Filter (m3)":[-1.0],"Total Infiltration in Filter (m3)":[-1.0],
-            "Mass Sediment Input to Filter (kg)":[-1.0],"Concentration Sediment in Runoff from source Area (g/L)":[-1.0],
-            "Mass Sediment Output from Filter (kg)":[-1.0],"Concentration Sediment in Runoff exiting the Filter (g/L)":[-1.0],
-            "Sediment Delivery Ratio":[-1.0],"Runoff Delivery Ratio":[-1.0],"Water Front Depth (m)":[-1.0]})
-        #Add water quality parameters if present
-        if water_quality:
-            df_conc["Leachate depth (m)"]=[-1.0]
-            df_conc["Pesticide Delivery Ratio"]=[-1.0]
+        df_conc = pd.DataFrame(data = {"Error":[1]})
+        #Add columns
+        if "Runoff" in outputs_to_save:
+            df_conc["RDR"]=[-1.0]
+        if "Sediment" in outputs_to_save:
+            df_conc["SDR"]=[-1.0]
+        
+        for i in [x.split()[-1] for x in outputs_to_save if x.split()[0] == "Pesticide"]
+            df_conc[f"PDR {i}",]=[-1.0]
 
     else:
         ruta = working_directory+f"\\design\\output\\design_{core}.osp"
@@ -13814,68 +14069,46 @@ def save_results_sensitivity_analysis_design(number_execution,core,working_direc
                 return -1.0
                 
         
-        #Obtain results osp
-        runoff_from_source_mm = obtain_result(" Total Runoff from Source (mm depth over Source Area)\n")  
-        runoff_from_source_m3 = obtain_result(" Total Runoff from Source\n")
-        runoff_out_filter_mm = obtain_result(" Total Runoff out from Filter (mm depth over Source+Filter)\n")
-        runoff_out_filter_m3 = obtain_result(" Total Runoff out from Filter\n")
-        infiltration_filter = obtain_result(" Total Infiltration in Filter\n")
-        mass_sediment_input_filter = obtain_result(" Mass Sediment Input to Filter\n")
-        concentration_sediment_source = obtain_result(" Concentration Sediment in Runoff from source Area\n")
-        sediment_out_filter = obtain_result(" Mass Sediment Output from Filter\n")
-        concentration_sediment_filter = obtain_result(" Concentration Sediment in Runoff exiting the Filter\n")
-        sdr = obtain_result(" Sediment Delivery Ratio\n")
-        rdr = obtain_result(" Runoff Delivery Ratio\n")
-
-            
+        #Obtain results
         
-        #Obtain results ohy
-        ruta = working_directory+f"\\design\\output\\design_{core}.ohy"
-        with open(ruta, "r") as archivo:
-            lineas_ohy = archivo.readlines()
-        water_front_depth =float(lineas_ohy[-1].split()[-2])
+        #Add columns
+        if "Runoff" in outputs_to_save:
+            rdr = obtain_result(" Runoff Delivery Ratio\n")
+            df_conc["RDR"]=[rdr]
+        if "Sediment" in outputs_to_save:
+            sdr = obtain_result(" Sediment Delivery Ratio\n")
+            df_conc["SDR"]=[sdr]
         
-
-        
-        #Dataframe to concatenate results
-        df_conc = pd.DataFrame(data = {"Error":[0],"Total Runoff from source (mm)":[runoff_from_source_mm],
-            "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm)":[runoff_out_filter_mm],
-            "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter (m3)":[infiltration_filter],
-            "Mass Sediment Input to Filter (kg)":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area (g/L)":[concentration_sediment_source],
-            "Mass Sediment Output from Filter (kg)":[sediment_out_filter],"Concentration Sediment in Runoff exiting the Filter (g/L)":[concentration_sediment_filter],
-            "Sediment Delivery Ratio":[sdr],"Runoff Delivery Ratio":[rdr],"Water Front Depth (m)":[water_front_depth]})
-        #Add water quality parameters if present
-        if water_quality:
-            #Obtain results water quality
+        for p in [x.split()[-1] for x in outputs_to_save if x.split()[0] == "Pesticide"]
             with open(working_directory+f"\\design\\output\\design_{core}.owq", "r") as archivo:
-                lineas_owq = archivo.readlines()
-            valores = []
-            for i in range(len(lineas_owq)):
-                if lineas_owq[i] == "      Z(m)      C(mg/L)      S(mg/mg)\n":
-                    for k in range(i+2,len(lineas_owq)):
-                        if len(lineas_owq[k].split())==0 or (float(lineas_owq[k].split()[1])==float(0)) and (float(lineas_owq[k].split()[2])==float(0)):
-                            profundidad_lixiviado = float(lineas_owq[k].split()[0])
-                            break
-            
-            def obtain_result_owq(string):
+            lineas_owq = archivo.readlines()
+            def obtain_result_owq(string,number_pesticide):
+                condition = False
                 for i in lineas_owq:
-                    if i.split("=")[-1]==string:
+                    if i == f"PRODUCT  {number_pesticide}- Soil leaching and mixing layer calculations (CDE)\n":
+                        condition = True
+                    if i.split("=")[-1]==string and condition:
                         for k in i.split("=")[0].split(" "):
                             try:
                                 output = float(k)
                                 return output
                             except:
                                 pass
-            pesticide_input = obtain_result_owq(" Pesticide input (mi)\n")
-            pesticide_output = obtain_result_owq(" Pesticide output (mo)\n")
+            
+            pesticide_input = obtain_result_owq(" Pesticide input (mi)\n",p)
+            pesticide_output = obtain_result_owq(" Pesticide output (mo)\n",p)
             try:
                 pesticide_delivery = pesticide_output/pesticide_input
             except ZeroDivisionError:
                 pesticide_delivery = np.nan
-                
-            df_conc["Pesticide Delivery Ratio"]=pesticide_delivery    
-            df_conc["Leachate depth (m)"]=profundidad_lixiviado
-        
+                    
+            df_conc[f"PDR {i}",]=pesticide_delivery
+    
+    
+    #Add vfs length column
+    df_conc.insert(0,"Buffer length (m)",buffer_lengths[number_execution%len(buffer_lengths)])
+    
+            
     #Add the values of inputs 
     for k,i in enumerate(dic_data.keys()):
         df_conc.insert(0,i,[param_values[number_execution][k]])
@@ -13894,22 +14127,22 @@ def save_results_sensitivity_analysis_design(number_execution,core,working_direc
 #PARALELIZATION OF SENSITIVITY
 def wrapper_sensitivity_paralelization(args):
     """Esta función envuelve la función original para manejar múltiples argumentos"""
-    i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality = args
-    return sensitivity_paralelization(i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality)
+    i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality,number_pesticides = args
+    return sensitivity_paralelization(i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality,number_pesticides)
 
 
-def sensitivity_paralelization(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file,water_quality):
+def sensitivity_paralelization(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file,water_quality,number_pesticides):
     '''Function to run in paralell sensitivity analysis'''
     try: #if there is an error execution then return a dataframe with error
         execution = execution_sensitivity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file)
         #Save results
         if execution == "error":
-            return save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = True)
+            return save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality,number_pesticides ,error = True)
             
         else:
-            return save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = False)
+            return save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality,number_pesticides ,error = False)
     except:
-        return save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,error = True)
+        return save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality,number_pesticides ,error = True)
         
     
     
@@ -14154,7 +14387,7 @@ def correct_irn_file(path):
         archivo.write(contenido)
 
 
-def save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality,error):
+def save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality,number_pesticides,error):
     """Function to save sensitivity results"""
     #Obtain the values
     if error:
@@ -14235,23 +14468,31 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
                             profundidad_lixiviado = float(lineas_owq[k].split()[0])
                             break
             
-            def obtain_result_owq(string):
+            def obtain_result_owq(string,number_pesticide):
+                condition = False
                 for i in lineas_owq:
-                    if i.split("=")[-1]==string:
+                    if i == f"PRODUCT  {number_pesticide}- Soil leaching and mixing layer calculations (CDE)\n":
+                        condition = True
+                    if i.split("=")[-1]==string and condition:
                         for k in i.split("=")[0].split(" "):
                             try:
                                 output = float(k)
                                 return output
                             except:
                                 pass
-            pesticide_input = obtain_result_owq(" Pesticide input (mi)\n")
-            pesticide_output = obtain_result_owq(" Pesticide output (mo)\n")
-            try:
-                pesticide_delivery = pesticide_output/pesticide_input
-            except ZeroDivisionError:
-                pesticide_delivery = np.nan
+            
+            #Iterate through all the pesticides
+            for p in range(number_pesticides):
+                pesticide_input = obtain_result_owq(" Pesticide input (mi)\n",p+1)
+                pesticide_output = obtain_result_owq(" Pesticide output (mo)\n",p+1)
+                try:
+                    pesticide_delivery = pesticide_output/pesticide_input
+                except ZeroDivisionError:
+                    pesticide_delivery = np.nan
                 
-            df_conc["Pesticide Delivery Ratio"]=pesticide_delivery    
+                df_conc[f"Pesticide Delivery Ratio Pesticide {p+1}"]=pesticide_delivery
+            
+
             df_conc["Leachate depth (m)"]=profundidad_lixiviado
         
     #Add the values of inputs 
@@ -14266,22 +14507,22 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
 #PARALELIZATION OF SENSITIVITY FOR CALIBRATION
 def wrapper_sensitivity_paralelization_calibration(args):
     """Esta función envuelve la función original para manejar múltiples argumentos"""
-    i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality, hidrograma, type_calibration = args
-    return sensitivity_paralelization_calibration(i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality,hidrograma,type_calibration)
+    i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality, hidrograma, type_calibration, number_pesticide = args
+    return sensitivity_paralelization_calibration(i, core_id, param_values, dic_data, sensitivity_parameters, working_directory, vfs_sensitivity_file,water_quality,hidrograma,type_calibration,number_pesticide)
 
 
-def sensitivity_paralelization_calibration(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file,water_quality,hidrograma,type_calibration):
+def sensitivity_paralelization_calibration(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file,water_quality,hidrograma,type_calibration,number_pesticide):
     '''Function to run in paralell sensitivity analysis'''
     try: #if there is an error execution then return a dataframe with error
         execution = execution_sensitivity_analysis_calibration(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file)
         #Save results
         if execution == "error":
-            return save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality ,hidrograma,type_calibration,error = True)
+            return save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality ,hidrograma,type_calibration,number_pesticide,error = True)
             
         else:
-            return save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality ,hidrograma,type_calibration,error = False)
+            return save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality ,hidrograma,type_calibration,number_pesticide,error = False)
     except:
-        return save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality ,hidrograma,type_calibration,error = True)
+        return save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality ,hidrograma,type_calibration,number_pesticide,error = True)
    
     
 
@@ -14511,7 +14752,7 @@ def correct_irn_file_calibration(path):
         archivo.write(contenido)
 
 
-def save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality,hidrograma,type_calibration,error):
+def save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality,hidrograma,type_calibration,number_pesticide,error):
     """Function to save sensitivity results"""
     #Obtain the values
     if error:
@@ -14673,9 +14914,12 @@ def save_results_sensitivity_analysis_calibration(number_execution,core,working_
                 with open(ruta, "r") as archivo:
                     lineas_owq = archivo.readlines()
                     
-                def obtain_result_owq(string):
+                def obtain_result_owq(string,number_pesticide):
+                    condition = False
                     for i in lineas_owq:
-                        if i.split("=")[-1]==string:
+                        if i == f"PRODUCT  {number_pesticide}- Soil leaching and mixing layer calculations (CDE)\n":
+                            condition = True
+                        if i.split("=")[-1]==string and condition:
                             for k in i.split("=")[0].split(" "):
                                 try:
                                     output = float(k)
@@ -14707,24 +14951,24 @@ def save_results_sensitivity_analysis_calibration(number_execution,core,working_
                 objective_function.append(normalized)
             
             if "Filtered pesticide" in hidrograma.keys():
-                pesticide_input = obtain_result_owq(" Pesticide input (mi)\n")
-                pesticide_output = obtain_result_owq(" Pesticide output (mo)\n")
+                pesticide_input = obtain_result_owq(" Pesticide input (mi)\n",number_pesticide)
+                pesticide_output = obtain_result_owq(" Pesticide output (mo)\n",number_pesticide)
                 filtered_pesticide = (pesticide_input-pesticide_output)/(pesticide_input)
                 normalized = (filtered_pesticide - hidrograma["Filtered pesticide"])/hidrograma["Filtered pesticide"]
                 objective_function.append(normalized)
                 
             if "Pesticide out the filter" in hidrograma.keys():
-                pesticide_output = obtain_result_owq(" Pesticide output (mo)\n")
+                pesticide_output = obtain_result_owq(" Pesticide output (mo)\n",number_pesticide)
                 normalized = (pesticide_output - hidrograma["Pesticide out the filter"])/hidrograma["Pesticide out the filter"]
                 objective_function.append(normalized)
             
             if "Pesticide outflow in solid phase" in hidrograma.keys():
-                pesticide_solid = obtain_result_owq(" Pesticide outflow in solid phase (mop)\n")
+                pesticide_solid = obtain_result_owq(" Pesticide outflow in solid phase (mop)\n",number_pesticide)
                 normalized = (pesticide_solid - hidrograma["Pesticide outflow in solid phase"])/hidrograma["Pesticide outflow in solid phase"]
                 objective_function.append(normalized)
             
             if "Pesticide outflow in liquid phase" in hidrograma.keys():
-                pesticide_liquid = obtain_result_owq(" Pesticide outflow in liquid phase (mod)\n")
+                pesticide_liquid = obtain_result_owq(" Pesticide outflow in liquid phase (mod)\n",number_pesticide)
                 normalized = (pesticide_liquid - hidrograma["Pesticide outflow in liquid phase"])/hidrograma["Pesticide outflow in liquid phase"]
                 objective_function.append(normalized)
             
