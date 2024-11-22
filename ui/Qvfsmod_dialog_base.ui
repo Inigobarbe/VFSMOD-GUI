@@ -2809,7 +2809,7 @@ default 5 min</string>
            <property name="geometry">
             <rect>
              <x>-571</x>
-             <y>0</y>
+             <y>-24</y>
              <width>1318</width>
              <height>743</height>
             </rect>
@@ -3179,7 +3179,7 @@ Solution Parameters</string>
                     </size>
                    </property>
                    <property name="text">
-                    <string>sensitivity\\output\\sensitivity.csv</string>
+                    <string>design\\output\\sensitivity_design.csv</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
@@ -3419,7 +3419,11 @@ Solution Parameters</string>
                            </widget>
                           </item>
                           <item>
-                           <widget class="QLineEdit" name="total_executions_design"/>
+                           <widget class="QLineEdit" name="total_executions_design">
+                            <property name="alignment">
+                             <set>Qt::AlignCenter</set>
+                            </property>
+                           </widget>
                           </item>
                          </layout>
                         </item>
@@ -3436,7 +3440,7 @@ Solution Parameters</string>
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>380</width>
+                          <width>335</width>
                           <height>326</height>
                          </rect>
                         </property>
@@ -3444,13 +3448,25 @@ Solution Parameters</string>
                          <item row="0" column="0">
                           <layout class="QGridLayout" name="gridLayout_53">
                            <item row="2" column="1">
-                            <widget class="QLineEdit" name="lower_sensitivity_design"/>
+                            <widget class="QLineEdit" name="lower_sensitivity_design">
+                             <property name="alignment">
+                              <set>Qt::AlignCenter</set>
+                             </property>
+                            </widget>
                            </item>
                            <item row="2" column="2">
-                            <widget class="QLineEdit" name="upper_sensitivity_design"/>
+                            <widget class="QLineEdit" name="upper_sensitivity_design">
+                             <property name="alignment">
+                              <set>Qt::AlignCenter</set>
+                             </property>
+                            </widget>
                            </item>
                            <item row="2" column="3">
-                            <widget class="QLineEdit" name="increment_sensitivity_design"/>
+                            <widget class="QLineEdit" name="increment_sensitivity_design">
+                             <property name="alignment">
+                              <set>Qt::AlignCenter</set>
+                             </property>
+                            </widget>
                            </item>
                            <item row="1" column="1">
                             <widget class="QLabel" name="label_65">
@@ -3476,7 +3492,7 @@ Solution Parameters</string>
                            <item row="3" column="1">
                             <widget class="QLabel" name="label_88">
                              <property name="text">
-                              <string>Desired reduction</string>
+                              <string>Desired DR</string>
                              </property>
                              <property name="alignment">
                               <set>Qt::AlignCenter</set>
@@ -3650,7 +3666,7 @@ Solution Parameters</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-298</y>
+             <y>0</y>
              <width>753</width>
              <height>803</height>
             </rect>
@@ -4494,8 +4510,8 @@ Identifiability</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_8">
            <property name="geometry">
             <rect>
-             <x>0</x>
-             <y>-108</y>
+             <x>-144</x>
+             <y>0</y>
              <width>923</width>
              <height>613</height>
             </rect>
@@ -5872,8 +5888,8 @@ Solution Parameters</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_10">
            <property name="geometry">
             <rect>
-             <x>0</x>
-             <y>-108</y>
+             <x>-124</x>
+             <y>0</y>
              <width>923</width>
              <height>613</height>
             </rect>

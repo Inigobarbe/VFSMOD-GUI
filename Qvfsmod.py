@@ -4978,9 +4978,11 @@ class qvfsmod:
     
     def update_progress_dialog_sensitivity_design(self,data):
         """Method to update progress bar in sensitivity paralelization for design"""
-        self.number_execution +=1
+        
         self.results.append(data[1])
-        text = f"Execution {self.rows_execute[self.number_execution][k]}/{len(self.param_values)}\n{self.buffer_lengths_sensitivity_design[self.number_execution%len(self.buffer_lengths_sensitivity_design)]}\n"
+        
+        text = f"Sample {self.rows_execute[self.number_execution]+1}/{len(self.param_values)}\n Buffer length {self.number_execution%len(self.buffer_lengths_sensitivity_design)+1}/{len(self.buffer_lengths_sensitivity_design)}\n"
+        self.number_execution +=1
         self.progress_dialog.setLabelText(text)
         self.progress_dialog.setValue(int(self.progress_dialog.maximum()*((self.number_execution / (len(self.param_values)*len(self.buffer_lengths_sensitivity_design))))))
         QCoreApplication.processEvents()  # Permitir que la interfaz gráfica responda
@@ -5135,16 +5137,17 @@ class qvfsmod:
         self.results_sensitivity = pd.DataFrame(columns=["Error"])
         
         #Add columns where data is going to be saved
-        self.outputs_sensitivity_design = []
+        self.outputs_sensitivity_design = {}
         if self.dlg_base.sensitivity_design_runoff_check.isChecked():
             self.results_sensitivity.insert(len(self.results_sensitivity.columns),"RDR",None)
-            self.outputs_sensitivity_design.append("Runoff")
+            self.outputs_sensitivity_design["RDR"] = float(self.dlg_base.sensitivity_design_runoff_line.text())
         if self.dlg_base.sensitivity_design_sediment_check.isChecked():
             self.results_sensitivity.insert(len(self.results_sensitivity.columns),"SDR",None)
-            self.outputs_sensitivity_design.append("Sediment")
+            self.outputs_sensitivity_design["SDR"] = float(self.dlg_base.sensitivity_design_sediment_line.text())
         for i in self.sensitivity_design_pesticides_present:
-            self.results_sensitivity.insert(len(self.results_sensitivity.columns),f"PDR {i}",None)
-            self.outputs_sensitivity_design.append(f"Pesticide {i}")
+            if getattr(self.dlg_base, f"sensitivity_design_pesticide_check_{i}").isChecked():
+                self.results_sensitivity.insert(len(self.results_sensitivity.columns),f"PDR {i}",None)
+                self.outputs_sensitivity_design[f"PDR {i}"] = float(getattr(self.dlg_base, f"sensitivity_design_pesticide_line_{i}").text())
             
         
         self.number_outputs = len(self.results_sensitivity.columns)-1
@@ -5157,7 +5160,8 @@ class qvfsmod:
         
         #Obtain the list with the buffer lengths that are going to be used to obtain the curves
         self.buffer_lengths_sensitivity_design = self.obtain_buffer_lengths_sensitivity_design()
-
+        
+        
         #Method were the paralelization is achieved
         self.start_analysis_sensitivity_design()
     
@@ -5395,7 +5399,154 @@ class qvfsmod:
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)
         self.warning_message("Sensitivity analysis completed succesfully!")
+    
+    
+    def run_sensitivity_analysis_part_two_design(self):
+        """Second part of sensitivity analysis for calibration to analyze the results. I have splitted sensitivity running
+        in two because we use Thread method and we need to stop till the thread finishes, if not we get an error"""
         
+        #Create DataFrame or results
+        self.results_sensitivity_raw = self.create_df_sensitivity_design(self.results)
+        
+        self.results_sensitivity_raw.to_csv(r"C:\borrar\resultados.csv",index=False, float_format='%.5f')
+        
+        #Obtain the data with the optimized buffer lengths
+        self.results_sensitivity = self.obtain_optimized_vfs_sensitivity_design()
+        
+        #Delete all files created for paralelization of sensitivity analysis
+        self.delete_files_sensitivity_design()
+        
+        #Save results in CSV
+        path = self.obtain_direction_vfsmod(self.dlg_base.file_save_design.text())
+        try:
+            if self.dlg_base.sobol_design.isChecked():
+                with open(path, 'w') as f:
+                    #Add first row
+                    f.write("Sobol sensitivity indexes" + '\n')
+                    #Add sensitivity indexes for each output
+                    for i in self.results_sensitivity.columns[-len(self.outputs_sensitivity_design):]:
+                        f.write("----------------------------------------------------------------------" + '\n')
+                        f.write(f"{i}" + '\n')
+                        si = sobol.analyze(self.problem, np.array(self.results_sensitivity[i]))
+                        for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()): 
+                            f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}_{si['S2'][input_parameter_k]}_{si['S2_conf'][input_parameter_k]}" + '\n')
+                    f.write("----------------------------------------------------------------------" + '\n')
+                    
+            elif self.dlg_base.morris_design.isChecked():
+                with open(path, 'w') as f:
+                    #Add first row
+                    f.write("Morris sensitivity indexes" + '\n')
+                    #Add sensitivity indexes for each output
+                    for i in self.results_sensitivity.columns[-len(self.outputs_sensitivity_design):]:
+                        f.write("----------------------------------------------------------------------" + '\n')
+                        f.write(f"{i}" + '\n')
+                        si = analyze_morris(self.problem,np.array(self.param_values),np.array(self.results_sensitivity[i]))
+                        for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
+                            f.write(f"{input_parameter}:{si['mu_star'][input_parameter_k]}_{si['sigma'][input_parameter_k]}_{si['mu'][input_parameter_k]}" + '\n')
+                    f.write("----------------------------------------------------------------------" + '\n')
+            
+            elif self.dlg_base.fast_design.isChecked():
+                with open(path, 'w') as f:
+                    #Add first row
+                    f.write("FAST sensitivity indexes" + '\n')
+                    #Add sensitivity indexes for each output
+                    for i in self.results_sensitivity.columns[-len(self.outputs_sensitivity_design):]:
+                        f.write("----------------------------------------------------------------------" + '\n')
+                        f.write(f"{i}" + '\n')
+                        si = analyze_fast(self.problem,np.array(self.results_sensitivity[i]))
+                        for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
+                            f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}" + '\n')
+                    f.write("----------------------------------------------------------------------" + '\n')
+            
+            
+        except PermissionError:
+            self.warning_message(f"{path} file is opened and Sensitivity Analysis data could not be saved")
+            return
+        
+        #Append results
+        self.results_sensitivity.to_csv(path, mode='a',index=False, float_format='%.5f')
+        self.results_sensitivity_raw.to_csv(path, mode='a',index=False, float_format='%.5f')
+            
+        #Add csv result to the lineEdit and update graph
+        r'''
+        if self.dlg_base.sobol.isChecked():
+            self.dlg_base.csv_results_2.setText(self.dlg_base.file_save.text())
+            self.show_sensitivity_graph_global()
+        elif self.dlg_base.morris.isChecked():
+            self.dlg_base.csv_results_morris.setText(self.dlg_base.file_save.text())
+            self.show_sensitivity_graph_global()
+        elif self.dlg_base.fast.isChecked():
+            self.dlg_base.csv_results_fast.setText(self.dlg_base.file_save.text())
+            self.show_sensitivity_graph_global()
+        elif self.dlg_base.oat.isChecked():
+            self.dlg_base.csv_results_oat.setText(self.dlg_base.file_save.text())
+            self.add_inputs_oat_results()'''
+        
+        #Close progress bar and warning message of ending
+        self.progress_metod(close = True)
+        self.warning_message("Sensitivity analysis completed succesfully!")
+    
+    def obtain_optimized_vfs_sensitivity_design(self):
+        """Method to obtain the buffer length to analyze sensitivity"""
+        #Create new df with required columns
+        input_parameters = list(self.dic_data.keys())
+
+        dic_save_data = {}
+        for output in self.outputs_sensitivity_design.keys():
+            values = []
+            for i in self.param_values: 
+                df_concat = self.results_sensitivity_raw.copy()
+                for k in range(len(i)): 
+                    df_concat = df_concat[df_concat[input_parameters[k]]==i[k]]
+                    
+                    
+                x_values = self.buffer_lengths_sensitivity_design
+            
+            
+                threshold = self.outputs_sensitivity_design[output]
+                
+                y_values = list(df_concat[output])
+                y_values = y_values[:len(x_values)]
+                
+                if threshold>=min(y_values) and threshold<=max(y_values):#if delivery ratio is between values, then interpolate
+                    f = interp1d(y_values, x_values)
+                    value = round(f(threshold).item(),2)
+                #if delivery ratio is below or higher, then extrapolate
+                elif threshold<min(y_values):
+                    slope = (x_values[-1]-x_values[-2])/(y_values[-1]-y_values[-2])
+                    value = x_values[-1] + slope*(threshold - y_values[-1])
+                elif threshold>max(y_values):
+                    slope = (x_values[0]-x_values[1])/(y_values[0]-y_values[1])
+                    value = x_values[0] + slope*(threshold-y_values[0])
+                if value<0:
+                    value = 0
+                
+                values.append(value)
+            
+            dic_save_data[f"Buffer Length {output}"] = values
+                
+
+        #Create df        
+        data_input_parameters = {}     
+        for k,i in enumerate(self.dic_data.keys()):
+            values = []
+            for p in self.param_values: 
+                values.append(p[k])
+            data_input_parameters[i] = values
+
+
+        data_input_parameters.update(dic_save_data)
+
+
+        columns = input_parameters + ["Buffer Length " + x for x in self.outputs_sensitivity_design.keys()]
+        df = pd.DataFrame(data = data_input_parameters)
+        return df
+                        
+                        
+                        
+                        
+            
+            
     
     def create_df_design(self,results):
         """Method to create the dataframe of design after parallelization"""
@@ -5440,6 +5591,52 @@ class qvfsmod:
         #If there are errors then make a linear regression to add data
         inputs = new_df[input_parameters]
         output_columns = new_df.columns[-self.number_outputs:].tolist()
+        outputs = new_df[output_columns]
+        # Filtrar los datos completos (sin valores NaN en outputs)
+        mask = new_df['Error'] == 0
+        inputs_complete = inputs[mask]
+        outputs_complete = outputs[mask]
+        if len(inputs_complete) == 0: #all rows are error
+            self.warning_message("All executions gave error.\n Please check input data.")
+            return
+        if len(inputs_complete)<len(new_df): #if there are less inputs without errors than original df then there are errors
+            for output in output_columns:
+                #Create model of linear regression
+                model_output = LinearRegression()
+                #Train model with data that is not with error
+                model_output.fit(inputs_complete, outputs_complete[output])
+                #Predict values with error
+                inputs_nan = inputs[~mask]
+                pred_output = model_output.predict(inputs_nan)
+                #Put predicted values in column
+                new_df.loc[~mask, output] = pred_output
+        
+        return new_df
+    
+    def create_df_sensitivity_design(self,results):
+        """Method to create the dataframe of sensitivity after parallelization for design"""
+        #First create dataframe
+        df = pd.DataFrame(columns=list(results[0].columns))
+        for i in results:
+            df = pd.concat([df,i], ignore_index=True)
+        
+        #Put in the same order as the input values
+        new_df = pd.DataFrame(columns=list(results[0].columns))
+        input_parameters = list(self.dic_data.keys())
+        
+        for i in self.param_values:
+            df_concat = df.copy()
+            for k in range(len(i)): 
+                df_concat = df_concat[df_concat[input_parameters[k]]==i[k]]
+            for v in self.buffer_lengths_sensitivity_design:
+                df_concat_2 = df_concat[df_concat["Buffer length (m)"]==v]
+                df_concat_2 = df_concat_2.iloc[[0]]
+                new_df = pd.concat([new_df,df_concat_2], ignore_index=True)
+        
+        #If there are errors then make a linear regression to add data
+        input_parameters +=  ["Buffer length (m)"] #here we include Buffer length to the inputs for the regression 
+        inputs = new_df[input_parameters]
+        output_columns = list(self.outputs_sensitivity_design.keys())
         outputs = new_df[output_columns]
         # Filtrar los datos completos (sin valores NaN en outputs)
         mask = new_df['Error'] == 0
@@ -6152,6 +6349,15 @@ class qvfsmod:
         files_delete = [self.working_directory+"\\sensitivity\\"+x for x in os.listdir(self.working_directory+"\\sensitivity") if "sensitivity" in x and "_" in x]
         files_delete += [self.working_directory+"\\sensitivity\\inputs\\"+x for x in os.listdir(self.working_directory+"\\sensitivity"+"\\inputs") if "sensitivity" in x and "_" in x]
         files_delete += [self.working_directory+"\\sensitivity\\output\\"+x for x in os.listdir(self.working_directory+"\\sensitivity"+"\\output") if "sensitivity" in x and "_" in x and x[-3:]!="csv"]
+        files_delete += [self.plugin_directory+"\\executables\\"+x for x in os.listdir(self.plugin_directory+"\\executables") if "execution" in x and "_" in x]
+        for i in files_delete:
+            os.remove(i)
+    
+    def delete_files_sensitivity_design(self):
+        """Method to delete files of sensitivity analysis for design after parallelization"""
+        files_delete = [self.working_directory+"\\design\\"+x for x in os.listdir(self.working_directory+"\\design") if "design" in x and "_" in x]
+        files_delete += [self.working_directory+"\\design\\inputs\\"+x for x in os.listdir(self.working_directory+"\\design"+"\\inputs") if "design" in x and "_" in x]
+        files_delete += [self.working_directory+"\\design\\output\\"+x for x in os.listdir(self.working_directory+"\\design"+"\\output") if "design" in x and "_" in x and x[-3:]!="csv"]
         files_delete += [self.plugin_directory+"\\executables\\"+x for x in os.listdir(self.plugin_directory+"\\executables") if "execution" in x and "_" in x]
         for i in files_delete:
             os.remove(i)
@@ -13842,11 +14048,10 @@ def execution_sensitivity_analysis_design(number_execution,core,param_values,dic
             execute_uh = True
            
     #Change value of buffer length
-    if i == "Buffer length (m)":
-        information_parameter = "Buffer length (m)"
-        value_change = buffer_lengths[number_execution%len(buffer_lengths)]
-        modify_inputs_sensitivity_design(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3],core,working_directory)
-        change_buffer_length_sensitivity_design(value_change,core,vfs_sensitivity_file,working_directory)
+    information_parameter = sensitivity_parameters["Buffer length (m)"]
+    value_change = buffer_lengths[number_execution%len(buffer_lengths)]
+    modify_inputs_sensitivity_design(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3],core,working_directory)
+    change_buffer_length_sensitivity_design(value_change,core,vfs_sensitivity_file,working_directory)
     
     #We execute
     #Only execute UH if there are parameters that need to be executed in UH
@@ -14039,12 +14244,12 @@ def save_results_sensitivity_analysis_design(number_execution,core,working_direc
         #Dataframe to concatenate to the sensitivity results
         df_conc = pd.DataFrame(data = {"Error":[1]})
         #Add columns
-        if "Runoff" in outputs_to_save:
+        if "RDR" in outputs_to_save.keys():
             df_conc["RDR"]=[-1.0]
-        if "Sediment" in outputs_to_save:
+        if "SDR" in outputs_to_save.keys():
             df_conc["SDR"]=[-1.0]
         
-        for i in [x.split()[-1] for x in outputs_to_save if x.split()[0] == "Pesticide"]
+        for i in [x.split()[-1] for x in outputs_to_save.keys() if x.split()[0] == "PDR"]:
             df_conc[f"PDR {i}",]=[-1.0]
 
     else:
@@ -14068,20 +14273,19 @@ def save_results_sensitivity_analysis_design(number_execution,core,working_direc
             except UnboundLocalError:
                 return -1.0
                 
-        
+        df_conc = pd.DataFrame(data = {"Error":[0]})
         #Obtain results
-        
         #Add columns
-        if "Runoff" in outputs_to_save:
+        if "RDR" in outputs_to_save.keys():
             rdr = obtain_result(" Runoff Delivery Ratio\n")
             df_conc["RDR"]=[rdr]
-        if "Sediment" in outputs_to_save:
+        if "SDR" in outputs_to_save.keys():
             sdr = obtain_result(" Sediment Delivery Ratio\n")
             df_conc["SDR"]=[sdr]
         
-        for p in [x.split()[-1] for x in outputs_to_save if x.split()[0] == "Pesticide"]
+        for p in [x.split()[-1] for x in outputs_to_save.keys() if x.split()[0] == "PDR"]:
             with open(working_directory+f"\\design\\output\\design_{core}.owq", "r") as archivo:
-            lineas_owq = archivo.readlines()
+                lineas_owq = archivo.readlines()
             def obtain_result_owq(string,number_pesticide):
                 condition = False
                 for i in lineas_owq:
@@ -14102,7 +14306,7 @@ def save_results_sensitivity_analysis_design(number_execution,core,working_direc
             except ZeroDivisionError:
                 pesticide_delivery = np.nan
                     
-            df_conc[f"PDR {i}",]=pesticide_delivery
+            df_conc[f"PDR {p}"]=pesticide_delivery
     
     
     #Add vfs length column
@@ -14111,7 +14315,8 @@ def save_results_sensitivity_analysis_design(number_execution,core,working_direc
             
     #Add the values of inputs 
     for k,i in enumerate(dic_data.keys()):
-        df_conc.insert(0,i,[param_values[number_execution][k]])
+        df_conc.insert(0,i,[param_values[rows_execute[number_execution]][k]])
+        
     
     return df_conc
 
