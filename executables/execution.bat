@@ -1,3 +1,3 @@
-cd "C:/borrar\inverse\" 
-"C:\qvfsmod\executables\vfsm" inverse.prj 
+cd "C:/borrar\" 
+"C:\qvfsmod\executables\uh" proyecto.lis 
 Pause 

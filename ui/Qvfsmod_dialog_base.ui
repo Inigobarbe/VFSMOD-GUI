@@ -2750,6 +2750,9 @@ default 5 min</string>
                  <property name="text">
                   <string>design\output\design_results.csv</string>
                  </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
                 </widget>
                </item>
               </layout>
@@ -2809,7 +2812,7 @@ default 5 min</string>
            <property name="geometry">
             <rect>
              <x>-571</x>
-             <y>-24</y>
+             <y>0</y>
              <width>1318</width>
              <height>743</height>
             </rect>
@@ -4491,8 +4494,326 @@ Identifiability</string>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="page_calibration_sedimentograph">
-       <layout class="QGridLayout" name="gridLayout_34"/>
+      <widget class="QWidget" name="page_results_design_uncertainity">
+       <layout class="QGridLayout" name="gridLayout_34">
+        <item row="0" column="0">
+         <widget class="QScrollArea" name="scrollArea_19">
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents_19">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>908</width>
+             <height>505</height>
+            </rect>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_65">
+            <item row="0" column="1">
+             <widget class="QFrame" name="frame_77">
+              <property name="minimumSize">
+               <size>
+                <width>460</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QFrame" name="frame_78">
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_67">
+               <item row="0" column="0" colspan="3">
+                <layout class="QHBoxLayout" name="horizontalLayout_147">
+                 <item>
+                  <widget class="QLabel" name="label_157">
+                   <property name="minimumSize">
+                    <size>
+                     <width>125</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Morris results file</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="csv_results_morris_design_uncertainity">
+                   <property name="minimumSize">
+                    <size>
+                     <width>213</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browse_design_sensitivity">
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="1" column="0" colspan="3">
+                <layout class="QHBoxLayout" name="horizontalLayout_148">
+                 <item>
+                  <widget class="QLabel" name="label_158">
+                   <property name="minimumSize">
+                    <size>
+                     <width>125</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>FAST results file</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="csv_results_fast_design_uncertainity">
+                   <property name="minimumSize">
+                    <size>
+                     <width>213</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browse_fast_csv_design_sensitivity">
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="2" column="0" colspan="3">
+                <layout class="QHBoxLayout" name="horizontalLayout_149">
+                 <item>
+                  <widget class="QLabel" name="label_159">
+                   <property name="minimumSize">
+                    <size>
+                     <width>125</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Sobol results file</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="csv_results_sobol_design_uncertainity">
+                   <property name="minimumSize">
+                    <size>
+                     <width>213</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browse_sobol_design_sensitivity">
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="3" column="0">
+                <widget class="QFrame" name="frame_39">
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QFrame" name="frame_37">
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_28">
+                  <item>
+                   <widget class="QLabel" name="label_77">
+                    <property name="text">
+                     <string>Databases</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="radio_morris_design">
+                    <property name="text">
+                     <string>Morris</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="radio_fast_design">
+                    <property name="text">
+                     <string>FAST</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="radio_sobol_design">
+                    <property name="text">
+                     <string>Sobol</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="verticalSpacer_22">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="3" column="2">
+                <widget class="QFrame" name="frame_40">
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_64">
+                  <item row="4" column="0">
+                   <spacer name="verticalSpacer_21">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QRadioButton" name="radio_frequency_design">
+                    <property name="text">
+                     <string>Frequency graph</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_89">
+                    <property name="text">
+                     <string>Graph</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QRadioButton" name="radio_all_lengths">
+                    <property name="text">
+                     <string>All lengths</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QRadioButton" name="radio_sensitivity_index">
+                    <property name="text">
+                     <string>Sensitivity index</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="4" column="0" colspan="3">
+                <widget class="QFrame" name="frame_38">
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_66">
+                  <item row="0" column="1">
+                   <widget class="QLineEdit" name="cumulative_probability_sensitivity_design">
+                    <property name="text">
+                     <string>97.5</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_90">
+                    <property name="text">
+                     <string>Cumulative probability (%)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLineEdit" name="buffer_length_sensitivity_design">
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_91">
+                    <property name="text">
+                     <string>Buffer length (m)</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="page_sensitivity_analysis">
        <layout class="QGridLayout" name="gridLayout_32">
@@ -4510,7 +4831,7 @@ Identifiability</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_8">
            <property name="geometry">
             <rect>
-             <x>-144</x>
+             <x>0</x>
              <y>0</y>
              <width>923</width>
              <height>613</height>
@@ -5888,7 +6209,7 @@ Solution Parameters</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_10">
            <property name="geometry">
             <rect>
-             <x>-124</x>
+             <x>0</x>
              <y>0</y>
              <width>923</width>
              <height>613</height>
@@ -6710,6 +7031,7 @@ Solution Parameters</string>
     </property>
     <addaction name="actionSimple_Design"/>
     <addaction name="actionDesign_with_Uncertainity"/>
+    <addaction name="actionResults_of_Design_with_Uncertainity"/>
    </widget>
    <widget class="QMenu" name="menuCalibratoin">
     <property name="title">
@@ -6793,6 +7115,11 @@ Solution Parameters</string>
   <action name="actionDesign_with_Uncertainity">
    <property name="text">
     <string>Design with Uncertainity</string>
+   </property>
+  </action>
+  <action name="actionResults_of_Design_with_Uncertainity">
+   <property name="text">
+    <string>Results of Design with Uncertainity</string>
    </property>
   </action>
  </widget>

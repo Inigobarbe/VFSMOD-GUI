@@ -93,12 +93,14 @@ from shutil import SameFileError
 import numpy as np
 import re
 from scipy.interpolate import interp1d
+from scipy.stats import percentileofscore
 from scipy import stats
 from itertools import product
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.ticker as tkr
 from matplotlib.ticker import FuncFormatter
+import seaborn as sns
 from PyQt5.QtWidgets import QVBoxLayout,QTableWidgetItem,QProgressDialog,QLabel, QLineEdit
 
 import sys
@@ -206,6 +208,31 @@ class qvfsmod:
         self.dlg_base.results_sensitivity_single.clicked.connect(self.udpate_sensitivity_calibration_results)
         self.dlg_sensitivity_calibration_results_hydrograph.threshold.textChanged.connect(self.udpate_sensitivity_calibration_results)
         
+        
+        
+        #Configurate the graph style
+        # Configuración global del estilo
+        plt.rcParams.update({
+            "font.family": "Sans-serif",  # Fuente sin serifas moderna
+            "axes.titlesize": 18,        # Tamaño del título
+            "axes.labelsize": 16,        # Tamaño de las etiquetas
+            "axes.labelweight": "medium", # Grosor mediano para un estilo refinado
+            "xtick.labelsize": 14,       # Tamaño de las etiquetas del eje X
+            "ytick.labelsize": 14,       # Tamaño de las etiquetas del eje Y
+            "axes.linewidth": 0.8,       # Líneas más delgadas para un look minimalista
+        })
+
+        # Configuración del estilo general
+        sns.set(style="whitegrid", palette="pastel")
+        
+        
+        #Update buffer length according to confindence level and veceversa
+        self.dlg_base.cumulative_probability_sensitivity_design.textChanged.connect(lambda _, b = "cumulative": self.udpate_buffer_length_cumulative(b))
+        self.dlg_base.buffer_length_sensitivity_design.textChanged.connect(lambda _, b = "length": self.udpate_buffer_length_cumulative(b))
+        self.dlg_base.radio_morris_design.toggled.connect(lambda checked: self.udpate_buffer_length_cumulative("cumulative") if checked else None)
+        self.dlg_base.radio_fast_design.toggled.connect(lambda checked: self.udpate_buffer_length_cumulative("cumulative") if checked else None)
+        self.dlg_base.radio_sobol_design.toggled.connect(lambda checked: self.udpate_buffer_length_cumulative("cumulative") if checked else None)
+        
         #Add widgets for having more than one species of pesticide
         self.create_pesticides_widgets()
         
@@ -240,6 +267,18 @@ class qvfsmod:
         self.dlg_base.check_pesticide_liquid.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
         
         
+        #Show outputs in the senstiivity analysis for design
+        self.dlg_base.csv_results_morris_design_uncertainity.textChanged.connect(self.show_sensitivity_graph_design)
+        self.dlg_base.csv_results_fast_design_uncertainity.textChanged.connect(self.show_sensitivity_graph_design)
+        self.dlg_base.csv_results_sobol_design_uncertainity.textChanged.connect(self.show_sensitivity_graph_design)
+        
+        #Update sensitivity for design
+        self.dlg_base.radio_frequency_design.toggled.connect(lambda checked: self.update_sensitivity_graph_design() if checked else None)
+        self.dlg_base.radio_sensitivity_index.toggled.connect(lambda checked: self.update_sensitivity_graph_design() if checked else None)
+        self.dlg_base.radio_all_lengths.toggled.connect(lambda checked: self.update_sensitivity_graph_design() if checked else None)
+        self.dlg_base.radio_morris_design.toggled.connect(lambda checked: self.update_sensitivity_graph_design() if checked else None)
+        self.dlg_base.radio_fast_design.toggled.connect(lambda checked: self.update_sensitivity_graph_design() if checked else None)
+        self.dlg_base.radio_sobol_design.toggled.connect(lambda checked: self.update_sensitivity_graph_design() if checked else None)
         
         #Browse sensitivity for calibration
         self.dlg_calibration_sensitivity_hydrograph.browse_vfs.clicked.connect(self.browse_calibration_sensitivity_hydrograph)
@@ -320,6 +359,7 @@ class qvfsmod:
         self.dlg_base.actionDesign_with_Uncertainity.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design_uncertainity))
         self.dlg_base.actionComplete_Calibration.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration_hydrograph))
         self.dlg_base.actionExecution.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sensitivity_analysis))
+        self.dlg_base.actionResults_of_Design_with_Uncertainity.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_results_design_uncertainity))
         self.dlg_base.actionGlobal_Results.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sobol_results))
         self.dlg_base.actionLocal_Results.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.oat_results))
         self.dlg_base.actionExecution_of_Uncertainity_Analysis.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.uncertainity_page))
@@ -847,6 +887,11 @@ class qvfsmod:
         self.dlg_base.browse.clicked.connect(self.browse_files_sensitivity_results)
         self.dlg_base.browse_2.clicked.connect(self.browse_files_sensitivity_results_sobol)
         self.dlg_base.browse_fast_csv.clicked.connect(self.browse_files_sensitivity_results_fast)
+        
+        #Browse file sensitivity graph for design
+        self.dlg_base.browse_design_sensitivity.clicked.connect(lambda _, b = "morris":self.browse_files_results_sensitivity_design(b))
+        self.dlg_base.browse_fast_csv_design_sensitivity.clicked.connect(lambda _, b = "fast":self.browse_files_results_sensitivity_design(b))
+        self.dlg_base.browse_sobol_design_sensitivity.clicked.connect(lambda _, b = "sobol":self.browse_files_results_sensitivity_design(b))
         
         #Browse calibration results
         self.dlg_calibration_results_hydrograph.browse.clicked.connect(self.browse_files_calibration_hydrograph)
@@ -2340,6 +2385,86 @@ class qvfsmod:
         else: 
             self.dlg_water_quality.frame_5.show()
     
+    
+    
+    def show_sensitivity_graph_design(self):
+        """Method to add the outputs for the graph visualization for design"""
+        #I iterate throughout all the paths and select all the outputs
+        paths = [self.dlg_base.csv_results_morris_design_uncertainity,self.dlg_base.csv_results_fast_design_uncertainity,
+            self.dlg_base.csv_results_sobol_design_uncertainity]
+        
+        outputs = []
+        for path in paths:
+            path =self.obtain_direction_vfsmod(path.text()) 
+            if os.path.exists(path) and os.path.isfile(path):
+                with open(path, mode='r', encoding='utf-8') as file:
+                    lines = file.read().splitlines()
+                #Obtain output names
+                for i in range(len(lines)):
+                    if lines[i] == "----------------------------------------------------------------------":
+                        if len(lines[i+1].split(","))>1:
+                            break
+                        else:
+                            outputs.append(lines[i+1])
+        #Obtain unique values
+        outputs = list(set(outputs))
+            
+        #Obtain the name of the output that was selected previously if there was something
+        output_previously = False
+        if self.dlg_base.frame_39.layout() != None:
+            for i in range(self.dlg_base.frame_39.layout().count()):
+                item = self.dlg_base.frame_39.layout().itemAt(i)
+                widget = item.widget()
+                
+                #Checks if the widget is a QCheckBox and if it is selected.
+                if isinstance(widget, QRadioButton) and widget.isChecked():
+                    output_previously = True
+                    output = widget.text()
+        
+        #Add the outputs
+        if len(outputs)>0:
+            if self.dlg_base.frame_39.layout() is not None:
+                layout_frame_22 = self.dlg_base.frame_39.layout()
+            else:
+                layout_frame_22 = QVBoxLayout()
+                self.dlg_base.frame_39.setLayout(layout_frame_22)
+
+            # Elimina todos los QRadioButton existentes y cualquier espaciador
+            for i in reversed(range(layout_frame_22.count())):
+                item = layout_frame_22.itemAt(i)
+                widget = item.widget()
+                
+                # Elimina el widget si es un QRadioButton or label
+                if isinstance(widget, QRadioButton) or isinstance(widget, QLabel):
+                    widget.deleteLater()
+                elif item.spacerItem() is not None:
+                    layout_frame_22.removeItem(item)
+            #Add label
+            label = QLabel("Outputs")
+            layout_frame_22.addWidget(label)
+            
+            # Crear y añadir nuevos QRadioButtons
+            outputs_checks = []
+            for opcion in outputs:
+                radio_button = QRadioButton(opcion)
+                # Conectar la función solo una vez
+                radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_sensitivity_graph_design() if checked else None)
+                layout_frame_22.addWidget(radio_button)
+                outputs_checks.append([opcion,radio_button])
+
+            # Añade el espaciador de nuevo después de los nuevos QRadioButtons
+            spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+            layout_frame_22.addItem(spacer)
+            
+            #Select one radiobutton
+            if output_previously:
+                for i in outputs_checks:
+                    if i[0]==output:
+                        i[1].setChecked(True)
+            else:
+                outputs_checks[0][1].setChecked(True)
+    
+    
     def show_sensitivity_graph_global(self):
         """Method to add the outputs for the graph visualization"""
         if self.dlg_base.radio_morris.isChecked():
@@ -2923,21 +3048,6 @@ class qvfsmod:
             for k in spacing:
                 k.setEnabled(False)
                 k.setStyleSheet("background-color: #d9d9d9;")
-    
-    def show_calibration_buttons(self):
-        """Method to add buttons to show calibration buttons and to show the dialog"""
-        #For the two frames
-        if self.dlg_base.frame_16.isVisible():
-            self.dlg_base.frame_16.setVisible(False)
-            self.dlg_base.frame_18.setVisible(False)
-        else:
-            self.dlg_base.frame_16.setVisible(True)
-            self.dlg_base.frame_18.setVisible(True)
-            #Show dialog
-            if self.dlg_base.calibration_hydrograph.isChecked():
-                self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration_hydrograph)
-            else:
-                self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_calibration_sedimentograph)
                 
 
     def show_design_buttons(self):
@@ -2955,20 +3065,6 @@ class qvfsmod:
             else:
                 self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_design_advanced)
                 
-    def show_sensitivity_buttons(self):
-        """Method to add buttons to show sensitivity buttons and to show the dialog"""
-        #For the two frames
-        if self.dlg_base.frame_54.isVisible():
-            self.dlg_base.frame_54.setVisible(False)
-            self.dlg_base.frame_55.setVisible(False)
-        else:
-            self.dlg_base.frame_54.setVisible(True)
-            self.dlg_base.frame_55.setVisible(True)
-            #Show dialog
-            if self.dlg_base.sensitivity_parameters.isChecked():
-                self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sensitivity_analysis)
-            else:
-                self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_sobol_results)
     
     def add_values_vfs_outputs_dialog(self):
         """Method to add filepaths of prj"""
@@ -4387,6 +4483,33 @@ class qvfsmod:
             self.dlg_calibration_sensitivity_hydrograph_show([False,""])
     
     
+    def browse_files_results_sensitivity_design(self,information):
+        """Method to select the sensitivity files for results of design with uncertainity"""
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        if information == "morris":
+            fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Morris Sensitivity Analysis Results File",working_directory+"\\design\\output" , "CSV files (*.csv)")
+        elif information == "sobol":
+            fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Sobol Sensitivity Analysis Results File",working_directory+"\\design\\output" , "CSV files (*.csv)")
+        elif information == "fast":
+            fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Fast Sensitivity Analysis Results File",working_directory+"\\design\\output" , "CSV files (*.csv)")
+        
+        if fname[0]!="":
+            #Put the relative path if the file is inside the folder
+            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
+                text = os.path.relpath(fname[0], working_directory)
+            else: #absolute path
+                text = fname[0]
+            if information == "morris":
+                self.dlg_base.csv_results_morris_design_uncertainity.setText(text)
+            elif information == "sobol":    
+                self.dlg_base.csv_results_sobol_design_uncertainity.setText(text)
+            elif information == "fast":
+                self.dlg_base.csv_results_fast_design_uncertainity.setText(text)
+            
+            #Show outputs
+            self.show_sensitivity_graph_design()
+            
+    
     def browse_files_sensitivity_results_sobol(self):
         """Method to select the file for sensitivity analysis graph between the local files for Sobol"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
@@ -4584,8 +4707,23 @@ class qvfsmod:
             self.dlg_water_quality.tableWidget.setColumnWidth(0, 400)
     
     
+    
     def update_sensitivity_graph_global(self):
         """Method to update the graph of the sensitivity for Sobol"""
+        #Create and clear axis before drawing
+        if not hasattr(self, 'canvas_sensitivity_graph'):
+            # Si no existe, crear el canvas y añadirlo al layout
+            self.canvas_sensitivity_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
+            
+            # Asignar un layout al QFrame si no tiene uno
+            layout = QVBoxLayout(self.dlg_base.frame_64)
+            self.dlg_base.frame_64.setLayout(layout)
+            
+            # Añadir el canvas al layout
+            layout.addWidget(self.canvas_sensitivity_graph)
+        else:
+            # Si ya existe, simplemente limpiar el canvas
+            self.canvas_sensitivity_graph.figure.clear()
         #MORRIS
         if self.dlg_base.radio_morris.isChecked():
             ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_morris.text())
@@ -4597,20 +4735,7 @@ class qvfsmod:
                     self.warning_message("Please select a csv file that contains Morris sensitivity analysis results")
                     return
                 
-                #Create and clear axis before drawing
-                if not hasattr(self, 'canvas_sensitivity_graph'):
-                    # Si no existe, crear el canvas y añadirlo al layout
-                    self.canvas_sensitivity_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
-                    
-                    # Asignar un layout al QFrame si no tiene uno
-                    layout = QVBoxLayout(self.dlg_base.frame_64)
-                    self.dlg_base.frame_64.setLayout(layout)
-                    
-                    # Añadir el canvas al layout
-                    layout.addWidget(self.canvas_sensitivity_graph)
-                else:
-                    # Si ya existe, simplemente limpiar el canvas
-                    self.canvas_sensitivity_graph.figure.clear()
+                
                 self.ax = self.canvas_sensitivity_graph.figure.subplots()
                 #Obtain output
                 for i in range(self.dlg_base.frame_18.layout().count()):
@@ -4806,7 +4931,437 @@ class qvfsmod:
                 #Draw canvas
                 self.canvas_sensitivity_graph.draw()
     
+    
+    
+    def update_sensitivity_graph_design(self):
+        """Method to update the graph of the sensitivity for Sobol"""
+        #Create and clear axis before drawing
+        if not hasattr(self, 'canvas_sensitivity_graph_design'):
+            # Si no existe, crear el canvas y añadirlo al layout
+            self.canvas_sensitivity_graph_design = FigureCanvas(plt.Figure(figsize=(15, 6)))
+            
+            # Asignar un layout al QFrame si no tiene uno
+            layout = QVBoxLayout(self.dlg_base.frame_77)
+            self.dlg_base.frame_77.setLayout(layout)
+            
+            # Añadir el canvas al layout
+            layout.addWidget(self.canvas_sensitivity_graph_design)
+        else:
+            # Si ya existe, simplemente limpiar el canvas
+            self.canvas_sensitivity_graph_design.figure.clear()
+        
+        
+        #FREQUENCY GRAPH
+        if self.dlg_base.radio_frequency_design.isChecked():
+            #Obtain data depending on database
+            if self.dlg_base.radio_morris_design.isChecked():
+                ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_morris_design_uncertainity.text())
+            elif self.dlg_base.radio_fast_design.isChecked():
+                ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_fast_design_uncertainity.text())
+            elif self.dlg_base.radio_sobol_design.isChecked():
+                ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_sobol_design_uncertainity.text())
+            
+            #Obtain data 
+            if os.path.exists(ruta) and os.path.isfile(ruta):
+                with open(ruta, "r") as archivo:
+                    lineas = archivo.readlines()
+            
+                #self.ax_frequency_design = self.canvas_sensitivity_graph_design.figure.subplots()
+                #Obtain output
+                for i in range(self.dlg_base.frame_39.layout().count()):
+                    item = self.dlg_base.frame_39.layout().itemAt(i)
+                    widget = item.widget()
+                    
+                    #Checks if the widget is a QCheckBox and if it is selected.
+                    if isinstance(widget, QRadioButton) and widget.isChecked():
+                        output_column = widget.text()
+                
+                values = []
+                for i in range(2,len(lineas)):
+                    if lineas[i] == "----------------------------------------------------------------------" + '\n':
+                        columna = lineas[i+1].replace("\n", "").split(",").index(output_column)
+                        for k in range(i+2,len(lineas)):
+                            if lineas[k] == "----------------------------------------------------------------------" + '\n':
+                                break
+                            values.append(float(lineas[k].split(",")[columna]))
+                        break
+                
+                #Create graph
+                # Crear figura y ejes
+                ax1 = self.canvas_sensitivity_graph_design.figure.subplots()
 
+                # Histograma
+                counts, bins, patches = ax1.hist(
+                    values, bins=20, density=True, alpha=0.7, color="lightcoral", edgecolor="black", label="Histogram"
+                )
+
+                # Función acumulada
+                cdf = np.cumsum(counts) / np.sum(counts)
+                ax2 = ax1.twinx()
+                ax2.plot(bins[:-1], cdf, color="teal", lw=2, label="Cumulative")
+
+                # Etiquetas de los ejes
+                ax1.set_xlabel("Buffer Length (m)", labelpad=10, color="black")
+                ax1.set_ylabel("Density", labelpad=10, color="black")
+                ax2.set_ylabel("Cumulative Probability", labelpad=10, color="black")
+
+                # Ajustes del título
+                ax1.set_title("Histogram and Cumulative Distribution", pad=15, color="black")
+
+                # Personalización de los grids
+                ax1.grid(visible=True, linestyle="--", linewidth=0.6, alpha=0.5)
+                ax2.grid(visible=False)
+
+                # Leyendas
+                ax1.legend(loc="upper left", fontsize=10, frameon=False)
+                ax2.legend(loc="upper right", fontsize=10, frameon=False)
+                
+                #Change background color
+                self.canvas_sensitivity_graph_design.figure.set_facecolor('#f0f0f0')
+                ax1.set_facecolor('#f0f0f0')
+                # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+                self.canvas_sensitivity_graph_design.figure.subplots_adjust(left=0.2, bottom=0.2)
+                #Draw canvas
+                self.canvas_sensitivity_graph_design.draw()
+               
+
+        #ALL LENGTHS
+        if self.dlg_base.radio_all_lengths.isChecked():
+            #Obtain data depending on database
+            if self.dlg_base.radio_morris_design.isChecked():
+                ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_morris_design_uncertainity.text())
+            elif self.dlg_base.radio_fast_design.isChecked():
+                ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_fast_design_uncertainity.text())
+            elif self.dlg_base.radio_sobol_design.isChecked():
+                ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_sobol_design_uncertainity.text())
+            
+            #Obtain data 
+            if os.path.exists(ruta) and os.path.isfile(ruta):
+                with open(ruta, "r") as archivo:
+                    lineas = archivo.readlines()
+            
+                #self.ax_frequency_design = self.canvas_sensitivity_graph_design.figure.subplots()
+                #Obtain output
+                for i in range(self.dlg_base.frame_39.layout().count()):
+                    item = self.dlg_base.frame_39.layout().itemAt(i)
+                    widget = item.widget()
+                    
+                    #Checks if the widget is a QCheckBox and if it is selected.
+                    if isinstance(widget, QRadioButton) and widget.isChecked():
+                        output_column = widget.text()
+                
+                values = []
+                contador = 0
+                for i in range(len(lineas)):
+                    if lineas[i] == "----------------------------------------------------------------------" + '\n':
+                        contador += 1 
+                    if contador == 3: 
+                        columna_output = lineas[i+1].replace("\n", "").split(",").index(" ".join(output_column.split()[2:]))
+                        column_buffer = lineas[i+1].replace("\n", "").split(",").index("Buffer length (m)")
+                        for k in range(i+2,len(lineas)):
+                            buffer_length = float(lineas[k].split(",")[column_buffer])
+                            value_output = float(lineas[k].split(",")[columna_output])
+                            values.append([buffer_length,value_output])
+                        break
+                
+                #Create graph
+                #Create figure
+                ax1 = self.canvas_sensitivity_graph_design.figure.subplots()
+                
+                #Obtain different data
+                buffer_lengths = sorted(set([x[0] for x in values]))
+                minimum_values = []
+                maximum_values = []
+                median_values = []
+                for i in buffer_lengths:
+                    minimum_values.append(min([x[1] for x in values if x[0]==i]))
+                    maximum_values.append(max([x[1] for x in values if x[0]==i]))
+                    median_values.append(stats.scoreatpercentile([x[1] for x in values if x[0]==i],50))
+                
+                #Add lines
+                #Minimum values
+                ax1.plot(buffer_lengths,minimum_values, linewidth=2, marker='o',color = "green" ,markersize=6,label = "Minimum")
+                #Maximum values
+                ax1.plot(buffer_lengths,maximum_values, linewidth=2, marker='o',color = "red" ,markersize=6,label = "Maximum")
+                #Median values
+                ax1.plot(buffer_lengths,median_values, linewidth=2, marker='o', color = "black", markersize=6,label = "Median")
+                    
+                #Labels
+                ax1.set_xlabel("Buffer lengths (m)",size = 10,family="arial",weight = "bold",color = "black")
+                ax1.set_ylabel(output_column,size = 10,family="arial",weight = "bold",color = "black")
+                #X ticks
+                ax1.tick_params(axis = "both",colors = "black",labelsize = 9)
+                # Add legend
+                ax1.legend()
+                
+                #Change background color
+                self.canvas_sensitivity_graph_design.figure.set_facecolor('#f0f0f0')
+                ax1.set_facecolor('#f0f0f0')
+                # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+                self.canvas_sensitivity_graph_design.figure.subplots_adjust(left=0.2, bottom=0.2)
+                #Draw canvas
+                self.canvas_sensitivity_graph_design.draw()
+                
+                
+                
+                            
+        #MORRIS
+        if self.dlg_base.radio_morris_design.isChecked() and self.dlg_base.radio_sensitivity_index.isChecked():
+            ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_morris_design_uncertainity.text())
+            if os.path.exists(ruta) and os.path.isfile(ruta):
+                with open(ruta, "r") as archivo:
+                    lineas = archivo.readlines()
+                #If the csv is not of a Morris sensitivity analysis then give error
+                if lineas[0]!="Morris sensitivity indexes" + '\n':
+                    self.warning_message("Please select a csv file that contains Morris sensitivity analysis results")
+                    return
+                
+                self.ax_design = self.canvas_sensitivity_graph_design.figure.subplots()
+                #Obtain output
+                for i in range(self.dlg_base.frame_39.layout().count()):
+                    item = self.dlg_base.frame_39.layout().itemAt(i)
+                    widget = item.widget()
+                    
+                    #Checks if the widget is a QCheckBox and if it is selected.
+                    if isinstance(widget, QRadioButton) and widget.isChecked():
+                        output_column = widget.text()
+                
+                names_inputs = []
+                mu_star = []
+                sigma = []
+                mu = []
+                for i in range(len(lineas)):
+                    if lineas[i] == output_column+ '\n':
+                        for k in lineas[i+1:]:
+                            if k == "----------------------------------------------------------------------" + '\n':
+                                    break
+                            names_inputs.append(k.split(":")[0])
+                            mu_star.append(float(k.split(":")[1].split("_")[0]))
+                            sigma.append(float(k.split(":")[1].split("_")[1]))
+                            mu.append(float(k.split(":")[1].split("_")[2]))
+                            
+                # Graficar los puntos con color granate y agregar etiquetas
+                add_label_monotonic = True # add label only once
+                add_label_non_monotonic = True # add label only once
+                for i, (x, y) in enumerate(zip(mu_star, sigma)):
+                    if np.isnan(x):x = 0
+                    if np.isnan(y):y = 0
+                    #If the difference between mu and mu star is higher than 5%, then is non-monotonic
+                    if (abs(mu_star[i])-abs(mu[i]))/abs(mu_star[i])>0.05:
+                        if add_label_non_monotonic: # add label only once
+                            self.ax_design.scatter(x, y, color="blue", marker="*", label="Non-Monotonic")
+                            add_label_non_monotonic = False
+                        else:
+                            self.ax_design.scatter(x, y, color="blue", marker="*")
+                        self.ax_design.annotate(f'{names_inputs[i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
+                            fontweight='bold',fontsize = 8)
+                    else:
+                        if add_label_monotonic: # add label only once
+                            self.ax_design.scatter(x, y, marker="o", color="maroon",label="Monotonic")
+                            add_label_monotonic = False
+                        else:
+                            self.ax_design.scatter(x, y, marker="o", color="maroon")
+                            
+                        self.ax_design.annotate(f'{names_inputs[i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
+                            fontweight='bold',fontsize = 8)
+                        
+                #Linea 1:1
+                line_plot = list(range(-1,int(max(list(mu_star)+list(sigma))*1.2)+2))
+                self.ax_design.plot(line_plot, line_plot, color="red",linestyle="--")
+                
+                self.ax_design.set_xlim(0,max(list(mu_star)+list(sigma))*1.2)
+                self.ax_design.set_ylim(0,max(list(mu_star)+list(sigma))*1.2)
+                
+                #Add legend
+                legend = self.ax_design.legend(loc="upper right")
+                legend.get_frame().set_facecolor('#f0f0f0')
+                #Labels
+                self.ax_design.set_xlabel("Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_design.set_ylabel("Standard Deviation of Elementary Effects ($\sigma_{i}$)",size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_design.set_title("Morris sensitivity analysis indexes", size=16, family="arial", weight="bold", color="black")
+                #Change background color
+                self.canvas_sensitivity_graph_design.figure.set_facecolor('#f0f0f0')
+                self.ax_design.set_facecolor('#f0f0f0')
+                # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+                self.canvas_sensitivity_graph_design.figure.subplots_adjust(left=0.2, bottom=0.2)
+                #Draw canvas
+                self.canvas_sensitivity_graph_design.draw()
+        
+        #FAST
+        elif self.dlg_base.radio_fast_design.isChecked() and self.dlg_base.radio_sensitivity_index.isChecked():
+            ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_fast_design_uncertainity.text())
+            if os.path.exists(ruta) and os.path.isfile(ruta):
+                with open(ruta, "r") as archivo:
+                    lineas = archivo.readlines()
+                #If the csv is not of a FAST sensitivity analysis then give error
+                if lineas[0]!="FAST sensitivity indexes" + '\n':
+                    self.warning_message("Please select a csv file that contains FAST sensitivity analysis results")
+                    return
+                
+                #Create and clear axis before drawing
+                self.canvas_sensitivity_graph_design.figure.clear()
+                self.ax_fast_design = self.canvas_sensitivity_graph_design.figure.subplots(1,2)
+                
+                #Obtain output
+                for i in range(self.dlg_base.frame_39.layout().count()):
+                    item = self.dlg_base.frame_39.layout().itemAt(i)
+                    widget = item.widget()
+                    
+                    #Checks if the widget is a QCheckBox and if it is selected.
+                    if isinstance(widget, QRadioButton) and widget.isChecked():
+                        output_column = widget.text()
+                
+                names_inputs = []
+                s1 = []
+                s1_conf = []
+                st = []
+                st_conf = []
+                for i in range(len(lineas)):
+                    if lineas[i] == output_column+ '\n':
+                        for k in lineas[i+1:]:
+                            if k == "----------------------------------------------------------------------" + '\n':
+                                    break
+                            names_inputs.append(k.split(":")[0])
+                            s1.append(float(k.split(":")[1].split("_")[0]))
+                            s1_conf.append(float(k.split(":")[1].split("_")[1]))
+                            st.append(float(k.split(":")[1].split("_")[2]))
+                            st_conf.append(float(k.split(":")[1].split("_")[3]))
+                
+                #Total order 
+                self.ax_fast_design[0].bar(names_inputs, st, yerr=st_conf, capsize=5, color='b')
+                self.ax_fast_design[0].set_title('FAST Total order index (ST)', fontsize=10)
+                self.ax_fast_design[0].set_ylabel('FAST index')
+                self.ax_fast_design[0].tick_params(axis='x', rotation=20,labelsize = 8)
+                
+                #First order 
+                self.ax_fast_design[1].bar(names_inputs, s1, yerr=s1_conf, capsize=5, color='b')
+                self.ax_fast_design[1].set_title('FAST First order index (S1)', fontsize=10)
+                self.ax_fast_design[1].tick_params(axis='x', rotation=20,labelsize = 8)
+                
+                #Change background color
+                self.canvas_sensitivity_graph_design.figure.set_facecolor('#f0f0f0')
+                self.ax_fast_design[0].set_facecolor('#f0f0f0')
+                self.ax_fast_design[1].set_facecolor('#f0f0f0')
+                
+                # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+                self.canvas_sensitivity_graph_design.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
+                self.canvas_sensitivity_graph_design.figure.subplots_adjust(left=0.2, bottom=0.2)
+                #Draw canvas
+                self.canvas_sensitivity_graph_design.draw()
+        
+        #Sobol
+        elif self.dlg_base.radio_sobol_design.isChecked() and self.dlg_base.radio_sensitivity_index.isChecked():
+            ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_sobol_design_uncertainity.text())
+            if os.path.exists(ruta) and os.path.isfile(ruta):
+                with open(ruta, "r") as archivo:
+                    lineas = archivo.readlines()
+                #If the csv is not of a Sobol sensitivity analysis then give error
+                if lineas[0]!="Sobol sensitivity indexes" + '\n':
+                    self.warning_message("Please select a csv file that contains Sobol sensitivity analysis results")
+                    return
+                
+                #Create and clear axis before drawing
+                self.canvas_sensitivity_graph_design.figure.clear()
+                self.ax_sobol_design = self.canvas_sensitivity_graph_design.figure.subplots(1, 2)
+                
+                #Obtain output
+                for i in range(self.dlg_base.frame_39.layout().count()):
+                    item = self.dlg_base.frame_39.layout().itemAt(i)
+                    widget = item.widget()
+                    
+                    #Checks if the widget is a QCheckBox and if it is selected.
+                    if isinstance(widget, QRadioButton) and widget.isChecked():
+                        output_column = widget.text()
+                
+                names_inputs = []
+                s1 = []
+                s1_conf = []
+                st = []
+                st_conf = []
+                for i in range(len(lineas)):
+                    if lineas[i] == output_column+ '\n':
+                        for k in lineas[i+1:]:
+                            if k == "----------------------------------------------------------------------" + '\n':
+                                    break
+                            names_inputs.append(k.split(":")[0])
+                            s1.append(float(k.split(":")[1].split("_")[0]))
+                            s1_conf.append(float(k.split(":")[1].split("_")[1]))
+                            st.append(float(k.split(":")[1].split("_")[2]))
+                            st_conf.append(float(k.split(":")[1].split("_")[3]))
+                
+                #Total order 
+                self.ax_sobol_design[0].bar(names_inputs, st, yerr=st_conf, capsize=5, color='b')
+                self.ax_sobol_design[0].set_title('Sobol Total order index (ST)', fontsize=10)
+                self.ax_sobol_design[0].set_ylabel('Sobol index')
+                self.ax_sobol_design[0].tick_params(axis='x', rotation=20,labelsize = 8)
+                
+                #First order 
+                self.ax_sobol_design[1].bar(names_inputs, s1, yerr=s1_conf, capsize=5, color='b')
+                self.ax_sobol_design[1].set_title('Sobol First order index (S1)', fontsize=10)
+                self.ax_sobol_design[1].tick_params(axis='x', rotation=20,labelsize = 8)
+                
+                #Change background color
+                self.canvas_sensitivity_graph_design.figure.set_facecolor('#f0f0f0')
+                self.ax_sobol_design[0].set_facecolor('#f0f0f0')
+                self.ax_sobol_design[1].set_facecolor('#f0f0f0')
+                
+                # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+                self.canvas_sensitivity_graph_design.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
+                self.canvas_sensitivity_graph_design.figure.subplots_adjust(left=0.2, bottom=0.2)
+                #Draw canvas
+                self.canvas_sensitivity_graph_design.draw()
+    
+    def udpate_buffer_length_cumulative(self,information):
+        """Method to obtain the buffer length according to a confidence level"""
+        #Obtain data depending on database
+        if self.dlg_base.radio_morris_design.isChecked():
+            ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_morris_design_uncertainity.text())
+        elif self.dlg_base.radio_fast_design.isChecked():
+            ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_fast_design_uncertainity.text())
+        elif self.dlg_base.radio_sobol_design.isChecked():
+            ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_sobol_design_uncertainity.text())
+        
+        #Obtain data 
+        if os.path.exists(ruta) and os.path.isfile(ruta):
+            with open(ruta, "r") as archivo:
+                lineas = archivo.readlines()
+            
+            for i in range(self.dlg_base.frame_39.layout().count()):
+                item = self.dlg_base.frame_39.layout().itemAt(i)
+                widget = item.widget()
+                
+                #Checks if the widget is a QCheckBox and if it is selected.
+                if isinstance(widget, QRadioButton) and widget.isChecked():
+                    output_column = widget.text()
+                        
+            values = []
+            for i in range(2,len(lineas)):
+                if lineas[i] == "----------------------------------------------------------------------" + '\n':
+                    columna = lineas[i+1].replace("\n", "").split(",").index(output_column)
+                    for k in range(i+2,len(lineas)):
+                        if lineas[k] == "----------------------------------------------------------------------" + '\n':
+                            break
+                        values.append(float(lineas[k].split(",")[columna]))
+                    break
+                    
+            if information == "cumulative":
+                #Obtain value
+                value = stats.scoreatpercentile(values,float(self.dlg_base.cumulative_probability_sensitivity_design.text()))
+                #Disconnect function
+                print(1)
+                self.dlg_base.cumulative_probability_sensitivity_design.textChanged.disconnect(lambda _, b = "cumulative": self.udpate_buffer_length_cumulative(b))
+                self.dlg_base.buffer_length_sensitivity_design.setText(str(round(value,2)))
+                #Connect function
+                self.dlg_base.cumulative_probability_sensitivity_design.textChanged.connect(lambda _, b = "cumulative": self.udpate_buffer_length_cumulative(b))
+            
+            elif information == "length":
+                value = percentileofscore(values, float(self.dlg_base.buffer_length_sensitivity_design.text()), kind='rank')
+                #Disconnect function
+                self.dlg_base.cumulative_probability_sensitivity_design.textChanged.disconnect(lambda _, b = "cumulative": self.udpate_buffer_length_cumulative(b))
+                self.dlg_base.cumulative_probability_sensitivity_design.setText(str(round(value,2)))
+                #Connect function
+                self.dlg_base.cumulative_probability_sensitivity_design.textChanged.connect(lambda _, b = "cumulative": self.udpate_buffer_length_cumulative(b))
+    
     def browse_files_uncertainity(self,information):
         """Method to select the file for uncertainity analysis between the local files"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
@@ -5408,7 +5963,6 @@ class qvfsmod:
         #Create DataFrame or results
         self.results_sensitivity_raw = self.create_df_sensitivity_design(self.results)
         
-        self.results_sensitivity_raw.to_csv(r"C:\borrar\resultados.csv",index=False, float_format='%.5f')
         
         #Obtain the data with the optimized buffer lengths
         self.results_sensitivity = self.obtain_optimized_vfs_sensitivity_design()
@@ -5465,22 +6019,20 @@ class qvfsmod:
         
         #Append results
         self.results_sensitivity.to_csv(path, mode='a',index=False, float_format='%.5f')
+        with open(path, 'a') as f:
+            f.write("----------------------------------------------------------------------" + '\n')
         self.results_sensitivity_raw.to_csv(path, mode='a',index=False, float_format='%.5f')
             
         #Add csv result to the lineEdit and update graph
-        r'''
+        
         if self.dlg_base.sobol.isChecked():
-            self.dlg_base.csv_results_2.setText(self.dlg_base.file_save.text())
-            self.show_sensitivity_graph_global()
+            self.dlg_base.csv_results_sobol_design_uncertainity.setText(self.dlg_base.file_save_design.text())
         elif self.dlg_base.morris.isChecked():
-            self.dlg_base.csv_results_morris.setText(self.dlg_base.file_save.text())
-            self.show_sensitivity_graph_global()
+            self.dlg_base.csv_results_morris_design_uncertainity.setText(self.dlg_base.file_save_design.text())
         elif self.dlg_base.fast.isChecked():
-            self.dlg_base.csv_results_fast.setText(self.dlg_base.file_save.text())
-            self.show_sensitivity_graph_global()
-        elif self.dlg_base.oat.isChecked():
-            self.dlg_base.csv_results_oat.setText(self.dlg_base.file_save.text())
-            self.add_inputs_oat_results()'''
+            self.dlg_base.csv_results_fast_design_uncertainity.setText(self.dlg_base.file_save_design.text())
+
+        self.show_sensitivity_graph_design()
         
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)
@@ -5892,7 +6444,7 @@ class qvfsmod:
             self.modify_igr_file_design()
         
         #NOW WE REPLICATE THE FILES AS MUCH AS CORES ARE IN THE COMPUTER
-        self.number_cores = psutil.cpu_count(logical=False)
+        self.number_cores = psutil.cpu_count()
         
         #Replicate prj as much as cores are
         for core in range(self.number_cores*5):#we do *5 because if not there can be problems of overlapping:processes executing files that are already executing
@@ -6027,7 +6579,7 @@ class qvfsmod:
             copy_paste("VFS","iwq")
         
         #NOW WE REPLICATE THE FILES AS MUCH AS CORES ARE IN THE COMPUTER
-        self.number_cores = psutil.cpu_count(logical=False)
+        self.number_cores = psutil.cpu_count()
         
         #Replicate prj as much as cores are
         for core in range(self.number_cores*5):#we do *5 because if not there can be problems of overlapping:processes executing files that are already executing
@@ -6178,7 +6730,7 @@ class qvfsmod:
             
         
         #NOW WE REPLICATE THE FILES AS MUCH AS CORES ARE IN THE COMPUTER
-        self.number_cores = psutil.cpu_count(logical=False)
+        self.number_cores = psutil.cpu_count()
         
         #Replicate prj as much as cores are
         for core in range(self.number_cores*5):#we do *5 because if not there can be problems of overlapping:processes executing files that are already executing
@@ -6296,7 +6848,7 @@ class qvfsmod:
             copy_paste("VFS","iwq")
         
         #NOW WE REPLICATE THE FILES AS MUCH AS CORES ARE IN THE COMPUTER
-        self.number_cores = psutil.cpu_count(logical=False)
+        self.number_cores = psutil.cpu_count()
         
         #Replicate prj as much as cores are
         for core in range(self.number_cores*5):#we do *5 because if not there can be problems of overlapping:processes executing files that are already executing
@@ -6464,7 +7016,7 @@ class qvfsmod:
             copy_paste("VFS","iwq")
         
         #NOW WE REPLICATE THE FILES AS MUCH AS CORES ARE IN THE COMPUTER
-        self.number_cores = psutil.cpu_count(logical=False)
+        self.number_cores = psutil.cpu_count()
         
         #Replicate prj as much as cores are
         for core in range(self.number_cores*5):#we do *5 because if not there can be problems of overlapping:processes executing files that are already executing
@@ -15200,7 +15752,7 @@ class DesignAnalysisThread(QThread):
         super().__init__()
         self.args_list = args_list
     def run(self):
-        with Pool(processes=psutil.cpu_count(logical=False)) as pool:
+        with Pool(processes=psutil.cpu_count()) as pool:
             async_results = [
                 pool.apply_async(
                     wrapper_design_paralelization,
@@ -15231,7 +15783,7 @@ class SensitivityAnalysisThread(QThread):
         super().__init__()
         self.args_list = args_list
     def run(self):
-        with Pool(processes=psutil.cpu_count(logical=False)) as pool:
+        with Pool(processes=psutil.cpu_count()) as pool:
             async_results = [
                 pool.apply_async(
                     wrapper_sensitivity_paralelization,
@@ -15260,7 +15812,7 @@ class SensitivityAnalysisThreadDesign(QThread):
         super().__init__()
         self.args_list = args_list
     def run(self):
-        with Pool(processes=psutil.cpu_count(logical=False)) as pool:
+        with Pool(processes=psutil.cpu_count()) as pool:
             async_results = [
                 pool.apply_async(
                     wrapper_sensitivity_paralelization_design,
@@ -15290,7 +15842,7 @@ class SensitivityAnalysisThreadCalibration(QThread):
         super().__init__()
         self.args_list = args_list
     def run(self):
-        with Pool(processes=psutil.cpu_count(logical=False)) as pool:
+        with Pool(processes=psutil.cpu_count()) as pool:
             async_results = [
                 pool.apply_async(
                     wrapper_sensitivity_paralelization_calibration,
@@ -15319,7 +15871,7 @@ class UncertainityAnalysisThread(QThread):
         super().__init__()
         self.args_list = args_list
     def run(self):
-        with Pool(processes=psutil.cpu_count(logical=False)) as pool:
+        with Pool(processes=psutil.cpu_count()) as pool:
             async_results = [
                 pool.apply_async(
                     wrapper_uncertainity_paralelization,
