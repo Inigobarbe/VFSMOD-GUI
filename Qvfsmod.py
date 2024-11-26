@@ -213,13 +213,13 @@ class qvfsmod:
         #Configurate the graph style
         # Configuración global del estilo
         plt.rcParams.update({
-            "font.family": "Sans-serif",  # Fuente sin serifas moderna
-            "axes.titlesize": 18,        # Tamaño del título
-            "axes.labelsize": 16,        # Tamaño de las etiquetas
-            "axes.labelweight": "medium", # Grosor mediano para un estilo refinado
-            "xtick.labelsize": 14,       # Tamaño de las etiquetas del eje X
-            "ytick.labelsize": 14,       # Tamaño de las etiquetas del eje Y
-            "axes.linewidth": 0.8,       # Líneas más delgadas para un look minimalista
+            "font.family": "Sans-serif",   # Fuente sin serifas moderna
+            "axes.titlesize": 18,         # Tamaño del título
+            "axes.labelsize": 30,         # Tamaño de las etiquetas de los ejes (aumentado)
+            "axes.labelweight": "bold",   # Peso del texto de las etiquetas de los ejes (negrita)
+            "xtick.labelsize": 20,        # Tamaño de las etiquetas del eje X
+            "ytick.labelsize": 20,        # Tamaño de las etiquetas del eje Y
+            "axes.linewidth": 0.8,        # Líneas más delgadas para un look minimalista
         })
 
         # Configuración del estilo general
@@ -227,11 +227,11 @@ class qvfsmod:
         
         
         #Update buffer length according to confindence level and veceversa
-        self.dlg_base.cumulative_probability_sensitivity_design.textChanged.connect(lambda _, b = "cumulative": self.udpate_buffer_length_cumulative(b))
-        self.dlg_base.buffer_length_sensitivity_design.textChanged.connect(lambda _, b = "length": self.udpate_buffer_length_cumulative(b))
-        self.dlg_base.radio_morris_design.toggled.connect(lambda checked: self.udpate_buffer_length_cumulative("cumulative") if checked else None)
-        self.dlg_base.radio_fast_design.toggled.connect(lambda checked: self.udpate_buffer_length_cumulative("cumulative") if checked else None)
-        self.dlg_base.radio_sobol_design.toggled.connect(lambda checked: self.udpate_buffer_length_cumulative("cumulative") if checked else None)
+        self.dlg_base.cumulative_probability_sensitivity_design.textChanged.connect(self.udpate_buffer_length_cumulative)
+        self.dlg_base.buffer_length_sensitivity_design.textChanged.connect(self.udpate_cumulative_buffer_length)
+        self.dlg_base.radio_morris_design.toggled.connect(lambda checked: self.udpate_buffer_length_cumulative() if checked else None)
+        self.dlg_base.radio_fast_design.toggled.connect(lambda checked: self.udpate_buffer_length_cumulative() if checked else None)
+        self.dlg_base.radio_sobol_design.toggled.connect(lambda checked: self.udpate_buffer_length_cumulative() if checked else None)
         
         #Add widgets for having more than one species of pesticide
         self.create_pesticides_widgets()
@@ -276,9 +276,6 @@ class qvfsmod:
         self.dlg_base.radio_frequency_design.toggled.connect(lambda checked: self.update_sensitivity_graph_design() if checked else None)
         self.dlg_base.radio_sensitivity_index.toggled.connect(lambda checked: self.update_sensitivity_graph_design() if checked else None)
         self.dlg_base.radio_all_lengths.toggled.connect(lambda checked: self.update_sensitivity_graph_design() if checked else None)
-        self.dlg_base.radio_morris_design.toggled.connect(lambda checked: self.update_sensitivity_graph_design() if checked else None)
-        self.dlg_base.radio_fast_design.toggled.connect(lambda checked: self.update_sensitivity_graph_design() if checked else None)
-        self.dlg_base.radio_sobol_design.toggled.connect(lambda checked: self.update_sensitivity_graph_design() if checked else None)
         
         #Browse sensitivity for calibration
         self.dlg_calibration_sensitivity_hydrograph.browse_vfs.clicked.connect(self.browse_calibration_sensitivity_hydrograph)
@@ -903,9 +900,6 @@ class qvfsmod:
         self.dlg_base.csv_results_fast.textChanged.connect(self.show_sensitivity_graph_global)
         self.dlg_base.csv_results_2.textChanged.connect(self.show_sensitivity_graph_global)
         
-        check_boxes = [self.dlg_base.radio_morris, self.dlg_base.radio_fast,self.dlg_base.radio_sobol]
-        for i in check_boxes:
-            i.toggled.connect(lambda checked, rb=i: self.show_sensitivity_graph_global() if checked else None)
         
         #Update sensitivity graph for OAT
         check_boxes = [self.dlg_base.runoff_source_mm_3,self.dlg_base.runoff_source_m3_3,
@@ -2448,13 +2442,15 @@ class qvfsmod:
             for opcion in outputs:
                 radio_button = QRadioButton(opcion)
                 # Conectar la función solo una vez
-                radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_sensitivity_graph_design() if checked else None)
+                radio_button.toggled.connect(lambda checked, rb=radio_button: self.udpate_buffer_length_cumulative() if checked else None)
                 layout_frame_22.addWidget(radio_button)
                 outputs_checks.append([opcion,radio_button])
 
             # Añade el espaciador de nuevo después de los nuevos QRadioButtons
             spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
             layout_frame_22.addItem(spacer)
+            
+            
             
             #Select one radiobutton
             if output_previously:
@@ -2463,73 +2459,75 @@ class qvfsmod:
                         i[1].setChecked(True)
             else:
                 outputs_checks[0][1].setChecked(True)
+                
     
     
     def show_sensitivity_graph_global(self):
         """Method to add the outputs for the graph visualization"""
-        if self.dlg_base.radio_morris.isChecked():
-            path = self.obtain_direction_vfsmod(self.dlg_base.csv_results_morris.text())
-        elif self.dlg_base.radio_fast.isChecked():
-            path = self.obtain_direction_vfsmod(self.dlg_base.csv_results_fast.text())
-        elif self.dlg_base.radio_sobol.isChecked():
-            path = self.obtain_direction_vfsmod(self.dlg_base.csv_results_2.text())
-        if os.path.exists(path) and os.path.isfile(path):
-            with open(path, mode='r', encoding='utf-8') as file:
-                lines = file.read().splitlines()
-            
-            #Obtain output names
-            outputs = []
-            for i in range(len(lines)):
-                if lines[i] == "----------------------------------------------------------------------":
-                    if len(lines[i+1].split(","))>1:
-                        break
-                    else:
-                        outputs.append(lines[i+1])
+        #I iterate throughout all the paths and select all the outputs
+        paths = [self.dlg_base.csv_results_morris,self.dlg_base.csv_results_fast,
+            self.dlg_base.csv_results_2]
+        
+        outputs = []
+        for path in paths:
+            path =self.obtain_direction_vfsmod(path.text()) 
+            if os.path.exists(path) and os.path.isfile(path):
+                with open(path, mode='r', encoding='utf-8') as file:
+                    lines = file.read().splitlines()
+                #Obtain output names
+                for i in range(len(lines)):
+                    if lines[i] == "----------------------------------------------------------------------":
+                        if len(lines[i+1].split(","))>1:
+                            break
+                        else:
+                            outputs.append(lines[i+1])
+        #Obtain unique values
+        outputs = list(set(outputs))
                 
-            #Obtain the name of the output that was selected previously
-            for i in range(self.dlg_base.frame_18.layout().count()):
-                item = self.dlg_base.frame_18.layout().itemAt(i)
+        #Obtain the name of the output that was selected previously
+        for i in range(self.dlg_base.frame_18.layout().count()):
+            item = self.dlg_base.frame_18.layout().itemAt(i)
+            widget = item.widget()
+            
+            #Checks if the widget is a QCheckBox and if it is selected.
+            if isinstance(widget, QRadioButton) and widget.isChecked():
+                output = widget.text()
+        
+        #Add the outputs
+        if len(outputs)>0:
+            if self.dlg_base.frame_18.layout() is not None:
+                layout_frame_22 = self.dlg_base.frame_18.layout()
+            else:
+                layout_frame_22 = QVBoxLayout()
+                self.dlg_base.frame_18.setLayout(layout_frame_22)
+
+            # Elimina todos los QRadioButton existentes y cualquier espaciador
+            for i in reversed(range(layout_frame_22.count())):
+                item = layout_frame_22.itemAt(i)
                 widget = item.widget()
                 
-                #Checks if the widget is a QCheckBox and if it is selected.
-                if isinstance(widget, QRadioButton) and widget.isChecked():
-                    output = widget.text()
+                # Elimina el widget si es un QRadioButton
+                if isinstance(widget, QRadioButton):
+                    widget.deleteLater()
+                elif item.spacerItem() is not None:
+                    layout_frame_22.removeItem(item)
+            # Crear y añadir nuevos QRadioButtons
+            outputs_checks = []
+            for opcion in outputs:
+                radio_button = QRadioButton(opcion)
+                # Conectar la función solo una vez
+                radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_sensitivity_graph_global() if checked else None)
+                layout_frame_22.addWidget(radio_button)
+                outputs_checks.append([opcion,radio_button])
+
+            # Añade el espaciador de nuevo después de los nuevos QRadioButtons
+            spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+            layout_frame_22.addItem(spacer)
             
-            #Add the outputs
-            if len(outputs)>0:
-                if self.dlg_base.frame_18.layout() is not None:
-                    layout_frame_22 = self.dlg_base.frame_18.layout()
-                else:
-                    layout_frame_22 = QVBoxLayout()
-                    self.dlg_base.frame_18.setLayout(layout_frame_22)
-
-                # Elimina todos los QRadioButton existentes y cualquier espaciador
-                for i in reversed(range(layout_frame_22.count())):
-                    item = layout_frame_22.itemAt(i)
-                    widget = item.widget()
-                    
-                    # Elimina el widget si es un QRadioButton
-                    if isinstance(widget, QRadioButton):
-                        widget.deleteLater()
-                    elif item.spacerItem() is not None:
-                        layout_frame_22.removeItem(item)
-                # Crear y añadir nuevos QRadioButtons
-                outputs_checks = []
-                for opcion in outputs:
-                    radio_button = QRadioButton(opcion)
-                    # Conectar la función solo una vez
-                    radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_sensitivity_graph_global() if checked else None)
-                    layout_frame_22.addWidget(radio_button)
-                    outputs_checks.append([opcion,radio_button])
-
-                # Añade el espaciador de nuevo después de los nuevos QRadioButtons
-                spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-                layout_frame_22.addItem(spacer)
-                
-                #Select one radiobutton
-                for i in outputs_checks:
-                    if i[0]==output:
-                        i[1].setChecked(True)
+            #Select one radiobutton
+            for i in outputs_checks:
+                if i[0]==output:
+                    i[1].setChecked(True)
     
     
     def add_inputs_oat_results(self):
@@ -4522,7 +4520,7 @@ class qvfsmod:
                 text = fname[0]
             self.dlg_base.csv_results_2.setText(text)
             #Update graph
-            self.update_sensitivity_graph_global()
+            self.show_sensitivity_graph_global()
     
     def browse_files_sensitivity_results_fast(self):
         """Method to select the file for sensitivity analysis graph between the local files for FAST"""
@@ -4536,7 +4534,7 @@ class qvfsmod:
                 text = fname[0]
             self.dlg_base.csv_results_fast.setText(text)
             #Update graph
-            self.update_sensitivity_graph_global()
+            self.show_sensitivity_graph_global()
     
     def browse_files_calibration_hydrograph(self):
         """Method to select the file for calibration results"""
@@ -4614,7 +4612,7 @@ class qvfsmod:
                 text = fname[0]
             self.dlg_base.csv_results_morris.setText(text)
             #Update graph
-            self.update_sensitivity_graph_global()
+            self.show_sensitivity_graph_global()
         
     
     def udpate_sensitivity_calibration_results(self):
@@ -4664,7 +4662,7 @@ class qvfsmod:
                 if np.isnan(y):y = 0
                 self.ax_calibration_sensitivity.scatter(x, y, marker="o", color="maroon")
                 self.ax_calibration_sensitivity.annotate(f'{names_inputs[i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
-                    fontweight='bold',fontsize = 8)
+                    fontweight='bold',fontsize = 10)
             #Linea 1:1
             line_plot = list(range(-1,int(max(list(mu_star)+list(sigma))*1.2)+2))
             self.ax_calibration_sensitivity.plot(line_plot, line_plot, color="red",linestyle="--")
@@ -4767,14 +4765,20 @@ class qvfsmod:
                     if np.isnan(x):x = 0
                     if np.isnan(y):y = 0
                     #If the difference between mu and mu star is higher than 5%, then is non-monotonic
-                    if (abs(mu_star[i])-abs(mu[i]))/abs(mu_star[i])>0.05:
+                    if abs(mu_star[i]) == 0 and abs(mu_star[i]) == 0:
+                        difference = 0
+                    elif abs(mu_star[i]) != 0 and abs(mu_star[i]) == 0:
+                        difference = 1
+                    else:
+                        difference = (abs(mu_star[i])-abs(mu[i]))/abs(mu_star[i])
+                    if difference>0.05:
                         if add_label_non_monotonic: # add label only once
                             self.ax.scatter(x, y, color="blue", marker="*", label="Non-Monotonic")
                             add_label_non_monotonic = False
                         else:
                             self.ax.scatter(x, y, color="blue", marker="*")
                         self.ax.annotate(f'{names_inputs[i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
-                            fontweight='bold',fontsize = 8)
+                            fontweight='bold',fontsize = 10)
                     else:
                         if add_label_monotonic: # add label only once
                             self.ax.scatter(x, y, marker="o", color="maroon",label="Monotonic")
@@ -4783,7 +4787,7 @@ class qvfsmod:
                             self.ax.scatter(x, y, marker="o", color="maroon")
                             
                         self.ax.annotate(f'{names_inputs[i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
-                            fontweight='bold',fontsize = 8)
+                            fontweight='bold',fontsize = 10)
                         
                 #Linea 1:1
                 line_plot = list(range(-1,int(max(list(mu_star)+list(sigma))*1.2)+2))
@@ -4965,8 +4969,7 @@ class qvfsmod:
             if os.path.exists(ruta) and os.path.isfile(ruta):
                 with open(ruta, "r") as archivo:
                     lineas = archivo.readlines()
-            
-                #self.ax_frequency_design = self.canvas_sensitivity_graph_design.figure.subplots()
+
                 #Obtain output
                 for i in range(self.dlg_base.frame_39.layout().count()):
                     item = self.dlg_base.frame_39.layout().itemAt(i)
@@ -4978,9 +4981,9 @@ class qvfsmod:
                 
                 values = []
                 for i in range(2,len(lineas)):
-                    if lineas[i] == "----------------------------------------------------------------------" + '\n':
-                        columna = lineas[i+1].replace("\n", "").split(",").index(output_column)
-                        for k in range(i+2,len(lineas)):
+                    if len(lineas[i].split(","))>2:
+                        columna = lineas[i].replace("\n", "").split(",").index(output_column)
+                        for k in range(i+1,len(lineas)):
                             if lineas[k] == "----------------------------------------------------------------------" + '\n':
                                 break
                             values.append(float(lineas[k].split(",")[columna]))
@@ -4999,14 +5002,18 @@ class qvfsmod:
                 cdf = np.cumsum(counts) / np.sum(counts)
                 ax2 = ax1.twinx()
                 ax2.plot(bins[:-1], cdf, color="teal", lw=2, label="Cumulative")
+                
+                #Vertical line
+                try:
+                    ax1.axvline(x=float(self.dlg_base.buffer_length_sensitivity_design.text()), color='red', linestyle='--', linewidth=1.5)
+                except:
+                    pass
 
                 # Etiquetas de los ejes
-                ax1.set_xlabel("Buffer Length (m)", labelpad=10, color="black")
-                ax1.set_ylabel("Density", labelpad=10, color="black")
-                ax2.set_ylabel("Cumulative Probability", labelpad=10, color="black")
+                ax1.set_xlabel("Buffer Length (m)", size = 14,family="arial",weight = "bold",color = "black")
+                ax1.set_ylabel("Density", size = 14,family="arial",weight = "bold",color = "black")
+                ax2.set_ylabel("Cumulative Probability", size = 14,family="arial",weight = "bold",color = "black")
 
-                # Ajustes del título
-                ax1.set_title("Histogram and Cumulative Distribution", pad=15, color="black")
 
                 # Personalización de los grids
                 ax1.grid(visible=True, linestyle="--", linewidth=0.6, alpha=0.5)
@@ -5051,14 +5058,11 @@ class qvfsmod:
                         output_column = widget.text()
                 
                 values = []
-                contador = 0
                 for i in range(len(lineas)):
-                    if lineas[i] == "----------------------------------------------------------------------" + '\n':
-                        contador += 1 
-                    if contador == 3: 
-                        columna_output = lineas[i+1].replace("\n", "").split(",").index(" ".join(output_column.split()[2:]))
-                        column_buffer = lineas[i+1].replace("\n", "").split(",").index("Buffer length (m)")
-                        for k in range(i+2,len(lineas)):
+                    if "Error" in lineas[i].split(","):
+                        columna_output = lineas[i].replace("\n", "").split(",").index(" ".join(output_column.split()[2:-1]))
+                        column_buffer = lineas[i].replace("\n", "").split(",").index("Buffer length (m)")
+                        for k in range(i+1,len(lineas)):
                             buffer_length = float(lineas[k].split(",")[column_buffer])
                             value_output = float(lineas[k].split(",")[columna_output])
                             values.append([buffer_length,value_output])
@@ -5080,15 +5084,24 @@ class qvfsmod:
                 
                 #Add lines
                 #Minimum values
-                ax1.plot(buffer_lengths,minimum_values, linewidth=2, marker='o',color = "green" ,markersize=6,label = "Minimum")
-                #Maximum values
-                ax1.plot(buffer_lengths,maximum_values, linewidth=2, marker='o',color = "red" ,markersize=6,label = "Maximum")
-                #Median values
-                ax1.plot(buffer_lengths,median_values, linewidth=2, marker='o', color = "black", markersize=6,label = "Median")
+                ax1.plot(buffer_lengths, minimum_values, linewidth=1.5, marker='o', color="steelblue",
+                         markersize=5, linestyle="--", label="Minimum")
+                ax1.plot(buffer_lengths, maximum_values, linewidth=1.5, marker='o', color="firebrick",
+                         markersize=5, linestyle="--", label="Maximum")
+
+                # Línea central: Mediana
+                ax1.plot(buffer_lengths, median_values, linewidth=2.5, marker='s', color="black",
+                         markersize=7, linestyle="-", label="Median")
+                 
+                #Vertical line
+                try:
+                    ax1.axvline(x=float(self.dlg_base.buffer_length_sensitivity_design.text()), color='red', linestyle='--', linewidth=1.5)
+                except:
+                    pass
                     
                 #Labels
-                ax1.set_xlabel("Buffer lengths (m)",size = 10,family="arial",weight = "bold",color = "black")
-                ax1.set_ylabel(output_column,size = 10,family="arial",weight = "bold",color = "black")
+                ax1.set_xlabel("Buffer lengths (m)",size = 14,family="arial",weight = "bold",color = "black")
+                ax1.set_ylabel(" ".join(output_column.split()[2:]),size = 14,family="arial",weight = "bold",color = "black")
                 #X ticks
                 ax1.tick_params(axis = "both",colors = "black",labelsize = 9)
                 # Add legend
@@ -5147,14 +5160,20 @@ class qvfsmod:
                     if np.isnan(x):x = 0
                     if np.isnan(y):y = 0
                     #If the difference between mu and mu star is higher than 5%, then is non-monotonic
-                    if (abs(mu_star[i])-abs(mu[i]))/abs(mu_star[i])>0.05:
+                    if abs(mu_star[i]) == 0 and abs(mu_star[i]) == 0:
+                        difference = 0
+                    elif abs(mu_star[i]) != 0 and abs(mu_star[i]) == 0:
+                        difference = 1
+                    else:
+                        difference = (abs(mu_star[i])-abs(mu[i]))/abs(mu_star[i])
+                    if difference>0.05:
                         if add_label_non_monotonic: # add label only once
                             self.ax_design.scatter(x, y, color="blue", marker="*", label="Non-Monotonic")
                             add_label_non_monotonic = False
                         else:
                             self.ax_design.scatter(x, y, color="blue", marker="*")
                         self.ax_design.annotate(f'{names_inputs[i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
-                            fontweight='bold',fontsize = 8)
+                            fontweight='bold',fontsize = 10)
                     else:
                         if add_label_monotonic: # add label only once
                             self.ax_design.scatter(x, y, marker="o", color="maroon",label="Monotonic")
@@ -5163,7 +5182,7 @@ class qvfsmod:
                             self.ax_design.scatter(x, y, marker="o", color="maroon")
                             
                         self.ax_design.annotate(f'{names_inputs[i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
-                            fontweight='bold',fontsize = 8)
+                            fontweight='bold',fontsize = 10)
                         
                 #Linea 1:1
                 line_plot = list(range(-1,int(max(list(mu_star)+list(sigma))*1.2)+2))
@@ -5311,8 +5330,9 @@ class qvfsmod:
                 #Draw canvas
                 self.canvas_sensitivity_graph_design.draw()
     
-    def udpate_buffer_length_cumulative(self,information):
-        """Method to obtain the buffer length according to a confidence level"""
+    
+    def obtain_values_sensitivity_design(self):
+        """Method to obtain the values of the senstivitiy analysis simulation for the design"""
         #Obtain data depending on database
         if self.dlg_base.radio_morris_design.isChecked():
             ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_morris_design_uncertainity.text())
@@ -5336,32 +5356,48 @@ class qvfsmod:
                         
             values = []
             for i in range(2,len(lineas)):
-                if lineas[i] == "----------------------------------------------------------------------" + '\n':
-                    columna = lineas[i+1].replace("\n", "").split(",").index(output_column)
-                    for k in range(i+2,len(lineas)):
+                if len(lineas[i].split(","))>2:
+                    columna = lineas[i].replace("\n", "").split(",").index(output_column)
+                    for k in range(i+1,len(lineas)):
                         if lineas[k] == "----------------------------------------------------------------------" + '\n':
                             break
                         values.append(float(lineas[k].split(",")[columna]))
                     break
                     
-            if information == "cumulative":
-                #Obtain value
-                value = stats.scoreatpercentile(values,float(self.dlg_base.cumulative_probability_sensitivity_design.text()))
-                #Disconnect function
-                print(1)
-                self.dlg_base.cumulative_probability_sensitivity_design.textChanged.disconnect(lambda _, b = "cumulative": self.udpate_buffer_length_cumulative(b))
-                self.dlg_base.buffer_length_sensitivity_design.setText(str(round(value,2)))
-                #Connect function
-                self.dlg_base.cumulative_probability_sensitivity_design.textChanged.connect(lambda _, b = "cumulative": self.udpate_buffer_length_cumulative(b))
-            
-            elif information == "length":
-                value = percentileofscore(values, float(self.dlg_base.buffer_length_sensitivity_design.text()), kind='rank')
-                #Disconnect function
-                self.dlg_base.cumulative_probability_sensitivity_design.textChanged.disconnect(lambda _, b = "cumulative": self.udpate_buffer_length_cumulative(b))
-                self.dlg_base.cumulative_probability_sensitivity_design.setText(str(round(value,2)))
-                #Connect function
-                self.dlg_base.cumulative_probability_sensitivity_design.textChanged.connect(lambda _, b = "cumulative": self.udpate_buffer_length_cumulative(b))
+            return values
+        
+    def udpate_buffer_length_cumulative(self):
+        """Method to obtain the buffer length according to a confidence level"""
+        values = self.obtain_values_sensitivity_design()
+        try:
+            #Obtain value
+            value = stats.scoreatpercentile(values,float(self.dlg_base.cumulative_probability_sensitivity_design.text()))
+            #Disconnect function
+            self.dlg_base.buffer_length_sensitivity_design.textChanged.disconnect(self.udpate_cumulative_buffer_length)
+            self.dlg_base.buffer_length_sensitivity_design.setText(str(round(value,2)))
+            #Connect function
+            self.dlg_base.buffer_length_sensitivity_design.textChanged.connect(self.udpate_cumulative_buffer_length)
+            #Update graph
+            self.update_sensitivity_graph_design()
+        except:
+            pass
+
     
+    def udpate_cumulative_buffer_length(self):
+        """Method to obtain confidence level acoording to a buffer length"""
+        values = self.obtain_values_sensitivity_design()
+        try:
+            value = percentileofscore(values, float(self.dlg_base.buffer_length_sensitivity_design.text()), kind='rank')
+            #Disconnect function
+            self.dlg_base.cumulative_probability_sensitivity_design.textChanged.disconnect(self.udpate_buffer_length_cumulative)
+            self.dlg_base.cumulative_probability_sensitivity_design.setText(str(round(value,2)))
+            #Connect function
+            self.dlg_base.cumulative_probability_sensitivity_design.textChanged.connect(self.udpate_buffer_length_cumulative)
+            #Update graph
+            self.update_sensitivity_graph_design()
+        except:
+            pass
+
     def browse_files_uncertainity(self,information):
         """Method to select the file for uncertainity analysis between the local files"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
@@ -5660,8 +5696,8 @@ class qvfsmod:
         self.problem = {'num_vars': len(self.dic_data),'names': list(self.dic_data.keys()),'bounds': [x[1] for x in self.dic_data.values()],"dists":[x[0] for x in self.dic_data.values()]}
         #Create samples
         if self.dlg_base.sobol_design.isChecked():
-            if int(self.dlg_base.trajectories_design.text())<256:
-                self.warning_message("Number of samples must be 256 or higher when executing Sobol")
+            if int(self.dlg_base.trajectories_design.text())<2:
+                self.warning_message("Number of samples must be 2 or higher when executing Sobol")
                 return
             self.param_values = saltelli.sample(self.problem, int(self.dlg_base.trajectories_design.text()))
         elif self.dlg_base.morris_design.isChecked():
@@ -5675,8 +5711,8 @@ class qvfsmod:
                 
             self.param_values = sample_morris(self.problem, int(self.dlg_base.trajectories_design.text()))
         elif self.dlg_base.fast_design.isChecked():
-            if int(self.dlg_base.trajectories_design.text())<256:
-                self.warning_message("N value must be 256 or higher when executing FAST")
+            if int(self.dlg_base.trajectories_design.text())<2:
+                self.warning_message("N value must be 2 or higher when executing FAST")
                 return
             self.param_values = sample_fast(self.problem, int(self.dlg_base.trajectories_design.text()), M = 1)
         
@@ -5801,7 +5837,7 @@ class qvfsmod:
         if self.water_quality:
             self.results_sensitivity.insert(len(self.results_sensitivity.columns),"Leachate depth (m)",None)
         
-        self.number_outputs = len(self.results_sensitivity.columns)-1
+        
         #Add the parameters names 
         for i in self.dic_data.keys():
             self.results_sensitivity.insert(0,i,None)
@@ -6025,11 +6061,11 @@ class qvfsmod:
             
         #Add csv result to the lineEdit and update graph
         
-        if self.dlg_base.sobol.isChecked():
+        if self.dlg_base.sobol_design.isChecked():
             self.dlg_base.csv_results_sobol_design_uncertainity.setText(self.dlg_base.file_save_design.text())
-        elif self.dlg_base.morris.isChecked():
+        elif self.dlg_base.morris_design.isChecked():
             self.dlg_base.csv_results_morris_design_uncertainity.setText(self.dlg_base.file_save_design.text())
-        elif self.dlg_base.fast.isChecked():
+        elif self.dlg_base.fast_design.isChecked():
             self.dlg_base.csv_results_fast_design_uncertainity.setText(self.dlg_base.file_save_design.text())
 
         self.show_sensitivity_graph_design()
@@ -6075,7 +6111,7 @@ class qvfsmod:
                 
                 values.append(value)
             
-            dic_save_data[f"Buffer Length {output}"] = values
+            dic_save_data[f"Buffer Length {output} {self.outputs_sensitivity_design[output]}"] = values
                 
 
         #Create df        
@@ -6090,7 +6126,6 @@ class qvfsmod:
         data_input_parameters.update(dic_save_data)
 
 
-        columns = input_parameters + ["Buffer Length " + x for x in self.outputs_sensitivity_design.keys()]
         df = pd.DataFrame(data = data_input_parameters)
         return df
                         
@@ -6142,6 +6177,7 @@ class qvfsmod:
         
         #If there are errors then make a linear regression to add data
         inputs = new_df[input_parameters]
+        self.number_outputs = len(new_df.columns)-len(input_parameters)-1
         output_columns = new_df.columns[-self.number_outputs:].tolist()
         outputs = new_df[output_columns]
         # Filtrar los datos completos (sin valores NaN en outputs)
