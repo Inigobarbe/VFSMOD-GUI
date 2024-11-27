@@ -159,7 +159,7 @@ QTableCornerButton::section {
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>410</width>
+           <width>391</width>
            <height>335</height>
           </rect>
          </property>
@@ -215,8 +215,8 @@ QTableCornerButton::section {
          <enum>QFrame::Raised</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout_5">
-         <item row="0" column="0">
-          <spacer name="horizontalSpacer">
+         <item row="0" column="4">
+          <spacer name="horizontalSpacer_2">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -238,15 +238,8 @@ QTableCornerButton::section {
            </property>
           </widget>
          </item>
-         <item row="0" column="2">
-          <widget class="QRadioButton" name="graph_fit">
-           <property name="text">
-            <string>Graph Fit</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="3">
-          <spacer name="horizontalSpacer_2">
+         <item row="0" column="0">
+          <spacer name="horizontalSpacer">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -257,6 +250,20 @@ QTableCornerButton::section {
             </size>
            </property>
           </spacer>
+         </item>
+         <item row="0" column="2">
+          <widget class="QRadioButton" name="graph_fit">
+           <property name="text">
+            <string>Graph Fit</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QPushButton" name="bootstraping">
+           <property name="text">
+            <string>Block Bootstrapping</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>

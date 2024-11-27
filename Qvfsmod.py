@@ -68,6 +68,8 @@ from ui.hydrograph_calibration_edit import hydrograph_calibration_edit
 from ui.sedimentograph_calibration_edit import sedimentograph_calibration_edit
 from ui.calibration_sensitivity_hydrograph import calibration_sensitivity_hydrograph
 from ui.sensitivity_calibration_results_hydrograph import sensitivity_calibration_results_hydrograph
+from ui.fiteval_hydrograph import fiteval_hydrograph
+from ui.fiteval_sedimentograph import fiteval_sedimentograph
 
 #Local libraries
 from libraries.SALib.sample import saltelli
@@ -196,6 +198,13 @@ class qvfsmod:
         self.dlg_sedimentograph_calibration_edit = sedimentograph_calibration_edit()
         self.dlg_calibration_sensitivity_hydrograph = calibration_sensitivity_hydrograph()
         self.dlg_sensitivity_calibration_results_hydrograph = sensitivity_calibration_results_hydrograph()
+        self.dlg_fiteval_hydrograph = fiteval_hydrograph()
+        self.dlg_fiteval_sedimentograph = fiteval_sedimentograph()
+        
+        #Create FITEVAL evaluation 
+        self.dlg_calibration_results_hydrograph.bootstraping.clicked.connect(self.calibration_hydrograph_bootstraping_show)
+        self.dlg_calibration_results_sedimentograph.bootstraping.clicked.connect(self.dlg_fiteval_sedimentograph.show)
+        self.dlg_fiteval_hydrograph.nash.textChanged.connect(self.calibration_hydrograph_bootstraping_update)
         
         #Sensitivity calibration results conditions
         self.dlg_base.results_sensitivity_hydrograph.clicked.connect(self.dlg_sensitivity_calibration_results_hydrograph.show)
@@ -266,6 +275,11 @@ class qvfsmod:
         self.dlg_base.check_pesticide_solid.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
         self.dlg_base.check_pesticide_liquid.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
         
+        
+        #Update graph senstiivity global
+        self.dlg_base.radio_morris.toggled.connect(lambda checked: self.update_sensitivity_graph_global() if checked else None)
+        self.dlg_base.radio_fast.toggled.connect(lambda checked: self.update_sensitivity_graph_global() if checked else None)
+        self.dlg_base.radio_sobol.toggled.connect(lambda checked: self.update_sensitivity_graph_global() if checked else None)
         
         #Show outputs in the senstiivity analysis for design
         self.dlg_base.csv_results_morris_design_uncertainity.textChanged.connect(self.show_sensitivity_graph_design)
@@ -973,6 +987,172 @@ class qvfsmod:
         
         #Update uncertainity graph
         self.dlg_base.csv_results_uncertainity.textChanged.connect(self.show_graph_sensitivity_uncertainity)
+    
+    
+    
+    
+    def calibration_hydrograph_bootstraping_show(self):
+        """Method to make the bootstraping for the calibrated hydrograph and show dialog"""
+        #Obtain data
+        path = self.obtain_direction_vfsmod(self.dlg_calibration_results_hydrograph.results.text())
+        if os.path.exists(path) and os.path.isfile(path):    
+            #First add the text
+            with open(path, "r") as archivo:
+                lineas = archivo.readlines()
+            contenido = ""
+            times = []
+            observed = []
+            simulated = []
+            for k,i in enumerate(lineas):
+                if i[:4]=="Time":
+                    for m in range(k+1,len(lineas)):
+                        try:
+                            times.append(float(lineas[m].split(",")[0]))
+                        except:
+                            times.append(0)
+                        try:
+                            observed.append(float(lineas[m].split(",")[1]))
+                        except:
+                            observed.append(0)
+                        try:
+                            simulated.append(float(lineas[m].split(",")[2]))
+                        except:
+                            simulated.append(0)
+                    break
+                contenido += i
+            
+            #Do the bootstraping
+            observed = np.array(observed)
+            simulated = np.array(simulated)
+            
+            n = len(observed)
+            observed_bootstrap = []
+            simulated_bootstrap = []
+            num_samples = 100
+            block_size = 4
+            nash_list = []
+
+            for _ in range(num_samples):
+                # Inicializamos las listas de las muestras remuestreadas
+                observed_sample = []
+                simulated_sample = []
+                
+                # Creamos una lista de índices de bloques
+                block_indices = np.arange(0, n - block_size + 1)  # Los índices posibles de inicio de bloque
+                
+                # Realizamos el remuestreo de bloques con reemplazo
+                while len(observed_sample) < n:
+                    # Elegimos aleatoriamente un índice de bloque con reemplazo
+                    start_idx = np.random.choice(block_indices)
+                    
+                    # Seleccionamos el bloque correspondiente
+                    observed_block = observed[start_idx:start_idx + block_size]
+                    simulated_block = simulated[start_idx:start_idx + block_size]
+                    
+                    # Añadimos los bloques seleccionados a la muestra
+                    observed_sample.extend(observed_block)
+                    simulated_sample.extend(simulated_block)
+                
+                # Cortamos la muestra para que tenga el tamaño original
+                observed_bootstrap.append(observed_sample[:n])
+                simulated_bootstrap.append(simulated_sample[:n])
+                
+                observed_sample = np.array(observed_sample)
+                simulated_sample = np.array(simulated_sample)
+                #Caclulate nash
+                mean_observed = np.mean(observed_sample)
+                numerator = np.sum((observed_sample - simulated_sample) ** 2)
+                denominator = np.sum((observed_sample - mean_observed) ** 2)
+                nse = 1 - (numerator / denominator)
+                nash_list.append(nse)
+            
+            #Create variable to be obtained in other method
+            self.nashes_bootstraping_hydrograph = nash_list
+            
+            #Update graph
+            self.calibration_hydrograph_bootstraping_update()
+            
+            #Show dialog
+            self.dlg_fiteval_hydrograph.show()
+            
+    def calibration_hydrograph_bootstraping_update(self):
+        """Method to update graph of bootstraping fo hydrograph"""
+        #Update values in lineEdits
+        self.update_values_bootstrapping_hydrograph()
+    
+        #Add the graph
+        if not hasattr(self, 'canvas_calibration_bootstrap_hydrograph'):
+            #Create the canvas of the graph
+            # Si no existe, crear el canvas y añadirlo al layout
+            self.canvas_calibration_bootstrap_hydrograph = FigureCanvas(plt.Figure(figsize=(15, 6)))
+            # Asignar un layout al QFrame si no tiene uno
+            layout = QVBoxLayout(self.dlg_fiteval_hydrograph.frame)
+            self.dlg_fiteval_hydrograph.frame.setLayout(layout)
+            #Add canvas to layout
+            layout.addWidget(self.canvas_calibration_bootstrap_hydrograph)
+        
+        #Add graph
+        self.canvas_calibration_bootstrap_hydrograph.figure.clear()
+        ax1 = self.canvas_calibration_bootstrap_hydrograph.figure.subplots()
+
+        # Histograma
+        finite_nse = [nse for nse in self.nashes_bootstraping_hydrograph if nse != -np.inf]
+        inf_count = len([nse for nse in self.nashes_bootstraping_hydrograph if nse == -np.inf])
+        
+        counts, bins, patches = ax1.hist(
+            finite_nse, bins=20, density=True, alpha=0.7, color="lightcoral", edgecolor="black", label="Histogram"
+        )
+
+        # Función acumulada
+        cdf = np.cumsum(counts) / np.sum(counts)
+        ax2 = ax1.twinx()
+        ax2.plot(bins[:-1], cdf, color="teal", lw=2, label="Cumulative")
+        if inf_count>0:
+            ax2.set_title(f"-Inf cases: {inf_count}")
+        
+        #Vertical line
+        try:
+            ax1.axvline(x=float(self.dlg_fiteval_hydrograph.nash.text()), color='red', linestyle='--', linewidth=1.5)
+        except:
+            pass
+
+        # Etiquetas de los ejes
+        ax1.set_xlabel("Nash–Sutcliffe Efficiency", size = 14,family="arial",weight = "bold",color = "black")
+        ax1.set_ylabel("Density", size = 14,family="arial",weight = "bold",color = "black")
+        ax2.set_ylabel("Cumulative Probability", size = 14,family="arial",weight = "bold",color = "black")
+
+
+        # Personalización de los grids
+        ax1.grid(visible=True, linestyle="--", linewidth=0.6, alpha=0.5)
+        ax2.grid(visible=False)
+
+        # Leyendas
+        ax1.legend(loc="upper left", fontsize=10, frameon=False)
+        ax2.legend(loc="upper right", fontsize=10, frameon=False)
+        
+        #Change background color
+        self.canvas_calibration_bootstrap_hydrograph.figure.set_facecolor('#f0f0f0')
+        ax1.set_facecolor('#f0f0f0')
+        # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+        self.canvas_calibration_bootstrap_hydrograph.figure.subplots_adjust(left=0.2, bottom=0.2)
+        #Draw canvas
+        self.canvas_calibration_bootstrap_hydrograph.draw()
+            
+    
+    def update_values_bootstrapping_hydrograph(self):
+        """Method to update values in th evaluation of hydrograph calibration"""
+        try:
+            #Obtain values
+            values = [x for x in self.nashes_bootstraping_hydrograph if not np.isnan(x)]
+            #Put p value
+            p_value = sum(1 for nash in values if nash < float(self.dlg_fiteval_hydrograph.nash.text())) / len(values)
+            self.dlg_fiteval_hydrograph.p_value.setText(str(p_value))
+            #Put confidence interval
+            self.dlg_fiteval_hydrograph.minimum.setText(str(round(stats.scoreatpercentile(values,2.5),2)))
+            self.dlg_fiteval_hydrograph.maximum.setText(str(round(stats.scoreatpercentile(values,97.5),2)))
+        except:
+            pass
+        
     
     def add_pesticides_dialog_sensitivity_design(self):
         """Method to add pesticides to the dialog of sensitivity analysis for design"""
@@ -5843,8 +6023,7 @@ class qvfsmod:
             self.results_sensitivity.insert(0,i,None)
         
         #Obtain number of pesticides 
-        if self.water_quality:
-            self.number_pesticides = self.obtain_number_pestidides(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity.text()))
+        self.number_pesticides = self.obtain_number_pestidides(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity.text()))
         
         #Method were the paralelization is achieved
         self.start_analysis_sensitivity()
@@ -6017,6 +6196,9 @@ class qvfsmod:
                     for i in self.results_sensitivity.columns[-len(self.outputs_sensitivity_design):]:
                         f.write("----------------------------------------------------------------------" + '\n')
                         f.write(f"{i}" + '\n')
+                        if all(x == 0 for x in np.array(self.results_sensitivity[i])):
+                            self.warning_message(f"{i} column is all with 0 values. \n Please check input data, you may have chosen a small rainfall event.")
+                            return
                         si = sobol.analyze(self.problem, np.array(self.results_sensitivity[i]))
                         for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()): 
                             f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}_{si['S2'][input_parameter_k]}_{si['S2_conf'][input_parameter_k]}" + '\n')
@@ -6030,6 +6212,9 @@ class qvfsmod:
                     for i in self.results_sensitivity.columns[-len(self.outputs_sensitivity_design):]:
                         f.write("----------------------------------------------------------------------" + '\n')
                         f.write(f"{i}" + '\n')
+                        if all(x == 0 for x in np.array(self.results_sensitivity[i])):
+                            self.warning_message(f"{i} column is all with 0 values. \n Please check input data, you may have chosen a small rainfall event.")
+                            return
                         si = analyze_morris(self.problem,np.array(self.param_values),np.array(self.results_sensitivity[i]))
                         for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
                             f.write(f"{input_parameter}:{si['mu_star'][input_parameter_k]}_{si['sigma'][input_parameter_k]}_{si['mu'][input_parameter_k]}" + '\n')
@@ -6043,6 +6228,9 @@ class qvfsmod:
                     for i in self.results_sensitivity.columns[-len(self.outputs_sensitivity_design):]:
                         f.write("----------------------------------------------------------------------" + '\n')
                         f.write(f"{i}" + '\n')
+                        if all(x == 0 for x in np.array(self.results_sensitivity[i])):
+                            self.warning_message(f"{i} column is all with 0 values. \n Please check input data, you may have chosen a small rainfall event.")
+                            return
                         si = analyze_fast(self.problem,np.array(self.results_sensitivity[i]))
                         for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
                             f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}" + '\n')
@@ -6096,18 +6284,22 @@ class qvfsmod:
                 y_values = list(df_concat[output])
                 y_values = y_values[:len(x_values)]
                 
-                if threshold>=min(y_values) and threshold<=max(y_values):#if delivery ratio is between values, then interpolate
-                    f = interp1d(y_values, x_values)
-                    value = round(f(threshold).item(),2)
-                #if delivery ratio is below or higher, then extrapolate
-                elif threshold<min(y_values):
-                    slope = (x_values[-1]-x_values[-2])/(y_values[-1]-y_values[-2])
-                    value = x_values[-1] + slope*(threshold - y_values[-1])
-                elif threshold>max(y_values):
-                    slope = (x_values[0]-x_values[1])/(y_values[0]-y_values[1])
-                    value = x_values[0] + slope*(threshold-y_values[0])
-                if value<0:
+                try:
+                    if threshold>=min(y_values) and threshold<=max(y_values):#if delivery ratio is between values, then interpolate
+                        f = interp1d(y_values, x_values)
+                        value = round(f(threshold).item(),2)
+                    #if delivery ratio is below or higher, then extrapolate
+                    elif threshold<min(y_values):
+                        slope = (x_values[-1]-x_values[-2])/(y_values[-1]-y_values[-2])
+                        value = x_values[-1] + slope*(threshold - y_values[-1])
+                    elif threshold>max(y_values):
+                        slope = (x_values[0]-x_values[1])/(y_values[0]-y_values[1])
+                        value = x_values[0] + slope*(threshold-y_values[0])
+                    if value<0:
+                        value = 0
+                except ZeroDivisionError:
                     value = 0
+                    
                 
                 values.append(value)
             
@@ -6344,8 +6536,7 @@ class qvfsmod:
         
         
         #Obtain number of pesticides 
-        if self.water_quality:
-            self.number_pesticides = self.obtain_number_pestidides(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_uncertainity.text()))
+        self.number_pesticides = self.obtain_number_pestidides(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_uncertainity.text()))
         
         #Method were the paralelization is achieved
         self.start_analysis_uncertainity()
@@ -10084,7 +10275,11 @@ class qvfsmod:
             
             #Then add the observed and simulated data
             df = pd.DataFrame(data = {"Time":self.data_aligned.index,"Observed":self.data_aligned.iloc[:,0],"Simulated":calibration_df_progress.iloc[:,0]})
-            df.to_csv(path, mode='a',index=False, float_format='%.5f')
+            try:
+                df.to_csv(path, mode='a',index=False, float_format='%.5f')
+            except PermissionError:
+                self.warning_message(f"{path} file is opened and Calibration data could not be saved")
+                return
             
             #Put filepath in the results dialog
             if self.calibration_sedimentograph:
@@ -11534,8 +11729,7 @@ class qvfsmod:
         self.move_files_design_analysis()
         
         #Obtain number of pesticides 
-        if self.water_quality:
-            self.number_pesticides = self.obtain_number_pestidides(self.obtain_direction_vfsmod(self.dlg_base.design_vfs_file.text()))
+        self.number_pesticides = self.obtain_number_pestidides(self.obtain_direction_vfsmod(self.dlg_base.design_vfs_file.text()))
         
         #We add the information of the loops to the files and we execute the file
         self.df_results_design = pd.DataFrame(columns=["Total Runoff from source (mm)","Total Runoff from Source (m3)",
