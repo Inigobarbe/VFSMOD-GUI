@@ -17,76 +17,12 @@ from PyQt5 import QtWidgets,QtGui
 from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QThread,pyqtSignal
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QAction, QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy,QAction, QMenu,QCheckBox, QFrame,QGridLayout,QHBoxLayout
-# Initialize Qt resources from file resources.py
-from resources import *
-# Import the code for the dialog
-from ui.Qvfsmod_dialog import qvfsmodMainWindow
-from ui.user_defined_storm_type import user_defined_storm_dialog
-from ui.hydrograph_dialog import output_hydrograph
-from ui.overland_flow import overland_flow
-from ui.buffer_segment import buffer_segment
-from ui.infiltration_soil_properties import infiltration_soil_properties
-from ui.soil_characteristic_curves import soil_characteristic_curves
-from ui.buffer_properties import buffer_properties
-from ui.water_quality import water_quality
-from ui.incoming_sediment import incoming_sediment
-from ui.vfsmod_hyetograph import vfsmod_hyetograph
-from ui.hyetograph import hyetograph
-from ui.vfsmod_hydrograph import vfsmod_hydrograph
-from ui.warning_message import warning_message
-from ui.warning_message_calibration import warning_message_calibration
-from ui.design_results import design_results
-from ui.design_results_graph import design_results_graph
-from ui.calibration_advanced_settings_hydrograph import calibration_advanced_settings_hydrograph
-from ui.calibration_advanced_settings_sedimentograph import calibration_advanced_settings_sedimentograph
-from ui.calibration_advanced_settings_single import calibration_advanced_settings_single
-from ui.sedimentograph_output import sedimentograph_output
-from ui.user_output_1 import user_output_1
-from ui.user_output_2 import user_output_2
-from ui.osp_results import osp_results
-from ui.runoff_graph import runoff_graph
-from ui.sediment_graph import sediment_graph
-from ui.owq_results import owq_results
-from ui.osm_results import osm_results
-from ui.ohy_results import ohy_results
-from ui.og2_results import og2_results
-from ui.og1_results import og1_results
-from ui.irn_results import irn_results
-from ui.iro_results import iro_results
-from ui.owq_graph import owq_graph
-from ui.owq_graph_balance import owq_graph_balance
-from ui.calibration_progress import calibration_progress
-from ui.calibration_results_sedimentograph import calibration_results_sedimentograph
-from ui.calibration_results_hydrograph import calibration_results_hydrograph
-from ui.sediment_calibration import sediment_calibration
-from ui.hydrograph_calibration import hydrograph_calibration
-from ui.discharge_calibration_single import discharge_calibration_single
-from ui.sediment_calibration_single import sediment_calibration_single
-from ui.pesticide_calibration import pesticide_calibration
-from ui.calibration_results_single import calibration_results_single
-from ui.hydrograph_calibration_edit import hydrograph_calibration_edit
-from ui.sedimentograph_calibration_edit import sedimentograph_calibration_edit
-from ui.calibration_sensitivity_hydrograph import calibration_sensitivity_hydrograph
-from ui.sensitivity_calibration_results_hydrograph import sensitivity_calibration_results_hydrograph
-from ui.fiteval_hydrograph import fiteval_hydrograph
-from ui.fiteval_sedimentograph import fiteval_sedimentograph
-
-#Local libraries
-from libraries.SALib.sample import saltelli
-from libraries.SALib.analyze import sobol
-from libraries.SALib.sample.morris import sample as sample_morris 
-from libraries.SALib.analyze.morris import analyze as analyze_morris
-
-from libraries.SALib.sample.fast_sampler import sample as sample_fast
-from libraries.SALib.analyze.fast import analyze as analyze_fast
-
 from sklearn.linear_model import LinearRegression
 from scipy.optimize import differential_evolution, minimize
 from multiprocessing import Pool
 import psutil
 import time
 import concurrent.futures
-from pathlib import Path
 import os.path
 import pandas as pd
 import subprocess
@@ -105,7 +41,86 @@ from matplotlib.ticker import FuncFormatter
 import seaborn as sns
 from PyQt5.QtWidgets import QVBoxLayout,QTableWidgetItem,QProgressDialog,QLabel, QLineEdit
 
+from SALib.sample import saltelli
+from SALib.analyze import sobol
+from SALib.sample.morris import sample as sample_morris 
+from SALib.analyze.morris import analyze as analyze_morris
+
+from libraries.SALib.sample.fast_sampler import sample as sample_fast
+from libraries.SALib.analyze.fast import analyze as analyze_fast
+
+
+import os
 import sys
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS  # Carpeta temporal donde PyInstaller empaqueta todo
+    except Exception:
+        base_path = os.path.abspath(".")  # Carpeta actual durante el desarrollo
+
+    return os.path.join(base_path, relative_path)
+
+sys.path.append(resource_path("ui"))
+
+#LOCAL FILES
+# Initialize Qt resources from file resources.py
+from resources import *
+# Import the code for the dialog
+from Qvfsmod_dialog import qvfsmodMainWindow
+from user_defined_storm_type import user_defined_storm_dialog
+from hydrograph_dialog import output_hydrograph
+from overland_flow import overland_flow
+from buffer_segment import buffer_segment
+from infiltration_soil_properties import infiltration_soil_properties
+from soil_characteristic_curves import soil_characteristic_curves
+from buffer_properties import buffer_properties
+from water_quality import water_quality
+from incoming_sediment import incoming_sediment
+from vfsmod_hyetograph import vfsmod_hyetograph
+from hyetograph import hyetograph
+from vfsmod_hydrograph import vfsmod_hydrograph
+from warning_message import warning_message
+from warning_message_calibration import warning_message_calibration
+from design_results import design_results
+from design_results_graph import design_results_graph
+from calibration_advanced_settings_hydrograph import calibration_advanced_settings_hydrograph
+from calibration_advanced_settings_sedimentograph import calibration_advanced_settings_sedimentograph
+from calibration_advanced_settings_single import calibration_advanced_settings_single
+from sedimentograph_output import sedimentograph_output
+from user_output_1 import user_output_1
+from user_output_2 import user_output_2
+from osp_results import osp_results
+from runoff_graph import runoff_graph
+from sediment_graph import sediment_graph
+from owq_results import owq_results
+from osm_results import osm_results
+from ohy_results import ohy_results
+from og2_results import og2_results
+from og1_results import og1_results
+from irn_results import irn_results
+from iro_results import iro_results
+from owq_graph import owq_graph
+from owq_graph_balance import owq_graph_balance
+from calibration_progress import calibration_progress
+from calibration_results_sedimentograph import calibration_results_sedimentograph
+from calibration_results_hydrograph import calibration_results_hydrograph
+from sediment_calibration import sediment_calibration
+from hydrograph_calibration import hydrograph_calibration
+from discharge_calibration_single import discharge_calibration_single
+from sediment_calibration_single import sediment_calibration_single
+from pesticide_calibration import pesticide_calibration
+from calibration_results_single import calibration_results_single
+from hydrograph_calibration_edit import hydrograph_calibration_edit
+from sedimentograph_calibration_edit import sedimentograph_calibration_edit
+from calibration_sensitivity_hydrograph import calibration_sensitivity_hydrograph
+from sensitivity_calibration_results_hydrograph import sensitivity_calibration_results_hydrograph
+from fiteval_hydrograph import fiteval_hydrograph
+from fiteval_sedimentograph import fiteval_sedimentograph
+
+
+
+
 
 
 class qvfsmod:
@@ -3727,104 +3742,265 @@ class qvfsmod:
     
     def show_owq_graph_balance(self):
         """Method to show the dialog with water quality balance graph"""
+        #Delete radio buttons of pesticides
+        if self.dlg_owq_graph_balance.frame_2.layout() is not None:
+            # Obtén el layout actual
+            layout = self.dlg_owq_graph_balance.frame_2.layout()
+            
+            # Elimina todos los widgets y elementos del layout (incluyendo espaciadores)
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.deleteLater()  # Elimina el widget
+                elif item.spacerItem() is not None:
+                    layout.removeItem(item)  # Elimina el espaciador
+
+        else:
+            # Si no hay un layout, crea uno nuevo
+            layout = QVBoxLayout()
+            self.dlg_owq_graph_balance.frame_2.setLayout(layout)
+            
+           
         #Obtain results
         ruta = self.obtain_direction_vfsmod(self.dlg_base.line_quality.text())
         if os.path.exists(ruta):
             #Obtain values
             with open(ruta, "r") as archivo:
-                lineas = archivo.readlines()
-            for i in range(len(lineas)):
-                if lineas[i] == " Pesticide mass balance, degradation & remobilization\n":
-                    fila = i
-            #Function to obtain infomation of owq file
-            def obtain_information(text):
-                for i in range(fila,len(lineas)):
-                    if lineas[i].split("=")[-1]==text+"\n":
-                        return float(lineas[i].split("=")[0].split("m")[0])
+                lineas_owq = archivo.readlines()
             
-            pesticide_input = obtain_information(" Pesticide input (mi)")
-            pesticide_output = obtain_information(" Pesticide output (mo)")
-            pesticide_outflow_solid = obtain_information(" Pesticide outflow in solid phase (mop)")
-            pesticide_outflow_liquid = obtain_information(" Pesticide outflow in liquid phase (mod)")
-            pesticide_trapped_vfs = obtain_information(" Pesticide trapped in VFS (mf)")
-            pesticide_trapped_sediment = obtain_information(" Pesticide trapped with sediment (mfsed)")
-            pesticide_trapped_mixing_layer = obtain_information(" Pesticide trapped in mixing layer (mfml)")
-            pesticide_mixing_layer_last_event = obtain_information(" Pesticide in mixing layer from last event (mfml0)")
-            total_surface_residue = obtain_information("mfml+mfsed+mfml0)")
-            total_surface_residue_after_degradation = obtain_information(" Total surface residue after degradation (  3 days)")
-            dissolved_surface_residue_after_degradation = obtain_information(" Dissolved surface residue after degradation (  3 days)")
-            sorbed_surface_residue_after_degradation = obtain_information(" Sorbed surface residue after degradation (  3 days)")
-            next_event_residue_remobilization = obtain_information("1)")
-   
-            name_variables = ["Pesticide input","Pesticide trapped in VFS","Pesticide trapped with sediment","Pesticide trapped in mixing layer",
-                "Pesticide in mixing layer from last event","Total surface residue","Pesticide output","Pesticide outflow in solid phase",
-                "Pesticide outflow in liquid phase","Total surface residue after degradation","Dissolved surface residue after degradation",
-                "Sorbed surface residue after degradation","Next event residue remobilization"]
-            value_variables = [pesticide_input,pesticide_trapped_vfs,pesticide_trapped_sediment,pesticide_trapped_mixing_layer,
-                pesticide_mixing_layer_last_event,total_surface_residue,pesticide_output,pesticide_outflow_solid,
-                pesticide_outflow_liquid,total_surface_residue_after_degradation,dissolved_surface_residue_after_degradation,
-                sorbed_surface_residue_after_degradation,next_event_residue_remobilization]
-            
-            
-            #Create graph
-            #Add layout
-            #If canvas exist then clear. If not then create it. 
-            if not hasattr(self, 'canvas_owq_graph_balance'):
-                # Si no existe, crear el canvas y añadirlo al layout
-                self.canvas_owq_graph_balance = FigureCanvas(plt.Figure(figsize=(15, 6)))
-                
-                # Asignar un layout al QFrame si no tiene uno
-                layout = QVBoxLayout(self.dlg_owq_graph_balance.frame)
-                self.dlg_owq_graph_balance.frame.setLayout(layout)
-                
-                # Añadir el canvas al layout
-                layout.addWidget(self.canvas_owq_graph_balance)
-                
-            else:
-                # Si ya existe, simplemente limpiar el canvas
-                self.canvas_owq_graph_balance.figure.clear()
-        
-            self.ax_owq_graph_balance= self.canvas_owq_graph_balance.figure.subplots()
-        
-            # Clear canvas
-            self.ax_owq_graph_balance.clear()
-            x = np.arange(len(name_variables))
-            bars = self.ax_owq_graph_balance.bar(x, value_variables)
-            
-            #Add values to the top of the bars
-            for bar in bars:
-                yval = bar.get_height()
-                self.ax_owq_graph_balance.text(bar.get_x() + bar.get_width()/2, yval, round(yval, 2),
-                                           ha='center', va='bottom', fontsize=9, color='black',weight ="bold")
+            #Add number of pesticides
+            pesticide = 1
+            for i in range(len(lineas_owq)):
+                if lineas_owq[i] == f"PRODUCT  {pesticide}- Soil leaching and mixing layer calculations (CDE)\n":
+                        pesticide += 1
+            #Add pesticides
+            # Agrega el QLabel
+            label = QLabel("Select pesticide")
+            layout.addWidget(label)
 
-            # Rotar las etiquetas del eje x a 45 grados
-            self.ax_owq_graph_balance.set_xticklabels(name_variables, rotation=45, ha='right')
+            # Lista de nombres para los QRadioButtons
+            pesticides = [f"Pesticide {x}" for x in range(1,pesticide)]
+            self.dictionary_radio_inputs_pesticides = {}
 
-            #Axis
-            self.ax_owq_graph_balance.set_ylabel("Amount of pesticide (mg)",size = 10,family="arial",weight = "bold",color = "black")
+            # Crear y añadir varios QRadioButton
+            for opcion in pesticides:
+                radio_button = QRadioButton(opcion)
+                # Conectar la función solo una vez
+                radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_owq_graph_balance(rb.text()) if checked else None)
+                self.dictionary_radio_inputs_pesticides[radio_button] = opcion
+                layout.addWidget(radio_button)
 
-            #X ticks
-            self.ax_owq_graph_balance.set_xticklabels(name_variables)
-            self.ax_owq_graph_balance.tick_params(axis = "both",colors = "black",labelsize = 9)
-            
-            #Red line
-            self.ax_owq_graph_balance.axvline(x=9.5, color='red', linestyle='--', linewidth=1.5) 
+            # Añade un espaciador para ajustar la posición
+            spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+            layout.addItem(spacer)
 
-            #Thousand separator
-            def xfunc(x,pos):
-                s = '{:0,d}'.format(int(x))
-                return s
-            x_format = tkr.FuncFormatter(xfunc)
-            self.ax_owq_graph_balance.yaxis.set_major_formatter(x_format)
-            
-            # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
-            self.canvas_owq_graph_balance.figure.subplots_adjust(left=0.2, bottom=0.2)
-
-            # Redraw the canvas
-            self.canvas_owq_graph_balance.draw()
+            # Selecciona el primer QRadioButton
+            if self.dictionary_radio_inputs_pesticides:
+                list(self.dictionary_radio_inputs_pesticides.keys())[0].setChecked(True)
             
             #Show dialog
             self.dlg_owq_graph_balance.show()
+            
+    def update_owq_graph_balance(self,pesticide):
+        """Method to update graph balance of pesticide data"""
+        #Obtain data
+        number_pesticide = int(pesticide.split()[-1])
+        
+        ruta = self.obtain_direction_vfsmod(self.dlg_base.line_quality.text())
+        #Obtain values
+        with open(ruta, "r") as archivo:
+            lineas_owq = archivo.readlines()
+                
+        #Function to obtain infomation of owq file
+        def obtain_result_owq(string,number_pesticide):
+            condition = False
+            for i in lineas_owq:
+                if i == f"PRODUCT  {number_pesticide}- Soil leaching and mixing layer calculations (CDE)\n":
+                    condition = True
+                if i.split("=")[-1]==string and condition:
+                    for k in i.split("=")[0].split(" "):
+                        try:
+                            output = float(k)
+                            return output
+                        except:
+                            pass
+
+        def obtain_result_owq_2(string,number_pesticide):
+            condition = False
+            for i in lineas_owq:
+                if i == f"PRODUCT  {number_pesticide}- Soil leaching and mixing layer calculations (CDE)\n":
+                    condition = True
+                if i.split("=")[0]==string and condition:
+                    for k in i.split("=")[1].split(" "):
+                        try:
+                            output = float(k)
+                            return output
+                        except:
+                            pass
+        def obtain_result_owq_3(string,number_pesticide):
+            condition = False
+            length_string = len(string)
+            for i in lineas_owq:
+                if i == f"PRODUCT  {number_pesticide}- Soil leaching and mixing layer calculations (CDE)\n":
+                    condition = True
+                
+                if i.split("=")[-1][:length_string]==string and condition:
+                    for k in i.split("=")[0].split(" "):
+                        try:
+                            output = float(k)
+                            return output
+                        except:
+                            pass
+        #Obtain inputs
+        pesticide_input = obtain_result_owq(" Pesticide input (mi)\n",number_pesticide)
+        pesticide_output = obtain_result_owq(" Pesticide output (mo)\n",number_pesticide)
+        output_liquid = obtain_result_owq(" Pesticide outflow in liquid phase (mod)\n",number_pesticide)
+        output_solid = obtain_result_owq(" Pesticide outflow in solid phase (mop)\n",number_pesticide)
+        trapped_in_vfs = obtain_result_owq(" Pesticide trapped in VFS (mf)\n",number_pesticide)
+        trapped_in_sediment = obtain_result_owq(" Pesticide trapped with sediment (mfsed)\n",number_pesticide)
+        trapped_in_mixing_layer = obtain_result_owq(" Pesticide trapped in mixing layer (mfml)\n",number_pesticide)
+
+        soil_profile = obtain_result_owq_2("        Soil profile total mass (mfF mg)",number_pesticide)
+        soil_profile_dissolved = obtain_result_owq_2("   Soil profile dissolved mass (mfFd mg)",number_pesticide)
+        soil_profile_sorbed = obtain_result_owq_2("      Soil profile sorbed mass (mfFp mg)",number_pesticide)
+        mixing_layer_dissolved = obtain_result_owq_2("  Mixing layer dissolved mass (mfmld mg)",number_pesticide)
+        mixing_layer_sorbed = obtain_result_owq_2("     Mixing layer sorbed mass (mfmlp mg)",number_pesticide)
+        
+        total_residue_after_degradation = obtain_result_owq_3(" Total surface residue after degradation",number_pesticide)
+        dissolved_surface_residue_after_degradation = obtain_result_owq_3(" Dissolved surface residue after degradation",number_pesticide)
+        sorbed_surface_residue_after_degradation = obtain_result_owq_3(" Sorbed surface residue after degradation",number_pesticide)
+        
+        #Create graph
+        #Add layout
+        #If canvas exist then clear. If not then create it. 
+        if not hasattr(self, 'canvas_owq_graph_balance'):
+            # Si no existe, crear el canvas y añadirlo al layout
+            self.canvas_owq_graph_balance = FigureCanvas(plt.Figure(figsize=(15, 6)))
+            
+            # Asignar un layout al QFrame si no tiene uno
+            layout = QVBoxLayout(self.dlg_owq_graph_balance.frame)
+            self.dlg_owq_graph_balance.frame.setLayout(layout)
+            
+            # Añadir el canvas al layout
+            layout.addWidget(self.canvas_owq_graph_balance)
+            
+        else:
+            # Si ya existe, simplemente limpiar el canvas
+            self.canvas_owq_graph_balance.figure.clear()
+    
+        self.ax_owq_graph_balance= self.canvas_owq_graph_balance.figure.subplots(1,2)
+    
+        # Clear canvas
+        self.ax_owq_graph_balance[0].clear()
+        self.ax_owq_graph_balance[1].clear()
+        
+        labels_today = [
+        'Outlflow solid', 'Outflow liquid',
+        'Mixing layer sorbed', 'Mixing layer dissolved',
+        'Infiltrated sorbed', 'Infiltrated dissolved',
+        'Trapped with sediment'
+        ]
+        sizes_today = [output_solid, output_liquid, mixing_layer_sorbed, mixing_layer_dissolved, soil_profile_sorbed-mixing_layer_sorbed, 
+            soil_profile_dissolved-mixing_layer_dissolved, trapped_in_sediment]  # Proporciones
+
+        # Datos para Tomorrow
+        labels_tomorrow = [
+            'Dissolved surface residue \nafter degradation', 'Sorbed surface residue \nafter degradation'
+        ]
+        
+        sizes_tomorrow = [dissolved_surface_residue_after_degradation, sorbed_surface_residue_after_degradation]  # Proporciones diferentes
+
+        # Colores principales y subdivisiones
+        base_colors = {
+            'Outflow': '#ff9999',
+            'Mixing layer': '#66b3ff',
+            'Infiltrated': '#99ff99',
+            'Sediment': '#ffcc99'
+        }
+        colors_today = [
+            base_colors['Outflow'], '#ffcccc',            # Outflow
+            base_colors['Mixing layer'], '#c2cfff',      # Mixing layer
+            base_colors['Infiltrated'], '#b3ffb3',     # Infiltrated
+            base_colors['Sediment']                    # Sediment
+        ]
+        colors_tomorrow = [
+            '#c2f0f0',  # Dissolved surface residue
+            '#ffb3b3'   # Sorbed surface residue
+        ]
+
+        # Propiedades de las líneas (estéticas)
+        wedgeprops_parents = {'edgecolor': '#333333', 'linewidth': 2, 'linestyle': '-.'}  # Grueso y discontinua para padres
+        wedgeprops_children = {'edgecolor': '#666666', 'linewidth': 1, 'linestyle': ':'}  # Fina y punteada para hijos
+
+        # Determinar los padres y las subdivisiones
+        parents_today = [0, 2, 4, 6]  # Índices de los segmentos principales en "Today"
+        parents_tomorrow = [0, 1]  # Índices de los segmentos principales en "Tomorrow"
+
+        # Pie chart de "Today"
+        startangle = 90
+        current_angle = startangle
+        total_today = sum(sizes_today)  # Total para calcular porcentajes
+
+        for i, size in enumerate(sizes_today):
+            # Seleccionar propiedades según si es padre o hijo
+            wedgeprops = wedgeprops_parents if i in parents_today else wedgeprops_children
+
+            # Formatear etiqueta con nombre y valor
+            label = f"{labels_today[i]} ({size})"
+            
+            # Dibujar cada segmento
+            self.ax_owq_graph_balance[0].pie(
+                [size, total_today - size],  # Tamaño del segmento actual y resto
+                colors=[colors_today[i], "none"],  # Color del segmento actual
+                startangle=current_angle,
+                radius=1.0,  # Escala uniforme
+                wedgeprops=wedgeprops,
+                labels=[label, None],  # Mostrar etiqueta del segmento actual
+                labeldistance=0.5,  # Etiquetas dentro del pie, más cerca del centro
+                textprops={'fontsize': 14, 'color': '#333333', 'weight': 'bold'}  # Etiquetas más grandes y estéticas
+            )
+            current_angle += size / total_today * 360  # Calcular el siguiente ángulo
+
+        # Pie chart de "Tomorrow"
+        current_angle = startangle
+        total_tomorrow = sum(sizes_tomorrow)  # Total para calcular porcentajes
+
+        for i, size in enumerate(sizes_tomorrow):
+            # Seleccionar propiedades según si es padre o hijo
+            wedgeprops = wedgeprops_parents if i in parents_tomorrow else wedgeprops_children
+
+            # Formatear etiqueta con nombre y valor
+            label = f"{labels_tomorrow[i]} ({size})"
+            
+            # Dibujar cada segmento
+            self.ax_owq_graph_balance[1].pie(
+                [size, total_tomorrow - size],  # Tamaño del segmento actual y resto
+                colors=[colors_tomorrow[i], "none"],  # Color del segmento actual
+                startangle=current_angle,
+                radius=1.0,  # Escala uniforme
+                wedgeprops=wedgeprops,
+                labels=[label, None],  # Mostrar etiqueta del segmento actual
+                labeldistance=0.5,  # Etiquetas dentro del pie, más cerca del centro
+                textprops={'fontsize': 14, 'color': '#333333', 'weight': 'bold'}  # Etiquetas más grandes y estéticas
+            )
+            current_angle += size / total_tomorrow * 360  # Calcular el siguiente ángulo
+
+
+        # Títulos de los pies
+        self.ax_owq_graph_balance[0].set_title("After event", fontsize=16, color='#333333', weight='bold')
+        self.ax_owq_graph_balance[1].set_title("For the next event", fontsize=16, color='#333333', weight='bold')
+
+        # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+        self.canvas_owq_graph_balance.figure.subplots_adjust(left=0.1, bottom=0.1)
+        #Change background color
+        self.canvas_owq_graph_balance.figure.set_facecolor('#f0f0f0')
+        self.ax_owq_graph_balance[0].set_facecolor('#f0f0f0')
+        self.ax_owq_graph_balance[1].set_facecolor('#f0f0f0')
+        
+        # Redraw the canvas
+        self.canvas_owq_graph_balance.draw()
+        
             
             
     def show_owq_graph(self):
@@ -3953,8 +4129,8 @@ class qvfsmod:
         self.ax_owq_graph[1].axhspan(0, 0.02, facecolor='gray', alpha=0.3)  # Opacidad del rectángulo
         
         # Añadir texto "mixing layer" dentro del rectángulo con flechas más a la derecha
-        self.ax_owq_graph[0].text(max(concentracion)*0.83, 0.01, 'Mixing Layer', fontsize=10, ha='center', va='center')
-        self.ax_owq_graph[1].text(max(ratio)*0.83, 0.01, 'Mixing Layer', fontsize=10, ha='center', va='center')
+        self.ax_owq_graph[0].text(max(concentracion)*0.83, 0.01, 'Mixing \nLayer', fontsize=10, ha='center', va='center')
+        self.ax_owq_graph[1].text(max(ratio)*0.83, 0.01, 'Mixing \nLayer', fontsize=10, ha='center', va='center')
 
         # Colorear los ejes en negro
         self.ax_owq_graph[0].spines['bottom'].set_color('black')
@@ -6693,8 +6869,8 @@ class qvfsmod:
                     archivo.write(i)
         #Move replicated input files 
         carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\design"
-        folder_path = Path(carpeta+"\\inputs")
-        files = [f.name for f in folder_path.iterdir() if f.is_file() and "_" not in f.name]
+        folder_path = os.path.join(carpeta, "inputs")
+        files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f)) and "_" not in f]
         for i in range(self.number_cores*5):
             for k in files:
                 shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("design",f"design_{i}"))
@@ -6828,8 +7004,8 @@ class qvfsmod:
                     archivo.write(i)
         #Move replicated input files 
         carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity"
-        folder_path = Path(carpeta+"\\inputs")
-        files = [f.name for f in folder_path.iterdir() if f.is_file() and "_" not in f.name]
+        folder_path = os.path.join(carpeta, "inputs")
+        files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f)) and "_" not in f]
         for i in range(self.number_cores*5):
             for k in files:
                 shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("sensitivity",f"sensitivity_{i}"))
@@ -6979,8 +7155,8 @@ class qvfsmod:
                     archivo.write(i)
         #Move replicated input files 
         carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\design"
-        folder_path = Path(carpeta+"\\inputs")
-        files = [f.name for f in folder_path.iterdir() if f.is_file() and "_" not in f.name]
+        folder_path = os.path.join(carpeta, "inputs")
+        files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f)) and "_" not in f]
         for i in range(self.number_cores*5):
             for k in files:
                 shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("design",f"design_{i}"))
@@ -7089,8 +7265,8 @@ class qvfsmod:
                     
         #Move replicated input files 
         carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\inverse"
-        folder_path = Path(carpeta+"\\inputs")
-        files = [f.name for f in folder_path.iterdir() if f.is_file() and "_" not in f.name]
+        folder_path = os.path.join(carpeta, "inputs")
+        files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f)) and "_" not in f]
         for i in range(self.number_cores*5):
             for k in files:
                 shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("inverse",f"inverse_{i}"))
@@ -7265,8 +7441,8 @@ class qvfsmod:
                     archivo.write(i)
         #Move replicated input files 
         carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity"
-        folder_path = Path(carpeta+"\\inputs")
-        files = [f.name for f in folder_path.iterdir() if f.is_file() and "_" not in f.name]
+        folder_path = os.path.join(carpeta, "inputs")
+        files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f)) and "_" not in f]
         for i in range(self.number_cores*5):
             for k in files:
                 shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("uncertainity",f"uncertainity_{i}"))
