@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>722</width>
-    <height>515</height>
+    <height>528</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -166,9 +166,9 @@ QTableCornerButton::section {
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
+        <y>-326</y>
         <width>679</width>
-        <height>870</height>
+        <height>949</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_7">
@@ -182,102 +182,134 @@ QTableCornerButton::section {
          </property>
          <layout class="QGridLayout" name="gridLayout_5">
           <item row="3" column="0">
-           <widget class="QTableWidget" name="tableWidget">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>200</height>
-             </size>
+           <widget class="QFrame" name="frame_7">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
             </property>
-            <row>
-             <property name="text">
-              <string/>
-             </property>
-            </row>
-            <row>
-             <property name="text">
-              <string/>
-             </property>
-            </row>
-            <row>
-             <property name="text">
-              <string/>
-             </property>
-            </row>
-            <column>
-             <property name="text">
-              <string>Day</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Daily air temperature (ºC)</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Top soil water content (m3/m3)</string>
-             </property>
-            </column>
-            <item row="0" column="0">
-             <property name="text">
-              <string>1</string>
-             </property>
-            </item>
-            <item row="0" column="1">
-             <property name="text">
-              <string>9.5</string>
-             </property>
-            </item>
-            <item row="0" column="2">
-             <property name="text">
-              <string>0.265</string>
-             </property>
-            </item>
-            <item row="1" column="0">
-             <property name="text">
-              <string>2</string>
-             </property>
-            </item>
-            <item row="1" column="1">
-             <property name="text">
-              <string>8.6</string>
-             </property>
-            </item>
-            <item row="1" column="2">
-             <property name="text">
-              <string>0.264</string>
-             </property>
-            </item>
-            <item row="2" column="0">
-             <property name="text">
-              <string>3</string>
-             </property>
-            </item>
-            <item row="2" column="1">
-             <property name="text">
-              <string>6.3</string>
-             </property>
-            </item>
-            <item row="2" column="2">
-             <property name="text">
-              <string>0.265</string>
-             </property>
-            </item>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_8">
+             <item row="1" column="1">
+              <layout class="QHBoxLayout" name="horizontalLayout_5">
+               <item>
+                <widget class="QLabel" name="label_11">
+                 <property name="minimumSize">
+                  <size>
+                   <width>221</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Top soil field capacity (m3/m3)</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="field_capacity">
+                 <property name="text">
+                  <string>0.26</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item row="2" column="1">
+              <layout class="QHBoxLayout" name="horizontalLayout_10">
+               <item>
+                <widget class="QLabel" name="label_16">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Flag for remobilization 
+of residues</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="imob"/>
+               </item>
+              </layout>
+             </item>
+             <item row="2" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_3">
+               <item>
+                <widget class="QLabel" name="label_9">
+                 <property name="minimumSize">
+                  <size>
+                   <width>221</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Days between runoff events</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="days">
+                 <property name="text">
+                  <string>3</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item row="1" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_6">
+               <item>
+                <widget class="QLabel" name="label_12">
+                 <property name="minimumSize">
+                  <size>
+                   <width>245</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Surface mixing 
+layer thickness (cm)</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="thickness">
+                 <property name="text">
+                  <string>2</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_25">
+               <property name="font">
+                <font>
+                 <family>Georgia</family>
+                 <pointsize>-1</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>General data</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
-          </item>
-          <item row="4" column="0">
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
           </item>
           <item row="1" column="0">
            <widget class="QFrame" name="frame_4">
@@ -404,120 +436,121 @@ from last event (mg/m2)</string>
             </layout>
            </widget>
           </item>
+          <item row="4" column="0">
+           <widget class="QTableWidget" name="tableWidget">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>200</height>
+             </size>
+            </property>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <column>
+             <property name="text">
+              <string>Day</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Daily air temperature (ºC)</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Top soil water content (m3/m3)</string>
+             </property>
+            </column>
+            <item row="0" column="0">
+             <property name="text">
+              <string>1</string>
+             </property>
+            </item>
+            <item row="0" column="1">
+             <property name="text">
+              <string>9.5</string>
+             </property>
+            </item>
+            <item row="0" column="2">
+             <property name="text">
+              <string>0.265</string>
+             </property>
+            </item>
+            <item row="1" column="0">
+             <property name="text">
+              <string>2</string>
+             </property>
+            </item>
+            <item row="1" column="1">
+             <property name="text">
+              <string>8.6</string>
+             </property>
+            </item>
+            <item row="1" column="2">
+             <property name="text">
+              <string>0.264</string>
+             </property>
+            </item>
+            <item row="2" column="0">
+             <property name="text">
+              <string>3</string>
+             </property>
+            </item>
+            <item row="2" column="1">
+             <property name="text">
+              <string>6.3</string>
+             </property>
+            </item>
+            <item row="2" column="2">
+             <property name="text">
+              <string>0.265</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
           <item row="2" column="0">
-           <widget class="QFrame" name="frame_7">
+           <widget class="QFrame" name="frame_8">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
             </property>
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
-            <layout class="QGridLayout" name="gridLayout_8">
-             <item row="1" column="1">
-              <layout class="QHBoxLayout" name="horizontalLayout_5">
-               <item>
-                <widget class="QLabel" name="label_11">
-                 <property name="minimumSize">
-                  <size>
-                   <width>221</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Top soil field capacity (m3/m3)</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLineEdit" name="field_capacity">
-                 <property name="text">
-                  <string>0.26</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item row="2" column="1">
-              <layout class="QHBoxLayout" name="horizontalLayout_10">
-               <item>
-                <widget class="QLabel" name="label_16">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Flag for remobilization 
-of residues</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QComboBox" name="imob"/>
-               </item>
-              </layout>
-             </item>
-             <item row="2" column="0">
-              <layout class="QHBoxLayout" name="horizontalLayout_3">
-               <item>
-                <widget class="QLabel" name="label_9">
-                 <property name="minimumSize">
-                  <size>
-                   <width>221</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Days between runoff events</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLineEdit" name="days">
-                 <property name="text">
-                  <string>3</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item row="1" column="0">
-              <layout class="QHBoxLayout" name="horizontalLayout_6">
-               <item>
-                <widget class="QLabel" name="label_12">
-                 <property name="minimumSize">
-                  <size>
-                   <width>245</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Surface mixing 
-layer thickness (cm)</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLineEdit" name="thickness">
-                 <property name="text">
-                  <string>2</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
+            <layout class="QGridLayout" name="gridLayout_12">
              <item row="0" column="0">
-              <widget class="QLabel" name="label_25">
+              <widget class="QLabel" name="label_27">
                <property name="font">
                 <font>
                  <family>Georgia</family>
@@ -527,7 +560,14 @@ layer thickness (cm)</string>
                 </font>
                </property>
                <property name="text">
-                <string>General data</string>
+                <string>Degradation data</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QPushButton" name="degradation_data">
+               <property name="text">
+                <string>Set Degradation Data</string>
                </property>
               </widget>
              </item>

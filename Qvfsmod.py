@@ -19,7 +19,7 @@ from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QAction, QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy,QAction, QMenu,QCheckBox, QFrame,QGridLayout,QHBoxLayout
 from sklearn.linear_model import LinearRegression
 from scipy.optimize import differential_evolution, minimize
-from multiprocessing import Pool
+from multiprocessing import Pool,freeze_support
 import psutil
 import time
 import concurrent.futures
@@ -53,70 +53,62 @@ from libraries.SALib.analyze.fast import analyze as analyze_fast
 import os
 import sys
 
-def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS  # Carpeta temporal donde PyInstaller empaqueta todo
-    except Exception:
-        base_path = os.path.abspath(".")  # Carpeta actual durante el desarrollo
-
-    return os.path.join(base_path, relative_path)
-
-sys.path.append(resource_path("ui"))
 
 #LOCAL FILES
 # Initialize Qt resources from file resources.py
 from resources import *
 # Import the code for the dialog
-from Qvfsmod_dialog import qvfsmodMainWindow
-from user_defined_storm_type import user_defined_storm_dialog
-from hydrograph_dialog import output_hydrograph
-from overland_flow import overland_flow
-from buffer_segment import buffer_segment
-from infiltration_soil_properties import infiltration_soil_properties
-from soil_characteristic_curves import soil_characteristic_curves
-from buffer_properties import buffer_properties
-from water_quality import water_quality
-from incoming_sediment import incoming_sediment
-from vfsmod_hyetograph import vfsmod_hyetograph
-from hyetograph import hyetograph
-from vfsmod_hydrograph import vfsmod_hydrograph
-from warning_message import warning_message
-from warning_message_calibration import warning_message_calibration
-from design_results import design_results
-from design_results_graph import design_results_graph
-from calibration_advanced_settings_hydrograph import calibration_advanced_settings_hydrograph
-from calibration_advanced_settings_sedimentograph import calibration_advanced_settings_sedimentograph
-from calibration_advanced_settings_single import calibration_advanced_settings_single
-from sedimentograph_output import sedimentograph_output
-from user_output_1 import user_output_1
-from user_output_2 import user_output_2
-from osp_results import osp_results
-from runoff_graph import runoff_graph
-from sediment_graph import sediment_graph
-from owq_results import owq_results
-from osm_results import osm_results
-from ohy_results import ohy_results
-from og2_results import og2_results
-from og1_results import og1_results
-from irn_results import irn_results
-from iro_results import iro_results
-from owq_graph import owq_graph
-from owq_graph_balance import owq_graph_balance
-from calibration_progress import calibration_progress
-from calibration_results_sedimentograph import calibration_results_sedimentograph
-from calibration_results_hydrograph import calibration_results_hydrograph
-from sediment_calibration import sediment_calibration
-from hydrograph_calibration import hydrograph_calibration
-from discharge_calibration_single import discharge_calibration_single
-from sediment_calibration_single import sediment_calibration_single
-from pesticide_calibration import pesticide_calibration
-from calibration_results_single import calibration_results_single
-from hydrograph_calibration_edit import hydrograph_calibration_edit
-from sedimentograph_calibration_edit import sedimentograph_calibration_edit
-from calibration_sensitivity_hydrograph import calibration_sensitivity_hydrograph
-from sensitivity_calibration_results_hydrograph import sensitivity_calibration_results_hydrograph
-from fiteval_hydrograph import fiteval_hydrograph
-from fiteval_sedimentograph import fiteval_sedimentograph
+from ui.Qvfsmod_dialog import qvfsmodMainWindow
+from ui.user_defined_storm_type import user_defined_storm_dialog
+from ui.hydrograph_dialog import output_hydrograph
+from ui.overland_flow import overland_flow
+from ui.buffer_segment import buffer_segment
+from ui.infiltration_soil_properties import infiltration_soil_properties
+from ui.soil_characteristic_curves import soil_characteristic_curves
+from ui.buffer_properties import buffer_properties
+from ui.water_quality import water_quality
+from ui.incoming_sediment import incoming_sediment
+from ui.vfsmod_hyetograph import vfsmod_hyetograph
+from ui.hyetograph import hyetograph
+from ui.vfsmod_hydrograph import vfsmod_hydrograph
+from ui.warning_message import warning_message
+from ui.warning_message_calibration import warning_message_calibration
+from ui.design_results import design_results
+from ui.design_results_graph import design_results_graph
+from ui.calibration_advanced_settings_hydrograph import calibration_advanced_settings_hydrograph
+from ui.calibration_advanced_settings_sedimentograph import calibration_advanced_settings_sedimentograph
+from ui.calibration_advanced_settings_single import calibration_advanced_settings_single
+from ui.sedimentograph_output import sedimentograph_output
+from ui.user_output_1 import user_output_1
+from ui.user_output_2 import user_output_2
+from ui.osp_results import osp_results
+from ui.runoff_graph import runoff_graph
+from ui.sediment_graph import sediment_graph
+from ui.owq_results import owq_results
+from ui.osm_results import osm_results
+from ui.ohy_results import ohy_results
+from ui.og2_results import og2_results
+from ui.og1_results import og1_results
+from ui.irn_results import irn_results
+from ui.iro_results import iro_results
+from ui.owq_graph import owq_graph
+from ui.owq_graph_balance import owq_graph_balance
+from ui.calibration_progress import calibration_progress
+from ui.calibration_results_sedimentograph import calibration_results_sedimentograph
+from ui.calibration_results_hydrograph import calibration_results_hydrograph
+from ui.sediment_calibration import sediment_calibration
+from ui.hydrograph_calibration import hydrograph_calibration
+from ui.discharge_calibration_single import discharge_calibration_single
+from ui.sediment_calibration_single import sediment_calibration_single
+from ui.pesticide_calibration import pesticide_calibration
+from ui.calibration_results_single import calibration_results_single
+from ui.hydrograph_calibration_edit import hydrograph_calibration_edit
+from ui.sedimentograph_calibration_edit import sedimentograph_calibration_edit
+from ui.calibration_sensitivity_hydrograph import calibration_sensitivity_hydrograph
+from ui.sensitivity_calibration_results_hydrograph import sensitivity_calibration_results_hydrograph
+from ui.fiteval_hydrograph import fiteval_hydrograph
+from ui.fiteval_sedimentograph import fiteval_sedimentograph
+from ui.degradation_data import degradation_data
 
 
 
@@ -215,11 +207,16 @@ class qvfsmod:
         self.dlg_sensitivity_calibration_results_hydrograph = sensitivity_calibration_results_hydrograph()
         self.dlg_fiteval_hydrograph = fiteval_hydrograph()
         self.dlg_fiteval_sedimentograph = fiteval_sedimentograph()
+        self.dlg_degradation_data = degradation_data()
+        
+        #Degradation data
+        self.dlg_water_quality.degradation_data.clicked.connect(self.dlg_degradation_data.show)
         
         #Create FITEVAL evaluation 
-        self.dlg_calibration_results_hydrograph.bootstraping.clicked.connect(self.calibration_hydrograph_bootstraping_show)
-        self.dlg_calibration_results_sedimentograph.bootstraping.clicked.connect(self.dlg_fiteval_sedimentograph.show)
-        self.dlg_fiteval_hydrograph.nash.textChanged.connect(self.calibration_hydrograph_bootstraping_update)
+        self.dlg_calibration_results_hydrograph.bootstraping.clicked.connect(lambda _, b ="hydrograph":self.calibration_hydrograph_bootstraping_show(b))
+        self.dlg_calibration_results_sedimentograph.bootstraping.clicked.connect(lambda _, b ="sedimentograph":self.calibration_hydrograph_bootstraping_show(b))
+        self.dlg_fiteval_hydrograph.nash.textChanged.connect(lambda _, b ="hydrograph":self.calibration_hydrograph_bootstraping_update(b))
+        self.dlg_fiteval_sedimentograph.nash.textChanged.connect(lambda _, b ="sedimentograph":self.calibration_hydrograph_bootstraping_update(b))
         
         #Sensitivity calibration results conditions
         self.dlg_base.results_sensitivity_hydrograph.clicked.connect(self.dlg_sensitivity_calibration_results_hydrograph.show)
@@ -1006,10 +1003,13 @@ class qvfsmod:
     
     
     
-    def calibration_hydrograph_bootstraping_show(self):
+    def calibration_hydrograph_bootstraping_show(self,type_calibration):
         """Method to make the bootstraping for the calibrated hydrograph and show dialog"""
         #Obtain data
-        path = self.obtain_direction_vfsmod(self.dlg_calibration_results_hydrograph.results.text())
+        if type_calibration == "hydrograph":
+            path = self.obtain_direction_vfsmod(self.dlg_calibration_results_hydrograph.results.text())
+        elif type_calibration == "sedimentograph":
+            path = self.obtain_direction_vfsmod(self.dlg_calibration_results_sedimentograph.results.text())
         if os.path.exists(path) and os.path.isfile(path):    
             #First add the text
             with open(path, "r") as archivo:
@@ -1046,6 +1046,7 @@ class qvfsmod:
             num_samples = 100
             block_size = 4
             nash_list = []
+            rmse_list = []
 
             for _ in range(num_samples):
                 # Inicializamos las listas de las muestras remuestreadas
@@ -1080,39 +1081,62 @@ class qvfsmod:
                 denominator = np.sum((observed_sample - mean_observed) ** 2)
                 nse = 1 - (numerator / denominator)
                 nash_list.append(nse)
+                #Calculate RMSE
+                rmse = np.sqrt(np.mean((observed_sample - simulated_sample) ** 2))
+                rmse_list.append(rmse)
             
             #Create variable to be obtained in other method
-            self.nashes_bootstraping_hydrograph = nash_list
+            if type_calibration == "hydrograph":
+                self.nashes_bootstraping_hydrograph = nash_list
+                self.rmse_bootstraping_hydrograph = rmse_list
+            elif type_calibration == "sedimentograph":
+                self.nashes_bootstraping_sedimentograph = nash_list
+                self.rmse_bootstraping_sedimentograph = rmse_list
             
             #Update graph
-            self.calibration_hydrograph_bootstraping_update()
+            self.calibration_hydrograph_bootstraping_update(type_calibration)
             
             #Show dialog
-            self.dlg_fiteval_hydrograph.show()
+            if type_calibration == "hydrograph":
+                self.dlg_fiteval_hydrograph.show()
+            elif type_calibration == "sedimentograph":
+                self.dlg_fiteval_sedimentograph.show()
             
-    def calibration_hydrograph_bootstraping_update(self):
+    def calibration_hydrograph_bootstraping_update(self,type_calibration):
         """Method to update graph of bootstraping fo hydrograph"""
         #Update values in lineEdits
-        self.update_values_bootstrapping_hydrograph()
-    
+        self.update_values_bootstrapping_hydrograph(type_calibration)
+        
         #Add the graph
-        if not hasattr(self, 'canvas_calibration_bootstrap_hydrograph'):
+        print(type_calibration)
+        if type_calibration == "hydrograph":
+            canvas = "canvas_calibration_bootstrap_hydrograph"
+            dialog = self.dlg_fiteval_hydrograph
+        elif type_calibration == "sedimentograph":
+            canvas = "canvas_calibration_bootstrap_sedimentograph"
+            dialog = self.dlg_fiteval_sedimentograph
+            
+        if not hasattr(self, canvas):
             #Create the canvas of the graph
             # Si no existe, crear el canvas y añadirlo al layout
-            self.canvas_calibration_bootstrap_hydrograph = FigureCanvas(plt.Figure(figsize=(15, 6)))
+            setattr(self,canvas,FigureCanvas(plt.Figure(figsize=(15, 6))))
             # Asignar un layout al QFrame si no tiene uno
-            layout = QVBoxLayout(self.dlg_fiteval_hydrograph.frame)
-            self.dlg_fiteval_hydrograph.frame.setLayout(layout)
+            layout = QVBoxLayout(dialog.frame)
+            dialog.frame.setLayout(layout)
             #Add canvas to layout
-            layout.addWidget(self.canvas_calibration_bootstrap_hydrograph)
+            layout.addWidget(getattr(self,canvas))
         
         #Add graph
-        self.canvas_calibration_bootstrap_hydrograph.figure.clear()
-        ax1 = self.canvas_calibration_bootstrap_hydrograph.figure.subplots()
+        getattr(self,canvas).figure.clear()
+        ax1 = getattr(self,canvas).figure.subplots()
 
         # Histograma
-        finite_nse = [nse for nse in self.nashes_bootstraping_hydrograph if nse != -np.inf]
-        inf_count = len([nse for nse in self.nashes_bootstraping_hydrograph if nse == -np.inf])
+        if type_calibration == "hydrograph":
+            finite_nse = [nse for nse in self.nashes_bootstraping_hydrograph if nse != -np.inf]
+            inf_count = len([nse for nse in self.nashes_bootstraping_hydrograph if nse == -np.inf])
+        elif type_calibration == "sedimentograph":
+            finite_nse = [nse for nse in self.nashes_bootstraping_sedimentograph if nse != -np.inf]
+            inf_count = len([nse for nse in self.nashes_bootstraping_sedimentograph if nse == -np.inf])
         
         counts, bins, patches = ax1.hist(
             finite_nse, bins=20, density=True, alpha=0.7, color="lightcoral", edgecolor="black", label="Histogram"
@@ -1127,7 +1151,7 @@ class qvfsmod:
         
         #Vertical line
         try:
-            ax1.axvline(x=float(self.dlg_fiteval_hydrograph.nash.text()), color='red', linestyle='--', linewidth=1.5)
+            ax1.axvline(x=float(dialog.nash.text()), color='red', linestyle='--', linewidth=1.5)
         except:
             pass
 
@@ -1146,25 +1170,42 @@ class qvfsmod:
         ax2.legend(loc="upper right", fontsize=10, frameon=False)
         
         #Change background color
-        self.canvas_calibration_bootstrap_hydrograph.figure.set_facecolor('#f0f0f0')
+        getattr(self,canvas).figure.set_facecolor('#f0f0f0')
         ax1.set_facecolor('#f0f0f0')
         # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-        self.canvas_calibration_bootstrap_hydrograph.figure.subplots_adjust(left=0.2, bottom=0.2)
+        getattr(self,canvas).figure.subplots_adjust(left=0.2, bottom=0.2)
         #Draw canvas
-        self.canvas_calibration_bootstrap_hydrograph.draw()
+        getattr(self,canvas).draw()
             
     
-    def update_values_bootstrapping_hydrograph(self):
+    def update_values_bootstrapping_hydrograph(self,type_calibration):
         """Method to update values in th evaluation of hydrograph calibration"""
         try:
+            if type_calibration == "hydrograph":
+                dialog = self.dlg_fiteval_hydrograph
+            elif type_calibration == "sedimentograph":
+                dialog = self.dlg_fiteval_sedimentograph
+                
             #Obtain values
-            values = [x for x in self.nashes_bootstraping_hydrograph if not np.isnan(x)]
+            if type_calibration == "hydrograph":
+                values = [x for x in self.nashes_bootstraping_hydrograph if not np.isnan(x)]
+                values_rmse = [x for x in self.rmse_bootstraping_hydrograph if not np.isnan(x)]
+            elif type_calibration == "sedimentograph":
+                values = [x for x in self.nashes_bootstraping_sedimentograph if not np.isnan(x)]
+                values_rmse = [x for x in self.rmse_bootstraping_sedimentograph if not np.isnan(x)]
+            
             #Put p value
-            p_value = sum(1 for nash in values if nash < float(self.dlg_fiteval_hydrograph.nash.text())) / len(values)
-            self.dlg_fiteval_hydrograph.p_value.setText(str(p_value))
-            #Put confidence interval
-            self.dlg_fiteval_hydrograph.minimum.setText(str(round(stats.scoreatpercentile(values,2.5),2)))
-            self.dlg_fiteval_hydrograph.maximum.setText(str(round(stats.scoreatpercentile(values,97.5),2)))
+            p_value = sum(1 for nash in values if nash < float(dialog.nash.text())) / len(values)
+            dialog.p_value.setText(f"p-value: {str(p_value)}")
+            #Put percentile values for nash
+            dialog.label_8.setText(str(round(stats.scoreatpercentile(values,2.5),2)))
+            dialog.label_13.setText(str(round(stats.scoreatpercentile(values,50),2)))
+            dialog.label_15.setText(str(round(stats.scoreatpercentile(values,97.5),2)))
+            #Same for RMSE
+            dialog.label_9.setText(f"{stats.scoreatpercentile(values_rmse,97.5):.2e}") #as in RMSE the higher the worse, I put 97.5% for 2.5%
+            dialog.label_14.setText(f"{stats.scoreatpercentile(values_rmse,50):.2e}")
+            dialog.label_16.setText(f"{stats.scoreatpercentile(values_rmse,2.5):.2e}")
+            
         except:
             pass
         
@@ -1441,51 +1482,109 @@ class qvfsmod:
     
     def add_pesticides_dialog(self):
         """Method to add widgets to pesticide dialog when more than a pesticide species is added"""
-        try:
-            number_pesticides = int(self.dlg_water_quality.number_pesticides.text())
-            if number_pesticides<=10: #if not the dialog can freeze and close
-                #Delete previous pesticides
-                if self.number_pesticides_dialog>1:
-                    widgets_to_delete = ["pesticide_direct_label_","label_kd_","label_koc_","line_kd_","line_koc_",
-                        "pesticide_label_","mass_label_","dispersion_label_","half_label_","remobilized_label_",
-                        "mass_","dispersion_","half_life_","remobilized_"]
-                    for p in range(self.number_pesticides_dialog-1):
-                        pesticide = p+2
-                        for i in widgets_to_delete:
-                            widget = getattr(self.dlg_water_quality, f"{i}{pesticide}")
-                            widget.hide()
-                    
-                #Add pesticides
-                for i in range(number_pesticides-1):
-                    #Create widgets
-                    pesticide = i+2
-                    
-                    #Add widgets
-                    #Direct inputs
-                    getattr(self.dlg_water_quality, f"pesticide_direct_label_{pesticide}").show()
-                    getattr(self.dlg_water_quality, f"label_kd_{pesticide}").show()
-                    getattr(self.dlg_water_quality, f"label_koc_{pesticide}").show()
-                    getattr(self.dlg_water_quality, f"line_kd_{pesticide}").show()
-                    getattr(self.dlg_water_quality, f"line_koc_{pesticide}").show()
-                    
-                    #Rest of the inputs
-                    getattr(self.dlg_water_quality, f"pesticide_label_{pesticide}").show()
-                    getattr(self.dlg_water_quality, f"mass_label_{pesticide}").show()
-                    getattr(self.dlg_water_quality, f"mass_{pesticide}").show()
-                    getattr(self.dlg_water_quality, f"dispersion_label_{pesticide}").show()
-                    getattr(self.dlg_water_quality, f"dispersion_{pesticide}").show()
-                    getattr(self.dlg_water_quality, f"half_label_{pesticide}").show()
-                    getattr(self.dlg_water_quality, f"half_life_{pesticide}").show()
-                    getattr(self.dlg_water_quality, f"remobilized_label_{pesticide}").show()
-                    getattr(self.dlg_water_quality, f"remobilized_{pesticide}").show()
-                    
-                #Create variable to know how many pesticides there are
-                self.number_pesticides_dialog = number_pesticides
+        #try:
+        number_pesticides = int(self.dlg_water_quality.number_pesticides.text())
+        if number_pesticides<=10: #if not the dialog can freeze and close
+            #Delete previous pesticides
+            if self.number_pesticides_dialog>1:
+                widgets_to_delete = ["pesticide_direct_label_","label_kd_","label_koc_","line_kd_","line_koc_",
+                    "pesticide_label_","mass_label_","dispersion_label_","half_label_","remobilized_label_",
+                    "mass_","dispersion_","half_life_","remobilized_"]
+                for p in range(self.number_pesticides_dialog-1):
+                    pesticide = p+2
+                    for i in widgets_to_delete:
+                        widget = getattr(self.dlg_water_quality, f"{i}{pesticide}")
+                        widget.hide()
                 
-            self.enable_disable_water_quality_dialog() #update enabling/disabling direct input
+            #Add pesticides
+            for i in range(number_pesticides-1):
+                #Create widgets
+                pesticide = i+2
                 
-        except:
-            pass
+                #Add widgets
+                #Direct inputs
+                getattr(self.dlg_water_quality, f"pesticide_direct_label_{pesticide}").show()
+                getattr(self.dlg_water_quality, f"label_kd_{pesticide}").show()
+                getattr(self.dlg_water_quality, f"label_koc_{pesticide}").show()
+                getattr(self.dlg_water_quality, f"line_kd_{pesticide}").show()
+                getattr(self.dlg_water_quality, f"line_koc_{pesticide}").show()
+                
+                #Rest of the inputs
+                getattr(self.dlg_water_quality, f"pesticide_label_{pesticide}").show()
+                getattr(self.dlg_water_quality, f"mass_label_{pesticide}").show()
+                getattr(self.dlg_water_quality, f"mass_{pesticide}").show()
+                getattr(self.dlg_water_quality, f"dispersion_label_{pesticide}").show()
+                getattr(self.dlg_water_quality, f"dispersion_{pesticide}").show()
+                getattr(self.dlg_water_quality, f"half_label_{pesticide}").show()
+                getattr(self.dlg_water_quality, f"half_life_{pesticide}").show()
+                getattr(self.dlg_water_quality, f"remobilized_label_{pesticide}").show()
+                getattr(self.dlg_water_quality, f"remobilized_{pesticide}").show()
+                
+            #Create variable to know how many pesticides there are
+            self.number_pesticides_dialog = number_pesticides
+            
+            
+            #Same for the degradation
+            #Delete previous pesticides
+            if self.number_pesticides_dialog>1:
+                widgets_to_delete = ["pesticide_direct_label_","label_kd_","label_koc_","line_kd_","line_koc_",
+                    "pesticide_label_","mass_label_","dispersion_label_","half_label_","remobilized_label_",
+                    "mass_","dispersion_","half_life_","remobilized_"]
+                for p in range(self.number_pesticides_dialog-1):
+                    pesticide = p+2
+                    for i in widgets_to_delete:
+                        widget = getattr(self.dlg_water_quality, f"{i}{pesticide}")
+                        widget.hide()
+            
+            # Configura la tabla
+            table = self.dlg_degradation_data.table_degradations
+
+            # Establece el número de filas y columnas
+            table.setRowCount(number_pesticides)
+            table.setColumnCount(number_pesticides)
+
+            # Configura los encabezados de filas y columnas
+            table.setHorizontalHeaderLabels(['A', 'B', 'C'])
+            table.setVerticalHeaderLabels(['1', '2', '3'])
+
+            # Ajusta el tamaño de las celdas para que sean cuadradas
+            size_cells = 50
+            table.horizontalHeader().setDefaultSectionSize(size_cells)  # Ancho de las columnas
+            table.verticalHeader().setDefaultSectionSize(size_cells)    # Altura de las filas
+            
+            #Change size of table
+            table.setFixedSize(size_cells*number_pesticides+50, size_cells*number_pesticides+50)
+
+            # Configura las celdas
+            for i in range(3):
+                for j in range(3):
+                    # Crea un elemento de celda
+                    item = QTableWidgetItem(f"{i},{j}")  # Valor inicial de ejemplo
+                    item.setTextAlignment(Qt.AlignCenter)  # Centra el texto
+                    
+                    if i == j:
+                        # Si es una celda de la diagonal, permítela editar
+                        item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled)
+                    else:
+                        # Si no es la diagonal, deshabilita la edición
+                        item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+                        # Opcional: Cambia el color de fondo para diferenciar
+                        item.setBackground(Qt.lightGray)
+                    
+                    # Asigna el elemento a la celda correspondiente
+                    table.setItem(i, j, item)
+            
+            
+            
+            
+            
+        self.enable_disable_water_quality_dialog() #update enabling/disabling direct input
+        
+        
+        
+                
+        r'''except:
+            pass'''
         
     def save_uh_project(self):
         """Method to save uh project"""
@@ -4794,7 +4893,7 @@ class qvfsmod:
     def browse_design_results_csv(self):
         """Method tho browse csv with results of design"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
-        fname = QFileDialog.getOpenFileName(self.dlg_design_results, "Select Design Results File",working_directory , "CSV files (*.csv)")
+        fname = QFileDialog.getOpenFileName(self.dlg_design_results, "Select Design Results File",working_directory +"\\design\\output", "CSV files (*.csv)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
@@ -14002,8 +14101,15 @@ class qvfsmod:
         self.ax_design_graph.set_ylabel(column_y,size = 10,family="arial",weight = "bold",color = "black")
         #X ticks
         self.ax_design_graph.tick_params(axis = "both",colors = "black",labelsize = 9)
-        # Add legend
-        self.ax_design_graph.legend()
+        # Add legend and change color
+        legend = self.ax_design_graph.legend(
+            loc="lower center",  # Centrar horizontalmente
+            bbox_to_anchor=(0.5, 1.01),  # Posición justo arriba del gráfico
+            ncol=4,  # Número de columnas en la leyenda
+        )
+        
+        #Change color legend
+        legend.get_frame().set_facecolor("#f0f0f0")
         
         #Remove previous line
         try:
@@ -14061,7 +14167,7 @@ class qvfsmod:
         self.ax_design_graph.set_facecolor('#f0f0f0')
         
         #Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-        self.canvas_design_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
+        self.canvas_design_graph.figure.subplots_adjust(left=0.2, bottom=0.2,top = 0.8)
         #Draw canvas
         self.canvas_design_graph.draw()
         
@@ -16301,7 +16407,7 @@ class UncertainityAnalysisThread(QThread):
         self.update_progress.emit([execution_num,result])
 
 if __name__ == "__main__":
-    
+    freeze_support() #to be able to use multiprocessing after converting it to an executable
     app = QtWidgets.QApplication(sys.argv)
     
     dialog = qvfsmod()
