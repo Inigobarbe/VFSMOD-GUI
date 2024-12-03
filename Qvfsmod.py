@@ -31,7 +31,7 @@ from shutil import SameFileError
 import numpy as np
 import re
 from scipy.interpolate import interp1d
-from scipy.stats import percentileofscore
+from scipy.stats import percentileofscore, geom
 from scipy import stats
 from itertools import product
 from matplotlib import pyplot as plt
@@ -49,7 +49,7 @@ from SALib.analyze.morris import analyze as analyze_morris
 from libraries.SALib.sample.fast_sampler import sample as sample_fast
 from libraries.SALib.analyze.fast import analyze as analyze_fast
 
-
+import math
 import os
 import sys
 
@@ -1036,45 +1036,83 @@ class qvfsmod:
                     break
                 contenido += i
             
-            #Do the bootstraping
-            observed = np.array(observed)
-            simulated = np.array(simulated)
             
-            n = len(observed)
-            observed_bootstrap = []
-            simulated_bootstrap = []
-            num_samples = 100
-            block_size = 4
+            #Obtain the expected length of block for the stationary bootsrapping according to Automatic Block-Length Selection for the Dependent Bootstrap (Dimitris N. Politis1 and Halbert White)
+            def lambda_function(t):
+                if abs(t)>=0 and abs(t)<=0.5:
+                    return 1
+                elif abs(t)>=0.5 and abs(t)<=1:
+                    return 2*(1-abs(t))
+                else:
+                    0
+
+            def r_function(k):
+                n = len(observed)
+                average = np.sum(observed)/len(observed)
+                values = 0
+                for i in range(n-abs(k)):
+                    values += (observed[i]-average)/(observed[i+abs(k)]-average)
+                return values/n
+
+
+            def g_function(w):
+                values = 0
+                for i in range(-M,M):
+                    values += lambda_function(i/M)*r_function(i)*math.cos(w*i)
+                return values
+
+
+            #Calculate G
+            M = int(len(observed)/2)
+            G = 0
+            for i in range(-M,M):
+                G += lambda_function(i/M)*abs(i)*r_function(i)
+
+            #Calculate D
+            integration_step = 0.1
+            D = 4*(g_function(0)**2)
+            values = 0
+            w = -math.pi
+            while w<math.pi:
+                values += (1+math.cos(w))*(g_function(w)**2)*integration_step
+                w += integration_step
+
+            values = 2*values/math.pi
+            D = D + values
+
+            #Calculate optimal size of block
+            b = (((2*(G**2))/D)**(1/3))*(len(observed)**(1/3))
+
+            #Calculate probability for geometrical distribution after we calculated the expected length
+            p = 1/b
+            
+            
+            #Do the bootstrapping
+            number_resamplings = 2000
             nash_list = []
             rmse_list = []
-
-            for _ in range(num_samples):
-                # Inicializamos las listas de las muestras remuestreadas
-                observed_sample = []
-                simulated_sample = []
-                
-                # Creamos una lista de índices de bloques
-                block_indices = np.arange(0, n - block_size + 1)  # Los índices posibles de inicio de bloque
-                
-                # Realizamos el remuestreo de bloques con reemplazo
-                while len(observed_sample) < n:
-                    # Elegimos aleatoriamente un índice de bloque con reemplazo
-                    start_idx = np.random.choice(block_indices)
+            for i in range(number_resamplings):
+                observed_blocks = []
+                simulated_blocks = []
+                while len(observed_blocks)<len(observed):
+                    index = np.random.randint(0, len(observed), dtype=int)
+                    size = geom.rvs(p, size=1)[0]
+                    if index+size>=len(observed):
+                        block_observed = list(observed[index:])+list(observed[:(index+size)%len(observed)])
+                        block_simulated = list(simulated[index:])+list(simulated[:(index+size)%len(simulated)])
+                    else:
+                        block_observed = list(observed[index:index+size])
+                        block_simulated = list(simulated[index:index+size])
+                        
+                    observed_blocks += block_observed
+                    simulated_blocks += block_simulated
                     
-                    # Seleccionamos el bloque correspondiente
-                    observed_block = observed[start_idx:start_idx + block_size]
-                    simulated_block = simulated[start_idx:start_idx + block_size]
-                    
-                    # Añadimos los bloques seleccionados a la muestra
-                    observed_sample.extend(observed_block)
-                    simulated_sample.extend(simulated_block)
+                observed_blocks = observed_blocks[:len(observed)]
+                simulated_blocks = simulated_blocks[:len(simulated)]
                 
-                # Cortamos la muestra para que tenga el tamaño original
-                observed_bootstrap.append(observed_sample[:n])
-                simulated_bootstrap.append(simulated_sample[:n])
-                
-                observed_sample = np.array(observed_sample)
-                simulated_sample = np.array(simulated_sample)
+                #Obtain indicators values
+                observed_sample = np.array(observed_blocks)
+                simulated_sample = np.array(simulated_blocks)
                 #Caclulate nash
                 mean_observed = np.mean(observed_sample)
                 numerator = np.sum((observed_sample - simulated_sample) ** 2)
@@ -1084,6 +1122,7 @@ class qvfsmod:
                 #Calculate RMSE
                 rmse = np.sqrt(np.mean((observed_sample - simulated_sample) ** 2))
                 rmse_list.append(rmse)
+            
             
             #Create variable to be obtained in other method
             if type_calibration == "hydrograph":
@@ -1108,7 +1147,6 @@ class qvfsmod:
         self.update_values_bootstrapping_hydrograph(type_calibration)
         
         #Add the graph
-        print(type_calibration)
         if type_calibration == "hydrograph":
             canvas = "canvas_calibration_bootstrap_hydrograph"
             dialog = self.dlg_fiteval_hydrograph
@@ -1196,7 +1234,7 @@ class qvfsmod:
             
             #Put p value
             p_value = sum(1 for nash in values if nash < float(dialog.nash.text())) / len(values)
-            dialog.p_value.setText(f"p-value: {str(p_value)}")
+            dialog.p_value.setText(f"p-value: {str(round(p_value,2))}")
             #Put percentile values for nash
             dialog.label_8.setText(str(round(stats.scoreatpercentile(values,2.5),2)))
             dialog.label_13.setText(str(round(stats.scoreatpercentile(values,50),2)))
@@ -1526,7 +1564,9 @@ class qvfsmod:
             
             #Same for the degradation
             #Delete previous pesticides
+            print("self.number_pesticides_dialog",self.number_pesticides_dialog)
             if self.number_pesticides_dialog>1:
+                print("b")
                 widgets_to_delete = ["pesticide_direct_label_","label_kd_","label_koc_","line_kd_","line_koc_",
                     "pesticide_label_","mass_label_","dispersion_label_","half_label_","remobilized_label_",
                     "mass_","dispersion_","half_life_","remobilized_"]
@@ -2074,7 +2114,7 @@ class qvfsmod:
                 text = os.path.relpath(fname[0], working_directory)
             else: #absolute path
                 text = fname[0]
-            self.dlg_hydrograph_calibration_edit.file_hydrograph.setText(text)
+            self.dlg_hydrograph_calibration_edit.file_hydrograph.setText(os.path.normpath(text))
     
     def dlg_sedimentograph_calibration_edit_browse(self):
         """Method to browse the hydrograph file"""
@@ -2086,7 +2126,7 @@ class qvfsmod:
                 text = os.path.relpath(fname[0], working_directory)
             else: #absolute path
                 text = fname[0]
-            self.dlg_sedimentograph_calibration_edit.file_sedimentograph.setText(text)
+            self.dlg_sedimentograph_calibration_edit.file_sedimentograph.setText(os.path.normpath(text))
     
     
     def dlg_hydrograph_calibration_edit_add(self,table):
@@ -3376,7 +3416,7 @@ class qvfsmod:
                         ikw = i.split("=")[-1]
                         if not os.path.isabs(ikw): #relative path
                             ikw = os.path.join(os.path.dirname(path), ikw)
-                        ikw = ikw.replace("\n", "") #take out the line jumps
+                        ikw = os.path.normpath(ikw.rstrip()) #take out the line jumps and spaces at the end
                         dictionary[i[:3]].setText(ikw)
                     if i[:3] == "iwq":
                         water_quality = True
@@ -3404,7 +3444,7 @@ class qvfsmod:
                         ikw = i.split("=")[-1]
                         if not os.path.isabs(ikw): #relative path
                             ikw = os.path.join(os.path.dirname(path), ikw)
-                        ikw = ikw.replace("\n", "") #take out the line jumps
+                        ikw = os.path.normpath(ikw.rstrip()) #take out the line jumps and spaces at the end
                         dictionary[i[:3]].setText(ikw)
             except:
                 pass
@@ -3778,7 +3818,12 @@ class qvfsmod:
         contenido = ""
         for i in lineas:
             contenido+=i
+        
         self.dlg_og1_results.textEdit.setPlainText(contenido)
+        #Change font
+        courier_font = QFont("Courier")
+        courier_font.setStyleHint(QFont.Monospace)  # Asegurar que es fuente monoespaciada
+        self.dlg_og1_results.textEdit.setFont(courier_font)
         
         #Show dialog
         self.dlg_og1_results.show()
@@ -3793,7 +3838,10 @@ class qvfsmod:
         for i in lineas:
             contenido+=i
         self.dlg_og2_results.textEdit.setPlainText(contenido)
-        
+        #Change font
+        courier_font = QFont("Courier")
+        courier_font.setStyleHint(QFont.Monospace)  # Asegurar que es fuente monoespaciada
+        self.dlg_og2_results.textEdit.setFont(courier_font)
         #Show dialog
         self.dlg_og2_results.show()
     
@@ -3807,6 +3855,10 @@ class qvfsmod:
         for i in lineas:
             contenido+=i
         self.dlg_ohy_results.textEdit.setPlainText(contenido)
+        #Change font
+        courier_font = QFont("Courier")
+        courier_font.setStyleHint(QFont.Monospace)  # Asegurar que es fuente monoespaciada
+        self.dlg_ohy_results.textEdit.setFont(courier_font)
         
         #Show dialog
         self.dlg_ohy_results.show()
@@ -3821,6 +3873,10 @@ class qvfsmod:
         for i in lineas:
             contenido+=i
         self.dlg_osm_results.textEdit.setPlainText(contenido)
+        #Change font
+        courier_font = QFont("Courier")
+        courier_font.setStyleHint(QFont.Monospace)  # Asegurar que es fuente monoespaciada
+        self.dlg_osm_results.textEdit.setFont(courier_font)
         
         #Show dialog
         self.dlg_osm_results.show()
@@ -3835,6 +3891,10 @@ class qvfsmod:
         for i in lineas:
             contenido+=i
         self.dlg_owq_results.textEdit.setPlainText(contenido)
+        #Change font
+        courier_font = QFont("Courier")
+        courier_font.setStyleHint(QFont.Monospace)  # Asegurar que es fuente monoespaciada
+        self.dlg_owq_results.textEdit.setFont(courier_font)
         
         #Show dialog
         self.dlg_owq_results.show()
@@ -4800,6 +4860,10 @@ class qvfsmod:
         for i in lineas:
             contenido+=i
         self.dlg_sedimentograph_output.textEdit.setPlainText(contenido)
+        #Change font
+        courier_font = QFont("Courier")
+        courier_font.setStyleHint(QFont.Monospace)  # Asegurar que es fuente monoespaciada
+        self.dlg_sedimentograph_output.textEdit.setFont(courier_font)
         #Show dialog
         self.dlg_sedimentograph_output.show()
     
@@ -4813,6 +4877,10 @@ class qvfsmod:
         for i in lineas:
             contenido+=i
         self.dlg_iro_results.textEdit.setPlainText(contenido)
+        #Change font
+        courier_font = QFont("Courier")
+        courier_font.setStyleHint(QFont.Monospace)  # Asegurar que es fuente monoespaciada
+        self.dlg_iro_results.textEdit.setFont(courier_font)
         #Show dialog
         self.dlg_iro_results.show()
     
@@ -4826,6 +4894,10 @@ class qvfsmod:
         for i in lineas:
             contenido+=i
         self.dlg_irn_results.textEdit.setPlainText(contenido)
+        #Change font
+        courier_font = QFont("Courier")
+        courier_font.setStyleHint(QFont.Monospace)  # Asegurar que es fuente monoespaciada
+        self.dlg_irn_results.textEdit.setFont(courier_font)
         #Show dialog
         self.dlg_irn_results.show()
         
@@ -4839,6 +4911,10 @@ class qvfsmod:
         for i in lineas:
             contenido+=i
         self.dlg_user_output_1.textEdit.setPlainText(contenido)
+        #Change font
+        courier_font = QFont("Courier")
+        courier_font.setStyleHint(QFont.Monospace)  # Asegurar que es fuente monoespaciada
+        self.dlg_user_output_1.textEdit.setFont(courier_font)
         #Show dialog
         self.dlg_user_output_1.show()
     
@@ -4852,6 +4928,11 @@ class qvfsmod:
         for i in lineas:
             contenido+=i
         self.dlg_user_output_2.textEdit.setPlainText(contenido)
+        #Change font
+        courier_font = QFont("Courier")
+        courier_font.setStyleHint(QFont.Monospace)  # Asegurar que es fuente monoespaciada
+        self.dlg_user_output_2.textEdit.setFont(courier_font)
+        
         #Show dialog
         self.dlg_user_output_2.show()
         
@@ -4900,7 +4981,7 @@ class qvfsmod:
                 text = os.path.relpath(fname[0], working_directory)
             else: #absolute path
                 text = fname[0]
-            self.dlg_design_results.design_file.setText(text)
+            self.dlg_design_results.design_file.setText(os.path.normpath(text))
     
     
     def browse_sensitivity_calibration_results(self):
@@ -4913,7 +4994,7 @@ class qvfsmod:
                 text = os.path.relpath(fname[0], working_directory)
             else: #absolute path
                 text = fname[0]
-            self.dlg_sensitivity_calibration_results_hydrograph.line_file.setText(text)
+            self.dlg_sensitivity_calibration_results_hydrograph.line_file.setText(os.path.normpath(text))
         
             #Update input parameters
             self.udpate_sensitivity_calibration_results()
@@ -4930,7 +5011,7 @@ class qvfsmod:
                 text = os.path.relpath(fname[0], working_directory)
             else: #absolute path
                 text = fname[0]
-            self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.setText(text)
+            self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.setText(os.path.normpath(text))
         
             #Update input parameters
             self.dlg_calibration_sensitivity_hydrograph_show([False,""])
@@ -4953,11 +5034,11 @@ class qvfsmod:
             else: #absolute path
                 text = fname[0]
             if information == "morris":
-                self.dlg_base.csv_results_morris_design_uncertainity.setText(text)
+                self.dlg_base.csv_results_morris_design_uncertainity.setText(os.path.normpath(text))
             elif information == "sobol":    
-                self.dlg_base.csv_results_sobol_design_uncertainity.setText(text)
+                self.dlg_base.csv_results_sobol_design_uncertainity.setText(os.path.normpath(text))
             elif information == "fast":
-                self.dlg_base.csv_results_fast_design_uncertainity.setText(text)
+                self.dlg_base.csv_results_fast_design_uncertainity.setText(os.path.normpath(text))
             
             #Show outputs
             self.show_sensitivity_graph_design()
@@ -4973,7 +5054,7 @@ class qvfsmod:
                 text = os.path.relpath(fname[0], working_directory)
             else: #absolute path
                 text = fname[0]
-            self.dlg_base.csv_results_2.setText(text)
+            self.dlg_base.csv_results_2.setText(os.path.normpath(text))
             #Update graph
             self.show_sensitivity_graph_global()
     
@@ -4987,7 +5068,7 @@ class qvfsmod:
                 text = os.path.relpath(fname[0], working_directory)
             else: #absolute path
                 text = fname[0]
-            self.dlg_base.csv_results_fast.setText(text)
+            self.dlg_base.csv_results_fast.setText(os.path.normpath(text))
             #Update graph
             self.show_sensitivity_graph_global()
     
@@ -5001,7 +5082,7 @@ class qvfsmod:
                 text = os.path.relpath(fname[0], working_directory)
             else: #absolute path
                 text = fname[0]
-            self.dlg_calibration_results_hydrograph.results.setText(text)
+            self.dlg_calibration_results_hydrograph.results.setText(os.path.normpath(text))
     
     def browse_files_calibration_sedimentograph(self):
         """Method to select the file for calibration results"""
@@ -5013,7 +5094,7 @@ class qvfsmod:
                 text = os.path.relpath(fname[0], working_directory)
             else: #absolute path
                 text = fname[0]
-            self.dlg_calibration_results_sedimentograph.results.setText(text)
+            self.dlg_calibration_results_sedimentograph.results.setText(os.path.normpath(text))
     
     def browse_files_calibration_single(self):
         """Method to select the file for single calibration results"""
@@ -5025,7 +5106,7 @@ class qvfsmod:
                 text = os.path.relpath(fname[0], working_directory)
             else: #absolute path
                 text = fname[0]
-            self.dlg_calibration_results_single.results.setText(text)
+            self.dlg_calibration_results_single.results.setText(os.path.normpath(text))
     
     def browse_csv_oat(self):
         """Method to add csv of oat results"""
@@ -5037,7 +5118,7 @@ class qvfsmod:
                 text = os.path.relpath(fname[0], working_directory)
             else: #absolute path
                 text = fname[0]
-            self.dlg_base.csv_results_oat.setText(text)
+            self.dlg_base.csv_results_oat.setText(os.path.normpath(text))
             #Update graph
             self.update_sensitity_graph_oat()
     
@@ -5051,7 +5132,7 @@ class qvfsmod:
                 text = os.path.relpath(fname[0], working_directory)
             else: #absolute path
                 text = fname[0]
-            self.dlg_base.csv_results_uncertainity.setText(text)
+            self.dlg_base.csv_results_uncertainity.setText(os.path.normpath(text))
             #Update graph
             self.update_graph_uncertainity()
         
@@ -5065,7 +5146,7 @@ class qvfsmod:
                 text = os.path.relpath(fname[0], working_directory)
             else: #absolute path
                 text = fname[0]
-            self.dlg_base.csv_results_morris.setText(text)
+            self.dlg_base.csv_results_morris.setText(os.path.normpath(text))
             #Update graph
             self.show_sensitivity_graph_global()
         
@@ -5873,11 +5954,11 @@ class qvfsmod:
             else: #absolute path
                 text = fname[0]
             if information == "prj":
-                self.dlg_base.vfs_file_uncertainity.setText(text)
+                self.dlg_base.vfs_file_uncertainity.setText(os.path.normpath(text))
             elif information == "lis":
-                self.dlg_base.uh_file_uncertainity.setText(text)
+                self.dlg_base.uh_file_uncertainity.setText(os.path.normpath(text))
             else:
-                self.dlg_base.file_save_uncertainity.setText(text)
+                self.dlg_base.file_save_uncertainity.setText(os.path.normpath(text))
     
     
     def browse_files_sensitivity(self,information):
@@ -5900,11 +5981,11 @@ class qvfsmod:
             else: #absolute path
                 text = fname[0]
         if information == "prj":
-            self.dlg_base.vfs_file_sensitivity.setText(text)
+            self.dlg_base.vfs_file_sensitivity.setText(os.path.normpath(text))
         elif information == "lis":
-            self.dlg_base.uh_file_sensitivity.setText(text)
+            self.dlg_base.uh_file_sensitivity.setText(os.path.normpath(text))
         else:
-            self.dlg_base.file_save.setText(text)
+            self.dlg_base.file_save.setText(os.path.normpath(text))
     
     
     def browse_files_sensitivity_design(self,information):
@@ -5927,13 +6008,13 @@ class qvfsmod:
             else: #absolute path
                 text = fname[0]
             if information == "prj":
-                self.dlg_base.vfs_file_sensitivity_design.setText(text)
+                self.dlg_base.vfs_file_sensitivity_design.setText(os.path.normpath(text))
                 #Add pesticides to dialog
                 self.add_pesticides_dialog_sensitivity_design()
             elif information == "lis":
-                self.dlg_base.uh_file_sensitivity_design.setText(text)
+                self.dlg_base.uh_file_sensitivity_design.setText(os.path.normpath(text))
             else:
-                self.dlg_base.file_save_design.setText(text)
+                self.dlg_base.file_save_design.setText(os.path.normpath(text))
     
     
     def start_analysis_design(self):
@@ -9019,9 +9100,9 @@ class qvfsmod:
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                information[2].setText(os.path.relpath(fname[0], working_directory))
+                information[2].setText(os.path.normpath(os.path.relpath(fname[0], working_directory)))
             else: #absolute path
-                information[2].setText(fname[0])
+                information[2].setText(os.path.normpath(fname[0]))
             #If single value prj is selected then update the number of pesticides
             if information[2]==self.dlg_base.single_values_line:
                 self.add_pesticides_dialog_single_calibration()
@@ -12830,9 +12911,9 @@ class qvfsmod:
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
-                self.dlg_base.design_vfs_file.setText(os.path.relpath(fname[0], working_directory))
+                self.dlg_base.design_vfs_file.setText(os.path.normpath(os.path.relpath(fname[0], working_directory)))
             else: #absolute path
-                self.dlg_base.design_vfs_file.setText(fname[0])
+                self.dlg_base.design_vfs_file.setText(os.path.normpath(fname[0]))
     
     def select_lis(self):
         """Method to select the .lis file among the local files"""
@@ -12840,7 +12921,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select UH Project File",working_directory , "LIS files (*.lis)")
         if fname[0]!="":
             #Put the absolute path
-            self.dlg_base.uh_file.setText(fname[0])
+            self.dlg_base.uh_file.setText(os.path.normpath(fname[0]))
             #Update filepaths
             self.add_values_uh_outputs_dialog()
             
@@ -12850,7 +12931,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select UH Input File", working_directory, "INP files (*.inp)")
         if fname[0]!="":
             #Put the absolute path
-            self.dlg_base.uh_input.setText(fname[0])
+            self.dlg_base.uh_input.setText(os.path.normpath(fname[0]))
 
 
     def select_iro(self):
@@ -12859,7 +12940,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Hydrograph File", working_directory, "IRO files (*.iro)")
         if fname[0]!="":
             #Put the absolute path
-            self.dlg_base.line_hydrograph.setText(fname[0])
+            self.dlg_base.line_hydrograph.setText(os.path.normpath(fname[0]))
         #Check if UH outputs exist
         self.check_uh_output_exist()
     
@@ -12869,7 +12950,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Hyetograph File", working_directory, "IRN files (*.irn)")
         if fname[0]!="":
             #Put the absolute path
-            self.dlg_base.line_hyetograph.setText(fname[0])
+            self.dlg_base.line_hyetograph.setText(os.path.normpath(fname[0]))
         #Check if UH outputs exist
         self.check_uh_output_exist()
                 
@@ -12879,7 +12960,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Incoming Sedimentograph File", working_directory, "ISD files (*.isd)")
         if fname[0]!="":
             #Put the absolute path
-            self.dlg_base.line_sedimentograph.setText(fname[0])
+            self.dlg_base.line_sedimentograph.setText(os.path.normpath(fname[0]))
         #Check if UH outputs exist
         self.check_uh_output_exist()
                 
@@ -12889,7 +12970,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Output Information Part 1 File", working_directory, "OUT files (*.out)")
         if fname[0]!="":
             #Put the absolute path
-            self.dlg_base.line_output_1.setText(fname[0])
+            self.dlg_base.line_output_1.setText(os.path.normpath(fname[0]))
         #Check if UH outputs exist
         self.check_uh_output_exist()
                 
@@ -12899,7 +12980,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Output Information Part 2 File", working_directory, "HYT files (*.hyt)")
         if fname[0]!="":
             #Put the absolute path
-            self.dlg_base.line_output_2.setText(fname[0])
+            self.dlg_base.line_output_2.setText(os.path.normpath(fname[0]))
         #Check if UH outputs exist
         self.check_uh_output_exist()  
     
@@ -12910,7 +12991,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Filter Strip Project File", working_directory, "PRJ files (*.prj)")
         if fname[0]!="":
             #Put absolute path if the file is inside the folder
-            self.dlg_base.line_project_vfsmod.setText(fname[0])
+            self.dlg_base.line_project_vfsmod.setText(os.path.normpath(fname[0]))
             #Update filepaths
             self.add_values_vfs_outputs_dialog()
             
@@ -12920,7 +13001,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Overland Flow Inputs File", working_directory, "IKW files (*.ikw)")
         if fname[0]!="":
             #Put absolute path
-            self.dlg_base.line_overland.setText(fname[0])
+            self.dlg_base.line_overland.setText(os.path.normpath(fname[0]))
             #Update ikw pesticide
             self.update_ikw_pesticide()
         #Check if VFSMOD outputs exist
@@ -12932,7 +13013,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Infiltration - Soil Properties File", working_directory, "ISO files (*.iso)")
         if fname[0]!="":
             #Put the absolute path
-            self.dlg_base.line_infiltration.setText(fname[0])
+            self.dlg_base.line_infiltration.setText(os.path.normpath(fname[0]))
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
     
@@ -12942,7 +13023,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Buffer Vegetation Properties File", working_directory, "IGR files (*.igr)")
         if fname[0]!="":
             #Put the absolute path
-            self.dlg_base.line_buffer.setText(fname[0])
+            self.dlg_base.line_buffer.setText(os.path.normpath(fname[0]))
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
     
@@ -12952,7 +13033,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Incoming Sediment Characteristics File", working_directory, "ISD files (*.isd)")
         if fname[0]!="":
             #Put the absolute path
-            self.dlg_base.line_incoming.setText(fname[0])
+            self.dlg_base.line_incoming.setText(os.path.normpath(fname[0]))
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
     
@@ -12962,7 +13043,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Storm Hyetograph File", working_directory, "IRN files (*.irn)")
         if fname[0]!="":
             #Put the absolute path
-            self.dlg_base.line_storm.setText(fname[0])
+            self.dlg_base.line_storm.setText(os.path.normpath(fname[0]))
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
     
@@ -12972,7 +13053,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Source Area Storm Runoff File", working_directory, "IRO files (*.iro)")
         if fname[0]!="":
             #Put the absolute path
-            self.dlg_base.line_source.setText(fname[0])
+            self.dlg_base.line_source.setText(os.path.normpath(fname[0]))
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
     
@@ -12982,7 +13063,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Water Quality Properties File", working_directory, "IWQ files (*.iwq)")
         if fname[0]!="":
             #Put the absolute path
-            self.dlg_base.line_water.setText(fname[0])
+            self.dlg_base.line_water.setText(os.path.normpath(fname[0]))
             #Put data in dialog
             self.dlg_water_quality_show(show= False)
             #Update ikw file
@@ -12997,7 +13078,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Sediment Transport File", working_directory, "OG1 files (*.og1)")
         if fname[0]!="":
             #Put the absolute path
-            self.dlg_base.line_sediment.setText(fname[0])
+            self.dlg_base.line_sediment.setText(os.path.normpath(fname[0]))
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
     
@@ -13007,7 +13088,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Flow throug FVS File", working_directory, "OG2 files (*.og2)")
         if fname[0]!="":
             #Put the absolute path
-            self.dlg_base.line_flow.setText(fname[0])
+            self.dlg_base.line_flow.setText(os.path.normpath(fname[0]))
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
         
@@ -13017,7 +13098,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Detailed Hydrograph File", working_directory, "OHY files (*.ohy)")
         if fname[0]!="":
             #Put the absolute path
-            self.dlg_base.line_hydrograph_2.setText(fname[0])
+            self.dlg_base.line_hydrograph_2.setText(os.path.normpath(fname[0]))
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
     
@@ -13027,7 +13108,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Water and Sediment Balances File", working_directory, "OSM files (*.osm)")
         if fname[0]!="":
             #Put the absolute path
-            self.dlg_base.line_waterland.setText(fname[0])
+            self.dlg_base.line_waterland.setText(os.path.normpath(fname[0]))
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
     
@@ -13037,7 +13118,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Overall Summary File", working_directory, "OSP files (*.osp)")
         if fname[0]!="":
             #Put the absolute path
-            self.dlg_base.line_overall.setText(fname[0])
+            self.dlg_base.line_overall.setText(os.path.normpath(fname[0]))
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
 
@@ -13047,7 +13128,7 @@ class qvfsmod:
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Water Quality Summary File", working_directory, "OWQ files (*.owq)")
         if fname[0]!="":
             #Put the absolute path
-            self.dlg_base.line_quality.setText(fname[0])
+            self.dlg_base.line_quality.setText(os.path.normpath(fname[0]))
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
  
@@ -13584,33 +13665,33 @@ class qvfsmod:
     
     def default_values(self):
         """Method to set default values for input values"""
-        self.dlg_base.working_directory_vfsmod.setText(r"C:/borrar")
+        self.dlg_base.working_directory_vfsmod.setText(os.path.normpath(r"C:/borrar"))
         #self.dlg_base.name_files.setText("prueba")
-        self.dlg_base.uh_file.setText(".lis")
-        self.dlg_base.uh_input.setText("inputs\.inp")
+        self.dlg_base.uh_file.setText(os.path.normpath(".lis"))
+        self.dlg_base.uh_input.setText(os.path.normpath("inputs\.inp"))
         
         #File paths
         #UH
-        self.dlg_base.line_hydrograph.setText("inputs\.iro")
-        self.dlg_base.line_hyetograph.setText("inputs\.irn")
-        self.dlg_base.line_sedimentograph.setText("inputs\.isd")
-        self.dlg_base.line_output_1.setText("output\.out")
-        self.dlg_base.line_output_2.setText("output\.hyt")
+        self.dlg_base.line_hydrograph.setText(os.path.normpath("inputs\.iro"))
+        self.dlg_base.line_hyetograph.setText(os.path.normpath("inputs\.irn"))
+        self.dlg_base.line_sedimentograph.setText(os.path.normpath("inputs\.isd"))
+        self.dlg_base.line_output_1.setText(os.path.normpath("output\.out"))
+        self.dlg_base.line_output_2.setText(os.path.normpath("output\.hyt"))
         #VFSMOD
-        self.dlg_base.line_project_vfsmod.setText(".prj")
-        self.dlg_base.line_overland.setText("inputs\.ikw")
-        self.dlg_base.line_infiltration.setText("inputs\.iso")
-        self.dlg_base.line_buffer.setText("inputs\.igr")
-        self.dlg_base.line_incoming.setText("inputs\.isd")
-        self.dlg_base.line_storm.setText("inputs\.irn")
-        self.dlg_base.line_source.setText("inputs\.iro")
-        self.dlg_base.line_water.setText("inputs\.iwq")
-        self.dlg_base.line_sediment.setText("output\.og1")
-        self.dlg_base.line_flow.setText("output\.og2")
-        self.dlg_base.line_hydrograph_2.setText("output\.ohy")
-        self.dlg_base.line_waterland.setText("output\.osm")
-        self.dlg_base.line_overall.setText("output\.osp")
-        self.dlg_base.line_quality.setText("output\.owq")
+        self.dlg_base.line_project_vfsmod.setText(os.path.normpath(".prj"))
+        self.dlg_base.line_overland.setText(os.path.normpath("inputs\.ikw"))
+        self.dlg_base.line_infiltration.setText(os.path.normpath("inputs\.iso"))
+        self.dlg_base.line_buffer.setText(os.path.normpath("inputs\.igr"))
+        self.dlg_base.line_incoming.setText(os.path.normpath("inputs\.isd"))
+        self.dlg_base.line_storm.setText(os.path.normpath("inputs\.irn"))
+        self.dlg_base.line_source.setText(os.path.normpath("inputs\.iro"))
+        self.dlg_base.line_water.setText(os.path.normpath("inputs\.iwq"))
+        self.dlg_base.line_sediment.setText(os.path.normpath("output\.og1"))
+        self.dlg_base.line_flow.setText(os.path.normpath("output\.og2"))
+        self.dlg_base.line_hydrograph_2.setText(os.path.normpath("output\.ohy"))
+        self.dlg_base.line_waterland.setText(os.path.normpath("output\.osm"))
+        self.dlg_base.line_overall.setText(os.path.normpath("output\.osp"))
+        self.dlg_base.line_quality.setText(os.path.normpath("output\.owq"))
         
         self.dlg_base.rainfall.setText("25")
         self.dlg_base.storm_duration.setText("6")

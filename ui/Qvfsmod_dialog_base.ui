@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>VSMOD</string>
+   <string>VFSMOD</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -554,6 +554,9 @@ typical 0.01-0.07</string>
                    <property name="toolTip">
                     <string/>
                    </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
                   </widget>
                  </item>
                  <item>
@@ -585,7 +588,11 @@ typical 0.01-0.07</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="uh_input"/>
+                  <widget class="QLineEdit" name="uh_input">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="select_inp">
@@ -1355,6 +1362,9 @@ default 5 min</string>
                      <width>315</width>
                      <height>16777215</height>
                     </size>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
                    </property>
                   </widget>
                  </item>
@@ -2133,8 +2143,8 @@ default 5 min</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>764</width>
-             <height>522</height>
+             <width>696</width>
+             <height>413</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_29">
@@ -2811,7 +2821,7 @@ default 5 min</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_13">
            <property name="geometry">
             <rect>
-             <x>-571</x>
+             <x>0</x>
              <y>0</y>
              <width>1318</width>
              <height>743</height>
@@ -2864,7 +2874,7 @@ default 5 min</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>231</width>
+                       <width>204</width>
                        <height>381</height>
                       </rect>
                      </property>
@@ -3106,8 +3116,8 @@ Solution Parameters</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>497</width>
-                       <height>173</height>
+                       <width>290</width>
+                       <height>28</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_98">
@@ -3444,7 +3454,7 @@ Solution Parameters</string>
                           <x>0</x>
                           <y>0</y>
                           <width>335</width>
-                          <height>326</height>
+                          <height>176</height>
                          </rect>
                         </property>
                         <layout class="QGridLayout" name="gridLayout_61">
@@ -4510,7 +4520,7 @@ Identifiability</string>
              <x>0</x>
              <y>0</y>
              <width>908</width>
-             <height>505</height>
+             <height>348</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_65">
@@ -5016,7 +5026,7 @@ Identifiability</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>231</width>
+                       <width>204</width>
                        <height>381</height>
                       </rect>
                      </property>
@@ -5259,7 +5269,7 @@ Solution Parameters</string>
                        <x>0</x>
                        <y>0</y>
                        <width>290</width>
-                       <height>173</height>
+                       <height>28</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_79">
@@ -5924,7 +5934,7 @@ Solution Parameters</string>
              <x>0</x>
              <y>0</y>
              <width>1124</width>
-             <height>505</height>
+             <height>453</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_40">
@@ -6305,7 +6315,7 @@ Solution Parameters</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>231</width>
+                       <width>204</width>
                        <height>381</height>
                       </rect>
                      </property>
@@ -6548,7 +6558,7 @@ Solution Parameters</string>
                        <x>0</x>
                        <y>0</y>
                        <width>290</width>
-                       <height>173</height>
+                       <height>28</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_86">
