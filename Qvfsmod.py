@@ -15,7 +15,7 @@
 
 from PyQt5 import QtWidgets,QtGui
 from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QThread,pyqtSignal
-from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtGui import QIcon, QFont, QGuiApplication
 from PyQt5.QtWidgets import QAction, QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy,QAction, QMenu,QCheckBox, QFrame,QGridLayout,QHBoxLayout
 from sklearn.linear_model import LinearRegression
 from scipy.optimize import differential_evolution, minimize
@@ -109,6 +109,8 @@ from ui.sensitivity_calibration_results_hydrograph import sensitivity_calibratio
 from ui.fiteval_hydrograph import fiteval_hydrograph
 from ui.fiteval_sedimentograph import fiteval_sedimentograph
 from ui.degradation_data import degradation_data
+from ui.owq_graph_reduction import owq_graph_reduction
+from ui.ohy_graphs import ohy_graphs
 
 
 
@@ -156,7 +158,6 @@ class qvfsmod:
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
-        
   
         #Instantiate dialogs
         self.dlg_base = qvfsmodMainWindow()
@@ -208,6 +209,15 @@ class qvfsmod:
         self.dlg_fiteval_hydrograph = fiteval_hydrograph()
         self.dlg_fiteval_sedimentograph = fiteval_sedimentograph()
         self.dlg_degradation_data = degradation_data()
+        self.dlg_owq_graph_reduction = owq_graph_reduction()
+        self.dlg_ohy_graphs = ohy_graphs()
+        
+        
+        #Apply styles
+        self.apply_styles_dialogs()
+        
+        #Ohy results
+        self.dlg_ohy_results.graphs.clicked.connect(self.show_ohy_graphs)
         
         #Degradation data
         self.dlg_water_quality.degradation_data.clicked.connect(self.dlg_degradation_data.show)
@@ -430,7 +440,6 @@ class qvfsmod:
         #Change files names if the name of the files is changed
         self.dlg_base.name_files.textChanged.connect(self.update_file_names)
         
-        self.dlg_design_results.graph.clicked.connect(self.dlg_design_results_graph.show)
         self.dlg_design_results.design_file.textChanged.connect(self.update_design_results)
         
         #Add pesticides to sensitivity for design 
@@ -527,6 +536,7 @@ class qvfsmod:
         #Show owq results graph
         self.dlg_owq_results.graph.clicked.connect(self.show_owq_graph)
         self.dlg_owq_results.balance_graph.clicked.connect(self.show_owq_graph_balance)
+        self.dlg_owq_results.reduction_graph.clicked.connect(self.show_owq_graph_reduction)
         
         #Disable combobox of water quality and add condition to set enable it. Same with the rest of the widgets
         self.dlg_base.combo_water.setVisible(False)
@@ -999,9 +1009,142 @@ class qvfsmod:
         
         #Update uncertainity graph
         self.dlg_base.csv_results_uncertainity.textChanged.connect(self.show_graph_sensitivity_uncertainity)
+        
     
     
     
+    
+    def apply_styles_dialogs(self):
+        """Method to apply styles to the different dialogs"""
+        #Obtain dialogs
+        dialogs = [self.dlg_base, self.dlg_user_storm,self.dlg_overland_flow,self.dlg_buffer_segment,self.dlg_infiltration_soil,
+            self.dlg_soil_curves, self.dlg_buffer_properties,self.dlg_water_quality ,self.dlg_incoming_sediment,self.dlg_vfsmod_hyetograph,
+            self.dlg_vfsmod_hydrograph,self.dlg_warning_message,self.dlg_warning_message_calibration,self.dlg_design_results,
+            self.dlg_design_results_graph,self.dlg_calibration_advanced_settings_hydrograph,self.dlg_calibration_advanced_settings_sedimentograph,
+            self.dlg_calibration_advanced_settings_single,self.dlg_sedimentograph_output,self.dlg_user_output_1,self.dlg_user_output_2,
+            self.dlg_osp_results,self.dlg_runoff_graph,self.dlg_sediment_graph,self.dlg_owq_results,self.dlg_osm_results,
+            self.dlg_ohy_results,self.dlg_og2_results ,self.dlg_og1_results,self.dlg_iro_results,self.dlg_irn_results,self.dlg_owq_graph,
+            self.dlg_owq_graph_balance,self.dlg_calibration_progress,self.dlg_calibration_results_sedimentograph,
+            self.dlg_calibration_results_hydrograph,self.dlg_sediment_calibration,self.dlg_hydrograph_calibration,
+            self.dlg_discharge_calibration_single,self.dlg_sediment_calibration_single,self.dlg_pesticide_calibration,
+            self.dlg_calibration_results_single,self.dlg_hydrograph_calibration_edit,self.dlg_sedimentograph_calibration_edit,
+            self.dlg_calibration_sensitivity_hydrograph,self.dlg_sensitivity_calibration_results_hydrograph,
+            self.dlg_fiteval_hydrograph,self.dlg_fiteval_sedimentograph,self.dlg_degradation_data]
+        
+        
+        #Obtain scaling factor for the size of labels
+        screen = QGuiApplication.primaryScreen()
+        dpi = screen.logicalDotsPerInch()
+        scaling_factor = dpi / 96  #96 is my original dpi
+        
+        
+        #Add styles
+        for dialog in dialogs:
+            dialog.setStyleSheet("""
+                QLabel {
+                    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+                    font-size: 16px; /* Cambiar el tamaño de la fuente */
+                    color: #000000; /* Color del texto (blanco) */
+                }
+
+                QLineEdit {
+                    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+                    font-size: 14px; /* Cambiar el tamaño de la fuente */
+                    color: #000000; /* Color del texto (blanco) */
+                    background-color: #f0f0f0; /* Color de fondo del QLineEdit */
+                    border: 1px solid #000000; /* Borde blanco */
+                }
+
+                QComboBox {
+                    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+                    font-size: 14px; /* Cambiar el tamaño de la fuente */
+                    color: #000000; /* Color del texto (blanco) */
+                    background-color: #cfd4da; /* Fondo oscuro del ComboBox */
+                }
+
+                QRadioButton {
+                    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+                    font-size: 14px; /* Cambiar el tamaño de la fuente */
+                    color: #000000; /* Color del texto (blanco) */
+                }
+
+                QCheckBox {
+                    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+                    font-size: 14px; /* Cambiar el tamaño de la fuente */
+                    color: #000000; /* Color del texto (blanco) */
+                }
+
+                /* Cambiar la fuente y estilo de los QPushButton */
+                QPushButton {
+                    font-family: 'Georgia'; /* Cambiar la fuente */
+                    font-size: 14px; /* Cambiar el tamaño de la fuente */
+                    color: #000000; /* Color del texto negro */
+                    background-color: #cfd4da; /* Fondo gris claro */
+                    border: 1px solid #a1a6ad; /* Borde gris medio */
+                    border-radius: 5px; /* Bordes redondeados */
+                    padding: 5px; /* Espaciado interno */
+                }
+
+                /* Estilo cuando el ratón pasa sobre el botón */
+                QPushButton:hover {
+                    color: #000000; /* Mantener el texto negro */
+                    background-color: #b7bcc3; /* Fondo gris un poco más oscuro al pasar el mouse */
+                }
+
+                /* Estilo cuando el botón está presionado */
+                QPushButton:pressed {
+                    background-color: #a6acb3; /* Fondo ligeramente más oscuro al presionar */
+                    color: #000000; /* Mantener el texto negro cuando se presiona */
+                }
+
+
+
+                /* Estilo general para QTableWidget y QTableView */
+                QTableWidget, QTableView {
+                    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+                    font-size: 14px; /* Tamaño de la fuente */
+                    color: #000000; /* Color del texto negro */
+                    background-color: #e6e9ed; /* Fondo gris claro para la tabla */
+                    gridline-color: #a1a6ad; /* Color de las líneas de la tabla (gris medio) */
+                    selection-background-color: #b7bcc3; /* Color de fondo cuando se selecciona una celda (gris suave) */
+                    selection-color: #000000; /* Color del texto cuando la celda está seleccionada (negro) */
+                }
+
+                /* Estilo para el encabezado horizontal de la tabla */
+                QHeaderView::section {
+                    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
+                    font-size: 14px; /* Tamaño de la fuente */
+                    color: #000000; /* Color del texto negro */
+                    background-color: #cfd4da; /* Fondo gris claro del encabezado */
+                    border: 1px solid #a1a6ad; /* Borde gris medio entre las secciones */
+                    padding: 4px; /* Espaciado interno en el encabezado */
+                }
+
+                /* Estilo para las celdas de la tabla al pasar el mouse */
+                QTableWidget::item:hover, QTableView::item:hover {
+                    background-color: #b7bcc3; /* Fondo gris suave al pasar el mouse */
+                    color: #000000; /* Mantener el texto negro */
+                }
+
+                /* Estilo para las celdas cuando están seleccionadas */
+                QTableWidget::item:selected, QTableView::item:selected {
+                    background-color: #a6acb3; /* Fondo gris intermedio cuando está seleccionado */
+                    color: #000000; /* Texto negro cuando está seleccionado */
+                }
+
+                /* Ajustar el tamaño de las celdas */
+                QTableWidget::item, QTableView::item {
+                    padding: 4px; /* Espaciado interno de las celdas */
+                }
+
+                /* Estilo para el borde inferior de la tabla */
+                QTableCornerButton::section {
+                    background-color: #cfd4da; /* Fondo del botón de esquina */
+                    border: 1px solid #a1a6ad; /* Borde gris medio del botón de esquina */
+                }
+                """)
+        
+        
     
     def calibration_hydrograph_bootstraping_show(self,type_calibration):
         """Method to make the bootstraping for the calibrated hydrograph and show dialog"""
@@ -1138,8 +1281,10 @@ class qvfsmod:
             #Show dialog
             if type_calibration == "hydrograph":
                 self.dlg_fiteval_hydrograph.show()
+                self.dlg_fiteval_hydrograph.raise_()
             elif type_calibration == "sedimentograph":
                 self.dlg_fiteval_sedimentograph.show()
+                self.dlg_fiteval_sedimentograph.raise_()
             
     def calibration_hydrograph_bootstraping_update(self,type_calibration):
         """Method to update graph of bootstraping fo hydrograph"""
@@ -1657,6 +1802,7 @@ class qvfsmod:
             
             #Show dialog
             self.dlg_calibration_sensitivity_hydrograph.show()
+            self.dlg_calibration_sensitivity_hydrograph.raise_()
         #Select inputs that can be selected in sensitivity analysis
         #Hydrograph
         if type_calibration == "hydrograph":
@@ -1936,6 +2082,7 @@ class qvfsmod:
         self.dlg_hydrograph_calibration_edit_add_values_table()
         #Show dialog
         self.dlg_hydrograph_calibration_edit.show()
+        self.dlg_hydrograph_calibration_edit.raise_()
     
     def dlg_sedimentograph_calibration_edit_show(self):
         """Method to show the editable hyddrograph for the calibration"""
@@ -1945,6 +2092,7 @@ class qvfsmod:
         self.dlg_sedimentograph_calibration_edit_add_values_table()
         #Show dialog
         self.dlg_sedimentograph_calibration_edit.show()
+        self.dlg_sedimentograph_calibration_edit.raise_()
     
     def dlg_sedimentograph_calibration_edit_add_values_table(self):  
         """Method to update the graph of the hydrograph"""
@@ -3517,6 +3665,7 @@ class qvfsmod:
                 r = int(self.add_values_dialog(lineas,4,0,self.dlg_base.williams,True))
                 if r==1: self.dlg_base.williams.setChecked(True)
                 elif r==2: self.dlg_base.creams_gleams.setChecked(True)
+                elif r==0: self.dlg_base.foster.setChecked(True)
                 #Timestep
                 self.dlg_base.timestep_check.setChecked(False)
                 timestep = self.add_values_dialog(lineas,0,7,self.dlg_base.timestep, True)
@@ -3580,6 +3729,7 @@ class qvfsmod:
                 pass
         #Show graph
         self.dlg_overland_flow.show()
+        self.dlg_overland_flow.raise_()
                 
     
     def dlg_infiltration_soil_show(self):
@@ -3645,6 +3795,7 @@ class qvfsmod:
             
         #Show dialog
         self.dlg_infiltration_soil.show()
+        self.dlg_infiltration_soil.raise_()
     
     def dlg_buffer_properties_show(self):
         """Method to add values of the igr to the dialog"""
@@ -3670,6 +3821,7 @@ class qvfsmod:
         
         #Show dialog
         self.dlg_buffer_properties.show()
+        self.dlg_buffer_properties.raise_()
     
     def dlg_incoming_sediment_show(self):
         """Method to add values of the isd to the dialog"""
@@ -3695,6 +3847,7 @@ class qvfsmod:
         
         #Show dialog
         self.dlg_incoming_sediment.show()
+        self.dlg_incoming_sediment.raise_()
     
     def dlg_water_quality_show(self,show=True):
         """Method to add values of thw iwq file to dialog"""
@@ -3797,6 +3950,7 @@ class qvfsmod:
         #Show dialog
         if show:
             self.dlg_water_quality.show()
+            self.dlg_water_quality.raise_()
         
     def add_values_dialog(self,lineas,row, column, lineEdit,retrieve =False):
         """Method to add values from the files to the dialog"""
@@ -3827,6 +3981,7 @@ class qvfsmod:
         
         #Show dialog
         self.dlg_og1_results.show()
+        self.dlg_og1_results.raise_()
     
     def show_og2_results(self):
         """Method to show og2 results"""
@@ -3844,6 +3999,7 @@ class qvfsmod:
         self.dlg_og2_results.textEdit.setFont(courier_font)
         #Show dialog
         self.dlg_og2_results.show()
+        self.dlg_og2_results.raise_()
     
     def show_ohy_results(self):
         """Method to show ohy results"""
@@ -3862,6 +4018,7 @@ class qvfsmod:
         
         #Show dialog
         self.dlg_ohy_results.show()
+        self.dlg_ohy_results.raise_()
     
     def show_osm_results(self):
         """Method to show osm results"""
@@ -3880,6 +4037,7 @@ class qvfsmod:
         
         #Show dialog
         self.dlg_osm_results.show()
+        self.dlg_osm_results.raise_()
     
     def show_owq_results(self):
         """Method to show owq results"""
@@ -3898,6 +4056,167 @@ class qvfsmod:
         
         #Show dialog
         self.dlg_owq_results.show()
+        self.dlg_owq_results.raise_()
+    
+    def show_owq_graph_reduction(self):
+        """Method to show the dialog with water quality balance graph"""
+        #Delete radio buttons of pesticides
+        if self.dlg_owq_graph_reduction.frame_3.layout() is not None:
+            # Obtén el layout actual
+            layout = self.dlg_owq_graph_reduction.frame_3.layout()
+            
+            # Elimina todos los widgets y elementos del layout (incluyendo espaciadores)
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.deleteLater()  # Elimina el widget
+                elif item.spacerItem() is not None:
+                    layout.removeItem(item)  # Elimina el espaciador
+
+        else:
+            # Si no hay un layout, crea uno nuevo
+            layout = QVBoxLayout()
+            self.dlg_owq_graph_reduction.frame_3.setLayout(layout)
+            
+           
+        #Obtain results
+        ruta = self.obtain_direction_vfsmod(self.dlg_base.line_quality.text())
+        if os.path.exists(ruta):
+            #Obtain values
+            with open(ruta, "r") as archivo:
+                lineas_owq = archivo.readlines()
+            
+            #Add number of pesticides
+            pesticide = 1
+            for i in range(len(lineas_owq)):
+                if lineas_owq[i] == f"PRODUCT  {pesticide}- Soil leaching and mixing layer calculations (CDE)\n":
+                        pesticide += 1
+            #Add pesticides
+            # Agrega el QLabel
+            label = QLabel("Select pesticide")
+            layout.addWidget(label)
+
+            # Lista de nombres para los QRadioButtons
+            pesticides = [f"Pesticide {x}" for x in range(1,pesticide)]
+            self.dictionary_radio_inputs_pesticides = {}
+
+            # Crear y añadir varios QRadioButton
+            for opcion in pesticides:
+                radio_button = QRadioButton(opcion)
+                # Conectar la función solo una vez
+                radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_owq_graph_reduction(rb.text()) if checked else None)
+                self.dictionary_radio_inputs_pesticides[radio_button] = opcion
+                layout.addWidget(radio_button)
+
+            # Añade un espaciador para ajustar la posición
+            spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+            layout.addItem(spacer)
+
+            # Selecciona el primer QRadioButton
+            if self.dictionary_radio_inputs_pesticides:
+                list(self.dictionary_radio_inputs_pesticides.keys())[0].setChecked(True)
+            
+            #Show dialog
+            self.dlg_owq_graph_reduction.show()
+            self.dlg_owq_graph_reduction.raise_()
+    
+    
+    
+    def update_owq_graph_reduction(self,pesticide):
+        """Method to update graph balance of pesticide data"""
+        #Obtain data
+        number_pesticide = int(pesticide.split()[-1])
+        
+        ruta = self.obtain_direction_vfsmod(self.dlg_base.line_quality.text())
+        #Obtain values
+        with open(ruta, "r") as archivo:
+            lineas_owq = archivo.readlines()
+                
+        #Function to obtain infomation of owq file
+        def obtain_result_owq(string,number_pesticide):
+            condition = False
+            for i in lineas_owq:
+                if i == f"PRODUCT  {number_pesticide}- Soil leaching and mixing layer calculations (CDE)\n":
+                    condition = True
+                if i.split("=")[-1]==string and condition:
+                    for k in i.split("=")[0].split(" "):
+                        try:
+                            output = float(k)
+                            return output
+                        except:
+                            pass
+
+        #Obtain inputs
+        infiltration = obtain_result_owq(" Infiltration (dQ)\n",number_pesticide)
+        sediment = obtain_result_owq(" Sediment reduction (dE)\n",number_pesticide)
+        runoff = obtain_result_owq(" Runoff inflow reduction\n",number_pesticide)
+        pesticide = obtain_result_owq(" Pesticide reduction (dP)\n",number_pesticide)
+        
+        
+        #Create graph
+        #Add layout
+        #If canvas exist then clear. If not then create it. 
+        if not hasattr(self, 'canvas_owq_graph_reduction'):
+            # Si no existe, crear el canvas y añadirlo al layout
+            self.canvas_owq_graph_reduction = FigureCanvas(plt.Figure(figsize=(15, 6)))
+            
+            # Asignar un layout al QFrame si no tiene uno
+            layout = QVBoxLayout(self.dlg_owq_graph_reduction.frame)
+            self.dlg_owq_graph_reduction.frame.setLayout(layout)
+            
+            # Añadir el canvas al layout
+            layout.addWidget(self.canvas_owq_graph_reduction)
+            
+        else:
+            # Si ya existe, simplemente limpiar el canvas
+            self.canvas_owq_graph_reduction.figure.clear()
+    
+        self.ax_owq_graph_reduction= self.canvas_owq_graph_reduction.figure.subplots()
+    
+        # Clear canvas
+        self.ax_owq_graph_reduction.clear()
+        
+        #Create graph
+        names = ['Infiltration (dQ)', 'Sediment reduction (dE)', 'Runoff inflow reduction',"Pesticide reduction (dP)"]
+        valores = [infiltration, sediment, runoff,pesticide]
+
+        # Crear el gráfico de barras
+        bars = self.ax_owq_graph_reduction.bar(names, valores,color ="red",edgecolor="black")
+        
+        #Add values to the top of the bars
+        for bar in bars:
+            yval = bar.get_height()
+            self.ax_owq_graph_reduction.text(bar.get_x() + bar.get_width()/2, yval, round(yval, 2),
+                                       ha='center', va='bottom', fontsize=9, color='black',weight ="bold")
+
+        
+        #Axis
+        self.ax_owq_graph_reduction.set_ylabel("Reduction (%)",size = 10,family="arial",weight = "bold",color = "black")
+
+        #X ticks
+        self.ax_owq_graph_reduction.tick_params(axis = "both",colors = "black",labelsize = 9)
+        
+        #Change y limit
+        self.ax_owq_graph_reduction.set_ylim(0, max(valores)*1.1)
+
+        #Thousand separator
+        def xfunc(x,pos):
+            s = '{:0,d}'.format(int(x))
+            return s
+        x_format = tkr.FuncFormatter(xfunc)
+        self.ax_owq_graph_reduction.yaxis.set_major_formatter(x_format)
+        
+        #Change background color
+        self.canvas_owq_graph_reduction.figure.set_facecolor('#f0f0f0')
+        self.ax_owq_graph_reduction.set_facecolor('#f0f0f0')
+
+        # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+        self.canvas_owq_graph_reduction.figure.subplots_adjust(left=0.1, bottom=0.1)
+        
+        # Redraw the canvas
+        self.canvas_owq_graph_reduction.draw()
+    
     
     def show_owq_graph_balance(self):
         """Method to show the dialog with water quality balance graph"""
@@ -3960,6 +4279,7 @@ class qvfsmod:
             
             #Show dialog
             self.dlg_owq_graph_balance.show()
+            self.dlg_owq_graph_balance.raise_()
             
     def update_owq_graph_balance(self,pesticide):
         """Method to update graph balance of pesticide data"""
@@ -4204,7 +4524,9 @@ class qvfsmod:
                             break
                         else:
                             valores.append([float(x) for x in lineas[k].split()])
-        
+            
+            
+            
             #Add pesticides
             # Agrega el QLabel
             label = QLabel("Select pesticide")
@@ -4232,6 +4554,7 @@ class qvfsmod:
                     
             #Show dialog
             self.dlg_owq_graph.show()
+            self.dlg_owq_graph.raise_()
 
     def update_owq_graph(self,pesticide):
         """Method to update the dialog with water quality graph"""
@@ -4270,6 +4593,18 @@ class qvfsmod:
         profundidad = df["z"]
         concentracion = df["c"]
         ratio = df["s"]
+        
+        #Change y axis to limit to the maximum among all the pesticides. Same with x values.
+        all_depths = [sublista[0] for pesticide in self.data_owq_graph.values() for sublista in pesticide]
+        all_water_concentrations = [sublista[1] for pesticide in self.data_owq_graph.values() for sublista in pesticide]
+        all_phases = [sublista[2] for pesticide in self.data_owq_graph.values() for sublista in pesticide]
+        
+        self.ax_owq_graph[0].set_ylim(0, max(all_depths)*1.05)
+        self.ax_owq_graph[1].set_ylim(0, max(all_depths)*1.05)
+        self.ax_owq_graph[0].set_xlim(-max(all_water_concentrations)/10,max(all_water_concentrations)*1.05)
+        self.ax_owq_graph[1].set_xlim(-max(all_phases)/10,max(all_phases)*1.05)
+
+        
         # Invertir el eje y para que 0 esté arriba y aumentar hacia abajo
         self.ax_owq_graph[0].invert_yaxis()
         self.ax_owq_graph[1].invert_yaxis()
@@ -4288,8 +4623,8 @@ class qvfsmod:
         self.ax_owq_graph[1].axhspan(0, 0.02, facecolor='gray', alpha=0.3)  # Opacidad del rectángulo
         
         # Añadir texto "mixing layer" dentro del rectángulo con flechas más a la derecha
-        self.ax_owq_graph[0].text(max(concentracion)*0.83, 0.01, 'Mixing \nLayer', fontsize=10, ha='center', va='center')
-        self.ax_owq_graph[1].text(max(ratio)*0.83, 0.01, 'Mixing \nLayer', fontsize=10, ha='center', va='center')
+        self.ax_owq_graph[0].text(max(all_water_concentrations)*0.83, 0.01, 'Mixing \nLayer', fontsize=10, ha='center', va='center')
+        self.ax_owq_graph[1].text(max(all_phases)*0.83, 0.01, 'Mixing \nLayer', fontsize=10, ha='center', va='center')
 
         # Colorear los ejes en negro
         self.ax_owq_graph[0].spines['bottom'].set_color('black')
@@ -4308,9 +4643,10 @@ class qvfsmod:
                 tick.set_color('red')
         self.ax_owq_graph[1].axvline(x=1, color='red', linestyle='--')
         
+        
         #Title
-        self.ax_owq_graph[0].set_title("Pore water concentration (mg/L)")
-        self.ax_owq_graph[1].set_title("Solid phase/liquid phase (mg/mg)")
+        self.ax_owq_graph[0].set_title("Pore water concentration (mg/L)",pad = 20)
+        self.ax_owq_graph[1].set_title("Solid phase/liquid phase (mg/mg)",pad = 20)
         
         #Change background color
         self.canvas_owq_graph.figure.set_facecolor('#f0f0f0')
@@ -4324,6 +4660,107 @@ class qvfsmod:
 
         # Redraw the canvas
         self.canvas_owq_graph.draw()
+        
+    
+    def show_ohy_graphs(self):
+        """Method to show ohy graph results"""
+        #Obtain results
+        ruta = self.obtain_direction_vfsmod(self.dlg_base.line_hydrograph_2.text())
+        with open(ruta, "r") as archivo:
+            lineas = archivo.readlines()
+        
+        #Obtain results
+        time = []
+        outflow = []
+        inflow = []
+        infiltration = []
+        rainfall = []
+        for i in range(len(lineas)):
+            if "ie =r-f" in lineas[i]:
+                for k in range(i+3,len(lineas)):
+                    time.append(lineas[k].split()[0])
+                    outflow.append(lineas[k].split()[1])
+                    rainfall.append(lineas[k].split()[3]+lineas[k].split()[6])
+                    inflow.append(lineas[k].split()[4])
+                    infiltration.append(lineas[k].split()[6])
+        
+        #Obtain results
+        runoff_in = obtain_result(" Total Runoff from Source\n")
+        rainfall = obtain_result(" Total Rainfall on Filter\n")
+        infiltration = obtain_result(" Total Infiltration in Filter\n")
+        runoff_out = obtain_result(" Total Runoff out from Filter\n")
+        
+        #Put graph
+        #If canvas exist then clear. If not then create it. 
+        if not hasattr(self, 'canvas_runoff_result'):
+            # Si no existe, crear el canvas y añadirlo al layout
+            self.canvas_runoff_result = FigureCanvas(plt.Figure(figsize=(15, 6)))
+            
+            # Asignar un layout al QFrame si no tiene uno
+            layout = QVBoxLayout(self.dlg_runoff_graph.frame)
+            self.dlg_runoff_graph.frame.setLayout(layout)
+            
+            # Añadir el canvas al layout
+            layout.addWidget(self.canvas_runoff_result)
+            
+        else:
+            # Si ya existe, simplemente limpiar el canvas
+            self.canvas_runoff_result.figure.clear()
+        
+        self.ax_runoff_result= self.canvas_runoff_result.figure.subplots()
+    
+    
+        # Clear canvas
+        self.ax_runoff_result.clear()
+        
+        #Create plot
+        # Datos para el gráfico
+        names = ['Runoff In', 'Rainfall', 'Infiltration', 'Runoff Out']
+        valores = [runoff_in, rainfall, infiltration, runoff_out]
+
+        # Crear el gráfico de barras
+        bars = self.ax_runoff_result.bar(names, valores)
+        
+        #Add values to the top of the bars
+        for bar in bars:
+            yval = bar.get_height()
+            self.ax_runoff_result.text(bar.get_x() + bar.get_width()/2, yval, round(yval, 2),
+                                       ha='center', va='bottom', fontsize=9, color='black',weight ="bold")
+
+        
+        #Axis
+        self.ax_runoff_result.set_xlabel("Component",size = 10,family="arial",weight = "bold",color = "black")
+        self.ax_runoff_result.set_ylabel("Amount (m$^{3}$)",size = 10,family="arial",weight = "bold",color = "black")
+
+        #X ticks
+        self.ax_runoff_result.tick_params(axis = "both",colors = "black",labelsize = 9)
+        
+        #Change y limit
+        self.ax_runoff_result.set_ylim(0, max(valores)*1.1)
+
+        #Thousand separator
+        def xfunc(x,pos):
+            s = '{:0,d}'.format(int(x))
+            return s
+        x_format = tkr.FuncFormatter(xfunc)
+        self.ax_runoff_result.yaxis.set_major_formatter(x_format)
+        
+        
+        #Change background color
+        self.canvas_runoff_result.figure.set_facecolor('#f0f0f0')
+        self.ax_runoff_result.set_facecolor('#f0f0f0')
+        
+        # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
+        self.canvas_runoff_result.figure.subplots_adjust(left=0.2, bottom=0.2)
+
+        # Redraw the canvas
+        self.canvas_runoff_result.draw()
+        
+        #Show dialog
+        self.dlg_runoff_graph.show()
+        self.dlg_runoff_graph.raise_()
+        
+        
         
         
     
@@ -4407,6 +4844,10 @@ class qvfsmod:
         self.ax_runoff_result.yaxis.set_major_formatter(x_format)
         
         
+        #Change background color
+        self.canvas_runoff_result.figure.set_facecolor('#f0f0f0')
+        self.ax_runoff_result.set_facecolor('#f0f0f0')
+        
         # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
         self.canvas_runoff_result.figure.subplots_adjust(left=0.2, bottom=0.2)
 
@@ -4415,6 +4856,7 @@ class qvfsmod:
         
         #Show dialog
         self.dlg_runoff_graph.show()
+        self.dlg_runoff_graph.raise_()
     
     def show_sediment_results(self):
         """Method to show the dialog with runoff graph"""
@@ -4494,7 +4936,9 @@ class qvfsmod:
         x_format = tkr.FuncFormatter(xfunc)
         self.ax_sediment_result.yaxis.set_major_formatter(x_format)
         
-        
+        #Change background color
+        self.canvas_sediment_result.figure.set_facecolor('#f0f0f0')
+        self.ax_sediment_result.set_facecolor('#f0f0f0')
         # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
         self.canvas_sediment_result.figure.subplots_adjust(left=0.2, bottom=0.2)
 
@@ -4503,6 +4947,7 @@ class qvfsmod:
         
         #Show dialog
         self.dlg_sediment_graph.show()
+        self.dlg_sediment_graph.raise_()
     
     def show_osp_results(self):
         """Method to show the osp results after the VFS execution"""
@@ -4535,6 +4980,7 @@ class qvfsmod:
         self.dlg_osp_results.tableWidget.setColumnWidth(0, 300)
         #Show dialog
         self.dlg_osp_results.show()
+        self.dlg_osp_results.raise_()
     
     
     def show_hydrograph_vfsmod_graph(self):
@@ -4697,6 +5143,7 @@ class qvfsmod:
         self.ax_buffer_segment = self.canvas_buffer_segment.figure.subplots()
         
         self.dlg_buffer_segment.show()
+        self.dlg_buffer_segment.raise_()
         self.update_buffer_segment_graph()
     
     def update_user_storm_graph(self):  
@@ -4751,7 +5198,13 @@ class qvfsmod:
         x_format = tkr.FuncFormatter(xfunc)
         self.ax_user_defined_storm.xaxis.set_major_formatter(x_format)
         
+        #Delete grids
+        self.ax_user_defined_storm_2.grid(False)
         
+        #Change background color
+        self.canvas_user_defined_storm.figure.set_facecolor('#f0f0f0')
+        self.ax_user_defined_storm_2.set_facecolor('#f0f0f0')
+        self.ax_user_defined_storm.set_facecolor('#f0f0f0')
         # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
         self.canvas_user_defined_storm.figure.subplots_adjust(wspace=1) #spacing beteween two graphs
         self.canvas_user_defined_storm.figure.subplots_adjust(left=0.15, bottom=0.2)
@@ -4866,6 +5319,7 @@ class qvfsmod:
         self.dlg_sedimentograph_output.textEdit.setFont(courier_font)
         #Show dialog
         self.dlg_sedimentograph_output.show()
+        self.dlg_sedimentograph_output.raise_()
     
     def dlg_iro_results_show(self):
         """Method to show iro results after UH execution"""
@@ -4883,6 +5337,7 @@ class qvfsmod:
         self.dlg_iro_results.textEdit.setFont(courier_font)
         #Show dialog
         self.dlg_iro_results.show()
+        self.dlg_iro_results.raise_()
     
     def dlg_irn_results_show(self):
         """Method to show irn results after UH execution"""
@@ -4900,6 +5355,7 @@ class qvfsmod:
         self.dlg_irn_results.textEdit.setFont(courier_font)
         #Show dialog
         self.dlg_irn_results.show()
+        self.dlg_irn_results.raise_()
         
     def show_output_1_results(self):
         """Method to show sedimentograph results after UH execution"""
@@ -4917,6 +5373,7 @@ class qvfsmod:
         self.dlg_user_output_1.textEdit.setFont(courier_font)
         #Show dialog
         self.dlg_user_output_1.show()
+        self.dlg_user_output_1.raise_()
     
     def show_output_2_results(self):
         """Method to show sedimentograph results after UH execution"""
@@ -4935,6 +5392,7 @@ class qvfsmod:
         
         #Show dialog
         self.dlg_user_output_2.show()
+        self.dlg_user_output_2.raise_()
         
         
     def set_timestep_non_editable(self):
@@ -5637,7 +6095,16 @@ class qvfsmod:
                     
                 #Labels
                 ax1.set_xlabel("Buffer lengths (m)",size = 14,family="arial",weight = "bold",color = "black")
-                ax1.set_ylabel(" ".join(output_column.split()[2:]),size = 14,family="arial",weight = "bold",color = "black")
+                if output_column.split()[2] == "RDR":
+                    ax1.set_ylabel("Runoff delivery ratio",size = 14,family="arial",weight = "bold",color = "black")
+                    ax1.set_title (f"Buffer length for a runoff delivery ratio of {output_column.split()[-1]}",color = "black")
+                elif output_column.split()[2] == "SDR":
+                    ax1.set_ylabel("Sediment delivery ratio",size = 14,family="arial",weight = "bold",color = "black")
+                    ax1.set_title (f"Buffer length for a sediment delivery ratio of {output_column.split()[-1]}",color = "black")
+                elif output_column.split()[2] == "PDR":
+                    ax1.set_ylabel(f"Pesticide delivery ratio \nfor Pesticide {output_column.split()[3]}",size = 14,family="arial",weight = "bold",color = "black")
+                    ax1.set_title (f"Buffer length for a pesticide delivery ratio of {output_column.split()[-1]}",color = "black")
+                    
                 #X ticks
                 ax1.tick_params(axis = "both",colors = "black",labelsize = 9)
                 # Add legend
@@ -5893,6 +6360,7 @@ class qvfsmod:
             values = []
             for i in range(2,len(lineas)):
                 if len(lineas[i].split(","))>2:
+                    print(lineas[i].replace("\n", "").split(","))
                     columna = lineas[i].replace("\n", "").split(",").index(output_column)
                     for k in range(i+1,len(lineas)):
                         if lineas[k] == "----------------------------------------------------------------------" + '\n':
@@ -8714,7 +9182,7 @@ class qvfsmod:
                     self.dlg_base.verticalLayout_27.addWidget(boton)
                     política_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                     boton.setSizePolicy(política_tamaño)
-                    boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
+                    boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity_desing(b))
             except:
                 pass
     
@@ -9718,7 +10186,7 @@ class qvfsmod:
             text=True, 
             shell=True)
         #Save warning
-        self.calibration_warning = resultado.stdout
+        self.calibration_warning = resultado.stderr
         #Put warning
         if not "...FINISHED..." in resultado.stdout:
             #Return a very bad result so the search avoid that space
@@ -9852,7 +10320,7 @@ class qvfsmod:
             text=True, 
             shell=True)
         #Save warning
-        self.calibration_warning = resultado.stdout
+        self.calibration_warning = resultado.stderr
         #Put warning
         if not "...FINISHED..." in resultado.stdout:
             #Return a very bad result so the search avoid that space
@@ -10097,7 +10565,7 @@ class qvfsmod:
             text=True, 
             shell=True)
         #Save warning
-        self.calibration_warning = resultado.stdout
+        self.calibration_warning = resultado.stderr
         #Put warning
         if not "...FINISHED..." in resultado.stdout:
             #Return a very bad result so the search avoid that space
@@ -11989,7 +12457,7 @@ class qvfsmod:
         
         #Put warning
         if not "...FINISHED..." in resultado.stdout:
-            self.warning_message(str(resultado.stdout))
+            self.warning_message(str(resultado.stderr), courier = True)
         else:
             self.warning_message("VFS executed succesfully!")
         
@@ -12322,6 +12790,7 @@ class qvfsmod:
             self.progress_dialog.setWindowModality(Qt.WindowModal)
             self.progress_dialog.setWindowTitle("Progress")
             self.progress_dialog.show()
+            self.progress_dialog.raise_()
             QCoreApplication.processEvents()# Permitir que la interfaz gráfica responda
         elif not close:
             #Updates of progress bar
@@ -12570,6 +13039,7 @@ class qvfsmod:
         #We show the dialog
         if show:
             self.dlg_vfsmod_hyetograph.show()
+            self.dlg_vfsmod_hyetograph.raise_()
         self.show_hietograph_vfsmod_graph()
         #Connect again update of graph to avoid all the updates
         self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.connect(self.update_vfsmod_hyetograph_graph)
@@ -12614,6 +13084,7 @@ class qvfsmod:
         #We show the dialog
         if show:
             self.dlg_vfsmod_hydrograph.show()
+            self.dlg_vfsmod_hydrograph.raise_()
         self.show_hydrograph_vfsmod_graph()
         #Connect again update of graph to avoid all the updates
         self.dlg_vfsmod_hydrograph.tableWidget.itemChanged.connect(self.update_vfsmod_hydrograph_graph)
@@ -12688,6 +13159,7 @@ class qvfsmod:
             
         #Show dialog
         self.dlg_soil_curves.show()
+        self.dlg_soil_curves.raise_()
     
     def update_k_units_cmh_1(self):
         """Method to update K units (cm/h) when text changed in the other units for the first layer"""
@@ -13160,7 +13632,7 @@ class qvfsmod:
         
         #Put warning
         if not "...FINISHED..." in resultado.stdout:
-            self.warning_message(str(resultado.stdout))
+            self.warning_message(str(resultado.stderr), courier = True)
         else:
             self.warning_message("UH executed succesfully!")
             
@@ -13168,10 +13640,28 @@ class qvfsmod:
         #Check if UH outputs exist
         self.check_uh_output_exist()
     
-    def warning_message(self,message):
+    def warning_message(self,message, courier = False):
         """Method to put a warning message"""
         #Put text
         self.dlg_warning_message.warning.setText(message)
+        # Change font type to Courier
+        if courier:
+            courier_font = QFont("Courier")
+            courier_font.setStyleHint(QFont.Monospace)  # Asegura el estilo monoespaciado
+            courier_font.setFixedPitch(True)            # Garantiza el espaciado fijo
+            courier_font.setPointSize(10)               # Ajusta el tamaño de fuente, si es necesario
+
+            # Aplicar la fuente al QLabel
+            self.dlg_warning_message.warning.setFont(courier_font) 
+        else:
+            courier_font = QFont("Georgia")
+            courier_font.setStyleHint(QFont.Monospace)  # Asegura el estilo monoespaciado
+            courier_font.setFixedPitch(True)            # Garantiza el espaciado fijo
+            courier_font.setPointSize(12)               # Ajusta el tamaño de fuente, si es necesario
+
+            # Aplicar la fuente al QLabel
+            self.dlg_warning_message.warning.setFont(courier_font)
+            
         #Put to the front
         self.dlg_warning_message.raise_()
         self.dlg_warning_message.activateWindow()
@@ -13240,6 +13730,7 @@ class qvfsmod:
         
         if self.dlg_base.williams.isChecked(): rainfall_factor = 1
         elif self.dlg_base.creams_gleams.isChecked(): rainfall_factor = 2
+        elif self.dlg_base.foster.isChecked(): rainfall_factor = 0
         
         soil_type = [self.dlg_base.soil_type.itemText(i) for i in range(self.dlg_base.soil_type.count())][self.dlg_base.soil_type.currentIndex()]
         storm_type = int(self.dlg_base.storm_type.currentIndex())+1
@@ -13910,6 +14401,7 @@ class qvfsmod:
         """Metod to add the user defined storm type data"""
         if self.dlg_base.storm_type.currentIndex()==4:
             self.dlg_user_storm.show()
+            self.dlg_user_storm.raise_()
             #Update graph
             self.update_user_storm_graph()
         else:
@@ -14093,6 +14585,9 @@ class qvfsmod:
     
     
     def show_design_graph(self):
+        #Show dialog
+        self.dlg_design_results_graph.show()
+        self.dlg_design_results_graph.raise_()
         """Method to show the results of the design"""
         if not hasattr(self, 'canvas_design_graph'):
             # Si no existe, crear el canvas y añadirlo al layout
@@ -14224,14 +14719,14 @@ class qvfsmod:
                     elif value<list(y_values)[0] and column_y=="Total Infiltration in Filter":
                         x_interpolado = str(list(x_values)[0])
                     else:
-                        x_interpolado = "x"
+                        x_interpolado = f"> {max(x_values)} m"
                 elif column_x == "Vegetation Spacing (cm)":
                     if value>list(y_values)[0] and column_y!="Total Infiltration in Filter":
                         x_interpolado = str(list(x_values)[-1])
                     elif value<list(y_values)[0] and column_y=="Total Infiltration in Filter":
                         x_interpolado = str(list(x_values)[-1])
                     else:
-                        x_interpolado = "x"
+                        x_interpolado = f"< {min(x_values)} m"
                         
             item = QTableWidgetItem(x_interpolado)
             self.dlg_design_results_graph.tableWidget.setItem(0, k, item)
@@ -14314,6 +14809,10 @@ class qvfsmod:
         # Crear un layout y añadir el canvas
         layout = QVBoxLayout()
         layout.addWidget(self.canvas)
+        
+        #Change background color
+        self.canvas.figure.set_facecolor('#f0f0f0')
+        ax0.set_facecolor('#f0f0f0')
 
         # Añadir el layout al contenedor
         self.dlg_output_hydrograph.frame.setLayout(layout)
@@ -14379,9 +14878,11 @@ class qvfsmod:
         
         #This is to save the plot
         self.figure_hydrograph = fig
+        
 
         # Mostrar el diálogo o ventana
         self.dlg_output_hydrograph.show()
+        self.dlg_output_hydrograph.raise_()
     
     def add_functions_outputs_hyetograph(self):
         """When creating the dialog fot hyetograph output for the outputs we add all the functionalities for them"""
@@ -14452,6 +14953,10 @@ class qvfsmod:
         # Crear un layout y añadir el canvas
         layout = QVBoxLayout()
         layout.addWidget(self.canvas)
+        
+        #Change background color
+        self.canvas.figure.set_facecolor('#f0f0f0')
+        ax0.set_facecolor('#f0f0f0')
 
         # Añadir el layout al contenedor
         self.dlg_output_hyetograph.frame.setLayout(layout)
@@ -14520,6 +15025,7 @@ class qvfsmod:
 
         # Mostrar el diálogo o ventana
         self.dlg_output_hyetograph.show()
+        self.dlg_output_hyetograph.raise_()
 
 
 
@@ -16494,5 +17000,3 @@ if __name__ == "__main__":
     dialog = qvfsmod()
     dialog.run()
     sys.exit(app.exec_())
-    
-    

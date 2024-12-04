@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>722</width>
+    <width>737</width>
     <height>300</height>
    </rect>
   </property>
@@ -140,6 +140,13 @@ QTableCornerButton::section {
        <widget class="QPushButton" name="balance_graph">
         <property name="text">
          <string>Balance graph</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="reduction_graph">
+        <property name="text">
+         <string>Reduction graph</string>
         </property>
        </widget>
       </item>

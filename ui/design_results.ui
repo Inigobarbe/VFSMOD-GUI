@@ -127,7 +127,11 @@ QTableCornerButton::section {
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="design_file"/>
+      <widget class="QLineEdit" name="design_file">
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="browse_design">
@@ -154,13 +158,6 @@ QTableCornerButton::section {
        <widget class="QPushButton" name="graph">
         <property name="text">
          <string>Graph</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QPushButton" name="opencsv">
-        <property name="text">
-         <string>Open CSV</string>
         </property>
        </widget>
       </item>
