@@ -12,11 +12,11 @@
 """
 
 
-
+import PyQt5
 from PyQt5 import QtWidgets,QtGui
 from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QThread,pyqtSignal
 from PyQt5.QtGui import QIcon, QFont, QGuiApplication
-from PyQt5.QtWidgets import QAction, QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy,QAction, QMenu,QCheckBox, QFrame,QGridLayout,QHBoxLayout
+from PyQt5.QtWidgets import QAction, QMessageBox,QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy,QAction, QMenu,QCheckBox, QFrame,QGridLayout,QHBoxLayout
 from sklearn.linear_model import LinearRegression
 from scipy.optimize import differential_evolution, minimize
 from multiprocessing import Pool,freeze_support
@@ -114,7 +114,20 @@ from ui.ohy_graphs import ohy_graphs
 
 
 
+#Detection of non expected errors
+def global_exception_handler(exctype, value, traceback):
+    """
+    Manejador global de excepciones no controladas.
+    """
+    QMessageBox.critical(None, "Python error", f"{value}")
+    # Opcional: registrar el error en un archivo de log
+    with open("error_log.txt", "a") as log_file:
+        log_file.write(f"Excepción: {exctype.__name__}\n")
+        log_file.write(f"Mensaje: {value}\n\n")
+    print(f"Error capturado globalmente: {value}")
 
+# Configurar el manejador global
+sys.excepthook = global_exception_handler
 
 
 class qvfsmod:
@@ -213,11 +226,14 @@ class qvfsmod:
         self.dlg_ohy_graphs = ohy_graphs()
         
         
-        #Apply styles
-        self.apply_styles_dialogs()
-        
         #Ohy results
         self.dlg_ohy_results.graphs.clicked.connect(self.show_ohy_graphs)
+        self.dlg_ohy_graphs.instantaneous.toggled.connect(lambda checked: self.update_ohy_graphs() if checked else None)
+        self.dlg_ohy_graphs.cumulative.toggled.connect(lambda checked: self.update_ohy_graphs() if checked else None)
+        self.dlg_ohy_graphs.wetting.toggled.connect(lambda checked: self.update_ohy_graphs() if checked else None)
+        self.dlg_ohy_graphs.soil_infiltration.toggled.connect(lambda checked: self.update_ohy_graphs() if checked else None)
+        
+        
         
         #Degradation data
         self.dlg_water_quality.degradation_data.clicked.connect(self.dlg_degradation_data.show)
@@ -1011,138 +1027,6 @@ class qvfsmod:
         self.dlg_base.csv_results_uncertainity.textChanged.connect(self.show_graph_sensitivity_uncertainity)
         
     
-    
-    
-    
-    def apply_styles_dialogs(self):
-        """Method to apply styles to the different dialogs"""
-        #Obtain dialogs
-        dialogs = [self.dlg_base, self.dlg_user_storm,self.dlg_overland_flow,self.dlg_buffer_segment,self.dlg_infiltration_soil,
-            self.dlg_soil_curves, self.dlg_buffer_properties,self.dlg_water_quality ,self.dlg_incoming_sediment,self.dlg_vfsmod_hyetograph,
-            self.dlg_vfsmod_hydrograph,self.dlg_warning_message,self.dlg_warning_message_calibration,self.dlg_design_results,
-            self.dlg_design_results_graph,self.dlg_calibration_advanced_settings_hydrograph,self.dlg_calibration_advanced_settings_sedimentograph,
-            self.dlg_calibration_advanced_settings_single,self.dlg_sedimentograph_output,self.dlg_user_output_1,self.dlg_user_output_2,
-            self.dlg_osp_results,self.dlg_runoff_graph,self.dlg_sediment_graph,self.dlg_owq_results,self.dlg_osm_results,
-            self.dlg_ohy_results,self.dlg_og2_results ,self.dlg_og1_results,self.dlg_iro_results,self.dlg_irn_results,self.dlg_owq_graph,
-            self.dlg_owq_graph_balance,self.dlg_calibration_progress,self.dlg_calibration_results_sedimentograph,
-            self.dlg_calibration_results_hydrograph,self.dlg_sediment_calibration,self.dlg_hydrograph_calibration,
-            self.dlg_discharge_calibration_single,self.dlg_sediment_calibration_single,self.dlg_pesticide_calibration,
-            self.dlg_calibration_results_single,self.dlg_hydrograph_calibration_edit,self.dlg_sedimentograph_calibration_edit,
-            self.dlg_calibration_sensitivity_hydrograph,self.dlg_sensitivity_calibration_results_hydrograph,
-            self.dlg_fiteval_hydrograph,self.dlg_fiteval_sedimentograph,self.dlg_degradation_data]
-        
-        
-        #Obtain scaling factor for the size of labels
-        screen = QGuiApplication.primaryScreen()
-        dpi = screen.logicalDotsPerInch()
-        scaling_factor = dpi / 96  #96 is my original dpi
-        
-        
-        #Add styles
-        for dialog in dialogs:
-            dialog.setStyleSheet("""
-                QLabel {
-                    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
-                    font-size: 16px; /* Cambiar el tamaño de la fuente */
-                    color: #000000; /* Color del texto (blanco) */
-                }
-
-                QLineEdit {
-                    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
-                    font-size: 14px; /* Cambiar el tamaño de la fuente */
-                    color: #000000; /* Color del texto (blanco) */
-                    background-color: #f0f0f0; /* Color de fondo del QLineEdit */
-                    border: 1px solid #000000; /* Borde blanco */
-                }
-
-                QComboBox {
-                    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
-                    font-size: 14px; /* Cambiar el tamaño de la fuente */
-                    color: #000000; /* Color del texto (blanco) */
-                    background-color: #cfd4da; /* Fondo oscuro del ComboBox */
-                }
-
-                QRadioButton {
-                    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
-                    font-size: 14px; /* Cambiar el tamaño de la fuente */
-                    color: #000000; /* Color del texto (blanco) */
-                }
-
-                QCheckBox {
-                    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
-                    font-size: 14px; /* Cambiar el tamaño de la fuente */
-                    color: #000000; /* Color del texto (blanco) */
-                }
-
-                /* Cambiar la fuente y estilo de los QPushButton */
-                QPushButton {
-                    font-family: 'Georgia'; /* Cambiar la fuente */
-                    font-size: 14px; /* Cambiar el tamaño de la fuente */
-                    color: #000000; /* Color del texto negro */
-                    background-color: #cfd4da; /* Fondo gris claro */
-                    border: 1px solid #a1a6ad; /* Borde gris medio */
-                    border-radius: 5px; /* Bordes redondeados */
-                    padding: 5px; /* Espaciado interno */
-                }
-
-                /* Estilo cuando el ratón pasa sobre el botón */
-                QPushButton:hover {
-                    color: #000000; /* Mantener el texto negro */
-                    background-color: #b7bcc3; /* Fondo gris un poco más oscuro al pasar el mouse */
-                }
-
-                /* Estilo cuando el botón está presionado */
-                QPushButton:pressed {
-                    background-color: #a6acb3; /* Fondo ligeramente más oscuro al presionar */
-                    color: #000000; /* Mantener el texto negro cuando se presiona */
-                }
-
-
-
-                /* Estilo general para QTableWidget y QTableView */
-                QTableWidget, QTableView {
-                    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
-                    font-size: 14px; /* Tamaño de la fuente */
-                    color: #000000; /* Color del texto negro */
-                    background-color: #e6e9ed; /* Fondo gris claro para la tabla */
-                    gridline-color: #a1a6ad; /* Color de las líneas de la tabla (gris medio) */
-                    selection-background-color: #b7bcc3; /* Color de fondo cuando se selecciona una celda (gris suave) */
-                    selection-color: #000000; /* Color del texto cuando la celda está seleccionada (negro) */
-                }
-
-                /* Estilo para el encabezado horizontal de la tabla */
-                QHeaderView::section {
-                    font-family: 'Georgia'; /* Cambiar la fuente a Georgia */
-                    font-size: 14px; /* Tamaño de la fuente */
-                    color: #000000; /* Color del texto negro */
-                    background-color: #cfd4da; /* Fondo gris claro del encabezado */
-                    border: 1px solid #a1a6ad; /* Borde gris medio entre las secciones */
-                    padding: 4px; /* Espaciado interno en el encabezado */
-                }
-
-                /* Estilo para las celdas de la tabla al pasar el mouse */
-                QTableWidget::item:hover, QTableView::item:hover {
-                    background-color: #b7bcc3; /* Fondo gris suave al pasar el mouse */
-                    color: #000000; /* Mantener el texto negro */
-                }
-
-                /* Estilo para las celdas cuando están seleccionadas */
-                QTableWidget::item:selected, QTableView::item:selected {
-                    background-color: #a6acb3; /* Fondo gris intermedio cuando está seleccionado */
-                    color: #000000; /* Texto negro cuando está seleccionado */
-                }
-
-                /* Ajustar el tamaño de las celdas */
-                QTableWidget::item, QTableView::item {
-                    padding: 4px; /* Espaciado interno de las celdas */
-                }
-
-                /* Estilo para el borde inferior de la tabla */
-                QTableCornerButton::section {
-                    background-color: #cfd4da; /* Fondo del botón de esquina */
-                    border: 1px solid #a1a6ad; /* Borde gris medio del botón de esquina */
-                }
-                """)
         
         
     
@@ -2798,45 +2682,48 @@ class qvfsmod:
     
     def update_buffer_length_table(self):
         """Method to update the buffer segment table when buffer length is changed"""
-        #We obtain information of ikw file
-        ikw = self.obtain_direction_vfsmod(self.dlg_base.line_overland.text())
-        if os.path.exists(ikw):
-            with open(ikw, "r") as archivo:
-                lineas = archivo.readlines()
-            
-            number_segments = int(lineas[3])
-            df = pd.DataFrame(data = {"Distance":[list(map(float, lineas[x].split()))[0] for x in range(4,4+number_segments)],
-                                 "Manning":[list(map(float, lineas[x].split()))[1] for x in range(4,4+number_segments)],
-                                 "Slope":[list(map(float, lineas[x].split()))[2] for x in range(4,4+number_segments)]})
-        else:
-            df = self.original_buffer_segments
-            
-        actual_length = max(df["Distance"])
-        length_to_change = float(self.dlg_overland_flow.length.text())
-        if length_to_change <= actual_length:
-            if length_to_change<min(df["Distance"]): #when distance is smaller than the first interval
-                df = df.head(1)
+        try:
+            #We obtain information of ikw file
+            ikw = self.obtain_direction_vfsmod(self.dlg_base.line_overland.text())
+            if os.path.exists(ikw):
+                with open(ikw, "r") as archivo:
+                    lineas = archivo.readlines()
+                
+                number_segments = int(lineas[3])
+                df = pd.DataFrame(data = {"Distance":[list(map(float, lineas[x].split()))[0] for x in range(4,4+number_segments)],
+                                     "Manning":[list(map(float, lineas[x].split()))[1] for x in range(4,4+number_segments)],
+                                     "Slope":[list(map(float, lineas[x].split()))[2] for x in range(4,4+number_segments)]})
             else:
-                df = df[df["Distance"]<=length_to_change]
+                df = self.original_buffer_segments
+                
+            actual_length = max(df["Distance"])
+            length_to_change = float(self.dlg_overland_flow.length.text())
+            if length_to_change <= actual_length:
+                if length_to_change<min(df["Distance"]): #when distance is smaller than the first interval
+                    df = df.head(1)
+                else:
+                    df = df[df["Distance"]<=length_to_change]
+                    df.loc[df.index[-1], "Distance"] = length_to_change
+            else:
                 df.loc[df.index[-1], "Distance"] = length_to_change
-        else:
-            df.loc[df.index[-1], "Distance"] = length_to_change
-        
-        #Add the information to the table
-        self.dlg_buffer_segment.tableWidget.itemChanged.disconnect(self.update_buffer_segment_graph) #disconnect. if not each time there is a row update it will be connected
-        self.dlg_buffer_segment.tableWidget.setRowCount(0)
-        self.dlg_buffer_segment.tableWidget.setRowCount(len(df))
-        for fila in range(len(df)):
-            for columna in range(len(df.columns)):
-                item = QTableWidgetItem(str(df.iloc[fila,columna]))
-                self.dlg_buffer_segment.tableWidget.setItem(fila, columna, item)
-                item.setTextAlignment(Qt.AlignCenter)
-        
-        #Connect again
-        self.dlg_buffer_segment.tableWidget.itemChanged.connect(self.update_buffer_segment_graph)
-        #Update graph
-        if hasattr(self, 'ax_buffer_segment'):
-            self.update_buffer_segment_graph()
+            
+            #Add the information to the table
+            self.dlg_buffer_segment.tableWidget.itemChanged.disconnect(self.update_buffer_segment_graph) #disconnect. if not each time there is a row update it will be connected
+            self.dlg_buffer_segment.tableWidget.setRowCount(0)
+            self.dlg_buffer_segment.tableWidget.setRowCount(len(df))
+            for fila in range(len(df)):
+                for columna in range(len(df.columns)):
+                    item = QTableWidgetItem(str(df.iloc[fila,columna]))
+                    self.dlg_buffer_segment.tableWidget.setItem(fila, columna, item)
+                    item.setTextAlignment(Qt.AlignCenter)
+            
+            #Connect again
+            self.dlg_buffer_segment.tableWidget.itemChanged.connect(self.update_buffer_segment_graph)
+            #Update graph
+            if hasattr(self, 'ax_buffer_segment'):
+                self.update_buffer_segment_graph()
+        except:
+            pass
     
     def set_working_directory(self):
         """Method to set the directory of the project"""
@@ -4670,97 +4557,238 @@ class qvfsmod:
             lineas = archivo.readlines()
         
         #Obtain results
-        time = []
-        outflow = []
-        inflow = []
-        infiltration = []
-        rainfall = []
+        self.time_ohy= []
+        self.outflow_ohy= []
+        self.inflow_ohy = []
+        self.infiltration_ohy = []
+        self.rainfall_ohy = []
+        self.wetting_front_ohy = []
         for i in range(len(lineas)):
             if "ie =r-f" in lineas[i]:
                 for k in range(i+3,len(lineas)):
-                    time.append(lineas[k].split()[0])
-                    outflow.append(lineas[k].split()[1])
-                    rainfall.append(lineas[k].split()[3]+lineas[k].split()[6])
-                    inflow.append(lineas[k].split()[4])
-                    infiltration.append(lineas[k].split()[6])
-        
-        #Obtain results
-        runoff_in = obtain_result(" Total Runoff from Source\n")
-        rainfall = obtain_result(" Total Rainfall on Filter\n")
-        infiltration = obtain_result(" Total Infiltration in Filter\n")
-        runoff_out = obtain_result(" Total Runoff out from Filter\n")
+                    self.time_ohy.append(float(lineas[k].split()[0]))
+                    self.outflow_ohy.append(float(lineas[k].split()[1]))
+                    self.rainfall_ohy.append(float(lineas[k].split()[3])+float(lineas[k].split()[6]))
+                    self.inflow_ohy.append(float(lineas[k].split()[4]))
+                    self.infiltration_ohy.append(float(lineas[k].split()[6]))
+                    self.wetting_front_ohy.append(float(lineas[k].split()[7]))
         
         #Put graph
         #If canvas exist then clear. If not then create it. 
-        if not hasattr(self, 'canvas_runoff_result'):
+        if not hasattr(self, 'canvas_ohy_graph'):
             # Si no existe, crear el canvas y añadirlo al layout
-            self.canvas_runoff_result = FigureCanvas(plt.Figure(figsize=(15, 6)))
+            self.canvas_ohy_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
             
             # Asignar un layout al QFrame si no tiene uno
-            layout = QVBoxLayout(self.dlg_runoff_graph.frame)
-            self.dlg_runoff_graph.frame.setLayout(layout)
+            layout = QVBoxLayout(self.dlg_ohy_graphs.frame)
+            self.dlg_ohy_graphs.frame.setLayout(layout)
             
             # Añadir el canvas al layout
-            layout.addWidget(self.canvas_runoff_result)
+            layout.addWidget(self.canvas_ohy_graph)
             
         else:
             # Si ya existe, simplemente limpiar el canvas
-            self.canvas_runoff_result.figure.clear()
+            self.canvas_ohy_graph.figure.clear()
         
-        self.ax_runoff_result= self.canvas_runoff_result.figure.subplots()
-    
-    
-        # Clear canvas
-        self.ax_runoff_result.clear()
+        self.ax_ohy_graph= self.canvas_ohy_graph.figure.subplots()
+        self.ax_precipitation_ohy = self.ax_ohy_graph.twinx()  
         
-        #Create plot
-        # Datos para el gráfico
-        names = ['Runoff In', 'Rainfall', 'Infiltration', 'Runoff Out']
-        valores = [runoff_in, rainfall, infiltration, runoff_out]
-
-        # Crear el gráfico de barras
-        bars = self.ax_runoff_result.bar(names, valores)
-        
-        #Add values to the top of the bars
-        for bar in bars:
-            yval = bar.get_height()
-            self.ax_runoff_result.text(bar.get_x() + bar.get_width()/2, yval, round(yval, 2),
-                                       ha='center', va='bottom', fontsize=9, color='black',weight ="bold")
-
-        
-        #Axis
-        self.ax_runoff_result.set_xlabel("Component",size = 10,family="arial",weight = "bold",color = "black")
-        self.ax_runoff_result.set_ylabel("Amount (m$^{3}$)",size = 10,family="arial",weight = "bold",color = "black")
-
-        #X ticks
-        self.ax_runoff_result.tick_params(axis = "both",colors = "black",labelsize = 9)
-        
-        #Change y limit
-        self.ax_runoff_result.set_ylim(0, max(valores)*1.1)
-
-        #Thousand separator
-        def xfunc(x,pos):
-            s = '{:0,d}'.format(int(x))
-            return s
-        x_format = tkr.FuncFormatter(xfunc)
-        self.ax_runoff_result.yaxis.set_major_formatter(x_format)
-        
-        
-        #Change background color
-        self.canvas_runoff_result.figure.set_facecolor('#f0f0f0')
-        self.ax_runoff_result.set_facecolor('#f0f0f0')
-        
-        # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
-        self.canvas_runoff_result.figure.subplots_adjust(left=0.2, bottom=0.2)
-
-        # Redraw the canvas
-        self.canvas_runoff_result.draw()
+        #Check instantaneaous flow graph so that graph is updated
+        self.dlg_ohy_graphs.instantaneous.setChecked(True)
         
         #Show dialog
-        self.dlg_runoff_graph.show()
-        self.dlg_runoff_graph.raise_()
+        self.dlg_ohy_graphs.show()
+        self.dlg_ohy_graphs.raise_()
         
+    def update_ohy_graphs(self):
+        """Method to update ohy graphs"""
+        #Clear graph
+        self.ax_ohy_graph.clear()
+        self.ax_precipitation_ohy.clear()
+        #Create graph
+        if self.dlg_ohy_graphs.instantaneous.isChecked():
+            #Add lines
+            #Inflow
+            self.ax_ohy_graph.plot(self.time_ohy, self.inflow_ohy, color="#00509e",label="Inflow hydrograph")
+            #Outflow
+            self.ax_ohy_graph.plot(self.time_ohy, self.outflow_ohy, color="#a0c4ff",label="Outflow hydrograph")
+            #Precipitation
+            self.ax_precipitation_ohy.bar(self.time_ohy, self.rainfall_ohy,width = self.time_ohy[1]-self.time_ohy[0] ,color = "blue", 
+                edgecolor = "blue",label="Rainfall")
+            
+            #Legend
+            # Ajustar la leyenda combinada
+            lines1, labels1 = self.ax_ohy_graph.get_legend_handles_labels()
+            lines2, labels2 = self.ax_precipitation_ohy.get_legend_handles_labels()
+            legend = self.ax_ohy_graph.legend(lines1 + lines2, labels1 + labels2, loc="best")
+            
+            #Thousand separator
+            def xfunc(x,pos):
+                s = '{:0,d}'.format(int(x))
+                return s
+            x_format = tkr.FuncFormatter(xfunc)
+            self.ax_ohy_graph.xaxis.set_major_formatter(x_format)
+
+            #Quit precipitation grid
+            self.ax_precipitation_ohy.grid(False)
+            
+            #Y limit for precipitation
+            self.ax_precipitation_ohy.set_ylim(0, max(self.rainfall_ohy)*2)
+
+            
+            #Invert y axis for precipitation
+            self.ax_precipitation_ohy.invert_yaxis()  # Invertir el eje y
+            
+            #Axis names
+            self.ax_ohy_graph.set_xlabel("Time (s)")
+            self.ax_ohy_graph.set_ylabel("Discharge (m$^{3}$/s)")
+            self.ax_precipitation_ohy.set_ylabel("Rainfall (m/s)")
+            
+            #Graph title
+            self.ax_ohy_graph.set_title("Instantaneaous flow graph",color = "black")
+            
+            #Change background color
+            self.canvas_ohy_graph.figure.set_facecolor('#f0f0f0')
+            self.ax_ohy_graph.set_facecolor('#f0f0f0')
+            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+            self.canvas_ohy_graph.figure.subplots_adjust(left=0.15, bottom=0.2,right=0.85)
+            #Draw canvas
+            self.canvas_ohy_graph.draw()
         
+        elif self.dlg_ohy_graphs.cumulative.isChecked():
+            #Add lines
+            #Precipitation
+            self.ax_precipitation_ohy.bar(self.time_ohy, self.rainfall_ohy,width = self.time_ohy[1]-self.time_ohy[0] ,color = "blue", 
+                edgecolor = "blue",label="Rainfall")
+            #Inflow
+            self.ax_ohy_graph.plot(self.time_ohy, np.cumsum(self.inflow_ohy), color="#00509e",label="Cumulative Inflow")
+            #Outflow
+            self.ax_ohy_graph.plot(self.time_ohy, np.cumsum(self.outflow_ohy), color="#a0c4ff",label="Cumulative Outflow")
+            
+            
+            #Legend
+            # Ajustar la leyenda combinada
+            lines1, labels1 = self.ax_ohy_graph.get_legend_handles_labels()
+            lines2, labels2 = self.ax_precipitation_ohy.get_legend_handles_labels()
+            legend = self.ax_ohy_graph.legend(lines1 + lines2, labels1 + labels2, loc="best")
+            
+            #Thousand separator
+            def xfunc(x,pos):
+                s = '{:0,d}'.format(int(x))
+                return s
+            x_format = tkr.FuncFormatter(xfunc)
+            self.ax_ohy_graph.xaxis.set_major_formatter(x_format)
+
+            #Quit precipitation grid
+            self.ax_precipitation_ohy.grid(False)
+            
+            #Y limit for precipitation
+            self.ax_precipitation_ohy.set_ylim(0, max(self.rainfall_ohy)*2)
+
+            
+            #Invert y axis for precipitation
+            self.ax_precipitation_ohy.invert_yaxis()  # Invertir el eje y
+            
+            #Axis names
+            self.ax_ohy_graph.set_xlabel("Time (s)")
+            self.ax_ohy_graph.set_ylabel("Cumulative Discharge (m$^{3}$/s)")
+            self.ax_precipitation_ohy.set_ylabel("Rainfall (m/s)")
+            
+            #Graph title
+            self.ax_ohy_graph.set_title("Cumulative flow graph",color = "black")
+            
+            #Change background color
+            self.canvas_ohy_graph.figure.set_facecolor('#f0f0f0')
+            self.ax_ohy_graph.set_facecolor('#f0f0f0')
+            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+            self.canvas_ohy_graph.figure.subplots_adjust(left=0.15, bottom=0.2,right=0.85)
+            #Draw canvas
+            self.canvas_ohy_graph.draw()
+        
+        elif self.dlg_ohy_graphs.wetting.isChecked():
+            #Add lines
+            #Wetting front
+            self.ax_ohy_graph.plot(self.time_ohy, self.wetting_front_ohy)
+            #Precipitation
+            self.ax_precipitation_ohy.bar(self.time_ohy, self.rainfall_ohy,width = self.time_ohy[1]-self.time_ohy[0] ,color = "blue", 
+                edgecolor = "blue",label="Rainfall")
+            
+            
+            #Thousand separator
+            def xfunc(x,pos):
+                s = '{:0,d}'.format(int(x))
+                return s
+            x_format = tkr.FuncFormatter(xfunc)
+            self.ax_ohy_graph.xaxis.set_major_formatter(x_format)
+
+            #Quit precipitation grid
+            self.ax_precipitation_ohy.grid(False)
+            
+            #Y limit for precipitation
+            self.ax_precipitation_ohy.set_ylim(0, max(self.rainfall_ohy)*2)
+
+            
+            #Invert y axis for precipitation
+            self.ax_precipitation_ohy.invert_yaxis()  # Invertir el eje y
+            
+            #Axis names
+            self.ax_ohy_graph.set_xlabel("Time (s)")
+            self.ax_ohy_graph.set_ylabel("Wetting front depth (m)")
+            self.ax_precipitation_ohy.set_ylabel("Rainfall (m/s)")
+            
+            #Graph title
+            self.ax_ohy_graph.set_title("Wetting front depth graph",color = "black")
+            
+            #Change background color
+            self.canvas_ohy_graph.figure.set_facecolor('#f0f0f0')
+            self.ax_ohy_graph.set_facecolor('#f0f0f0')
+            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+            self.canvas_ohy_graph.figure.subplots_adjust(left=0.15, bottom=0.2,right=0.85)
+            #Draw canvas
+            self.canvas_ohy_graph.draw()
+        
+        elif self.dlg_ohy_graphs.soil_infiltration.isChecked():
+            #Add lines
+            #Wetting front
+            self.ax_ohy_graph.plot(self.time_ohy, self.infiltration_ohy)
+            #Precipitation
+            self.ax_precipitation_ohy.bar(self.time_ohy, self.rainfall_ohy,width = self.time_ohy[1]-self.time_ohy[0] ,color = "blue", 
+                edgecolor = "blue",label="Rainfall")
+            
+            
+            #Thousand separator
+            def xfunc(x,pos):
+                s = '{:0,d}'.format(int(x))
+                return s
+            x_format = tkr.FuncFormatter(xfunc)
+            self.ax_ohy_graph.xaxis.set_major_formatter(x_format)
+
+            #Quit precipitation grid
+            self.ax_precipitation_ohy.grid(False)
+            
+            #Y limit for precipitation
+            self.ax_precipitation_ohy.set_ylim(0, max(self.rainfall_ohy)*2)
+
+            
+            #Invert y axis for precipitation
+            self.ax_precipitation_ohy.invert_yaxis()  # Invertir el eje y
+            
+            #Axis names
+            self.ax_ohy_graph.set_xlabel("Time (s)")
+            self.ax_ohy_graph.set_ylabel("Soil infiltration (m/s)")
+            self.ax_precipitation_ohy.set_ylabel("Rainfall (m/s)")
+            
+            #Graph title
+            self.ax_ohy_graph.set_title("Soil infiltration graph",color = "black")
+            
+            #Change background color
+            self.canvas_ohy_graph.figure.set_facecolor('#f0f0f0')
+            self.ax_ohy_graph.set_facecolor('#f0f0f0')
+            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+            self.canvas_ohy_graph.figure.subplots_adjust(left=0.15, bottom=0.2,right=0.85)
+            #Draw canvas
+            self.canvas_ohy_graph.draw()
+            
         
         
     
@@ -5432,7 +5460,7 @@ class qvfsmod:
     def browse_design_results_csv(self):
         """Method tho browse csv with results of design"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
-        fname = QFileDialog.getOpenFileName(self.dlg_design_results, "Select Design Results File",working_directory +"\\design\\output", "CSV files (*.csv)")
+        fname = QFileDialog.getOpenFileName(self.dlg_design_results, "Select Design Results File",os.path.normpath(working_directory +"\\design\\output"), "CSV files (*.csv)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
@@ -5479,11 +5507,11 @@ class qvfsmod:
         """Method to select the sensitivity files for results of design with uncertainity"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
         if information == "morris":
-            fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Morris Sensitivity Analysis Results File",working_directory+"\\design\\output" , "CSV files (*.csv)")
+            fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Morris Sensitivity Analysis Results File",os.path.normpath(working_directory+"\\design\\output"), "CSV files (*.csv)")
         elif information == "sobol":
-            fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Sobol Sensitivity Analysis Results File",working_directory+"\\design\\output" , "CSV files (*.csv)")
+            fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Sobol Sensitivity Analysis Results File",os.path.normpath(working_directory+"\\design\\output") , "CSV files (*.csv)")
         elif information == "fast":
-            fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Fast Sensitivity Analysis Results File",working_directory+"\\design\\output" , "CSV files (*.csv)")
+            fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Fast Sensitivity Analysis Results File",os.path.normpath(working_directory+"\\design\\output") , "CSV files (*.csv)")
         
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -5505,7 +5533,7 @@ class qvfsmod:
     def browse_files_sensitivity_results_sobol(self):
         """Method to select the file for sensitivity analysis graph between the local files for Sobol"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
-        fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Sobol Sensitivity Analysis Results File",working_directory+"\\sensitivity\\output" , "CSV files (*.csv)")
+        fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Sobol Sensitivity Analysis Results File",os.path.normpath(working_directory+"\\sensitivity\\output") , "CSV files (*.csv)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
@@ -5519,7 +5547,7 @@ class qvfsmod:
     def browse_files_sensitivity_results_fast(self):
         """Method to select the file for sensitivity analysis graph between the local files for FAST"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
-        fname = QFileDialog.getOpenFileName(self.dlg_base, "Select FAST Sensitivity Analysis Results File",working_directory+"\\sensitivity\\output" , "CSV files (*.csv)")
+        fname = QFileDialog.getOpenFileName(self.dlg_base, "Select FAST Sensitivity Analysis Results File",os.path.normpath(working_directory+"\\sensitivity\\output") , "CSV files (*.csv)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
@@ -5533,7 +5561,7 @@ class qvfsmod:
     def browse_files_calibration_hydrograph(self):
         """Method to select the file for calibration results"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
-        fname = QFileDialog.getOpenFileName(self.dlg_calibration_results_hydrograph, "Select Calibration Results File",working_directory+"\\inverse" , "CSV files (*.csv)")
+        fname = QFileDialog.getOpenFileName(self.dlg_calibration_results_hydrograph, "Select Calibration Results File",os.path.normpath(working_directory+"\\inverse") , "CSV files (*.csv)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
@@ -5545,7 +5573,7 @@ class qvfsmod:
     def browse_files_calibration_sedimentograph(self):
         """Method to select the file for calibration results"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
-        fname = QFileDialog.getOpenFileName(self.dlg_calibration_results_sedimentograph, "Select Calibration Results File",working_directory+"\\inverse" , "CSV files (*.csv)")
+        fname = QFileDialog.getOpenFileName(self.dlg_calibration_results_sedimentograph, "Select Calibration Results File",os.path.normpath(working_directory+"\\inverse") , "CSV files (*.csv)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
@@ -5557,7 +5585,7 @@ class qvfsmod:
     def browse_files_calibration_single(self):
         """Method to select the file for single calibration results"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
-        fname = QFileDialog.getOpenFileName(self.dlg_calibration_results_single, "Select Calibration Results File",working_directory+"\\inverse" , "CSV files (*.csv)")
+        fname = QFileDialog.getOpenFileName(self.dlg_calibration_results_single, "Select Calibration Results File",os.path.normpath(working_directory+"\\inverse") , "CSV files (*.csv)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
@@ -5569,7 +5597,7 @@ class qvfsmod:
     def browse_csv_oat(self):
         """Method to add csv of oat results"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
-        fname = QFileDialog.getOpenFileName(self.dlg_base, "Select OAT Sensitivity Analysis Results File",working_directory+"\\sensitivity\\output" , "CSV files (*.csv)")
+        fname = QFileDialog.getOpenFileName(self.dlg_base, "Select OAT Sensitivity Analysis Results File",os.path.normpath(working_directory+"\\sensitivity\\output") , "CSV files (*.csv)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
@@ -5583,7 +5611,7 @@ class qvfsmod:
     def browse_csv_uncertainity(self):
         """Method to add csv of uncertainity results"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
-        fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Uncertainity Analysis Results File",working_directory+"\\uncertainity\\output" , "CSV files (*.csv)")
+        fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Uncertainity Analysis Results File",os.path.normpath(working_directory+"\\uncertainity\\output") , "CSV files (*.csv)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
@@ -5597,7 +5625,7 @@ class qvfsmod:
     def browse_files_sensitivity_results(self):
         """Method to select the file for sensitivity analysis graph between the local files for Morris"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
-        fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Morris Sensitivity Analysis Results File",working_directory+"\\sensitivity\\output" , "CSV files (*.csv)")
+        fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Morris Sensitivity Analysis Results File",os.path.normpath(working_directory+"\\sensitivity\\output") , "CSV files (*.csv)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
@@ -5672,8 +5700,8 @@ class qvfsmod:
             self.ax_calibration_sensitivity.set_xlim(0,max(list(mu_star)+list(sigma))*1.2)
             self.ax_calibration_sensitivity.set_ylim(0,max(list(mu_star)+list(sigma))*1.2)
             #Labels
-            self.ax_calibration_sensitivity.set_xlabel("Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 12,family="arial",weight = "bold",color = "black")
-            self.ax_calibration_sensitivity.set_ylabel("Standard Deviation of \nElementary Effects ($\sigma_{i}$)",size = 12,family="arial",weight = "bold",color = "black")
+            self.ax_calibration_sensitivity.set_xlabel(r"Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 12,family="arial",weight = "bold",color = "black")
+            self.ax_calibration_sensitivity.set_ylabel(r"Standard Deviation /nof Elementary Effects ($\sigma_{i}$)",size = 12,family="arial",weight = "bold",color = "black")
             self.ax_calibration_sensitivity.set_title("Morris sensitivity analysis indexes", size=14, family="arial", weight="bold", color="black")
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
             self.canvas_sensitivity_graph_calibration.figure.subplots_adjust(left=0.2, bottom=0.2)
@@ -5794,8 +5822,8 @@ class qvfsmod:
                 legend = self.ax.legend(loc="upper right")
                 legend.get_frame().set_facecolor('#f0f0f0')
                 #Labels
-                self.ax.set_xlabel("Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 14,family="arial",weight = "bold",color = "black")
-                self.ax.set_ylabel("Standard Deviation of Elementary Effects ($\sigma_{i}$)",size = 14,family="arial",weight = "bold",color = "black")
+                self.ax.set_xlabel(r"Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 14,family="arial",weight = "bold",color = "black")
+                self.ax.set_ylabel(r"Standard Deviation /nof Elementary Effects ($\sigma_{i}$)",size = 14,family="arial",weight = "bold",color = "black")
                 self.ax.set_title("Morris sensitivity analysis indexes", size=16, family="arial", weight="bold", color="black")
                 #Change background color
                 self.canvas_sensitivity_graph.figure.set_facecolor('#f0f0f0')
@@ -6198,8 +6226,8 @@ class qvfsmod:
                 legend = self.ax_design.legend(loc="upper right")
                 legend.get_frame().set_facecolor('#f0f0f0')
                 #Labels
-                self.ax_design.set_xlabel("Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 14,family="arial",weight = "bold",color = "black")
-                self.ax_design.set_ylabel("Standard Deviation of Elementary Effects ($\sigma_{i}$)",size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_design.set_xlabel(r"Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_design.set_ylabel(r"Standard Deviation /nof Elementary Effects ($\sigma_{i}$)",size = 14,family="arial",weight = "bold",color = "black")
                 self.ax_design.set_title("Morris sensitivity analysis indexes", size=16, family="arial", weight="bold", color="black")
                 #Change background color
                 self.canvas_sensitivity_graph_design.figure.set_facecolor('#f0f0f0')
@@ -6360,7 +6388,6 @@ class qvfsmod:
             values = []
             for i in range(2,len(lineas)):
                 if len(lineas[i].split(","))>2:
-                    print(lineas[i].replace("\n", "").split(","))
                     columna = lineas[i].replace("\n", "").split(",").index(output_column)
                     for k in range(i+1,len(lineas)):
                         if lineas[k] == "----------------------------------------------------------------------" + '\n':
@@ -6693,7 +6720,7 @@ class qvfsmod:
         """Method to run whole sensitivity analysis"""
         #Create the dictionary for the sensitivity analysis
         self.dic_data = self.create_dictionary_sensitivity_analysis_design()
-        
+        print("diccionario",self.dic_data)
         self.vfs_sensitivity_file = self.dlg_base.vfs_file_sensitivity_design.text()
         
         #Create problem variable
@@ -7406,7 +7433,7 @@ class qvfsmod:
         """Method to move files to the corresponding folders for sensitiviy analysis"""
         #FIRST WE MOVE THE FILES TO THE FOLDER OF DESIGN ANALYSIS
         #Prj
-        prj_file = self.dlg_base.working_directory_vfsmod.text()+"\\design\\design.prj"
+        prj_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\design\\design.prj")
         #Check if water quality is simulated
         with open(self.obtain_direction_vfsmod(self.dlg_base.design_vfs_file.text()), "r") as archivo:
             lineas = archivo.readlines()
@@ -7417,37 +7444,37 @@ class qvfsmod:
             
         #Create file
         with open(prj_file, 'w') as archivo:
-            archivo.write(f"ikw=inputs\\design.ikw  \n")
-            archivo.write(f"iso=inputs\\design.iso  \n")
-            archivo.write(f"igr=inputs\\design.igr  \n")
-            archivo.write(f"isd=inputs\\design.isd  \n")
-            archivo.write(f"irn=inputs\\design.irn  \n")
-            archivo.write(f"iro=inputs\\design.iro  \n")
+            archivo.write(os.path.normpath(f"ikw=inputs\\design.ikw  \n"))
+            archivo.write(os.path.normpath(f"iso=inputs\\design.iso  \n"))
+            archivo.write(os.path.normpath(f"igr=inputs\\design.igr  \n"))
+            archivo.write(os.path.normpath(f"isd=inputs\\design.isd  \n"))
+            archivo.write(os.path.normpath(f"irn=inputs\\design.irn  \n"))
+            archivo.write(os.path.normpath(f"iro=inputs\\design.iro  \n"))
             if self.water_quality:
-                archivo.write(f"iwq=inputs\\design.iwq  \n")
-            archivo.write(f"og1=output\\design.og1  \n")
-            archivo.write(f"og2=output\\design.og2  \n")
-            archivo.write(f"ohy=output\\design.ohy  \n")
-            archivo.write(f"osm=output\\design.osm  \n")
-            archivo.write(f"osp=output\\design.osp  \n")
+                archivo.write(os.path.normpath(f"iwq=inputs\\design.iwq  \n"))
+            archivo.write(os.path.normpath(f"og1=output\\design.og1  \n"))
+            archivo.write(os.path.normpath(f"og2=output\\design.og2  \n"))
+            archivo.write(os.path.normpath(f"ohy=output\\design.ohy  \n"))
+            archivo.write(os.path.normpath(f"osm=output\\design.osm  \n"))
+            archivo.write(os.path.normpath(f"osp=output\\design.osp  \n"))
             if self.water_quality:
-                archivo.write(f"owq=output\\design.owq  \n")
+                archivo.write(os.path.normpath(f"owq=output\\design.owq  \n"))
         
         #UH
-        lis_file = self.dlg_base.working_directory_vfsmod.text()+"\\design\\design.lis"
+        lis_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\design\\design.lis")
         #Create file
         with open(lis_file, 'w') as archivo:
-            archivo.write(f"inp=inputs\\design.inp  \n")
-            archivo.write(f"iro=inputs\\design.iro  \n")
-            archivo.write(f"irn=inputs\\design.irn  \n")
-            archivo.write(f"isd=inputs\\design.isd  \n")
-            archivo.write(f"out=inputs\\design.out  \n")
-            archivo.write(f"hyt=inputs\\design.hyt  \n")
+            archivo.write(os.path.normpath(f"inp=inputs\\design.inp  \n"))
+            archivo.write(os.path.normpath(f"iro=inputs\\design.iro  \n"))
+            archivo.write(os.path.normpath(f"irn=inputs\\design.irn  \n"))
+            archivo.write(os.path.normpath(f"isd=inputs\\design.isd  \n"))
+            archivo.write(os.path.normpath(f"out=inputs\\design.out  \n"))
+            archivo.write(os.path.normpath(f"hyt=inputs\\design.hyt  \n"))
         
         #REST OF THE FILES
         #Function to copy and paste the inputs to create the files to use in the design analysis
         def copy_paste(process,type_input):
-            ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\design\\inputs\\design.{type_input}" 
+            ruta_pegar = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\design\\inputs\\design.{type_input}" )
             if process == "UH":
                 ruta = self.obtain_direction_vfsmod(self.dlg_base.design_uh_file.text())
             elif process == "VFS":
@@ -7516,40 +7543,40 @@ class qvfsmod:
                 for i in lineas:
                     archivo.write(i)
         #Move replicated input files 
-        carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\design"
+        carpeta = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\design")
         folder_path = os.path.join(carpeta, "inputs")
         files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f)) and "_" not in f]
         for i in range(self.number_cores*5):
             for k in files:
-                shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("design",f"design_{i}"))
+                shutil.copyfile(os.path.normpath(carpeta+"\\inputs\\"+k), os.path.normpath(carpeta+"\\inputs\\"+k.replace("design",f"design_{i}")))
         #Replicate executables
-        carpeta_bat = self.plugin_directory+"\\executables"
+        carpeta_bat = os.path.normpath(self.plugin_directory+"\\executables")
         for core in range(self.number_cores*5):
             #Execution UH
-            shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_uh_{core}.bat")
-            f = open(carpeta_bat+"\\"+f"execution_uh_{core}.bat","w+")
-            linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\design\\"')
-            linea_dos = f'"{self.plugin_directory}\\executables\\uh" design_{core}.lis'
+            shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_uh_{core}.bat"))
+            f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_uh_{core}.bat"),"w+")
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\design\\')}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\uh')}" design_{core}.lis'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
-            f.write("{} \n".format(linea_tres))
+            #f.write("{} \n".format(linea_tres))
             f.close()
             #Execution VFS
-            shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_vfs_{core}.bat")
-            f = open(carpeta_bat+"\\"+f"execution_vfs_{core}.bat","w+")
-            linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\design\\"')
-            linea_dos = f'"{self.plugin_directory}\\executables\\vfsm" design_{core}.prj'
+            shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"))
+            f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"),"w+")
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\design\\')}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\vfsm')}" design_{core}.prj'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
-            f.write("{} \n".format(linea_tres))
+            #f.write("{} \n".format(linea_tres))
             f.close()
     
     def move_files_sensitivity_analysis(self):
         """Method to move files to the corresponding folders for sensitiviy analysis"""
         #Prj
-        prj_file = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\sensitivity.prj"
+        prj_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\sensitivity.prj")
         #Check if water quality is simulated
         with open(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity.text()), "r") as archivo:
             lineas = archivo.readlines()
@@ -7560,37 +7587,37 @@ class qvfsmod:
             
         #Create file
         with open(prj_file, 'w') as archivo:
-            archivo.write(f"ikw=inputs\\sensitivity.ikw  \n")
-            archivo.write(f"iso=inputs\\sensitivity.iso  \n")
-            archivo.write(f"igr=inputs\\sensitivity.igr  \n")
-            archivo.write(f"isd=inputs\\sensitivity.isd  \n")
-            archivo.write(f"irn=inputs\\sensitivity.irn  \n")
-            archivo.write(f"iro=inputs\\sensitivity.iro  \n")
+            archivo.write(os.path.normpath(f"ikw=inputs\\sensitivity.ikw  \n"))
+            archivo.write(os.path.normpath(f"iso=inputs\\sensitivity.iso  \n"))
+            archivo.write(os.path.normpath(f"igr=inputs\\sensitivity.igr  \n"))
+            archivo.write(os.path.normpath(f"isd=inputs\\sensitivity.isd  \n"))
+            archivo.write(os.path.normpath(f"irn=inputs\\sensitivity.irn  \n"))
+            archivo.write(os.path.normpath(f"iro=inputs\\sensitivity.iro  \n"))
             if self.water_quality:
-                archivo.write(f"iwq=inputs\\sensitivity.iwq  \n")
-            archivo.write(f"og1=output\\sensitivity.og1  \n")
-            archivo.write(f"og2=output\\sensitivity.og2  \n")
-            archivo.write(f"ohy=output\\sensitivity.ohy  \n")
-            archivo.write(f"osm=output\\sensitivity.osm  \n")
-            archivo.write(f"osp=output\\sensitivity.osp  \n")
+                archivo.write(os.path.normpath(f"iwq=inputs\\sensitivity.iwq  \n"))
+            archivo.write(os.path.normpath(f"og1=output\\sensitivity.og1  \n"))
+            archivo.write(os.path.normpath(f"og2=output\\sensitivity.og2  \n"))
+            archivo.write(os.path.normpath(f"ohy=output\\sensitivity.ohy  \n"))
+            archivo.write(os.path.normpath(f"osm=output\\sensitivity.osm  \n"))
+            archivo.write(os.path.normpath(f"osp=output\\sensitivity.osp  \n"))
             if self.water_quality:
-                archivo.write(f"owq=output\\sensitivity.owq  \n")
+                archivo.write(os.path.normpath(f"owq=output\\sensitivity.owq  \n"))
         
         #UH
-        lis_file = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\sensitivity.lis"
+        lis_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity\\sensitivity.lis")
         #Create file
         with open(lis_file, 'w') as archivo:
-            archivo.write(f"inp=inputs\\sensitivity.inp  \n")
-            archivo.write(f"iro=inputs\\sensitivity.iro  \n")
-            archivo.write(f"irn=inputs\\sensitivity.irn  \n")
-            archivo.write(f"isd=inputs\\sensitivity.isd  \n")
-            archivo.write(f"out=inputs\\sensitivity.out  \n")
-            archivo.write(f"hyt=inputs\\sensitivity.hyt  \n")
+            archivo.write(os.path.normpath(f"inp=inputs\\sensitivity.inp  \n"))
+            archivo.write(os.path.normpath(f"iro=inputs\\sensitivity.iro  \n"))
+            archivo.write(os.path.normpath(f"irn=inputs\\sensitivity.irn  \n"))
+            archivo.write(os.path.normpath(f"isd=inputs\\sensitivity.isd  \n"))
+            archivo.write(os.path.normpath(f"out=inputs\\sensitivity.out  \n"))
+            archivo.write(os.path.normpath(f"hyt=inputs\\sensitivity.hyt  \n"))
         
         #REST OF THE FILES
         #Function to copy and paste the inputs to create the files to use in the sensitivity analysis
         def copy_paste(process,type_input):
-            ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\sensitivity\\inputs\\sensitivity.{type_input}" 
+            ruta_pegar = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\sensitivity\\inputs\\sensitivity.{type_input}" )
             if process == "UH":
                 ruta = self.obtain_direction_vfsmod(self.dlg_base.uh_file_sensitivity.text())
             elif process == "VFS":
@@ -7651,41 +7678,41 @@ class qvfsmod:
                 for i in lineas:
                     archivo.write(i)
         #Move replicated input files 
-        carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity"
+        carpeta = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\sensitivity")
         folder_path = os.path.join(carpeta, "inputs")
         files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f)) and "_" not in f]
         for i in range(self.number_cores*5):
             for k in files:
-                shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("sensitivity",f"sensitivity_{i}"))
+                shutil.copyfile(os.path.normpath(carpeta+"\\inputs\\"+k), os.path.normpath(carpeta+"\\inputs\\"+k.replace("sensitivity",f"sensitivity_{i}")))
         #Replicate executables
-        carpeta_bat = self.plugin_directory+"\\executables"
+        carpeta_bat = os.path.normpath(self.plugin_directory+"\\executables")
         for core in range(self.number_cores*5):
             #Execution UH
-            shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_uh_{core}.bat")
-            f = open(carpeta_bat+"\\"+f"execution_uh_{core}.bat","w+")
-            linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\sensitivity\\"')
-            linea_dos = f'"{self.plugin_directory}\\executables\\uh" sensitivity_{core}.lis'
+            shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_uh_{core}.bat"))
+            f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_uh_{core}.bat"),"w+")
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\sensitivity\\')}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\uh')}" sensitivity_{core}.lis'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
-            f.write("{} \n".format(linea_tres))
+            #f.write("{} \n".format(linea_tres))
             f.close()
             #Execution VFS
-            shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_vfs_{core}.bat")
-            f = open(carpeta_bat+"\\"+f"execution_vfs_{core}.bat","w+")
-            linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\sensitivity\\"')
-            linea_dos = f'"{self.plugin_directory}\\executables\\vfsm" sensitivity_{core}.prj'
+            shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"))
+            f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"),"w+")
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\sensitivity\\')}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\vfsm')}" sensitivity_{core}.prj'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
-            f.write("{} \n".format(linea_tres))
+            #f.write("{} \n".format(linea_tres))
             f.close()
     
     
     def move_files_sensitivity_analysis_design(self):
         """Method to move files to the corresponding folders for sensitiviy analysis for design"""
         #Prj
-        prj_file = self.dlg_base.working_directory_vfsmod.text()+"\\design\\design.prj"
+        prj_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\design\\design.prj")
         #Check if water quality is simulated
         with open(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity_design.text()), "r") as archivo:
             lineas = archivo.readlines()
@@ -7696,37 +7723,37 @@ class qvfsmod:
             
         #Create file
         with open(prj_file, 'w') as archivo:
-            archivo.write(f"ikw=inputs\\design.ikw  \n")
-            archivo.write(f"iso=inputs\\design.iso  \n")
-            archivo.write(f"igr=inputs\\design.igr  \n")
-            archivo.write(f"isd=inputs\\design.isd  \n")
-            archivo.write(f"irn=inputs\\design.irn  \n")
-            archivo.write(f"iro=inputs\\design.iro  \n")
+            archivo.write(os.path.normpath(f"ikw=inputs\\design.ikw  \n"))
+            archivo.write(os.path.normpath(f"iso=inputs\\design.iso  \n"))
+            archivo.write(os.path.normpath(f"igr=inputs\\design.igr  \n"))
+            archivo.write(os.path.normpath(f"isd=inputs\\design.isd  \n"))
+            archivo.write(os.path.normpath(f"irn=inputs\\design.irn  \n"))
+            archivo.write(os.path.normpath(f"iro=inputs\\design.iro  \n"))
             if self.water_quality:
-                archivo.write(f"iwq=inputs\\design.iwq  \n")
-            archivo.write(f"og1=output\\design.og1  \n")
-            archivo.write(f"og2=output\\design.og2  \n")
-            archivo.write(f"ohy=output\\design.ohy  \n")
-            archivo.write(f"osm=output\\design.osm  \n")
-            archivo.write(f"osp=output\\design.osp  \n")
+                archivo.write(os.path.normpath(f"iwq=inputs\\design.iwq  \n"))
+            archivo.write(os.path.normpath(f"og1=output\\design.og1  \n"))
+            archivo.write(os.path.normpath(f"og2=output\\design.og2  \n"))
+            archivo.write(os.path.normpath(f"ohy=output\\design.ohy  \n"))
+            archivo.write(os.path.normpath(f"osm=output\\design.osm  \n"))
+            archivo.write(os.path.normpath(f"osp=output\\design.osp  \n"))
             if self.water_quality:
-                archivo.write(f"owq=output\\design.owq  \n")
+                archivo.write(os.path.normpath(f"owq=output\\design.owq  \n"))
         
         #UH
-        lis_file = self.dlg_base.working_directory_vfsmod.text()+"\\design\\design.lis"
+        lis_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\design\\design.lis")
         #Create file
         with open(lis_file, 'w') as archivo:
-            archivo.write(f"inp=inputs\\design.inp  \n")
-            archivo.write(f"iro=inputs\\design.iro  \n")
-            archivo.write(f"irn=inputs\\design.irn  \n")
-            archivo.write(f"isd=inputs\\design.isd  \n")
-            archivo.write(f"out=inputs\\design.out  \n")
-            archivo.write(f"hyt=inputs\\design.hyt  \n")
+            archivo.write(os.path.normpath(f"inp=inputs\\design.inp  \n"))
+            archivo.write(os.path.normpath(f"iro=inputs\\design.iro  \n"))
+            archivo.write(os.path.normpath(f"irn=inputs\\design.irn  \n"))
+            archivo.write(os.path.normpath(f"isd=inputs\\design.isd  \n"))
+            archivo.write(os.path.normpath(f"out=inputs\\design.out  \n"))
+            archivo.write(os.path.normpath(f"hyt=inputs\\design.hyt  \n"))
         
         #REST OF THE FILES
         #Function to copy and paste the inputs to create the files to use in the sensitivity analysis
         def copy_paste(process,type_input):
-            ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\design\\inputs\\design.{type_input}" 
+            ruta_pegar = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\design\\inputs\\design.{type_input}" )
             if process == "UH":
                 ruta = self.obtain_direction_vfsmod(self.dlg_base.uh_file_sensitivity_design.text())
             elif process == "VFS":
@@ -7766,7 +7793,7 @@ class qvfsmod:
             copy_paste("VFS","iwq")
         
         #Change storm value (Rainfall mm) before replicating
-        inp_file = self.dlg_base.working_directory_vfsmod.text()+f"\\design\\inputs\\design.inp"
+        inp_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\design\\inputs\\design.inp")
         with open(inp_file, 'r') as file:
             lineas = file.readlines()
         numbers_str = lineas[0]
@@ -7802,34 +7829,34 @@ class qvfsmod:
                 for i in lineas:
                     archivo.write(i)
         #Move replicated input files 
-        carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\design"
+        carpeta = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\design")
         folder_path = os.path.join(carpeta, "inputs")
         files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f)) and "_" not in f]
         for i in range(self.number_cores*5):
             for k in files:
-                shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("design",f"design_{i}"))
+                shutil.copyfile(os.path.normpath(carpeta+"\\inputs\\"+k), os.path.normpath(carpeta+"\\inputs\\"+k.replace("design",f"design_{i}")))
         #Replicate executables
-        carpeta_bat = self.plugin_directory+"\\executables"
+        carpeta_bat = os.path.normpath(self.plugin_directory+"\\executables")
         for core in range(self.number_cores*5):
             #Execution UH
-            shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_uh_{core}.bat")
-            f = open(carpeta_bat+"\\"+f"execution_uh_{core}.bat","w+")
-            linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\design\\"')
-            linea_dos = f'"{self.plugin_directory}\\executables\\uh" design_{core}.lis'
+            shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_uh_{core}.bat"))
+            f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_uh_{core}.bat"),"w+")
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\design\\')}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\uh')}" design_{core}.lis'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
-            f.write("{} \n".format(linea_tres))
+            #f.write("{} \n".format(linea_tres))
             f.close()
             #Execution VFS
-            shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_vfs_{core}.bat")
-            f = open(carpeta_bat+"\\"+f"execution_vfs_{core}.bat","w+")
-            linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\design\\"')
-            linea_dos = f'"{self.plugin_directory}\\executables\\vfsm" design_{core}.prj'
+            shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"))
+            f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"),"w+")
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\design\\')}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\vfsm')}" design_{core}.prj'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
-            f.write("{} \n".format(linea_tres))
+            #f.write("{} \n".format(linea_tres))
             f.close()
     
     
@@ -7837,7 +7864,7 @@ class qvfsmod:
         """Method to move files to the corresponding folders for sensitiviy analysis for calibration"""
         #FIRST WE MOVE THE FILES TO THE FOLDER OF SENSITIVITY ANALYSIS
         #Prj
-        prj_file = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.prj"
+        prj_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.prj")
         #Check if water quality is simulated
         with open(self.obtain_direction_vfsmod(self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.text()), "r") as archivo:
             lineas = archivo.readlines()
@@ -7848,27 +7875,27 @@ class qvfsmod:
             
         #Create file
         with open(prj_file, 'w') as archivo:
-            archivo.write(f"ikw=inputs\\inverse.ikw  \n")
-            archivo.write(f"iso=inputs\\inverse.iso  \n")
-            archivo.write(f"igr=inputs\\inverse.igr  \n")
-            archivo.write(f"isd=inputs\\inverse.isd  \n")
-            archivo.write(f"irn=inputs\\inverse.irn  \n")
-            archivo.write(f"iro=inputs\\inverse.iro  \n")
+            archivo.write(os.path.normpath(f"ikw=inputs\\inverse.ikw  \n"))
+            archivo.write(os.path.normpath(f"iso=inputs\\inverse.iso  \n"))
+            archivo.write(os.path.normpath(f"igr=inputs\\inverse.igr  \n"))
+            archivo.write(os.path.normpath(f"isd=inputs\\inverse.isd  \n"))
+            archivo.write(os.path.normpath(f"irn=inputs\\inverse.irn  \n"))
+            archivo.write(os.path.normpath(f"iro=inputs\\inverse.iro  \n"))
             if self.water_quality:
-                archivo.write(f"iwq=inputs\\inverse.iwq  \n")
-            archivo.write(f"og1=output\\inverse.og1  \n")
-            archivo.write(f"og2=output\\inverse.og2  \n")
-            archivo.write(f"ohy=output\\inverse.ohy  \n")
-            archivo.write(f"osm=output\\inverse.osm  \n")
-            archivo.write(f"osp=output\\inverse.osp  \n")
+                archivo.write(os.path.normpath(f"iwq=inputs\\inverse.iwq  \n"))
+            archivo.write(os.path.normpath(f"og1=output\\inverse.og1  \n"))
+            archivo.write(os.path.normpath(f"og2=output\\inverse.og2  \n"))
+            archivo.write(os.path.normpath(f"ohy=output\\inverse.ohy  \n"))
+            archivo.write(os.path.normpath(f"osm=output\\inverse.osm  \n"))
+            archivo.write(os.path.normpath(f"osp=output\\inverse.osp  \n"))
             if self.water_quality:
-                archivo.write(f"owq=output\\inverse.owq  \n")
+                archivo.write(os.path.normpath(f"owq=output\\inverse.owq  \n"))
         
         
         #REST OF THE FILES
         #Function to copy and paste the inputs to create the files to use in the sensitivity analysis
         def copy_paste(process,type_input):
-            ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.{type_input}" 
+            ruta_pegar = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.{type_input}" )
             ruta = self.obtain_direction_vfsmod(self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.text())
             if os.path.exists(ruta) and os.path.isfile(ruta):
                 #First we open .prj and obtain the direction of the copying file
@@ -7912,81 +7939,81 @@ class qvfsmod:
                     archivo.write(i)
                     
         #Move replicated input files 
-        carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\inverse"
+        carpeta = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\inverse")
         folder_path = os.path.join(carpeta, "inputs")
         files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f)) and "_" not in f]
         for i in range(self.number_cores*5):
             for k in files:
-                shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("inverse",f"inverse_{i}"))
+                shutil.copyfile(os.path.normpath(carpeta+"\\inputs\\"+k), os.path.normpath(carpeta+"\\inputs\\"+k.replace("inverse",f"inverse_{i}")))
         #Replicate executables
-        carpeta_bat = self.plugin_directory+"\\executables"
+        carpeta_bat = os.path.normpath(self.plugin_directory+"\\executables")
         for core in range(self.number_cores*5):
             #Execution VFS
-            shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_vfs_{core}.bat")
-            f = open(carpeta_bat+"\\"+f"execution_vfs_{core}.bat","w+")
-            linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\inverse\\"')
-            linea_dos = f'"{self.plugin_directory}\\executables\\vfsm" inverse_{core}.prj'
+            shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"))
+            f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"),"w+")
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\inverse\\')}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\vfsm')}" inverse_{core}.prj'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
-            f.write("{} \n".format(linea_tres))
+            #f.write("{} \n".format(linea_tres))
             f.close()
     
     def delete_files_design(self):
         """Method to delete files of design analysis after parallelization"""
-        files_delete = [self.working_directory+"\\design\\"+x for x in os.listdir(self.working_directory+"\\design") if "design" in x and "_" in x]
-        files_delete += [self.working_directory+"\\design\\inputs\\"+x for x in os.listdir(self.working_directory+"\\design"+"\\inputs") if "design" in x and "_" in x]
-        files_delete += [self.working_directory+"\\design\\output\\"+x for x in os.listdir(self.working_directory+"\\design"+"\\output") if "design" in x and "_" in x and x[-3:]!="csv"]
-        files_delete += [self.plugin_directory+"\\executables\\"+x for x in os.listdir(self.plugin_directory+"\\executables") if "execution" in x and "_" in x]
+        files_delete = [os.path.normpath(self.working_directory+"\\design\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\design")) if "design" in x and "_" in x]
+        files_delete += [os.path.normpath(self.working_directory+"\\design\\inputs\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\design"+"\\inputs")) if "design" in x and "_" in x]
+        files_delete += [os.path.normpath(self.working_directory+"\\design\\output\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\design"+"\\output")) if "design" in x and "_" in x and x[-3:]!="csv"]
+        files_delete += [os.path.normpath(self.plugin_directory+"\\executables\\"+x) for x in os.listdir(os.path.normpath(self.plugin_directory+"\\executables")) if "execution" in x and "_" in x]
         for i in files_delete:
             os.remove(i)
     
     def delete_files_calibration_single(self):
         """Method to delete files of design analysis after parallelization"""
-        files_delete = [self.working_directory+"\\inverse\\output\\"+x for x in os.listdir(self.working_directory+"\\inverse"+"\\output")]
+        files_delete = [os.path.normpath(self.working_directory+"\\inverse\\output\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\inverse"+"\\output"))]
         for i in files_delete:
             os.remove(i)
     
     def delete_files_sensitivity(self):
         """Method to delete files of sensitivity analysis after parallelization"""
-        files_delete = [self.working_directory+"\\sensitivity\\"+x for x in os.listdir(self.working_directory+"\\sensitivity") if "sensitivity" in x and "_" in x]
-        files_delete += [self.working_directory+"\\sensitivity\\inputs\\"+x for x in os.listdir(self.working_directory+"\\sensitivity"+"\\inputs") if "sensitivity" in x and "_" in x]
-        files_delete += [self.working_directory+"\\sensitivity\\output\\"+x for x in os.listdir(self.working_directory+"\\sensitivity"+"\\output") if "sensitivity" in x and "_" in x and x[-3:]!="csv"]
-        files_delete += [self.plugin_directory+"\\executables\\"+x for x in os.listdir(self.plugin_directory+"\\executables") if "execution" in x and "_" in x]
+        files_delete = [os.path.normpath(self.working_directory+"\\sensitivity\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\sensitivity")) if "sensitivity" in x and "_" in x]
+        files_delete += [os.path.normpath(self.working_directory+"\\sensitivity\\inputs\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\sensitivity"+"\\inputs")) if "sensitivity" in x and "_" in x]
+        files_delete += [os.path.normpath(self.working_directory+"\\sensitivity\\output\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\sensitivity"+"\\output")) if "sensitivity" in x and "_" in x and x[-3:]!="csv"]
+        files_delete += [os.path.normpath(self.plugin_directory+"\\executables\\"+x) for x in os.listdir(os.path.normpath(self.plugin_directory+"\\executables")) if "execution" in x and "_" in x]
         for i in files_delete:
             os.remove(i)
     
     def delete_files_sensitivity_design(self):
         """Method to delete files of sensitivity analysis for design after parallelization"""
-        files_delete = [self.working_directory+"\\design\\"+x for x in os.listdir(self.working_directory+"\\design") if "design" in x and "_" in x]
-        files_delete += [self.working_directory+"\\design\\inputs\\"+x for x in os.listdir(self.working_directory+"\\design"+"\\inputs") if "design" in x and "_" in x]
-        files_delete += [self.working_directory+"\\design\\output\\"+x for x in os.listdir(self.working_directory+"\\design"+"\\output") if "design" in x and "_" in x and x[-3:]!="csv"]
-        files_delete += [self.plugin_directory+"\\executables\\"+x for x in os.listdir(self.plugin_directory+"\\executables") if "execution" in x and "_" in x]
+        files_delete = [os.path.normpath(self.working_directory+"\\design\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\design")) if "design" in x and "_" in x]
+        files_delete += [os.path.normpath(self.working_directory+"\\design\\inputs\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\design"+"\\inputs")) if "design" in x and "_" in x]
+        files_delete += [os.path.normpath(self.working_directory+"\\design\\output\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\design"+"\\output")) if "design" in x and "_" in x and x[-3:]!="csv"]
+        files_delete += [os.path.normpath(self.plugin_directory+"\\executables\\"+x) for x in os.listdir(os.path.normpath(self.plugin_directory+"\\executables")) if "execution" in x and "_" in x]
         for i in files_delete:
             os.remove(i)
     
     def delete_files_sensitivity_calibration(self):
         """Method to delete files of sensitivity for calibration analysis after parallelization"""
-        files_delete = [self.working_directory+"\\inverse\\"+x for x in os.listdir(self.working_directory+"\\inverse") if "inverse" in x and "_" in x]
-        files_delete += [self.working_directory+"\\inverse\\inputs\\"+x for x in os.listdir(self.working_directory+"\\inverse"+"\\inputs") if "inverse" in x and "_" in x]
-        files_delete += [self.working_directory+"\\inverse\\output\\"+x for x in os.listdir(self.working_directory+"\\inverse"+"\\output") if "inverse" in x and "_" in x and x[-3:]!="csv"]
-        files_delete += [self.plugin_directory+"\\executables\\"+x for x in os.listdir(self.plugin_directory+"\\executables") if "execution" in x and "_" in x]
+        files_delete = [os.path.normpath(self.working_directory+"\\inverse\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\inverse")) if "inverse" in x and "_" in x]
+        files_delete += [os.path.normpath(self.working_directory+"\\inverse\\inputs\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\inverse"+"\\inputs")) if "inverse" in x and "_" in x]
+        files_delete += [os.path.normpath(self.working_directory+"\\inverse\\output\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\inverse"+"\\output")) if "inverse" in x and "_" in x and x[-3:]!="csv"]
+        files_delete += [os.path.normpath(self.plugin_directory+"\\executables\\"+x) for x in os.listdir(os.path.normpath(self.plugin_directory+"\\executables")) if "execution" in x and "_" in x]
         for i in files_delete:
             os.remove(i)
     
     def delete_files_uncertainity(self):
         """Method to delete files of uncertainity analysis after parallelization"""
-        files_delete = [self.working_directory+"\\uncertainity\\"+x for x in os.listdir(self.working_directory+"\\uncertainity") if "uncertainity" in x and "_" in x]
-        files_delete += [self.working_directory+"\\uncertainity\\inputs\\"+x for x in os.listdir(self.working_directory+"\\uncertainity"+"\\inputs") if "uncertainity" in x and "_" in x]
-        files_delete += [self.working_directory+"\\uncertainity\\output\\"+x for x in os.listdir(self.working_directory+"\\uncertainity"+"\\output") if "uncertainity" in x and "_" in x and x[-3:]!="csv"]
-        files_delete += [self.plugin_directory+"\\executables\\"+x for x in os.listdir(self.plugin_directory+"\\executables") if "execution" in x and "_" in x]
+        files_delete = [os.path.normpath(self.working_directory+"\\uncertainity\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\uncertainity")) if "uncertainity" in x and "_" in x]
+        files_delete += [os.path.normpath(self.working_directory+"\\uncertainity\\inputs\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\uncertainity"+"\\inputs")) if "uncertainity" in x and "_" in x]
+        files_delete += [os.path.normpath(self.working_directory+"\\uncertainity\\output\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\uncertainity"+"\\output")) if "uncertainity" in x and "_" in x and x[-3:]!="csv"]
+        files_delete += [os.path.normpath(self.plugin_directory+"\\executables\\"+x) for x in os.listdir(os.path.normpath(self.plugin_directory+"\\executables")) if "execution" in x and "_" in x]
         for i in files_delete:
             os.remove(i)
     
     def move_files_uncertainity_analysis(self):
         """Method to move files to the corresponding folders for uncertainity analysis"""
         #Prj
-        prj_file = self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\uncertainity.prj"
+        prj_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\uncertainity.prj")
         #Check if water quality is simulated
         with open(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_uncertainity.text()), "r") as archivo:
             lineas = archivo.readlines()
@@ -7997,37 +8024,37 @@ class qvfsmod:
             
         #Create file
         with open(prj_file, 'w') as archivo:
-            archivo.write(f"ikw=inputs\\uncertainity.ikw  \n")
-            archivo.write(f"iso=inputs\\uncertainity.iso  \n")
-            archivo.write(f"igr=inputs\\uncertainity.igr  \n")
-            archivo.write(f"isd=inputs\\uncertainity.isd  \n")
-            archivo.write(f"irn=inputs\\uncertainity.irn  \n")
-            archivo.write(f"iro=inputs\\uncertainity.iro  \n")
+            archivo.write(os.path.normpath(f"ikw=inputs\\uncertainity.ikw  \n"))
+            archivo.write(os.path.normpath(f"iso=inputs\\uncertainity.iso  \n"))
+            archivo.write(os.path.normpath(f"igr=inputs\\uncertainity.igr  \n"))
+            archivo.write(os.path.normpath(f"isd=inputs\\uncertainity.isd  \n"))
+            archivo.write(os.path.normpath(f"irn=inputs\\uncertainity.irn  \n"))
+            archivo.write(os.path.normpath(f"iro=inputs\\uncertainity.iro  \n"))
             if self.water_quality:
                 archivo.write(f"iwq=inputs\\uncertainity.iwq  \n")
-            archivo.write(f"og1=output\\uncertainity.og1  \n")
-            archivo.write(f"og2=output\\uncertainity.og2  \n")
-            archivo.write(f"ohy=output\\uncertainity.ohy  \n")
-            archivo.write(f"osm=output\\uncertainity.osm  \n")
-            archivo.write(f"osp=output\\uncertainity.osp  \n")
+            archivo.write(os.path.normpath(f"og1=output\\uncertainity.og1  \n"))
+            archivo.write(os.path.normpath(f"og2=output\\uncertainity.og2  \n"))
+            archivo.write(os.path.normpath(f"ohy=output\\uncertainity.ohy  \n"))
+            archivo.write(os.path.normpath(f"osm=output\\uncertainity.osm  \n"))
+            archivo.write(os.path.normpath(f"osp=output\\uncertainity.osp  \n"))
             if self.water_quality:
-                archivo.write(f"owq=output\\uncertainity.owq  \n")
+                archivo.write(os.path.normpath(f"owq=output\\uncertainity.owq  \n"))
         
         #UH
-        lis_file = self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\uncertainity.lis"
+        lis_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\\uncertainity\\uncertainity.lis")
         #Create file
         with open(lis_file, 'w') as archivo:
-            archivo.write(f"inp=inputs\\uncertainity.inp  \n")
-            archivo.write(f"iro=inputs\\uncertainity.iro  \n")
-            archivo.write(f"irn=inputs\\uncertainity.irn  \n")
-            archivo.write(f"isd=inputs\\uncertainity.isd  \n")
-            archivo.write(f"out=inputs\\uncertainity.out  \n")
-            archivo.write(f"hyt=inputs\\uncertainity.hyt  \n")
+            archivo.write(os.path.normpath(rf"inp=inputs\\uncertainity.inp  \n"))
+            archivo.write(os.path.normpath(rf"iro=inputs\\uncertainity.iro  \n"))
+            archivo.write(os.path.normpath(rf"irn=inputs\\uncertainity.irn  \n"))
+            archivo.write(os.path.normpath(rf"isd=inputs\\uncertainity.isd  \n"))
+            archivo.write(os.path.normpath(rf"out=inputs\\uncertainity.out  \n"))
+            archivo.write(os.path.normpath(rf"hyt=inputs\\uncertainity.hyt  \n"))
         
         #REST OF THE FILES
         #Function to copy and paste the inputs to create the files to use in the uncertainity analysis
         def copy_paste(process,type_input):
-            ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\uncertainity\\inputs\\uncertainity.{type_input}" 
+            ruta_pegar = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+rf"\\uncertainity\\inputs\\uncertainity.{type_input}" )
             if process == "UH":
                 ruta = self.obtain_direction_vfsmod(self.dlg_base.uh_file_uncertainity.text())
             elif process == "VFS":
@@ -8088,34 +8115,34 @@ class qvfsmod:
                 for i in lineas:
                     archivo.write(i)
         #Move replicated input files 
-        carpeta = self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity"
+        carpeta = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\\uncertainity")
         folder_path = os.path.join(carpeta, "inputs")
         files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f)) and "_" not in f]
         for i in range(self.number_cores*5):
             for k in files:
-                shutil.copyfile(carpeta+"\\inputs\\"+k, carpeta+"\\inputs\\"+k.replace("uncertainity",f"uncertainity_{i}"))
+                shutil.copyfile(os.path.normpath(carpeta+r"\\inputs\\"+k), os.path.normpath(carpeta+r"\\inputs\\"+k.replace("uncertainity",f"uncertainity_{i}")))
         #Replicate executables
-        carpeta_bat = self.plugin_directory+"\\executables"
+        carpeta_bat = os.path.normpath(self.plugin_directory+"r\\executables")
         for core in range(self.number_cores*5):
             #Execution UH
-            shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_uh_{core}.bat")
-            f = open(carpeta_bat+"\\"+f"execution_uh_{core}.bat","w+")
-            linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\uncertainity\\"')
-            linea_dos = f'"{self.plugin_directory}\\executables\\uh" uncertainity_{core}.lis'
+            shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_uh_{core}.bat"))
+            f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_uh_{core}.bat"),"w+")
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\uncertainity\\')}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\uh')}" uncertainity_{core}.lis'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
-            f.write("{} \n".format(linea_tres))
+            #f.write("{} \n".format(linea_tres))
             f.close()
             #Execution VFS
-            shutil.copyfile(carpeta_bat+"\\execution.bat", carpeta_bat+"\\"+f"execution_vfs_{core}.bat")
-            f = open(carpeta_bat+"\\"+f"execution_vfs_{core}.bat","w+")
-            linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\uncertainity\\"')
-            linea_dos = f'"{self.plugin_directory}\\executables\\vfsm" uncertainity_{core}.prj'
+            shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"))
+            f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"),"w+")
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\uncertainity\\')}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+'r\\executables\\vfsm')}" uncertainity_{core}.prj'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
-            f.write("{} \n".format(linea_tres))
+            #f.write("{} \n".format(linea_tres))
             f.close()
             
     
@@ -8130,12 +8157,12 @@ class qvfsmod:
             except:
                 pass
             
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\sensitivity"):
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\sensitivity")):
             create_folder("sensitivity")
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\sensitivity\inputs"):
-            create_folder("sensitivity\inputs")
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\sensitivity\output"):
-            create_folder("sensitivity\output")
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\sensitivity\inputs")):
+            create_folder(os.path.normpath(r"sensitivity\inputs"))
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\sensitivity\output")):
+            create_folder(os.path.normpath(r"sensitivity\output"))
         
     def create_folder_sensitivity_analysis_design(self):
         """Method to create the folder needed to sensitivity analysis for design"""
@@ -8148,12 +8175,12 @@ class qvfsmod:
             except:
                 pass
             
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\design"):
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\design")):
             create_folder("design")
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\design\inputs"):
-            create_folder("design\inputs")
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\design\output"):
-            create_folder("design\output")
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\design\inputs")):
+            create_folder(os.path.normpath(r"design\inputs"))
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\design\output")):
+            create_folder(os.path.normpath(r"design\output"))
     
     def create_folder_sensitivity_analysis_calibration(self):
         """Method to create the folder needed to sensitivity analysis for calibration"""
@@ -8166,12 +8193,12 @@ class qvfsmod:
             except:
                 pass
             
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\inverse"):
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\inverse")):
             create_folder("inverse")
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\inverse\inputs"):
-            create_folder("inverse\inputs")
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\inverse\output"):
-            create_folder("inverse\output")
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\inverse\inputs")):
+            create_folder(os.path.normpath(r"inverse\inputs"))
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\inverse\output")):
+            create_folder(os.path.normpath(r"inverse\output"))
     
     def create_folder_uncertainity_analysis(self):
         """Method to create the folder needed to uncertainity analysis"""
@@ -8184,56 +8211,56 @@ class qvfsmod:
             except:
                 pass
             
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+r"\uncertainity"):
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\uncertainity")):
             create_folder("uncertainity")
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+r"\uncertainity\inputs"):
-            create_folder("uncertainity\inputs")
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+r"\uncertainity\output"):
-            create_folder("uncertainity\output")
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\uncertainity\inputs")):
+            create_folder(os.path.normpath(r"uncertainity\inputs"))
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\uncertainity\output")):
+            create_folder(os.path.normpath(r"uncertainity\output"))
     
     
     def update_bat_uh_sensitivity(self):
         """Method to update the bat for execution of UH for sensitivity analysis"""
-        f = open(self.plugin_directory+"\\executables\\execution.bat","w+")
-        linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\sensitivity\\"')
-        linea_dos = f'"{self.plugin_directory}\\executables\\uh" sensitivity.lis'
+        f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
+        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\sensitivity\\')}"')
+        linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\uh')}" sensitivity.lis'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
         f.write("{} \n".format(linea_dos))
-        f.write("{} \n".format(linea_tres))
+        #f.write("{} \n".format(linea_tres))
         f.close()
     
     def update_bat_uh_uncertainity(self):
         """Method to update the bat for execution of UH for uncertainity analysis"""
-        f = open(self.plugin_directory+"\\executables\\execution.bat","w+")
-        linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\uncertainity\\"')
-        linea_dos = f'"{self.plugin_directory}\\executables\\uh" uncertainity.lis'
+        f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
+        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\uncertainity\\')}"')
+        linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\uh')}" uncertainity.lis'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
         f.write("{} \n".format(linea_dos))
-        f.write("{} \n".format(linea_tres))
+        #f.write("{} \n".format(linea_tres))
         f.close()
     
     def update_bat_vfs_sensitivity(self):
         """Method to update the bat for execution of VFS for sensitivity analysis"""
-        f = open(self.plugin_directory+"\\executables\\execution.bat","w+")
-        linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\sensitivity\\"')
-        linea_dos = f'"{self.plugin_directory}\\executables\\vfsm" sensitivity.prj'
+        f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
+        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\sensitivity\\')}"')
+        linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\vfsm')}" sensitivity.prj'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
         f.write("{} \n".format(linea_dos))
-        f.write("{} \n".format(linea_tres))
+        #f.write("{} \n".format(linea_tres))
         f.close()
         
     def update_bat_vfs_uncertainity(self):
         """Method to update the bat for execution of VFS for uncertainity analysis"""
-        f = open(self.plugin_directory+"\\executables\\execution.bat","w+")
-        linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\uncertainity\\"')
-        linea_dos = f'"{self.plugin_directory}\\executables\\vfsm" uncertainity.prj'
+        f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
+        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\uncertainity\\')}"')
+        linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\vfsm')}" uncertainity.prj'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
         f.write("{} \n".format(linea_dos))
-        f.write("{} \n".format(linea_tres))
+        #f.write("{} \n".format(linea_tres))
         f.close()
     
     
@@ -8253,6 +8280,7 @@ class qvfsmod:
                 distribution = "triang"
                 texto = str(self.dlg_base.table_uncertainity.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+                parameters[-1] = (parameters[-1] - parameters[0])/(parameters[1]-parameters[0])
             elif str(self.dlg_base.table_uncertainity.item(row, 1).text()) == "Normal":
                 distribution = "norm"
                 texto = str(self.dlg_base.table_uncertainity.item(row, 2).text())
@@ -8311,6 +8339,7 @@ class qvfsmod:
                     distribution = "triang"
                     texto = str(self.dlg_base.table.item(row, 2).text())
                     parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+                    parameters[-1] = (parameters[-1] - parameters[0])/(parameters[1]-parameters[0])
                 elif str(self.dlg_base.table.item(row, 1).text()) == "Normal":
                     distribution = "norm"
                     texto = str(self.dlg_base.table.item(row, 2).text())
@@ -8353,6 +8382,7 @@ class qvfsmod:
                 distribution = "triang"
                 texto = str(self.dlg_base.table_2.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+                parameters[-1] = (parameters[-1] - parameters[0])/(parameters[1]-parameters[0])
             elif str(self.dlg_base.table_2.item(row, 1).text()) == "Normal":
                 distribution = "norm"
                 texto = str(self.dlg_base.table_2.item(row, 2).text())
@@ -8394,6 +8424,7 @@ class qvfsmod:
                 distribution = "triang"
                 texto = str(self.dlg_calibration_sensitivity_hydrograph.table.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
+                parameters[-1] = (parameters[-1] - parameters[0])/(parameters[1]-parameters[0])
             elif str(self.dlg_calibration_sensitivity_hydrograph.table.item(row, 1).text()) == "Normal":
                 distribution = "norm"
                 texto = str(self.dlg_calibration_sensitivity_hydrograph.table.item(row, 2).text())
@@ -9825,12 +9856,12 @@ class qvfsmod:
         """Method to move files to the corresponding folders for calibration"""
         #Move sedimentograph
         try:
-            shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_base.sedimentograph_file.text()),self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_base.sedimentograph_file.text())}")
+            shutil.copyfile(os.path.normpath(self.obtain_direction_vfsmod(self.dlg_base.sedimentograph_file.text())),os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_base.sedimentograph_file.text())}"))
         except SameFileError:
             pass
             
         #Prj
-        prj_file = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.prj"
+        prj_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.prj")
         #Check if water quality is simulated
         with open(self.obtain_direction_vfsmod(self.dlg_base.vfs_file.text()), "r") as archivo:
             lineas = archivo.readlines()
@@ -9841,37 +9872,37 @@ class qvfsmod:
             
         #Create file
         with open(prj_file, 'w') as archivo:
-            archivo.write(f"ikw=inputs\\inverse.ikw  \n")
-            archivo.write(f"iso=inputs\\inverse.iso  \n")
-            archivo.write(f"igr=inputs\\inverse.igr  \n")
-            archivo.write(f"isd=inputs\\inverse.isd  \n")
-            archivo.write(f"irn=inputs\\inverse.irn  \n")
-            archivo.write(f"iro=inputs\\inverse.iro  \n")
+            archivo.write(os.path.normpath(f"ikw=inputs\\inverse.ikw  \n"))
+            archivo.write(os.path.normpath(f"iso=inputs\\inverse.iso  \n"))
+            archivo.write(os.path.normpath(f"igr=inputs\\inverse.igr  \n"))
+            archivo.write(os.path.normpath(f"isd=inputs\\inverse.isd  \n"))
+            archivo.write(os.path.normpath(f"irn=inputs\\inverse.irn  \n"))
+            archivo.write(os.path.normpath(f"iro=inputs\\inverse.iro  \n"))
             if self.water_quality:
-                archivo.write(f"iwq=inputs\\inverse.iwq  \n")
-            archivo.write(f"og1=output\\inverse.og1  \n")
-            archivo.write(f"og2=output\\inverse.og2  \n")
-            archivo.write(f"ohy=output\\inverse.ohy  \n")
-            archivo.write(f"osm=output\\inverse.osm  \n")
-            archivo.write(f"osp=output\\inverse.osp  \n")
+                archivo.write(os.path.normpath(f"iwq=inputs\\inverse.iwq  \n"))
+            archivo.write(os.path.normpath(f"og1=output\\inverse.og1  \n"))
+            archivo.write(os.path.normpath(f"og2=output\\inverse.og2  \n"))
+            archivo.write(os.path.normpath(f"ohy=output\\inverse.ohy  \n"))
+            archivo.write(os.path.normpath(f"osm=output\\inverse.osm  \n"))
+            archivo.write(os.path.normpath(f"osp=output\\inverse.osp  \n"))
             if self.water_quality:
-                archivo.write(f"owq=output\\inverse.owq  \n")
+                archivo.write(os.path.normpath(f"owq=output\\inverse.owq  \n"))
         
         #UH
-        lis_file = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.lis"
+        lis_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.lis")
         #Create file
         with open(lis_file, 'w') as archivo:
-            archivo.write(f"inp=inputs\\inverse.inp  \n")
-            archivo.write(f"iro=inputs\\inverse.iro  \n")
-            archivo.write(f"irn=inputs\\inverse.irn  \n")
-            archivo.write(f"isd=inputs\\inverse.isd  \n")
-            archivo.write(f"out=inputs\\inverse.out  \n")
-            archivo.write(f"hyt=inputs\\inverse.hyt  \n")
+            archivo.write(os.path.normpath(f"inp=inputs\\inverse.inp  \n"))
+            archivo.write(os.path.normpath(f"iro=inputs\\inverse.iro  \n"))
+            archivo.write(os.path.normpath(f"irn=inputs\\inverse.irn  \n"))
+            archivo.write(os.path.normpath(f"isd=inputs\\inverse.isd  \n"))
+            archivo.write(os.path.normpath(f"out=inputs\\inverse.out  \n"))
+            archivo.write(os.path.normpath(f"hyt=inputs\\inverse.hyt  \n"))
         
         #REST OF THE FILES
         #Function to copy and paste the inputs to create the files to use in the design analysis
         def copy_paste(type_input):
-            ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.{type_input}" 
+            ruta_pegar = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.{type_input}" )
             ruta = self.obtain_direction_vfsmod(self.dlg_base.vfs_file.text())
             if os.path.exists(ruta) and os.path.isfile(ruta):
                 #First we open .prj and obtain the direction of the copying file
@@ -9905,7 +9936,7 @@ class qvfsmod:
     def move_files_calibration_single(self):
         """Method to move files to the corresponding folders for calibration"""
         #Prj
-        prj_file = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.prj"
+        prj_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.prj")
         #Check if water quality is simulated
         with open(self.obtain_direction_vfsmod(self.dlg_base.single_values_line.text()), "r") as archivo:
             lineas = archivo.readlines()
@@ -9916,37 +9947,37 @@ class qvfsmod:
             
         #Create file
         with open(prj_file, 'w') as archivo:
-            archivo.write(f"ikw=inputs\\inverse.ikw  \n")
-            archivo.write(f"iso=inputs\\inverse.iso  \n")
-            archivo.write(f"igr=inputs\\inverse.igr  \n")
-            archivo.write(f"isd=inputs\\inverse.isd  \n")
-            archivo.write(f"irn=inputs\\inverse.irn  \n")
-            archivo.write(f"iro=inputs\\inverse.iro  \n")
+            archivo.write(os.path.normpath(f"ikw=inputs\\inverse.ikw  \n"))
+            archivo.write(os.path.normpath(f"iso=inputs\\inverse.iso  \n"))
+            archivo.write(os.path.normpath(f"igr=inputs\\inverse.igr  \n"))
+            archivo.write(os.path.normpath(f"isd=inputs\\inverse.isd  \n"))
+            archivo.write(os.path.normpath(f"irn=inputs\\inverse.irn  \n"))
+            archivo.write(os.path.normpath(f"iro=inputs\\inverse.iro  \n"))
             if self.water_quality:
-                archivo.write(f"iwq=inputs\\inverse.iwq  \n")
-            archivo.write(f"og1=output\\inverse.og1  \n")
-            archivo.write(f"og2=output\\inverse.og2  \n")
-            archivo.write(f"ohy=output\\inverse.ohy  \n")
-            archivo.write(f"osm=output\\inverse.osm  \n")
-            archivo.write(f"osp=output\\inverse.osp  \n")
+                archivo.write(os.path.normpath(f"iwq=inputs\\inverse.iwq  \n"))
+            archivo.write(os.path.normpath(f"og1=output\\inverse.og1  \n"))
+            archivo.write(os.path.normpath(f"og2=output\\inverse.og2  \n"))
+            archivo.write(os.path.normpath(f"ohy=output\\inverse.ohy  \n"))
+            archivo.write(os.path.normpath(f"osm=output\\inverse.osm  \n"))
+            archivo.write(os.path.normpath(f"osp=output\\inverse.osp  \n"))
             if self.water_quality:
-                archivo.write(f"owq=output\\inverse.owq  \n")
+                archivo.write(os.path.normpath(f"owq=output\\inverse.owq  \n"))
         
         #UH
-        lis_file = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.lis"
+        lis_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.lis")
         #Create file
         with open(lis_file, 'w') as archivo:
-            archivo.write(f"inp=inputs\\inverse.inp  \n")
-            archivo.write(f"iro=inputs\\inverse.iro  \n")
-            archivo.write(f"irn=inputs\\inverse.irn  \n")
-            archivo.write(f"isd=inputs\\inverse.isd  \n")
-            archivo.write(f"out=inputs\\inverse.out  \n")
-            archivo.write(f"hyt=inputs\\inverse.hyt  \n")
+            archivo.write(os.path.normpath(f"inp=inputs\\inverse.inp  \n"))
+            archivo.write(os.path.normpath(f"iro=inputs\\inverse.iro  \n"))
+            archivo.write(os.path.normpath(f"irn=inputs\\inverse.irn  \n"))
+            archivo.write(os.path.normpath(f"isd=inputs\\inverse.isd  \n"))
+            archivo.write(os.path.normpath(f"out=inputs\\inverse.out  \n"))
+            archivo.write(os.path.normpath(f"hyt=inputs\\inverse.hyt  \n"))
         
         #REST OF THE FILES
         #Function to copy and paste the inputs to create the files to use in the design analysis
         def copy_paste(type_input):
-            ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.{type_input}" 
+            ruta_pegar = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.{type_input}") 
             ruta = self.obtain_direction_vfsmod(self.dlg_base.single_values_line.text())
             if os.path.exists(ruta) and os.path.isfile(ruta):
                 #First we open .prj and obtain the direction of the copying file
@@ -10181,7 +10212,7 @@ class qvfsmod:
         #Update bat for calibration
         self.update_bat_calibration()
         #Execute
-        resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
+        resultado = subprocess.run([os.path.normpath(self.plugin_directory+"\\executables\\execution.bat")],
             capture_output=True, 
             text=True, 
             shell=True)
@@ -10193,7 +10224,7 @@ class qvfsmod:
             self.calibration_df_progress = pd.DataFrame(data = {"Time":self.hydrograph_calibration_df.Time.tolist(),"Sediment":[np.nan] * len(self.hydrograph_calibration_df)})
             return 1e20
         #Read output
-        ruta = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\output\\inverse.ohy"
+        ruta = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\output\\inverse.ohy")
         with open(ruta, "r") as archivo:
             lineas = archivo.readlines()
         discharge = []
@@ -10315,7 +10346,7 @@ class qvfsmod:
         #Update bat for calibration
         self.update_bat_calibration()
         #Execute
-        resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
+        resultado = subprocess.run([os.path.normpath(self.plugin_directory+"\\executables\\execution.bat")],
             capture_output=True, 
             text=True, 
             shell=True)
@@ -10329,7 +10360,7 @@ class qvfsmod:
         
         #Read output
         #First obtain the gso data in (g/cm.s)
-        ruta = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\output\\inverse.og1"
+        ruta = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\output\\inverse.og1")
         with open(ruta, "r") as archivo:
             lineas = archivo.readlines()
         sediment = []
@@ -10341,7 +10372,7 @@ class qvfsmod:
                     sediment.append(float(lineas[k].split()[9]))
         self.calibration_df_progress = pd.DataFrame(data = {"Time":times,"Sediment":sediment})
         #Then obtain the width of the filter
-        with open(self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\output\\inverse.osp", "r") as archivo:
+        with open(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\output\\inverse.osp"), "r") as archivo:
             lineas = archivo.readlines()
         try:
             for i in lineas:
@@ -10560,7 +10591,7 @@ class qvfsmod:
         #Update bat for calibration
         self.update_bat_calibration()
         #Execute
-        resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
+        resultado = subprocess.run([os.path.normpath(self.plugin_directory+"\\executables\\execution.bat")],
             capture_output=True, 
             text=True, 
             shell=True)
@@ -10581,7 +10612,7 @@ class qvfsmod:
         #Create variable to add objective function
         objective_function = []
         #Function to obtain results from osp
-        ruta = self.working_directory+f"\\inverse\\output\\inverse.osp"
+        ruta = os.path.normpath(self.working_directory+f"\\inverse\\output\\inverse.osp")
         with open(ruta, "r") as archivo:
             lineas = archivo.readlines()
         def obtain_result_osp(string):
@@ -10597,7 +10628,7 @@ class qvfsmod:
         
         #Same for owq
         if self.water_quality:
-            ruta = self.working_directory+f"\\inverse\\output\\inverse.owq"
+            ruta = os.path.normpath(self.working_directory+f"\\inverse\\output\\inverse.owq")
             try:
                 with open(ruta, "r") as archivo:
                     lineas_owq = archivo.readlines()
@@ -11162,7 +11193,7 @@ class qvfsmod:
         """Method to add the optimized project to the working folder with a name to informe that it is optimized"""
         #Check if there is water quality
         #Check if water quality is simulated
-        with open(self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.prj", "r") as archivo:
+        with open(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.prj"), "r") as archivo:
             lineas = archivo.readlines()
         self.water_quality = False
         for i in lineas:
@@ -11174,35 +11205,35 @@ class qvfsmod:
         if self.calibration_hydrograph:
             name_original_project = os.path.basename(self.obtain_direction_vfsmod(self.dlg_base.vfs_project.text())).split('.')[0]
             name_present_project = f"{name_original_project}_opt_hydr"
-            prj_file = self.dlg_base.working_directory_vfsmod.text()+f"\\{name_present_project}.prj"
+            prj_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\{name_present_project}.prj")
         elif self.calibration_sedimentograph:
             name_original_project = os.path.basename(self.obtain_direction_vfsmod(self.dlg_base.vfs_file.text())).split('.')[0]
             name_present_project = f"{name_original_project}_opt_sedim"
-            prj_file = self.dlg_base.working_directory_vfsmod.text()+f"\\{name_present_project}.prj"
+            prj_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\{name_present_project}.prj")
         
         with open(prj_file, 'w') as archivo:
-            archivo.write(f"ikw=inputs\\{name_present_project}.ikw  \n")
-            archivo.write(f"iso=inputs\\{name_present_project}.iso  \n")
-            archivo.write(f"igr=inputs\\{name_present_project}.igr  \n")
-            archivo.write(f"isd=inputs\\{name_present_project}.isd  \n")
-            archivo.write(f"irn=inputs\\{name_present_project}.irn  \n")
-            archivo.write(f"iro=inputs\\{name_present_project}.iro  \n")
+            archivo.write(os.path.normpath(f"ikw=inputs\\{name_present_project}.ikw  \n"))
+            archivo.write(os.path.normpath(f"iso=inputs\\{name_present_project}.iso  \n"))
+            archivo.write(os.path.normpath(f"igr=inputs\\{name_present_project}.igr  \n"))
+            archivo.write(os.path.normpath(f"isd=inputs\\{name_present_project}.isd  \n"))
+            archivo.write(os.path.normpath(f"irn=inputs\\{name_present_project}.irn  \n"))
+            archivo.write(os.path.normpath(f"iro=inputs\\{name_present_project}.iro  \n"))
             if self.water_quality:
-                archivo.write(f"iwq=inputs\\{name_present_project}.iwq  \n")
-            archivo.write(f"og1=output\\{name_present_project}.og1  \n")
-            archivo.write(f"og2=output\\{name_present_project}.og2  \n")
-            archivo.write(f"ohy=output\\{name_present_project}.ohy  \n")
-            archivo.write(f"osm=output\\{name_present_project}.osm  \n")
-            archivo.write(f"osp=output\\{name_present_project}.osp  \n")
+                archivo.write(os.path.normpath(f"iwq=inputs\\{name_present_project}.iwq  \n"))
+            archivo.write(os.path.normpath(f"og1=output\\{name_present_project}.og1  \n"))
+            archivo.write(os.path.normpath(f"og2=output\\{name_present_project}.og2  \n"))
+            archivo.write(os.path.normpath(f"ohy=output\\{name_present_project}.ohy  \n"))
+            archivo.write(os.path.normpath(f"osm=output\\{name_present_project}.osm  \n"))
+            archivo.write(os.path.normpath(f"osp=output\\{name_present_project}.osp  \n"))
             if self.water_quality:
-                archivo.write(f"owq=output\\{name_present_project}.owq  \n")
+                archivo.write(os.path.normpath(f"owq=output\\{name_present_project}.owq  \n"))
         
         
         #Move REST OF THE FILES
         #Function to copy and paste the inputs to create the files to use in the design analysis
         def copy_paste(type_input):
-            ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\inputs\\{name_present_project}.{type_input}" 
-            ruta = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\inverse.prj"
+            ruta_pegar = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\inputs\\{name_present_project}.{type_input}" )
+            ruta = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.prj")
             if os.path.exists(ruta) and os.path.isfile(ruta):
                 #First we open .prj and obtain the direction of the copying file
                 with open(ruta, "r") as archivo:
@@ -11458,27 +11489,27 @@ class qvfsmod:
             
     def update_bat_calibration(self):
         """Method to update the bat of the hydrograph"""
-        f = open(self.plugin_directory+"\\executables\\execution.bat","w+")
-        linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\inverse\\"')
-        linea_dos = f'"{self.plugin_directory}\\executables\\vfsm" inverse.prj'
+        f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
+        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\inverse\\')}"')
+        linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\vfsm')}" inverse.prj'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
         f.write("{} \n".format(linea_dos))
-        f.write("{} \n".format(linea_tres))
+        #f.write("{} \n".format(linea_tres))
         f.close()
     
     def move_files_calibration_hydrograph(self):
         """Method to move files to the corresponding folders for calibration"""
         #Move hydrograph
         try:
-            shutil.copyfile(self.obtain_direction_vfsmod(self.dlg_base.hydrograph_file.text()),self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_base.hydrograph_file.text())}")
+            shutil.copyfile(os.path.normpath(self.obtain_direction_vfsmod(self.dlg_base.hydrograph_file.text())),os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\{os.path.basename(self.dlg_base.hydrograph_file.text())}"))
         except SameFileError:
             pass
             
         #Prj
-        prj_file = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.prj"
+        prj_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\\inverse\\inverse.prj")
         #Check if water quality is simulated
-        with open(self.obtain_direction_vfsmod(self.dlg_base.vfs_project.text()), "r") as archivo:
+        with open(os.path.normpath(self.obtain_direction_vfsmod(self.dlg_base.vfs_project.text())), "r") as archivo:
             lineas = archivo.readlines()
         self.water_quality = False
         for i in lineas:
@@ -11487,37 +11518,37 @@ class qvfsmod:
             
         #Create file
         with open(prj_file, 'w') as archivo:
-            archivo.write(f"ikw=inputs\\inverse.ikw  \n")
-            archivo.write(f"iso=inputs\\inverse.iso  \n")
-            archivo.write(f"igr=inputs\\inverse.igr  \n")
-            archivo.write(f"isd=inputs\\inverse.isd  \n")
-            archivo.write(f"irn=inputs\\inverse.irn  \n")
-            archivo.write(f"iro=inputs\\inverse.iro  \n")
+            archivo.write(os.path.normpath(f"ikw=inputs\\inverse.ikw  \n"))
+            archivo.write(os.path.normpath(f"iso=inputs\\inverse.iso  \n"))
+            archivo.write(os.path.normpath(f"igr=inputs\\inverse.igr  \n"))
+            archivo.write(os.path.normpath(f"isd=inputs\\inverse.isd  \n"))
+            archivo.write(os.path.normpath(f"irn=inputs\\inverse.irn  \n"))
+            archivo.write(os.path.normpath(f"iro=inputs\\inverse.iro  \n"))
             if self.water_quality:
-                archivo.write(f"iwq=inputs\\inverse.iwq  \n")
-            archivo.write(f"og1=output\\inverse.og1  \n")
-            archivo.write(f"og2=output\\inverse.og2  \n")
-            archivo.write(f"ohy=output\\inverse.ohy  \n")
-            archivo.write(f"osm=output\\inverse.osm  \n")
-            archivo.write(f"osp=output\\inverse.osp  \n")
+                archivo.write(os.path.normpath(os.path.normpath(f"iwq=inputs\\inverse.iwq  \n")))
+            archivo.write(os.path.normpath(f"og1=output\\inverse.og1  \n"))
+            archivo.write(os.path.normpath(f"og2=output\\inverse.og2  \n"))
+            archivo.write(os.path.normpath(f"ohy=output\\inverse.ohy  \n"))
+            archivo.write(os.path.normpath(f"osm=output\\inverse.osm  \n"))
+            archivo.write(os.path.normpath(f"osp=output\\inverse.osp  \n"))
             if self.water_quality:
-                archivo.write(f"owq=output\\inverse.owq  \n")
+                archivo.write(os.path.normpath(f"owq=output\\inverse.owq  \n"))
         
         #UH
-        lis_file = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.lis"
+        lis_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.lis")
         #Create file
         with open(lis_file, 'w') as archivo:
-            archivo.write(f"inp=inputs\\inverse.inp  \n")
-            archivo.write(f"iro=inputs\\inverse.iro  \n")
-            archivo.write(f"irn=inputs\\inverse.irn  \n")
-            archivo.write(f"isd=inputs\\inverse.isd  \n")
-            archivo.write(f"out=inputs\\inverse.out  \n")
-            archivo.write(f"hyt=inputs\\inverse.hyt  \n")
+            archivo.write(fos.path.normpath("inp=inputs\\inverse.inp  \n"))
+            archivo.write(fos.path.normpath("iro=inputs\\inverse.iro  \n"))
+            archivo.write(fos.path.normpath("irn=inputs\\inverse.irn  \n"))
+            archivo.write(fos.path.normpath("isd=inputs\\inverse.isd  \n"))
+            archivo.write(fos.path.normpath("out=inputs\\inverse.out  \n"))
+            archivo.write(fos.path.normpath("hyt=inputs\\inverse.hyt  \n"))
         
         #REST OF THE FILES
         #Function to copy and paste the inputs to create the files to use in the design analysis
         def copy_paste(type_input):
-            ruta_pegar = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.{type_input}" 
+            ruta_pegar = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.{type_input}") 
             ruta = self.obtain_direction_vfsmod(self.dlg_base.vfs_project.text())
             if os.path.exists(ruta) and os.path.isfile(ruta):
                 #First we open .prj and obtain the direction of the copying file
@@ -11904,7 +11935,7 @@ class qvfsmod:
     
     def modify_inputs_calibration(self,extension, row, column, new_value):
         """Method to modify inputs in calibration"""
-        filepath = self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.{extension}"
+        filepath = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\inverse\\inputs\\inverse.{extension}")
         with open(filepath, 'r') as file:
             lineas = file.readlines()
         numbers_str = lineas[row]
@@ -12113,7 +12144,7 @@ class qvfsmod:
     def modify_mannign_slope_hydrograph_calibration(self,column,new_value):
         """Method to modify the manning and slope for hydrograph calibration"""
         #We obtain information of ikw file
-        ikw = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inputs\\inverse.ikw"
+        ikw = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inputs\\inverse.ikw")
         
         with open(ikw, "r") as archivo:
             lineas = archivo.readlines()
@@ -12137,7 +12168,7 @@ class qvfsmod:
     def modify_ikw_file_calibration(self,value_change):
         """Metod to modify the ikw file for the hydrograph calibration"""
         #We obtain information of ikw file
-        ikw = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inputs\\inverse.ikw"
+        ikw = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inputs\\inverse.ikw")
         #We substitute value of length
         with open(ikw, "r") as archivo:
             lineas = archivo.readlines()
@@ -12203,7 +12234,7 @@ class qvfsmod:
     def modify_ikw_file_calibration_single(self,value_change):
         """Metod to modify the ikw file for the single calibration"""
         #We obtain information of ikw file
-        ikw = self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inputs\\inverse.ikw"
+        ikw = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inputs\\inverse.ikw")
         #We substitute value of length
         with open(ikw, "r") as archivo:
             lineas = archivo.readlines()
@@ -12277,12 +12308,12 @@ class qvfsmod:
             except:
                 pass
             
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\inverse"):
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\inverse")):
             create_folder("inverse")
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\inverse\inputs"):
-            create_folder("inverse\inputs")
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\inverse\output"):
-            create_folder("inverse\output")
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\inverse\inputs")):
+            create_folder(os.path.normpath(r"inverse\inputs"))
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\inverse\output")):
+            create_folder(os.path.normpath(r"inverse\output"))
     
     def draw_calibration_hydrology(self):
         """Method to draw the dialog in calibration of hydrology"""
@@ -12450,7 +12481,7 @@ class qvfsmod:
         self.update_bat_vfsmod()
         
         #Execute bat
-        resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
+        resultado = subprocess.run([os.path.normpath(self.plugin_directory+"\\executables\\execution.bat")],
             capture_output=True, 
             text=True, 
             shell=True)
@@ -12554,7 +12585,6 @@ class qvfsmod:
         
         #Obtain number of pesticides 
         self.number_pesticides = self.obtain_number_pestidides(self.obtain_direction_vfsmod(self.dlg_base.design_vfs_file.text()))
-        
         #We add the information of the loops to the files and we execute the file
         self.df_results_design = pd.DataFrame(columns=["Total Runoff from source (mm)","Total Runoff from Source (m3)",
             "Total Runoff out from Filter (mm)","Total Runoff out from Filter (m3)","Total Infiltration in Filter",
@@ -12566,31 +12596,29 @@ class qvfsmod:
         self.start_analysis_design()
     
     def run_design_part_two(self):
-         """Second part of design analysis to analyze the results. I have splitted sensitivity running in two because we use Thread method and we need to stop till the thread finishes, if not we get an error"""
-        
-         #Create DataFrame or results
-         self.df_results_design = self.create_df_design(self.results)
+        """Second part of design analysis to analyze the results. I have splitted sensitivity running in two because we use Thread method and we need to stop till the thread finishes, if not we get an error"""
+        #Create DataFrame or results
+        self.df_results_design = self.create_df_design(self.results)
+        #Delete all files created for paralelization of design analysis
+        self.delete_files_design()
 
-         #Delete all files created for paralelization of design analysis
-         self.delete_files_design()
-
-         #Add results to a csv
-         try:
-             self.df_results_design.to_csv(self.obtain_direction_vfsmod(self.dlg_base.name_design_csv.text()), index=False, float_format='%.5f')
-         except PermissionError:
+        #Add results to a csv
+        try:
+            self.df_results_design.to_csv(self.obtain_direction_vfsmod(self.dlg_base.name_design_csv.text()), index=False, float_format='%.5f')
+        except PermissionError:
             self.warning_message(f"{self.obtain_direction_vfsmod(self.dlg_base.name_design_csv.text())} file is opened and Design Analysis data could not be saved")
             return
-         #Close progress bar
-         self.progress_metod(close = True)
-    
-         #Add csv vile to the lineedit to finally put the results in the table
-         self.dlg_design_results.design_file.setText(self.dlg_base.name_design_csv.text())
-    
-         #Update resutls
-         self.update_design_results()
-    
-         #Warning message
-         self.warning_message("Design completed succesfully!")
+        #Close progress bar
+        self.progress_metod(close = True)
+
+        #Add csv vile to the lineedit to finally put the results in the table
+        self.dlg_design_results.design_file.setText(self.dlg_base.name_design_csv.text())
+
+        #Update resutls
+        self.update_design_results()
+
+        #Warning message
+        self.warning_message("Design completed succesfully!")
     
     def update_design_results(self):
         """Method to show the diaog and add outputs to table after the design execution"""
@@ -12616,13 +12644,13 @@ class qvfsmod:
             
     def update_bat_uh_design(self):
         """Method to update bat for the execution of UH"""
-        f = open(self.plugin_directory+"\\executables\\execution.bat","w+")
-        linea_uno = "cd {}".format(f'"{self.dlg_base.working_directory_vfsmod.text()}\\"')
-        linea_dos = f'"{self.plugin_directory}\\executables\\uh" design.lis'
+        f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
+        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text())}"')
+        linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\uh')}" design.lis'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
         f.write("{} \n".format(linea_dos))
-        f.write("{} \n".format(linea_tres))
+        #f.write("{} \n".format(linea_tres))
         f.close()
     
     def create_folder_for_design(self):
@@ -12636,12 +12664,12 @@ class qvfsmod:
             except:
                 pass
             
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\design"):
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\design")):
             create_folder("design")
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\design\inputs"):
-            create_folder("design\inputs")
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text())+"\design\output"):
-            create_folder("design\output")
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\design\inputs")):
+            create_folder(os.path.normpath(r"design\inputs"))
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\design\output")):
+            create_folder(os.path.normpath(r"design\output"))
         
     def create_combinations_design(self):
         """Method to create the combinations for the design"""
@@ -12707,7 +12735,7 @@ class qvfsmod:
         #First we save the .ikw file path
         ruta = self.obtain_direction_vfsmod(self.dlg_base.design_vfs_file.text())
         if os.path.exists(ruta) and os.path.isfile(ruta):
-            ikw = self.dlg_base.working_directory_vfsmod.text()+"\\design\\inputs\\design.ikw"
+            ikw = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\design\\inputs\\design.ikw")
             #We substitute value of length
             with open(ikw, "r") as archivo:
                 lineas = archivo.readlines()
@@ -12762,13 +12790,13 @@ class qvfsmod:
                 contenido +=f" {df.iloc[i,0]}   {df.iloc[i,1]}   {df.iloc[i,2]}\n"
             for i in lineas_ikw_original[-8:]:    
                 contenido+=f"{i}"
-            with open(self.dlg_base.working_directory_vfsmod.text()+"\\design\\inputs\\design.ikw", 'w') as archivo:
+            with open(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\design\\inputs\\design.ikw"), 'w') as archivo:
                 archivo.write(contenido)
     
     def modify_inp_file_design(self,duration=None,rainfall = None):
         """Metod to change storm duration"""
         #First we save the .inp file path
-        filepath = self.dlg_base.working_directory_vfsmod.text()+fr"\design\inputs\design.inp"
+        filepath = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+fr"\design\inputs\design.inp")
         with open(filepath, 'r') as file:
             lineas = file.readlines()
         numbers_str = lineas[0]
@@ -12809,7 +12837,7 @@ class qvfsmod:
     def modify_igr_file_design(self,value_change = None):
         """Metod to create the .igr file for the design execution"""
         #First we save the .igr file path
-        filepath = self.dlg_base.working_directory_vfsmod.text()+fr"\design\inputs\design.igr"
+        filepath = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+fr"\design\inputs\design.igr")
         with open(filepath, 'r') as file:
             lineas = file.readlines()
         numbers_str = lineas[0]
@@ -12957,13 +12985,13 @@ class qvfsmod:
     
     def update_bat_vfsmod(self):
         """Metod to update bat for the execution of VFS"""
-        f = open(self.plugin_directory+"\\executables\\execution.bat","w+")
-        linea_uno = "cd {}".format(f'"{os.path.dirname(self.obtain_direction_vfsmod(self.dlg_base.line_project_vfsmod.text()))}\\"')
-        linea_dos = f'"{self.plugin_directory}\\executables\\vfsm" {os.path.basename(self.dlg_base.line_project_vfsmod.text())}'
+        f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
+        linea_uno = "cd {}".format(f'"{os.path.normpath(os.path.dirname(self.obtain_direction_vfsmod(self.dlg_base.line_project_vfsmod.text())))}"')
+        linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\vfsm')}" {os.path.normpath(os.path.basename(self.dlg_base.line_project_vfsmod.text()))}'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
         f.write("{} \n".format(linea_dos))
-        f.write("{} \n".format(linea_tres))
+        #f.write("{} \n".format(linea_tres))
         f.close()
     
     def create_prj_file(self):
@@ -13325,7 +13353,7 @@ class qvfsmod:
         """Run method that performs all the real work"""
         
         # show the dialog
-        self.dlg_base.show()
+        self.dlg_base.showMaximized()
         self.dlg_base.raise_()
         self.dlg_base.activateWindow()
     
@@ -13625,7 +13653,7 @@ class qvfsmod:
         self.update_bat_uh()
         
         #Execute bat
-        resultado = subprocess.run([self.plugin_directory+"\\executables\\execution.bat"],
+        resultado = subprocess.run([os.path.normpath(self.plugin_directory+"\\executables\\execution.bat")],
             capture_output=True, 
             text=True, 
             shell=True)
@@ -13672,13 +13700,13 @@ class qvfsmod:
         
     def update_bat_uh(self):
         """Metod to update bat for the execution of UH"""
-        f = open(self.plugin_directory+"\\executables\\execution.bat","w+")
-        linea_uno = "cd {}".format(f'"{os.path.dirname(self.obtain_direction_vfsmod(self.dlg_base.uh_file.text()))}\\"')
-        linea_dos = f'"{self.plugin_directory}\\executables\\uh" {os.path.basename(self.dlg_base.uh_file.text())}'
+        f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
+        linea_uno = "cd {}".format(f'"{os.path.dirname(os.path.normpath(self.obtain_direction_vfsmod(self.dlg_base.uh_file.text())))}"')
+        linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\uh')}" {os.path.normpath(os.path.basename(self.dlg_base.uh_file.text()))}'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
         f.write("{} \n".format(linea_dos))
-        f.write("{} \n".format(linea_tres))
+        #f.write("{} \n".format(linea_tres))
         f.close()
     
     
@@ -14150,39 +14178,39 @@ class qvfsmod:
             if extension == "": extension = lineEdits_extension[i]
             directory = os.path.dirname(i.text())
             if directory=="":
-                i.setText(self.dlg_base.name_files.text() + "."+extension)
+                i.setText(os.path.normpath(self.dlg_base.name_files.text() + "."+extension))
             else:
-                i.setText(directory + "\\"+ self.dlg_base.name_files.text() + "."+extension)
+                i.setText(os.path.normpath(directory + "\\"+ self.dlg_base.name_files.text() + "."+extension))
     
     def default_values(self):
         """Method to set default values for input values"""
-        self.dlg_base.working_directory_vfsmod.setText(os.path.normpath(r"C:/borrar"))
+        self.dlg_base.working_directory_vfsmod.setText(os.path.normpath(r"C:/Users/i.barberena/Documents/Proyect"))
         #self.dlg_base.name_files.setText("prueba")
         self.dlg_base.uh_file.setText(os.path.normpath(".lis"))
-        self.dlg_base.uh_input.setText(os.path.normpath("inputs\.inp"))
+        self.dlg_base.uh_input.setText(os.path.normpath(r"inputs\.inp"))
         
         #File paths
         #UH
-        self.dlg_base.line_hydrograph.setText(os.path.normpath("inputs\.iro"))
-        self.dlg_base.line_hyetograph.setText(os.path.normpath("inputs\.irn"))
-        self.dlg_base.line_sedimentograph.setText(os.path.normpath("inputs\.isd"))
-        self.dlg_base.line_output_1.setText(os.path.normpath("output\.out"))
-        self.dlg_base.line_output_2.setText(os.path.normpath("output\.hyt"))
+        self.dlg_base.line_hydrograph.setText(os.path.normpath(r"inputs\.iro"))
+        self.dlg_base.line_hyetograph.setText(os.path.normpath(r"inputs\.irn"))
+        self.dlg_base.line_sedimentograph.setText(os.path.normpath(r"inputs\.isd"))
+        self.dlg_base.line_output_1.setText(os.path.normpath(r"output\.out"))
+        self.dlg_base.line_output_2.setText(os.path.normpath(r"output\.hyt"))
         #VFSMOD
         self.dlg_base.line_project_vfsmod.setText(os.path.normpath(".prj"))
-        self.dlg_base.line_overland.setText(os.path.normpath("inputs\.ikw"))
-        self.dlg_base.line_infiltration.setText(os.path.normpath("inputs\.iso"))
-        self.dlg_base.line_buffer.setText(os.path.normpath("inputs\.igr"))
-        self.dlg_base.line_incoming.setText(os.path.normpath("inputs\.isd"))
-        self.dlg_base.line_storm.setText(os.path.normpath("inputs\.irn"))
-        self.dlg_base.line_source.setText(os.path.normpath("inputs\.iro"))
-        self.dlg_base.line_water.setText(os.path.normpath("inputs\.iwq"))
-        self.dlg_base.line_sediment.setText(os.path.normpath("output\.og1"))
-        self.dlg_base.line_flow.setText(os.path.normpath("output\.og2"))
-        self.dlg_base.line_hydrograph_2.setText(os.path.normpath("output\.ohy"))
-        self.dlg_base.line_waterland.setText(os.path.normpath("output\.osm"))
-        self.dlg_base.line_overall.setText(os.path.normpath("output\.osp"))
-        self.dlg_base.line_quality.setText(os.path.normpath("output\.owq"))
+        self.dlg_base.line_overland.setText(os.path.normpath(r"inputs\.ikw"))
+        self.dlg_base.line_infiltration.setText(os.path.normpath(r"inputs\.iso"))
+        self.dlg_base.line_buffer.setText(os.path.normpath(r"inputs\.igr"))
+        self.dlg_base.line_incoming.setText(os.path.normpath(r"inputs\.isd"))
+        self.dlg_base.line_storm.setText(os.path.normpath(r"inputs\.irn"))
+        self.dlg_base.line_source.setText(os.path.normpath(r"inputs\.iro"))
+        self.dlg_base.line_water.setText(os.path.normpath(r"inputs\.iwq"))
+        self.dlg_base.line_sediment.setText(os.path.normpath(r"output\.og1"))
+        self.dlg_base.line_flow.setText(os.path.normpath(r"output\.og2"))
+        self.dlg_base.line_hydrograph_2.setText(os.path.normpath(r"output\.ohy"))
+        self.dlg_base.line_waterland.setText(os.path.normpath(r"output\.osm"))
+        self.dlg_base.line_overall.setText(os.path.normpath(r"output\.osp"))
+        self.dlg_base.line_quality.setText(os.path.normpath(r"output\.owq"))
         
         self.dlg_base.rainfall.setText("25")
         self.dlg_base.storm_duration.setText("6")
@@ -15049,7 +15077,7 @@ def design_paralelization(number_execution,core,combinations_design,working_dire
         modify_igr_file_design(combinations_design[number_execution][2],core,working_directory)
     
     #Execution
-    resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_uh_{core}.bat"],
+    resultado = subprocess.run([os.path.normpath(os.path.dirname(__file__)+f"\\executables\\execution_uh_{core}.bat")],
         capture_output=True, 
         text=True, 
         shell=True)
@@ -15058,10 +15086,10 @@ def design_paralelization(number_execution,core,combinations_design,working_dire
         error = True
         
     #Correct hietograph file
-    #correct_irn_file(working_directory+f"\\design\\inputs\\design_{core}.irn") 
+    #correct_irn_file(os.path.normpath(working_directory+f"\\design\\inputs\\design_{core}.irn")) 
     
     #VFS
-    resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_vfs_{core}.bat"],
+    resultado = subprocess.run([os.path.normpath(os.path.dirname(__file__)+f"\\executables\\execution_vfs_{core}.bat")],
             capture_output=True, 
             text=True, 
             shell=True)
@@ -15077,7 +15105,7 @@ def design_paralelization(number_execution,core,combinations_design,working_dire
 
 def modify_inp_file_design(new_value, core,working_directory):
     """Method to modfiy rainfall"""
-    filepath = working_directory+fr"\design\inputs\design_{core}.inp"
+    filepath = os.path.normpath(working_directory+fr"\design\inputs\design_{core}.inp")
     with open(filepath, 'r') as file:
         lineas = file.readlines()
     numbers_str = lineas[0]
@@ -15093,7 +15121,7 @@ def modify_inp_file_design(new_value, core,working_directory):
 
 def modify_igr_file_design(new_value, core,working_directory):
     """Method to modfiy inputs in design analysis"""
-    filepath = working_directory+fr"\design\inputs\design_{core}.igr"
+    filepath = os.path.normpath(working_directory+fr"\design\inputs\design_{core}.igr")
     with open(filepath, 'r') as file:
         lineas = file.readlines()
     numbers_str = lineas[0]
@@ -15114,7 +15142,7 @@ def modify_ikw_file_design(vfs_file_design,working_directory,value_change,core):
     #First we save the .ikw file path
     ruta = vfs_file_design
     if os.path.exists(ruta) and os.path.isfile(ruta):
-        ikw = working_directory+f"\\design\\inputs\\design_{core}.ikw"
+        ikw = os.path.normpath(working_directory+f"\\design\\inputs\\design_{core}.ikw")
         #We substitute value of length
         with open(ikw, "r") as archivo:
             lineas = archivo.readlines()
@@ -15211,7 +15239,7 @@ def modify_ikw_file_design(vfs_file_design,working_directory,value_change,core):
         for i in lineas_ikw_original[-8:]:    
             contenido+=f"{i}"
 
-        with open(working_directory+f"\\design\\inputs\\design_{core}.ikw", 'w') as archivo:
+        with open(os.path.normpath(working_directory+f"\\design\\inputs\\design_{core}.ikw"), 'w') as archivo:
             archivo.write(contenido)
 
 
@@ -15224,7 +15252,7 @@ def save_outputs_design(working_directory,error,length_checked,spacing_checked,n
             "Total Runoff out from Filter (m3)":[np.nan],"Total Infiltration in Filter":[np.nan],
             "Mass Sediment Input to Filter":[np.nan],"Concentration Sediment in Runoff from source Area":[np.nan],
             "Mass Sediment Output from Filter":[np.nan],"Concentration Sediment in Runoff exiting the Filter":[np.nan],
-            "Sediment Delivery Ratio":[np.nan],"Runoff Delivery Ratio":[np.nan], "Pesticide Delivery Ratio":[np.nan]})
+            "Sediment Delivery Ratio":[np.nan],"Runoff Delivery Ratio":[np.nan]})
         
         #Add water quality parameters if present
         if water_quality:
@@ -15239,7 +15267,7 @@ def save_outputs_design(working_directory,error,length_checked,spacing_checked,n
 
     
     else:
-        ruta = working_directory+f"\\design\\output\\design_{core}.osp"
+        ruta = os.path.normpath(working_directory+f"\\design\\output\\design_{core}.osp")
         with open(ruta, "r") as archivo:
             lineas = archivo.readlines()
         #Function to obtain specific results form .osp file
@@ -15282,7 +15310,7 @@ def save_outputs_design(working_directory,error,length_checked,spacing_checked,n
         #Add water quality parameters if present
         if water_quality:
             #Obtain results water quality
-            with open(working_directory+f"\\design\\output\\design_{core}.owq", "r") as archivo:
+            with open(os.path.normpath(working_directory+f"\\design\\output\\design_{core}.owq"), "r") as archivo:
                 lineas_owq = archivo.readlines()
             def obtain_result_owq(string,number_pesticide):
                 condition = False
@@ -15364,7 +15392,7 @@ def execution_uncertainity_analysis(number_execution,core,param_values,dic_data,
     #We execute
     #Only execute UH if there are parameters that need to be executed in UH
     if execute_uh:
-        resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_uh_{core}.bat"],
+        resultado = subprocess.run([os.path.normpath(os.path.dirname(__file__)+f"\\executables\\execution_uh_{core}.bat")],
             capture_output=True, 
             text=True, 
             shell=True)
@@ -15373,10 +15401,10 @@ def execution_uncertainity_analysis(number_execution,core,param_values,dic_data,
             return "error"
             
         #Correct hietograph file
-        #correct_irn_file(working_directory+f"\\uncertainity\\inputs\\uncertainity_{core}.irn") 
+        #correct_irn_file(os.path.normpath(working_directory+f"\\uncertainity\\inputs\\uncertainity_{core}.irn")) 
     
     #VFS
-    resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_vfs_{core}.bat"],
+    resultado = subprocess.run([os.path.normpath(os.path.dirname(__file__)+f"\\executables\\execution_vfs_{core}.bat")],
             capture_output=True, 
             text=True, 
             shell=True)
@@ -15420,7 +15448,7 @@ def change_buffer_length_uncertainity(value_change,core,vfs_uncertainity_file,wo
     """Method to modifi length of buffer in uncertainity analysis"""
     #First we save the .ikw file path
     ruta = vfs_uncertainity_file
-    ikw = working_directory+f"\\uncertainity\\inputs\\uncertainity_{core}.ikw"
+    ikw = working_directory+os.path.normpath(f"\\uncertainity\\inputs\\uncertainity_{core}.ikw")
     #We substitute value of length
     with open(ikw, "r") as archivo:
         lineas = archivo.readlines()
@@ -15518,13 +15546,13 @@ def change_buffer_length_uncertainity(value_change,core,vfs_uncertainity_file,wo
         contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
     for i in lineas_ikw_original[-8:]:    
         contenido+=f"{i}"
-    with open(working_directory+f"\\uncertainity\\inputs\\uncertainity_{core}.ikw", 'w') as archivo:
+    with open(working_directory+os.path.normpath(f"\\uncertainity\\inputs\\uncertainity_{core}.ikw"), 'w') as archivo:
         archivo.write(contenido)
 
 def change_filter_manning_uncertainity(value_change,column,core,working_directory):
     """Method to change the manning and slope value of the buffer in uncertainity analysis"""
     #We obtain information of ikw file
-    ikw = working_directory+f"\\uncertainity\\inputs\\uncertainity_{core}.ikw"
+    ikw = working_directory+os.path.normpath(f"\\uncertainity\\inputs\\uncertainity_{core}.ikw")
     
     with open(ikw, "r") as archivo:
         lineas = archivo.readlines()
@@ -15561,7 +15589,7 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
             df_conc["Leachate depth (m)"]=[-1.0]
             df_conc["Pesticide Delivery Ratio"]=[-1.0]
     else:
-        ruta = working_directory+f"\\uncertainity\\output\\uncertainity_{core}.osp"
+        ruta = working_directory+os.path.normpath(f"\\uncertainity\\output\\uncertainity_{core}.osp")
         with open(ruta, "r") as archivo:
             lineas = archivo.readlines()
         #Function to obtain specific results form .osp file
@@ -15594,7 +15622,7 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
         rdr = obtain_result(" Runoff Delivery Ratio\n")
         
         #Obtain results ohy
-        ruta = working_directory+f"\\uncertainity\\output\\uncertainity_{core}.ohy"
+        ruta = working_directory+os.path.normpath(f"\\uncertainity\\output\\uncertainity_{core}.ohy")
         with open(ruta, "r") as archivo:
             lineas_ohy = archivo.readlines()
         water_front_depth =float(lineas_ohy[-1].split()[-2])
@@ -15609,7 +15637,7 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
         #Add water quality parameters if present
         if water_quality:
             #Obtain results water quality
-            with open(working_directory+f"\\uncertainity\\output\\uncertainity_{core}.owq", "r") as archivo:
+            with open(working_directory+os.path.normpath(f"\\uncertainity\\output\\uncertainity_{core}.owq"), "r") as archivo:
                 lineas_owq = archivo.readlines()
             valores = []
             for i in range(len(lineas_owq)):
@@ -15707,7 +15735,7 @@ def execution_sensitivity_analysis_design(number_execution,core,param_values,dic
     #We execute
     #Only execute UH if there are parameters that need to be executed in UH
     if execute_uh:
-        resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_uh_{core}.bat"],
+        resultado = subprocess.run([os.path.dirname(__file__)+os.path.normpath(f"\\executables\\execution_uh_{core}.bat")],
             capture_output=True, 
             text=True, 
             shell=True)
@@ -15717,10 +15745,10 @@ def execution_sensitivity_analysis_design(number_execution,core,param_values,dic
     
     
         #Correct hietograph file
-        #correct_irn_file(working_directory+f"\\design\\inputs\\design_{core}.irn") 
+        #correct_irn_file(working_directory+os.path.normpath(f"\\design\\inputs\\design_{core}.irn")) 
     
     #VFS
-    resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_vfs_{core}.bat"],
+    resultado = subprocess.run([os.path.dirname(__file__)+os.path.normpath(f"\\executables\\execution_vfs_{core}.bat")],
             capture_output=True, 
             text=True, 
             shell=True)
@@ -15732,9 +15760,9 @@ def execution_sensitivity_analysis_design(number_execution,core,param_values,dic
 def modify_inputs_sensitivity_design(extension, row, column, new_value, process,core,working_directory):
     """Function to modfiy inputs in sensitivity analysis"""
     if process == "uh":
-        ruta = os.path.normpath(working_directory+f"\design\design_{core}.lis")
+        ruta = os.path.normpath(working_directory+os.path.normpath(rf"\design\design_{core}.lis"))
     else:
-        ruta = os.path.normpath(working_directory+f"\design\design_{core}.prj")
+        ruta = os.path.normpath(working_directory+os.path.normpath(rf"\design\design_{core}.prj"))
     with open(ruta, "r") as archivo:
         lineas_prj = archivo.readlines()
     for i in lineas_prj:
@@ -15763,7 +15791,7 @@ def change_buffer_length_sensitivity_design(value_change,core,vfs_sensitivity_fi
     """Function to modifi length of buffer in sensitivity analysis"""
     #First we save the .ikw file path
     ruta = vfs_sensitivity_file
-    ikw = working_directory+f"\\design\\inputs\\design_{core}.ikw"
+    ikw = working_directory+os.path.normpath(f"\\design\\inputs\\design_{core}.ikw")
     #We substitute value of length
     with open(ikw, "r") as archivo:
         lineas = archivo.readlines()
@@ -15861,13 +15889,13 @@ def change_buffer_length_sensitivity_design(value_change,core,vfs_sensitivity_fi
         contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
     for i in lineas_ikw_original[-8:]:    
         contenido+=f"{i}"
-    with open(working_directory+f"\\design\\inputs\\design_{core}.ikw", 'w') as archivo:
+    with open(working_directory+os.path.normpath(f"\\design\\inputs\\design_{core}.ikw"), 'w') as archivo:
         archivo.write(contenido)
     
 def change_filter_manning_sensitivity_design(value_change,column,core,working_directory):
     """Function to change the manning and slope value of the buffer in sensitivity analysis"""
     #We obtain information of ikw file
-    ikw = working_directory+f"\\design\\inputs\\design_{core}.ikw"
+    ikw = working_directory+os.path.normpath(f"\\design\\inputs\\design_{core}.ikw")
     
     with open(ikw, "r") as archivo:
         lineas = archivo.readlines()
@@ -15904,7 +15932,7 @@ def save_results_sensitivity_analysis_design(number_execution,core,working_direc
             df_conc[f"PDR {i}",]=[-1.0]
 
     else:
-        ruta = working_directory+f"\\design\\output\\design_{core}.osp"
+        ruta = working_directory+os.path.normpath(f"\\design\\output\\design_{core}.osp")
         with open(ruta, "r") as archivo:
             lineas = archivo.readlines()
             
@@ -15935,7 +15963,7 @@ def save_results_sensitivity_analysis_design(number_execution,core,working_direc
             df_conc["SDR"]=[sdr]
         
         for p in [x.split()[-1] for x in outputs_to_save.keys() if x.split()[0] == "PDR"]:
-            with open(working_directory+f"\\design\\output\\design_{core}.owq", "r") as archivo:
+            with open(working_directory+os.path.normpath(f"\\design\\output\\design_{core}.owq"), "r") as archivo:
                 lineas_owq = archivo.readlines()
             def obtain_result_owq(string,number_pesticide):
                 condition = False
@@ -16030,7 +16058,7 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
     #We execute
     #Only execute UH if there are parameters that need to be executed in UH
     if execute_uh:
-        resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_uh_{core}.bat"],
+        resultado = subprocess.run([os.path.dirname(__file__)+os.path.normpath(f"\\executables\\execution_uh_{core}.bat")],
             capture_output=True, 
             text=True, 
             shell=True)
@@ -16040,10 +16068,10 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
     
     
         #Correct hietograph file
-        #correct_irn_file(working_directory+f"\\sensitivity\\inputs\\sensitivity_{core}.irn") 
+        #correct_irn_file(working_directory+os.path.normpath(f"\\sensitivity\\inputs\\sensitivity_{core}.irn")) 
     
     #VFS
-    resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_vfs_{core}.bat"],
+    resultado = subprocess.run([os.path.dirname(__file__)+os.path.normpath(f"\\executables\\execution_vfs_{core}.bat")],
             capture_output=True, 
             text=True, 
             shell=True)
@@ -16055,9 +16083,9 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
 def modify_inputs_sensitivity(extension, row, column, new_value, process,core,working_directory):
     """Function to modfiy inputs in sensitivity analysis"""
     if process == "uh":
-        ruta = os.path.normpath(working_directory+f"\sensitivity\sensitivity_{core}.lis")
+        ruta = os.path.normpath(working_directory+os.path.normpath(rf"\sensitivity\sensitivity_{core}.lis"))
     else:
-        ruta = os.path.normpath(working_directory+f"\sensitivity\sensitivity_{core}.prj")
+        ruta = os.path.normpath(working_directory+os.path.normpath(rf"\sensitivity\sensitivity_{core}.prj"))
     with open(ruta, "r") as archivo:
         lineas_prj = archivo.readlines()
     for i in lineas_prj:
@@ -16086,7 +16114,7 @@ def change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file,work
     """Function to modifi length of buffer in sensitivity analysis"""
     #First we save the .ikw file path
     ruta = vfs_sensitivity_file
-    ikw = working_directory+f"\\sensitivity\\inputs\\sensitivity_{core}.ikw"
+    ikw = working_directory+os.path.normpath(f"\\sensitivity\\inputs\\sensitivity_{core}.ikw")
     #We substitute value of length
     with open(ikw, "r") as archivo:
         lineas = archivo.readlines()
@@ -16184,13 +16212,13 @@ def change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file,work
         contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
     for i in lineas_ikw_original[-8:]:    
         contenido+=f"{i}"
-    with open(working_directory+f"\\sensitivity\\inputs\\sensitivity_{core}.ikw", 'w') as archivo:
+    with open(working_directory+os.path.normpath(f"\\sensitivity\\inputs\\sensitivity_{core}.ikw", 'w')) as archivo:
         archivo.write(contenido)
     
 def change_filter_manning_sensitivity(value_change,column,core,working_directory):
     """Function to change the manning and slope value of the buffer in sensitivity analysis"""
     #We obtain information of ikw file
-    ikw = working_directory+f"\\sensitivity\\inputs\\sensitivity_{core}.ikw"
+    ikw = working_directory+os.path.normpath(f"\\sensitivity\\inputs\\sensitivity_{core}.ikw")
     
     with open(ikw, "r") as archivo:
         lineas = archivo.readlines()
@@ -16260,7 +16288,7 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
             df_conc["Pesticide Delivery Ratio"]=[-1.0]
 
     else:
-        ruta = working_directory+f"\\sensitivity\\output\\sensitivity_{core}.osp"
+        ruta = working_directory+os.path.normpath(f"\\sensitivity\\output\\sensitivity_{core}.osp")
         with open(ruta, "r") as archivo:
             lineas = archivo.readlines()
             
@@ -16297,7 +16325,7 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
             
         
         #Obtain results ohy
-        ruta = working_directory+f"\\sensitivity\\output\\sensitivity_{core}.ohy"
+        ruta = working_directory+os.path.normpath(f"\\sensitivity\\output\\sensitivity_{core}.ohy")
         with open(ruta, "r") as archivo:
             lineas_ohy = archivo.readlines()
         water_front_depth =float(lineas_ohy[-1].split()[-2])
@@ -16314,7 +16342,7 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
         #Add water quality parameters if present
         if water_quality:
             #Obtain results water quality
-            with open(working_directory+f"\\sensitivity\\output\\sensitivity_{core}.owq", "r") as archivo:
+            with open(working_directory+os.path.normpath(f"\\sensitivity\\output\\sensitivity_{core}.owq"), "r") as archivo:
                 lineas_owq = archivo.readlines()
             valores = []
             for i in range(len(lineas_owq)):
@@ -16408,7 +16436,7 @@ def execution_sensitivity_analysis_calibration(number_execution,core,param_value
     
     #We execute
     #VFS
-    resultado = subprocess.run([os.path.dirname(__file__)+f"\\executables\\execution_vfs_{core}.bat"],
+    resultado = subprocess.run([os.path.dirname(__file__)+os.path.normpath(f"\\executables\\execution_vfs_{core}.bat")],
             capture_output=True, 
             text=True, 
             shell=True)
@@ -16420,9 +16448,9 @@ def execution_sensitivity_analysis_calibration(number_execution,core,param_value
 def modify_inputs_sensitivity_calibration(extension, row, column, new_value, process,core,working_directory):
     """Function to modfiy inputs in sensitivity analysis"""
     if process == "uh":
-        ruta = os.path.normpath(working_directory+f"\inverse\inverse_{core}.lis")
+        ruta = os.path.normpath(working_directory+os.path.normpath(f"\\inverse\\inverse_{core}.lis"))
     else:
-        ruta = os.path.normpath(working_directory+f"\inverse\inverse_{core}.prj")
+        ruta = os.path.normpath(working_directory+os.path.normpath(f"\\inverse\\inverse_{core}.prj"))
     with open(ruta, "r") as archivo:
         lineas_prj = archivo.readlines()
     for i in lineas_prj:
@@ -16451,7 +16479,7 @@ def change_buffer_length_sensitivity_calibration(value_change,core,vfs_sensitivi
     """Function to modifi length of buffer in sensitivity analysis"""
     #First we save the .ikw file path
     ruta = vfs_sensitivity_file
-    ikw = working_directory+f"\\inverse\\inputs\\inverse_{core}.ikw"
+    ikw = working_directory+os.path.normpath(f"\\inverse\\inputs\\inverse_{core}.ikw")
     #We substitute value of length
     with open(ikw, "r") as archivo:
         lineas = archivo.readlines()
@@ -16549,13 +16577,13 @@ def change_buffer_length_sensitivity_calibration(value_change,core,vfs_sensitivi
         contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
     for i in lineas_ikw_original[-8:]:    
         contenido+=f"{i}"
-    with open(working_directory+f"\\inverse\\inputs\\inverse_{core}.ikw", 'w') as archivo:
+    with open(working_directory+os.path.normpath(f"\\inverse\\inputs\\inverse_{core}.ikw", 'w')) as archivo:
         archivo.write(contenido)
     
 def change_filter_manning_sensitivity_calibration(value_change,column,core,working_directory):
     """Function to change the manning and slope value of the buffer in sensitivity analysis"""
     #We obtain information of ikw file
-    ikw = working_directory+f"\\inverse\\inputs\\inverse_{core}.ikw"
+    ikw = working_directory+os.path.normpath(f"\\inverse\\inputs\\inverse_{core}.ikw")
     
     with open(ikw, "r") as archivo:
         lineas = archivo.readlines()
@@ -16617,7 +16645,7 @@ def save_results_sensitivity_analysis_calibration(number_execution,core,working_
 
     else:
         if type_calibration == "hydrograph":
-            ruta = working_directory+f"\\inverse\\output\\inverse_{core}.ohy"
+            ruta = working_directory+os.path.normpath(f"\\inverse\\output\\inverse_{core}.ohy")
             with open(ruta, "r") as archivo:
                 lineas = archivo.readlines()
             discharge = []
@@ -16677,7 +16705,7 @@ def save_results_sensitivity_analysis_calibration(number_execution,core,working_
             df_conc = pd.DataFrame(data = {"Error":[0],"Goodnes of fit":[nash_sutcliffe_efficiency]})
         
         elif type_calibration == "sedimentograph":
-            ruta = working_directory+f"\\inverse\\output\\inverse_{core}.og1"
+            ruta = working_directory+os.path.normpath(f"\\inverse\\output\\inverse_{core}.og1")
             with open(ruta, "r") as archivo:
                 lineas = archivo.readlines()
             sediment = []
@@ -16689,7 +16717,7 @@ def save_results_sensitivity_analysis_calibration(number_execution,core,working_
                         sediment.append(float(lineas[k].split()[9]))
             calibration_df_progress = pd.DataFrame(data = {"Time":times,"Sediment":sediment})
             #Then obtain the width of the filter
-            with open(working_directory+f"\\inverse\\output\\inverse_{core}.osp", "r") as archivo:
+            with open(working_directory+os.path.normpath(f"\\inverse\\output\\inverse_{core}.osp", "r")) as archivo:
                 lineas = archivo.readlines()
             for i in lineas:
                 if i.split("=")[-1]==" Filter Strip Width (input)\n":
@@ -16750,7 +16778,7 @@ def save_results_sensitivity_analysis_calibration(number_execution,core,working_
             #Create variable to add objective function
             objective_function = []
             #Function to obtain results from osp
-            ruta = working_directory+f"\\inverse\\output\\inverse_{core}.osp"
+            ruta = working_directory+os.path.normpath(f"\\inverse\\output\\inverse_{core}.osp")
             with open(ruta, "r") as archivo:
                 lineas = archivo.readlines()
             def obtain_result_osp(string):
@@ -16766,7 +16794,7 @@ def save_results_sensitivity_analysis_calibration(number_execution,core,working_
             
             #Same for owq
             if water_quality:
-                ruta = working_directory+f"\\inverse\\output\\inverse_{core}.owq"
+                ruta = working_directory+os.path.normpath(f"\\inverse\\output\\inverse_{core}.owq")
                 with open(ruta, "r") as archivo:
                     lineas_owq = archivo.readlines()
                     
@@ -16995,6 +17023,15 @@ class UncertainityAnalysisThread(QThread):
 
 if __name__ == "__main__":
     freeze_support() #to be able to use multiprocessing after converting it to an executable
+    
+    
+    
+    #We scalate the dialogs and all the elements depending on the resolution of the screen
+    if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
+        PyQt5.QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+
+    if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
+        PyQt5.QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
     app = QtWidgets.QApplication(sys.argv)
     
     dialog = qvfsmod()

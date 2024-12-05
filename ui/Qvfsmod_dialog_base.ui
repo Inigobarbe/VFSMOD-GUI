@@ -346,9 +346,9 @@ QTableCornerButton::section {
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-492</y>
+             <y>-491</y>
              <width>573</width>
-             <height>1014</height>
+             <height>1011</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_25">
@@ -466,8 +466,6 @@ example 1%</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -613,8 +611,6 @@ typical 0.01-0.07</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -712,8 +708,6 @@ typical 0.01-0.07</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -745,8 +739,6 @@ typical 0.01-0.07</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -770,7 +762,11 @@ typical 0.01-0.07</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="line_hydrograph"/>
+                  <widget class="QLineEdit" name="line_hydrograph">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="browse_hydrograph">
@@ -825,7 +821,11 @@ typical 0.01-0.07</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="line_hyetograph"/>
+                  <widget class="QLineEdit" name="line_hyetograph">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="browse_hyetograph">
@@ -886,7 +886,11 @@ typical 0.01-0.07</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="line_sedimentograph"/>
+                  <widget class="QLineEdit" name="line_sedimentograph">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="browse_sedimentograph">
@@ -941,7 +945,11 @@ typical 0.01-0.07</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="line_output_1"/>
+                  <widget class="QLineEdit" name="line_output_1">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="browse_output1">
@@ -996,7 +1004,11 @@ typical 0.01-0.07</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="line_output_2"/>
+                  <widget class="QLineEdit" name="line_output_2">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="browse_output2">
@@ -1053,8 +1065,6 @@ typical 0.01-0.07</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -1207,8 +1217,6 @@ default 5 min</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -1332,9 +1340,9 @@ default 5 min</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-188</y>
              <width>573</width>
-             <height>722</height>
+             <height>708</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_17">
@@ -1460,8 +1468,6 @@ default 5 min</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -1485,7 +1491,11 @@ default 5 min</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="line_overland"/>
+                  <widget class="QLineEdit" name="line_overland">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="edit_overland">
@@ -1523,7 +1533,11 @@ default 5 min</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="line_infiltration"/>
+                  <widget class="QLineEdit" name="line_infiltration">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="edit_infiltration">
@@ -1561,7 +1575,11 @@ default 5 min</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="line_buffer"/>
+                  <widget class="QLineEdit" name="line_buffer">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="edit_buffer">
@@ -1599,7 +1617,11 @@ default 5 min</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="line_incoming"/>
+                  <widget class="QLineEdit" name="line_incoming">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="edit_incoming">
@@ -1637,7 +1659,11 @@ default 5 min</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="line_storm"/>
+                  <widget class="QLineEdit" name="line_storm">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="edit_storm">
@@ -1675,7 +1701,11 @@ default 5 min</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="line_source"/>
+                  <widget class="QLineEdit" name="line_source">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="edit_source">
@@ -1713,7 +1743,11 @@ default 5 min</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="line_water"/>
+                  <widget class="QLineEdit" name="line_water">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="edit_water">
@@ -1781,7 +1815,11 @@ default 5 min</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="line_hydrograph_2"/>
+                  <widget class="QLineEdit" name="line_hydrograph_2">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="browse_hydrograph_2">
@@ -1836,7 +1874,11 @@ default 5 min</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="line_sediment"/>
+                  <widget class="QLineEdit" name="line_sediment">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="browse_sediment">
@@ -1881,8 +1923,6 @@ default 5 min</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -1906,7 +1946,11 @@ default 5 min</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="line_flow"/>
+                  <widget class="QLineEdit" name="line_flow">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="browse_flow">
@@ -1961,7 +2005,11 @@ default 5 min</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="line_quality"/>
+                  <widget class="QLineEdit" name="line_quality">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="browse_quality">
@@ -2016,7 +2064,11 @@ default 5 min</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="line_waterland"/>
+                  <widget class="QLineEdit" name="line_waterland">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="browse_waterland">
@@ -2071,7 +2123,11 @@ default 5 min</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="line_overall"/>
+                  <widget class="QLineEdit" name="line_overall">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="browse_overall">
@@ -2151,7 +2207,7 @@ default 5 min</string>
              <x>0</x>
              <y>0</y>
              <width>764</width>
-             <height>522</height>
+             <height>520</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_29">
@@ -2828,10 +2884,10 @@ default 5 min</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_13">
            <property name="geometry">
             <rect>
-             <x>-384</x>
-             <y>-238</y>
+             <x>0</x>
+             <y>0</y>
              <width>1318</width>
-             <height>743</height>
+             <height>736</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_55">
@@ -2881,8 +2937,8 @@ default 5 min</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>231</width>
-                       <height>381</height>
+                       <width>202</width>
+                       <height>370</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_90">
@@ -3123,8 +3179,8 @@ Solution Parameters</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>497</width>
-                       <height>173</height>
+                       <width>290</width>
+                       <height>28</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_98">
@@ -3316,8 +3372,8 @@ Solution Parameters</string>
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>335</width>
-                          <height>226</height>
+                          <width>341</width>
+                          <height>174</height>
                          </rect>
                         </property>
                         <layout class="QGridLayout" name="gridLayout_61">
@@ -3561,7 +3617,6 @@ Solution Parameters</string>
                            <font>
                             <family>Georgia</family>
                             <pointsize>-1</pointsize>
-                            <underline>true</underline>
                            </font>
                           </property>
                           <property name="text">
@@ -3700,8 +3755,8 @@ Solution Parameters</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>753</width>
-             <height>803</height>
+             <width>735</width>
+             <height>797</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_9">
@@ -3720,8 +3775,6 @@ Solution Parameters</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -4190,8 +4243,6 @@ Solution Parameters</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -4327,8 +4378,6 @@ Identifiability</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -4540,7 +4589,7 @@ Identifiability</string>
              <x>0</x>
              <y>0</y>
              <width>908</width>
-             <height>505</height>
+             <height>341</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_65">
@@ -4864,7 +4913,7 @@ Identifiability</string>
              <x>0</x>
              <y>0</y>
              <width>923</width>
-             <height>613</height>
+             <height>606</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_22">
@@ -5046,8 +5095,8 @@ Identifiability</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>231</width>
-                       <height>381</height>
+                       <width>202</width>
+                       <height>370</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_78">
@@ -5289,7 +5338,7 @@ Solution Parameters</string>
                        <x>0</x>
                        <y>0</y>
                        <width>290</width>
-                       <height>173</height>
+                       <height>28</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_79">
@@ -5377,7 +5426,6 @@ Solution Parameters</string>
                         <font>
                          <family>Georgia</family>
                          <pointsize>-1</pointsize>
-                         <underline>true</underline>
                         </font>
                        </property>
                        <property name="text">
@@ -5510,7 +5558,6 @@ Solution Parameters</string>
                            <font>
                             <family>Georgia</family>
                             <pointsize>-1</pointsize>
-                            <underline>false</underline>
                            </font>
                           </property>
                           <property name="text">
@@ -5524,7 +5571,6 @@ Solution Parameters</string>
                            <font>
                             <family>Georgia</family>
                             <pointsize>-1</pointsize>
-                            <underline>false</underline>
                            </font>
                           </property>
                           <property name="text">
@@ -5589,7 +5635,7 @@ Solution Parameters</string>
              <x>0</x>
              <y>0</y>
              <width>1000</width>
-             <height>553</height>
+             <height>539</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_43">
@@ -5953,8 +5999,8 @@ Solution Parameters</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1124</width>
-             <height>453</height>
+             <width>1119</width>
+             <height>441</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_40">
@@ -6241,8 +6287,8 @@ Solution Parameters</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>923</width>
-             <height>613</height>
+             <width>921</width>
+             <height>606</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_24">
@@ -6335,8 +6381,8 @@ Solution Parameters</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>204</width>
-                       <height>381</height>
+                       <width>202</width>
+                       <height>370</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_82">
@@ -6817,8 +6863,8 @@ Solution Parameters</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1068</width>
-             <height>609</height>
+             <width>1066</width>
+             <height>607</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_96">
@@ -7039,7 +7085,7 @@ Solution Parameters</string>
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuProject_Selection">

@@ -1,0 +1,15 @@
+Excepción: ValueError
+Mensaje: could not convert string to float: 'l'
+
+Excepción: ValueError
+Mensaje: could not convert string to float: 'p'
+
+Excepción: ValueError
+Mensaje: could not convert string to float: 'p'
+
+Excepción: ValueError
+Mensaje: could not convert string to float: 'p'
+
+Excepción: ValueError
+Mensaje: could not convert string to float: ''
+
