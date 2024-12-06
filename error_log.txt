@@ -13,3 +13,45 @@ Mensaje: could not convert string to float: 'p'
 Excepción: ValueError
 Mensaje: could not convert string to float: ''
 
+Excepción: ValueError
+Mensaje: invalid literal for int() with base 10: 'a'
+
+Excepción: ValueError
+Mensaje: invalid literal for int() with base 10: ''
+
+Excepción: ValueError
+Mensaje: invalid literal for int() with base 10: ''
+
+Excepción: ValueError
+Mensaje: invalid literal for int() with base 10: ''
+
+Excepción: NameError
+Mensaje: name 'pesticides' is not defined
+
+Excepción: TypeError
+Mensaje: object of type 'int' has no len()
+
+Excepción: AttributeError
+Mensaje: 'degradation_data' object has no attribute 'label_pesticide_1_molar_mass'
+
+Excepción: AttributeError
+Mensaje: 'degradation_data' object has no attribute 'label_pesticide_1_molar_mass'
+
+Excepción: AttributeError
+Mensaje: 'degradation_data' object has no attribute 'label_pesticide_1_molar_mass'
+
+Excepción: AttributeError
+Mensaje: 'NoneType' object has no attribute 'deleteLater'
+
+Excepción: RuntimeError
+Mensaje: wrapped C/C++ object of type QLabel has been deleted
+
+Excepción: ValueError
+Mensaje: invalid literal for int() with base 10: ''
+
+Excepción: AttributeError
+Mensaje: 'NoneType' object has no attribute 'deleteLater'
+
+Excepción: AttributeError
+Mensaje: 'NoneType' object has no attribute 'deleteLater'
+

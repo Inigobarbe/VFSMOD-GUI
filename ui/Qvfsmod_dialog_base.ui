@@ -346,9 +346,9 @@ QTableCornerButton::section {
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-491</y>
+             <y>0</y>
              <width>573</width>
-             <height>1011</height>
+             <height>1014</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_25">
@@ -1340,9 +1340,9 @@ default 5 min</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-188</y>
+             <y>0</y>
              <width>573</width>
-             <height>708</height>
+             <height>722</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_17">
@@ -2207,7 +2207,7 @@ default 5 min</string>
              <x>0</x>
              <y>0</y>
              <width>764</width>
-             <height>520</height>
+             <height>522</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_29">
@@ -2884,10 +2884,10 @@ default 5 min</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_13">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>-54</x>
              <y>0</y>
              <width>1318</width>
-             <height>736</height>
+             <height>743</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_55">
@@ -2936,9 +2936,9 @@ default 5 min</string>
                      <property name="geometry">
                       <rect>
                        <x>0</x>
-                       <y>0</y>
-                       <width>202</width>
-                       <height>370</height>
+                       <y>-208</y>
+                       <width>231</width>
+                       <height>381</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_90">
@@ -3179,8 +3179,8 @@ Solution Parameters</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>290</width>
-                       <height>28</height>
+                       <width>497</width>
+                       <height>173</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_98">
@@ -3372,8 +3372,8 @@ Solution Parameters</string>
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>341</width>
-                          <height>174</height>
+                          <width>335</width>
+                          <height>226</height>
                          </rect>
                         </property>
                         <layout class="QGridLayout" name="gridLayout_61">
@@ -3754,9 +3754,9 @@ Solution Parameters</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>735</width>
-             <height>797</height>
+             <y>-298</y>
+             <width>753</width>
+             <height>803</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_9">
@@ -4558,19 +4558,6 @@ Identifiability</string>
           </widget>
          </widget>
         </item>
-        <item row="0" column="1">
-         <spacer name="horizontalSpacer_15">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="page_results_design_uncertainity">
@@ -4589,7 +4576,7 @@ Identifiability</string>
              <x>0</x>
              <y>0</y>
              <width>908</width>
-             <height>341</height>
+             <height>505</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_65">
@@ -4910,10 +4897,10 @@ Identifiability</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_8">
            <property name="geometry">
             <rect>
-             <x>0</x>
-             <y>0</y>
+             <x>-176</x>
+             <y>-108</y>
              <width>923</width>
-             <height>606</height>
+             <height>613</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_22">
@@ -5095,8 +5082,8 @@ Identifiability</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>202</width>
-                       <height>370</height>
+                       <width>231</width>
+                       <height>381</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_78">
@@ -5338,7 +5325,7 @@ Solution Parameters</string>
                        <x>0</x>
                        <y>0</y>
                        <width>290</width>
-                       <height>28</height>
+                       <height>173</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_79">
@@ -5455,30 +5442,6 @@ Solution Parameters</string>
                         <enum>QFrame::Raised</enum>
                        </property>
                        <layout class="QGridLayout" name="gridLayout_35">
-                        <item row="0" column="0">
-                         <layout class="QHBoxLayout" name="horizontalLayout_122">
-                          <item>
-                           <widget class="QLabel" name="label_125">
-                            <property name="minimumSize">
-                             <size>
-                              <width>85</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>Trajectories</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QLineEdit" name="trajectories">
-                            <property name="alignment">
-                             <set>Qt::AlignCenter</set>
-                            </property>
-                           </widget>
-                          </item>
-                         </layout>
-                        </item>
                         <item row="1" column="0">
                          <layout class="QHBoxLayout" name="horizontalLayout_123">
                           <item>
@@ -5496,6 +5459,30 @@ Solution Parameters</string>
                           </item>
                           <item>
                            <widget class="QLineEdit" name="samples">
+                            <property name="alignment">
+                             <set>Qt::AlignCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                        <item row="0" column="0">
+                         <layout class="QHBoxLayout" name="horizontalLayout_122">
+                          <item>
+                           <widget class="QLabel" name="label_125">
+                            <property name="minimumSize">
+                             <size>
+                              <width>85</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="text">
+                             <string>Trajectories</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QLineEdit" name="trajectories">
                             <property name="alignment">
                              <set>Qt::AlignCenter</set>
                             </property>
@@ -5635,7 +5622,7 @@ Solution Parameters</string>
              <x>0</x>
              <y>0</y>
              <width>1000</width>
-             <height>539</height>
+             <height>553</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_43">
@@ -5999,8 +5986,8 @@ Solution Parameters</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1119</width>
-             <height>441</height>
+             <width>1124</width>
+             <height>505</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_40">
@@ -6285,10 +6272,10 @@ Solution Parameters</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_10">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>-65</x>
              <y>0</y>
-             <width>921</width>
-             <height>606</height>
+             <width>923</width>
+             <height>613</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_24">
@@ -6381,8 +6368,8 @@ Solution Parameters</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>202</width>
-                       <height>370</height>
+                       <width>231</width>
+                       <height>381</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_82">
@@ -6624,7 +6611,7 @@ Solution Parameters</string>
                        <x>0</x>
                        <y>0</y>
                        <width>290</width>
-                       <height>28</height>
+                       <height>173</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_86">
@@ -6863,8 +6850,8 @@ Solution Parameters</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1066</width>
-             <height>607</height>
+             <width>1068</width>
+             <height>609</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_96">
@@ -7085,7 +7072,7 @@ Solution Parameters</string>
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuProject_Selection">

@@ -16,7 +16,7 @@ import PyQt5
 from PyQt5 import QtWidgets,QtGui
 from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QThread,pyqtSignal
 from PyQt5.QtGui import QIcon, QFont, QGuiApplication
-from PyQt5.QtWidgets import QAction, QMessageBox,QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy,QAction, QMenu,QCheckBox, QFrame,QGridLayout,QHBoxLayout
+from PyQt5.QtWidgets import QAction, QComboBox,QMessageBox,QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy,QAction, QMenu,QCheckBox, QFrame,QGridLayout,QHBoxLayout
 from sklearn.linear_model import LinearRegression
 from scipy.optimize import differential_evolution, minimize
 from multiprocessing import Pool,freeze_support
@@ -114,7 +114,7 @@ from ui.ohy_graphs import ohy_graphs
 
 
 
-#Detection of non expected errors
+r'''#Detection of non expected errors
 def global_exception_handler(exctype, value, traceback):
     """
     Manejador global de excepciones no controladas.
@@ -128,7 +128,7 @@ def global_exception_handler(exctype, value, traceback):
 
 # Configurar el manejador global
 sys.excepthook = global_exception_handler
-
+'''
 
 class qvfsmod:
     """QGIS Plugin Implementation."""
@@ -302,11 +302,11 @@ class qvfsmod:
         
         
         #In single values, when checkbox is changed then update the parameters
-        self.dlg_base.check_total_discharge.stateChanged.connect(lambda _, b = [False,"hydrograph"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
-        self.dlg_base.check_filtered_discharge.stateChanged.connect(lambda _, b = [False,"hydrograph"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
+        self.dlg_base.check_total_discharge.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
+        self.dlg_base.check_filtered_discharge.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
         
-        self.dlg_base.check_total_sediment.stateChanged.connect(lambda _, b = [False,"sedimentograph"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
-        self.dlg_base.check_filtered_sediment.stateChanged.connect(lambda _, b = [False,"sedimentograph"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
+        self.dlg_base.check_total_sediment.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
+        self.dlg_base.check_filtered_sediment.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
         
         self.dlg_base.check_filtered_pesticide.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
         self.dlg_base.check_pesticide_out.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
@@ -506,6 +506,13 @@ class qvfsmod:
         #Column widths of iro and irn
         self.dlg_vfsmod_hydrograph.tableWidget.setColumnWidth(1, 150)
         self.dlg_vfsmod_hyetograph.tableWidget.setColumnWidth(1, 150)
+        
+        
+        #Put the option to select pesticides in sensitivity analysis
+        self.dlg_base.parameter_name_design.textChanged.connect(lambda _, b= "design_uncertainity":self.add_pesticides_dialog_sensitivity_inputs(b))
+        self.dlg_calibration_sensitivity_hydrograph.parameter_name.textChanged.connect(lambda _, b= "identifiability":self.add_pesticides_dialog_sensitivity_inputs(b))
+        self.dlg_base.parameter_name.textChanged.connect(lambda _, b= "sensitivity_analysis":self.add_pesticides_dialog_sensitivity_inputs(b))
+        self.dlg_base.parameter_name_uncertainity.textChanged.connect(lambda _, b= "uncertainity":self.add_pesticides_dialog_sensitivity_inputs(b))
         
         #If text of the outputs is changed then check if the output exist for UH
         lineEdits = [self.dlg_base.uh_file,self.dlg_base.uh_input,self.dlg_base.line_hydrograph,
@@ -1027,8 +1034,102 @@ class qvfsmod:
         self.dlg_base.csv_results_uncertainity.textChanged.connect(self.show_graph_sensitivity_uncertainity)
         
     
+    def add_pesticides_dialog_sensitivity_inputs(self,process):
+        """Method to add pesticides to the dialog to choose as input"""
+        self.variables_water_quality = ["Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Pesticide half-life (days)","Total pesticide mass per unit area source field (mg/m2)","Dispersion length of chemical (m)","Runoff remobilized VFS residue \nfrom last event (mg/m2)"]
         
+        #Design with uncertainity
+        if process == "design_uncertainity":
+            if self.dlg_base.parameter_name_design.text() in self.variables_water_quality:
+                #Create label and combobox
+                if not hasattr(self.dlg_base, 'pesticide_input_design_uncertainity'):
+                    number_pesticides = self.obtain_number_pestidides(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity_design.text()))
+                    if type(number_pesticides)==int:
+                        self.dlg_base.pesticide_input_design_uncertainity = QLabel("Select pesticide")
+                        self.dlg_base.pesticide_input_design_uncertainity_combo = QComboBox()
+                        items = [f"Pesticide {p+1}" for p in range(number_pesticides)]
+                        self.dlg_base.pesticide_input_design_uncertainity_combo.addItems(items)
+                        # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
+                        row_count = self.dlg_base.gridLayout_93.rowCount()
+                        self.dlg_base.gridLayout_93.addWidget(self.dlg_base.pesticide_input_design_uncertainity, row_count, 0)
+                        self.dlg_base.gridLayout_93.addWidget(self.dlg_base.pesticide_input_design_uncertainity_combo, row_count, 1)
+            #Quit widgets
+            else:
+                if hasattr(self.dlg_base, 'pesticide_input_design_uncertainity'):
+                    self.dlg_base.pesticide_input_design_uncertainity.deleteLater()
+                    delattr(self.dlg_base,"pesticide_input_design_uncertainity")
+                    self.dlg_base.pesticide_input_design_uncertainity_combo.deleteLater()
+                    delattr(self.dlg_base,"pesticide_input_design_uncertainity_combo")
         
+        #Identifiability
+        elif process == "identifiability": 
+            if self.dlg_calibration_sensitivity_hydrograph.parameter_name.text() in self.variables_water_quality:
+                #Create label and combobox
+                if not hasattr(self.dlg_calibration_sensitivity_hydrograph, 'pesticide_input_identifiability'):
+                    number_pesticides = self.obtain_number_pestidides(self.obtain_direction_vfsmod(self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.text()))
+                    if type(number_pesticides)==int:
+                        self.dlg_calibration_sensitivity_hydrograph.pesticide_input_identifiability = QLabel("Select pesticide")
+                        self.dlg_calibration_sensitivity_hydrograph.pesticide_input_identifiability_combo = QComboBox()
+                        items = [f"Pesticide {p+1}" for p in range(number_pesticides)]
+                        self.dlg_calibration_sensitivity_hydrograph.pesticide_input_identifiability_combo.addItems(items)
+                        # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
+                        row_count = self.dlg_calibration_sensitivity_hydrograph.gridLayout_81.rowCount()
+                        self.dlg_calibration_sensitivity_hydrograph.gridLayout_81.addWidget(self.dlg_calibration_sensitivity_hydrograph.pesticide_input_identifiability, row_count, 0)
+                        self.dlg_calibration_sensitivity_hydrograph.gridLayout_81.addWidget(self.dlg_calibration_sensitivity_hydrograph.pesticide_input_identifiability_combo, row_count, 1)
+            #Quit widgets
+            else:
+                if hasattr(self.dlg_calibration_sensitivity_hydrograph, 'pesticide_input_identifiability'):
+                    self.dlg_calibration_sensitivity_hydrograph.pesticide_input_identifiability.deleteLater()
+                    delattr(self.dlg_calibration_sensitivity_hydrograph,"pesticide_input_identifiability")
+                    self.dlg_calibration_sensitivity_hydrograph.pesticide_input_identifiability_combo.deleteLater()
+                    delattr(self.dlg_calibration_sensitivity_hydrograph,"pesticide_input_identifiability_combo")
+        
+        #Sensitivity analysis
+        if process == "sensitivity_analysis":
+            if self.dlg_base.parameter_name.text() in self.variables_water_quality:
+                #Create label and combobox
+                if not hasattr(self.dlg_base, 'pesticide_input_sensitivity'):
+                    number_pesticides = self.obtain_number_pestidides(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity.text()))
+                    if type(number_pesticides)==int:
+                        self.dlg_base.pesticide_input_sensitivity = QLabel("Select pesticide")
+                        self.dlg_base.pesticide_input_sensitivity_combo = QComboBox()
+                        items = [f"Pesticide {p+1}" for p in range(number_pesticides)]
+                        self.dlg_base.pesticide_input_sensitivity_combo.addItems(items)
+                        # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
+                        row_count = self.dlg_base.gridLayout_81.rowCount()
+                        self.dlg_base.gridLayout_81.addWidget(self.dlg_base.pesticide_input_sensitivity, row_count, 0)
+                        self.dlg_base.gridLayout_81.addWidget(self.dlg_base.pesticide_input_sensitivity_combo, row_count, 1)
+            #Quit widgets
+            else:
+                if hasattr(self.dlg_base, 'pesticide_input_sensitivity'):
+                    self.dlg_base.pesticide_input_sensitivity.deleteLater()
+                    delattr(self.dlg_base,"pesticide_input_sensitivity")
+                    self.dlg_base.pesticide_input_sensitivity_combo.deleteLater()
+                    delattr(self.dlg_base,"pesticide_input_sensitivity_combo")
+        
+        #Uncertainity
+        if process == "uncertainity":
+            if self.dlg_base.parameter_name_uncertainity.text() in self.variables_water_quality:
+                #Create label and combobox
+                if not hasattr(self.dlg_base, 'pesticide_input_uncertainity'):
+                    number_pesticides = self.obtain_number_pestidides(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_uncertainity.text()))
+                    if type(number_pesticides)==int:
+                        self.dlg_base.pesticide_input_uncertainity = QLabel("Select pesticide")
+                        self.dlg_base.pesticide_input_uncertainity_combo = QComboBox()
+                        items = [f"Pesticide {p+1}" for p in range(number_pesticides)]
+                        self.dlg_base.pesticide_input_uncertainity_combo.addItems(items)
+                        # Agrega el nuevo QLabel y QLineEdit a la siguiente fila
+                        row_count = self.dlg_base.gridLayout_84.rowCount()
+                        self.dlg_base.gridLayout_84.addWidget(self.dlg_base.pesticide_input_uncertainity, row_count, 0)
+                        self.dlg_base.gridLayout_84.addWidget(self.dlg_base.pesticide_input_uncertainity_combo, row_count, 1)
+            #Quit widgets
+            else:
+                if hasattr(self.dlg_base, 'pesticide_input_uncertainity'):
+                    self.dlg_base.pesticide_input_uncertainity.deleteLater()
+                    delattr(self.dlg_base,"pesticide_input_uncertainity")
+                    self.dlg_base.pesticide_input_uncertainity_combo.deleteLater()
+                    delattr(self.dlg_base,"pesticide_input_uncertainity_combo")
+                    
     
     def calibration_hydrograph_bootstraping_show(self,type_calibration):
         """Method to make the bootstraping for the calibrated hydrograph and show dialog"""
@@ -1549,111 +1650,141 @@ class qvfsmod:
     
     def add_pesticides_dialog(self):
         """Method to add widgets to pesticide dialog when more than a pesticide species is added"""
-        #try:
-        number_pesticides = int(self.dlg_water_quality.number_pesticides.text())
-        if number_pesticides<=10: #if not the dialog can freeze and close
-            #Delete previous pesticides
-            if self.number_pesticides_dialog>1:
-                widgets_to_delete = ["pesticide_direct_label_","label_kd_","label_koc_","line_kd_","line_koc_",
-                    "pesticide_label_","mass_label_","dispersion_label_","half_label_","remobilized_label_",
-                    "mass_","dispersion_","half_life_","remobilized_"]
-                for p in range(self.number_pesticides_dialog-1):
-                    pesticide = p+2
-                    for i in widgets_to_delete:
-                        widget = getattr(self.dlg_water_quality, f"{i}{pesticide}")
-                        widget.hide()
+        try:
+            number_pesticides = int(self.dlg_water_quality.number_pesticides.text())
+            if number_pesticides<=10: #if not the dialog can freeze and close
+                #Delete previous pesticides
+                if self.number_pesticides_dialog>1:
+                    widgets_to_delete = ["pesticide_direct_label_","label_kd_","label_koc_","line_kd_","line_koc_",
+                        "pesticide_label_","mass_label_","dispersion_label_","half_label_","remobilized_label_",
+                        "mass_","dispersion_","half_life_","remobilized_"]
+                    for p in range(self.number_pesticides_dialog-1):
+                        pesticide = p+2
+                        for i in widgets_to_delete:
+                            widget = getattr(self.dlg_water_quality, f"{i}{pesticide}")
+                            widget.hide()
                 
-            #Add pesticides
-            for i in range(number_pesticides-1):
-                #Create widgets
-                pesticide = i+2
-                
-                #Add widgets
-                #Direct inputs
-                getattr(self.dlg_water_quality, f"pesticide_direct_label_{pesticide}").show()
-                getattr(self.dlg_water_quality, f"label_kd_{pesticide}").show()
-                getattr(self.dlg_water_quality, f"label_koc_{pesticide}").show()
-                getattr(self.dlg_water_quality, f"line_kd_{pesticide}").show()
-                getattr(self.dlg_water_quality, f"line_koc_{pesticide}").show()
-                
-                #Rest of the inputs
-                getattr(self.dlg_water_quality, f"pesticide_label_{pesticide}").show()
-                getattr(self.dlg_water_quality, f"mass_label_{pesticide}").show()
-                getattr(self.dlg_water_quality, f"mass_{pesticide}").show()
-                getattr(self.dlg_water_quality, f"dispersion_label_{pesticide}").show()
-                getattr(self.dlg_water_quality, f"dispersion_{pesticide}").show()
-                getattr(self.dlg_water_quality, f"half_label_{pesticide}").show()
-                getattr(self.dlg_water_quality, f"half_life_{pesticide}").show()
-                getattr(self.dlg_water_quality, f"remobilized_label_{pesticide}").show()
-                getattr(self.dlg_water_quality, f"remobilized_{pesticide}").show()
-                
-            #Create variable to know how many pesticides there are
-            self.number_pesticides_dialog = number_pesticides
-            
-            
-            #Same for the degradation
-            #Delete previous pesticides
-            print("self.number_pesticides_dialog",self.number_pesticides_dialog)
-            if self.number_pesticides_dialog>1:
-                print("b")
-                widgets_to_delete = ["pesticide_direct_label_","label_kd_","label_koc_","line_kd_","line_koc_",
-                    "pesticide_label_","mass_label_","dispersion_label_","half_label_","remobilized_label_",
-                    "mass_","dispersion_","half_life_","remobilized_"]
-                for p in range(self.number_pesticides_dialog-1):
-                    pesticide = p+2
-                    for i in widgets_to_delete:
-                        widget = getattr(self.dlg_water_quality, f"{i}{pesticide}")
-                        widget.hide()
-            
-            # Configura la tabla
-            table = self.dlg_degradation_data.table_degradations
-
-            # Establece el número de filas y columnas
-            table.setRowCount(number_pesticides)
-            table.setColumnCount(number_pesticides)
-
-            # Configura los encabezados de filas y columnas
-            table.setHorizontalHeaderLabels(['A', 'B', 'C'])
-            table.setVerticalHeaderLabels(['1', '2', '3'])
-
-            # Ajusta el tamaño de las celdas para que sean cuadradas
-            size_cells = 50
-            table.horizontalHeader().setDefaultSectionSize(size_cells)  # Ancho de las columnas
-            table.verticalHeader().setDefaultSectionSize(size_cells)    # Altura de las filas
-            
-            #Change size of table
-            table.setFixedSize(size_cells*number_pesticides+50, size_cells*number_pesticides+50)
-
-            # Configura las celdas
-            for i in range(3):
-                for j in range(3):
-                    # Crea un elemento de celda
-                    item = QTableWidgetItem(f"{i},{j}")  # Valor inicial de ejemplo
-                    item.setTextAlignment(Qt.AlignCenter)  # Centra el texto
+                #Remove molar lines
+                for p in range(self.number_pesticides_dialog):
+                    try:
+                        pesticide = p+1
+                        widget = getattr(self.dlg_degradation_data, f"label_pesticide_{pesticide}_molar_mass")
+                        widget.deleteLater()
+                        widget = getattr(self.dlg_degradation_data, f"pesticide_{pesticide}_molar_mass")
+                        widget.deleteLater()
+                        
+                    except:
+                        pass
                     
-                    if i == j:
-                        # Si es una celda de la diagonal, permítela editar
-                        item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled)
-                    else:
-                        # Si no es la diagonal, deshabilita la edición
-                        item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-                        # Opcional: Cambia el color de fondo para diferenciar
-                        item.setBackground(Qt.lightGray)
+                #Add pesticides
+                for i in range(number_pesticides-1):
+                    #Create widgets
+                    pesticide = i+2
+                    #Add widgets
+                    #Direct inputs
+                    getattr(self.dlg_water_quality, f"pesticide_direct_label_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"label_kd_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"label_koc_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"line_kd_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"line_koc_{pesticide}").show()
                     
-                    # Asigna el elemento a la celda correspondiente
-                    table.setItem(i, j, item)
-            
-            
-            
-            
-            
-        self.enable_disable_water_quality_dialog() #update enabling/disabling direct input
+                    #Rest of the inputs
+                    getattr(self.dlg_water_quality, f"pesticide_label_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"mass_label_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"mass_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"dispersion_label_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"dispersion_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"half_label_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"half_life_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"remobilized_label_{pesticide}").show()
+                    getattr(self.dlg_water_quality, f"remobilized_{pesticide}").show()
+                
+                
+                #Create variable to know how many pesticides there are
+                self.number_pesticides_dialog = number_pesticides
+                
+                print(number_pesticides)
+                #Put molar masses
+                
+                
+                #Then add them
+                for p in range(number_pesticides):
+                    pesticide = p+1
+                    #Label
+                    label = QLabel(f"Pesticide {pesticide} molar mass (g/mol)")
+                    setattr(self.dlg_degradation_data, f"label_pesticide_{pesticide}_molar_mass", label)
+                    getattr(self.dlg_degradation_data, f"label_pesticide_{pesticide}_molar_mass").setMinimumHeight(50)
+                    
+                    #LineEdit                
+                    line = QLineEdit()
+                    setattr(self.dlg_degradation_data, f"pesticide_{pesticide}_molar_mass", line)
+                    getattr(self.dlg_degradation_data, f"pesticide_{pesticide}_molar_mass").setAlignment(Qt.AlignCenter)
+                    
+                    #Add widgets
+                    self.dlg_degradation_data.gridLayout_2.addWidget(getattr(self.dlg_degradation_data, f"label_pesticide_{pesticide}_molar_mass"), 2*pesticide, 0)
+                    self.dlg_degradation_data.gridLayout_2.addWidget(getattr(self.dlg_degradation_data, f"pesticide_{pesticide}_molar_mass"), 2*pesticide, 1)
+                    
+                
+                
+                
+                #Same for the degradation            
+                # Configura la tabla
+                table = self.dlg_degradation_data.table_degradations
+
+                # Establece el número de filas y columnas
+                table.setRowCount(number_pesticides)
+                table.setColumnCount(number_pesticides)
+
+                # Configura los encabezados de filas y columnas
+                pesticides = [f"Pesticide {x+1}" for x in range(number_pesticides)]
+                table.setHorizontalHeaderLabels([f"Child: {name}" for name in pesticides])
+                table.setVerticalHeaderLabels([f"Parent: {name}" for name in pesticides])
+                table.verticalHeader().setMinimumWidth(160)
+
+                # Ajusta el tamaño de las celdas para que sean cuadradas
+                size_cells = 50
+                table.horizontalHeader().setDefaultSectionSize(size_cells)  # Ancho de las columnas
+                table.verticalHeader().setDefaultSectionSize(size_cells)    # Altura de las filas
+
+                # Cambia el tamaño de la tabla
+                table.setFixedSize(160* number_pesticides+160+20, size_cells * number_pesticides + 50)
+
+                # Configura las celdas
+                for i in range(number_pesticides):
+                    for j in range(number_pesticides):
+                        if i == j:
+                            # Crea un elemento de celda
+                            item = QTableWidgetItem(str(-1))  # Valor inicial de ejemplo
+                            item.setTextAlignment(Qt.AlignCenter)  # Centra el texto
+                            # Si es una celda de la diagonal, permítela editar
+                            item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+                            # Opcional: Cambia el color de fondo para diferenciar
+                            item.setBackground(Qt.lightGray)
+                        else:
+                            # Crea un elemento de celda
+                            item = QTableWidgetItem(str(0))  # Valor inicial de ejemplo
+                            item.setTextAlignment(Qt.AlignCenter)  # Centra el texto
+                            # Si no es la diagonal, deshabilita la edición
+                            item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled)
+                            
+                        
+                        # Asigna el elemento a la celda correspondiente
+                        table.setItem(i, j, item)
+                
+                #Change column widths
+                for col in range(number_pesticides):
+                    table.setColumnWidth(col, 160)
+                
+                
+                
+                
+            self.enable_disable_water_quality_dialog() #update enabling/disabling direct input
         
         
         
                 
-        r'''except:
-            pass'''
+        except:
+            pass
         
     def save_uh_project(self):
         """Method to save uh project"""
@@ -3809,8 +3940,21 @@ class qvfsmod:
                         #Runoff remobilized VFS residue \nfrom last event (mg/m2)
                         self.add_values_dialog(lineas,4,6+(4*p)+4,getattr(self.dlg_water_quality, f"remobilized_{pesticide}"))
                         
-                        
+                    #Degradation
+                    #Molar weights
+                    for p in range(number_pesticides):
+                        pesticide = p+1
+                        self.add_values_dialog(lineas,8,p,getattr(self.dlg_degradation_data, f'pesticide_{pesticide}_molar_mass'))
                     
+                    #Degradation values
+                    for fila in range(number_pesticides):
+                        for columna in range(number_pesticides):
+                            value = self.add_values_dialog(lineas,9+fila,columna,self.dlg_water_quality.calculation, True)
+                            item = QTableWidgetItem(str(value))
+                            self.dlg_degradation_data.table_degradations.setItem(fila, columna, item)
+                            item.setTextAlignment(Qt.AlignCenter)
+                            
+                        
                     #Flag for remobilization of residues
                     imob = self.add_values_dialog(lineas,7,0,self.dlg_water_quality.imob,True)
                     self.dlg_water_quality.imob.setCurrentIndex(int(imob)-1)
@@ -6583,6 +6727,7 @@ class qvfsmod:
         has to be used because we need QTrhead to add progress bar"""
         self.number_execution = 0
         self.results = []
+        print("eeee",self.sensitivity_parameters)
         self.rows_execute = [i for i in range(len(self.param_values)) for _ in range(len(self.buffer_lengths_sensitivity_design))] #each row(sample in sensitivity analysis) is going to be executed as many times as combinations of buffer lengths are
         args_list = [(i, i % (self.number_cores*5), 
           self.param_values, self.dic_data, 
@@ -6721,6 +6866,7 @@ class qvfsmod:
         #Create the dictionary for the sensitivity analysis
         self.dic_data = self.create_dictionary_sensitivity_analysis_design()
         print("diccionario",self.dic_data)
+        print("sensitivity_parameters",self.sensitivity_parameters)
         self.vfs_sensitivity_file = self.dlg_base.vfs_file_sensitivity_design.text()
         
         #Create problem variable
@@ -7555,8 +7701,8 @@ class qvfsmod:
             #Execution UH
             shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_uh_{core}.bat"))
             f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_uh_{core}.bat"),"w+")
-            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\design\\')}"')
-            linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\uh')}" design_{core}.lis'
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/design/")}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/uh")}" design_{core}.lis'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
@@ -7565,8 +7711,8 @@ class qvfsmod:
             #Execution VFS
             shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"))
             f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"),"w+")
-            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\design\\')}"')
-            linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\vfsm')}" design_{core}.prj'
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/design/")}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/vfsm")}" design_{core}.prj'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
@@ -7690,8 +7836,8 @@ class qvfsmod:
             #Execution UH
             shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_uh_{core}.bat"))
             f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_uh_{core}.bat"),"w+")
-            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\sensitivity\\')}"')
-            linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\uh')}" sensitivity_{core}.lis'
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/sensitivity/")}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/uh")}" sensitivity_{core}.lis'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
@@ -7700,8 +7846,8 @@ class qvfsmod:
             #Execution VFS
             shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"))
             f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"),"w+")
-            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\sensitivity\\')}"')
-            linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\vfsm')}" sensitivity_{core}.prj'
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/sensitivity/")}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/vfsm")}" sensitivity_{core}.prj'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
@@ -7841,8 +7987,8 @@ class qvfsmod:
             #Execution UH
             shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_uh_{core}.bat"))
             f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_uh_{core}.bat"),"w+")
-            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\design\\')}"')
-            linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\uh')}" design_{core}.lis'
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/design/")}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/uh")}" design_{core}.lis'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
@@ -7851,8 +7997,8 @@ class qvfsmod:
             #Execution VFS
             shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"))
             f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"),"w+")
-            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\design\\')}"')
-            linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\vfsm')}" design_{core}.prj'
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/design/")}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/vfsm")}" design_{core}.prj'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
@@ -7951,8 +8097,8 @@ class qvfsmod:
             #Execution VFS
             shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"))
             f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"),"w+")
-            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\inverse\\')}"')
-            linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\vfsm')}" inverse_{core}.prj'
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/inverse/")}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/vfsm")}" inverse_{core}.prj'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
@@ -8127,8 +8273,8 @@ class qvfsmod:
             #Execution UH
             shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_uh_{core}.bat"))
             f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_uh_{core}.bat"),"w+")
-            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\uncertainity\\')}"')
-            linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\uh')}" uncertainity_{core}.lis'
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/uncertainity/")}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/uh")}" uncertainity_{core}.lis'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
@@ -8137,8 +8283,8 @@ class qvfsmod:
             #Execution VFS
             shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"))
             f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"),"w+")
-            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\uncertainity\\')}"')
-            linea_dos = f'"{os.path.normpath(self.plugin_directory+'r\\executables\\vfsm')}" uncertainity_{core}.prj'
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/uncertainity/")}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+r"/executables/vfsm")}" uncertainity_{core}.prj'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
@@ -8222,8 +8368,8 @@ class qvfsmod:
     def update_bat_uh_sensitivity(self):
         """Method to update the bat for execution of UH for sensitivity analysis"""
         f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
-        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\sensitivity\\')}"')
-        linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\uh')}" sensitivity.lis'
+        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/sensitivity/")}"')
+        linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/uh")}" sensitivity.lis'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
         f.write("{} \n".format(linea_dos))
@@ -8233,8 +8379,8 @@ class qvfsmod:
     def update_bat_uh_uncertainity(self):
         """Method to update the bat for execution of UH for uncertainity analysis"""
         f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
-        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\uncertainity\\')}"')
-        linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\uh')}" uncertainity.lis'
+        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/uncertainity/")}"')
+        linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/uh")}" uncertainity.lis'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
         f.write("{} \n".format(linea_dos))
@@ -8244,8 +8390,8 @@ class qvfsmod:
     def update_bat_vfs_sensitivity(self):
         """Method to update the bat for execution of VFS for sensitivity analysis"""
         f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
-        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\sensitivity\\')}"')
-        linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\vfsm')}" sensitivity.prj'
+        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/sensitivity/")}"')
+        linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/vfsm")}" sensitivity.prj'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
         f.write("{} \n".format(linea_dos))
@@ -8255,8 +8401,8 @@ class qvfsmod:
     def update_bat_vfs_uncertainity(self):
         """Method to update the bat for execution of VFS for uncertainity analysis"""
         f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
-        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\uncertainity\\')}"')
-        linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\vfsm')}" uncertainity.prj'
+        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/uncertainity/")}"')
+        linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/vfsm")}" uncertainity.prj'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
         f.write("{} \n".format(linea_dos))
@@ -8302,7 +8448,11 @@ class qvfsmod:
             name = self.dlg_base.table_uncertainity.item(i, 0).text()
             #Obtain name of distribution and parameters
             dis,param = distribution_parameters_fun(i)
-            dic_data[name] = [dis,param]
+            if self.dlg_base.table_uncertainity.item(i, 3).text()== "Not applicable" or self.dlg_base.table_uncertainity.item(i, 3).text()=="1":
+                dic_data[name] = [dis,param]
+            else:
+                dic_data[name+f" Pesticide {self.dlg_base.table_uncertainity.item(i, 3).text()}"] = [dis,param]
+                self.update_sensitivity_parameter(name,self.dlg_base.table_uncertainity.item(i, 3).text())
         return dic_data
         
     def create_dictionary_sensitivity_analysis(self):
@@ -8323,7 +8473,11 @@ class qvfsmod:
                     value += increment
                     if value>maximum:
                         break
-                dic_data[name] = values
+                if self.dlg_base.table_oat.item(i, 2).text()== "Not applicable" or self.dlg_base.table_oat.item(i, 2).text()=="1":
+                    dic_data[name] = values
+                else:
+                    dic_data[name+f" Pesticide {self.dlg_base.table_oat.item(i, 2).text()}"] = values
+                    self.update_sensitivity_parameter(name,self.dlg_base.table_oat.item(i, 2).text())
             return dic_data
         else:
             def distribution_parameters_fun(row):
@@ -8361,7 +8515,11 @@ class qvfsmod:
                 name = self.dlg_base.table.item(i, 0).text()
                 #Obtain name of distribution and parameters
                 dis,param = distribution_parameters_fun(i)
-                dic_data[name] = [dis,param]
+                if self.dlg_base.table.item(i, 3).text()== "Not applicable" or self.dlg_base.table.item(i, 3).text()=="1":
+                    dic_data[name] = [dis,param]
+                else:
+                    dic_data[name+f" Pesticide {self.dlg_base.table.item(i, 3).text()}"] = [dis,param]
+                    self.update_sensitivity_parameter(name,self.dlg_base.table.item(i, 3).text())
             
             return dic_data
     
@@ -8404,10 +8562,37 @@ class qvfsmod:
             name = self.dlg_base.table_2.item(i, 0).text()
             #Obtain name of distribution and parameters
             dis,param = distribution_parameters_fun(i)
-            dic_data[name] = [dis,param]
+            if self.dlg_base.table_2.item(i, 3).text()== "Not applicable" or self.dlg_base.table_2.item(i, 3).text()=="1":
+                dic_data[name] = [dis,param]
+            else:
+                dic_data[name+f" Pesticide {self.dlg_base.table_2.item(i, 3).text()}"] = [dis,param]
+                self.update_sensitivity_parameter(name,self.dlg_base.table_2.item(i, 3).text())
         
         return dic_data
     
+    def update_sensitivity_parameter(self,name,pesticide):
+        """When doing sensitivity analysis if we use a parameter of a different pesticide than 1 we have to create the parameter because is not created"""
+        pesticide = int(pesticide)
+        if name == "Pesticide half-life (days)":
+            self.sensitivity_parameters[name+f" Pesticide {pesticide}"] =  ["iwq",4,4*pesticide - 1,"vfs"]
+        
+        elif name == "Total pesticide mass per unit area source field (mg/m2)":
+            self.sensitivity_parameters[name+f" Pesticide {pesticide}"] =["iwq",4,4*pesticide,"vfs"]
+        
+        elif name == "Dispersion length of chemical (m)":
+            self.sensitivity_parameters[name+f" Pesticide {pesticide}"] =  ["iwq",4,4*pesticide +1,"vfs"]
+        
+        elif name == "Runoff remobilized VFS residue \nfrom last event (mg/m2)":
+            self.sensitivity_parameters[name+f" Pesticide {pesticide}"] =  ["iwq",4,4*pesticide +2,"vfs"]
+            
+        elif name == "Linear sorption coefficient (L/Kg)":
+            self.sensitivity_parameters[name+f" Pesticide {pesticide}"] =  ["iwq",1,pesticide,"vfs"]
+            
+        elif name == "Adsorption coefficient (L/Kg)":
+            self.sensitivity_parameters[name+f" Pesticide {pesticide}"] =  ["iwq",1,pesticide+1,"vfs"]
+            
+
+        
     def create_dictionary_sensitivity_analysis_calibration(self):
         """Method to create the dictionary that will contain the parameters of the sensitivity analysis for calibration"""
         #Functions to convert user specified inputs into inputs that SALib can read
@@ -8446,7 +8631,11 @@ class qvfsmod:
             name = self.dlg_calibration_sensitivity_hydrograph.table.item(i, 0).text()
             #Obtain name of distribution and parameters
             dis,param = distribution_parameters_fun(i)
-            dic_data[name] = [dis,param]
+            if self.dlg_calibration_sensitivity_hydrograph.table.item(i, 3).text()== "Not applicable" or self.dlg_calibration_sensitivity_hydrograph.table.item(i, 3).text()=="1":
+                dic_data[name] = [dis,param]
+            else:
+                dic_data[name+f" Pesticide {self.dlg_calibration_sensitivity_hydrograph.table.item(i, 3).text()}"] = [dis,param]
+                self.update_sensitivity_parameter(name,self.dlg_calibration_sensitivity_hydrograph.table.item(i, 3).text())
         
         return dic_data
     
@@ -8913,8 +9102,8 @@ class qvfsmod:
         
         if table.columnCount() == 0:
             #Añadir columnas
-            if self.dlg_base.oat.isChecked(): nombres_columnas = ["Parameter","Values"]
-            elif not self.dlg_base.oat.isChecked(): nombres_columnas = ["Parameter","Distribution","Distribution parameters"]
+            if self.dlg_base.oat.isChecked(): nombres_columnas = ["Parameter","Values","Pesticide"]
+            elif not self.dlg_base.oat.isChecked(): nombres_columnas = ["Parameter","Distribution","Distribution parameters","Pesticide"]
             
             table.setColumnCount(len(nombres_columnas))
             table.setHorizontalHeaderLabels(nombres_columnas)
@@ -8944,6 +9133,11 @@ class qvfsmod:
         #Add distribution parameters
         if self.dlg_base.oat.isChecked():
             add_element(1,f"base:{self.dlg_base.first.text()},min:{self.dlg_base.second.text()},max:{self.dlg_base.third.text()},increment:{self.dlg_base.fourth.text()}")
+            if self.dlg_base.parameter_name.text() in self.variables_water_quality:
+                add_element(2,self.dlg_base.pesticide_input_sensitivity_combo.currentText().split()[-1])
+            else:
+                add_element(2,"Not applicable")
+    
         elif not self.dlg_base.oat.isChecked():
             if distribution=="Uniform" or distribution=="Logaritmic uniform":
                 add_element(2,f"min:{self.dlg_base.first.text()},max:{self.dlg_base.second.text()}")
@@ -8953,6 +9147,11 @@ class qvfsmod:
                 add_element(2,f"mean:{self.dlg_base.first.text()},stdv:{self.dlg_base.second.text()}")
             elif distribution == "Normal truncated":
                 add_element(2,f"min:{self.dlg_base.first.text()},max:{self.dlg_base.second.text()},mean:{self.dlg_base.third.text()},stdv:{self.dlg_base.fourth.text()}")
+            #Add pesticide
+            if self.dlg_base.parameter_name.text() in self.variables_water_quality:
+                add_element(3,self.dlg_base.pesticide_input_sensitivity_combo.currentText().split()[-1])
+            else:
+                add_element(3,"Not applicable")
             
             #Update number of samples
             self.change_sensitivity_method()
@@ -8965,7 +9164,7 @@ class qvfsmod:
         
         if table.columnCount() == 0:
             #Añadir columnas
-            nombres_columnas = ["Parameter","Distribution","Distribution parameters"]
+            nombres_columnas = ["Parameter","Distribution","Distribution parameters","Pesticide"]
             
             table.setColumnCount(len(nombres_columnas))
             table.setHorizontalHeaderLabels(nombres_columnas)
@@ -8997,6 +9196,12 @@ class qvfsmod:
         elif distribution == "Normal truncated":
             add_element(2,f"min:{self.dlg_base.first_design.text()},max:{self.dlg_base.second_design.text()},mean:{self.dlg_base.third_design.text()},stdv:{self.dlg_base.fourth_design.text()}")
         
+        #Add pesticide
+        if self.dlg_base.parameter_name_design.text() in self.variables_water_quality:
+            add_element(3,self.dlg_base.pesticide_input_design_uncertainity_combo.currentText().split()[-1])
+        else:
+            add_element(3,"Not applicable")
+        
         #Update number of samples
         self.change_sensitivity_method_design()
     
@@ -9007,7 +9212,7 @@ class qvfsmod:
         
         if table.columnCount() == 0:
             #Añadir columnas
-            nombres_columnas = ["Parameter","Distribution","Distribution parameters"]
+            nombres_columnas = ["Parameter","Distribution","Distribution parameters","Pesticide"]
             
             table.setColumnCount(len(nombres_columnas))
             table.setHorizontalHeaderLabels(nombres_columnas)
@@ -9039,6 +9244,11 @@ class qvfsmod:
         elif distribution == "Normal truncated":
             add_element(2,f"min:{self.dlg_calibration_sensitivity_hydrograph.first.text()},max:{self.dlg_calibration_sensitivity_hydrograph.second.text()},mean:{self.dlg_calibration_sensitivity_hydrograph.third.text()},stdv:{self.dlg_calibration_sensitivity_hydrograph.fourth.text()}")
         
+        #Add pesticide
+        if self.dlg_calibration_sensitivity_hydrograph.parameter_name.text() in self.variables_water_quality:
+            add_element(3,self.dlg_calibration_sensitivity_hydrograph.pesticide_input_identifiability_combo.currentText().split()[-1])
+        else:
+            add_element(3,"Not applicable")
         #Update number of samples
         self.change_sensitivity_method_calibration()
     
@@ -9050,7 +9260,7 @@ class qvfsmod:
         
         if table.columnCount() == 0:
             #Añadir columnas
-            nombres_columnas = ["Parameter","Distribution","Distribution parameters"]
+            nombres_columnas = ["Parameter","Distribution","Distribution parameters","Pesticide"]
             
             table.setColumnCount(len(nombres_columnas))
             table.setHorizontalHeaderLabels(nombres_columnas)
@@ -9080,7 +9290,11 @@ class qvfsmod:
             add_element(2,f"mean:{self.dlg_base.first_2.text()},stdv:{self.dlg_base.second_2.text()}")
         elif distribution == "Normal truncated":
             add_element(2,f"min:{self.dlg_base.first_2.text()},max:{self.dlg_base.second_2.text()},mean:{self.dlg_base.third_2.text()},stdv:{self.dlg_base.fourth_2.text()}")
-            
+        #Add pesticide
+        if self.dlg_base.parameter_name_uncertainity.text() in self.variables_water_quality:
+            add_element(3,self.dlg_base.pesticide_input_uncertainity_combo.currentText().split()[-1])
+        else:
+            add_element(3,"Not applicable")
     
     def change_sensitivity_method(self):
         """Method to change sensitivity inputs depending on selected senstitivity metod"""
@@ -9567,7 +9781,7 @@ class qvfsmod:
                 self.dlg_base.verticalLayout_21.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                 boton.setSizePolicy(politica_tamaño)
-                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
+                boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
 
     def add_parameter_name_sensitivity(self,name):
         """Method to add the parameter name to the lineEdit in sensitivity analysis dialog"""
@@ -11490,8 +11704,8 @@ class qvfsmod:
     def update_bat_calibration(self):
         """Method to update the bat of the hydrograph"""
         f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
-        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+'\\inverse\\')}"')
-        linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\vfsm')}" inverse.prj'
+        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/inverse/")}"')
+        linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/vfsm")}" inverse.prj'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
         f.write("{} \n".format(linea_dos))
@@ -12542,28 +12756,31 @@ class qvfsmod:
     
     def obtain_number_pestidides(self,direction):
         """Method to obtain the number of pesticides from a prj"""
-        prj_file = direction
-        #Obtain direction iwq
-        with open(prj_file, "r") as archivo:
-            lineas = archivo.readlines() 
-            
-        for i in lineas:
-            if i[:3]=="ikw":
-                ikw = i.split("=")[-1]
-        if not os.path.isabs(ikw): #relative path
-            ikw = os.path.join(os.path.dirname(prj_file), ikw)
-        ikw = ikw.replace("\n", "") #take out the line jumps
-        with open(ikw, 'r') as file:
-            lineas = file.readlines()
-        #Obtain number of pesticides
-        condicion = False
-        for i in lineas[4:]:
-            if len(i.split())==3:
-                condicion = True
-            if condicion and len(i.split())!=3:
-                pesticides = int(i.replace("\n", ""))
-                break
-        return pesticides
+        try:
+            prj_file = direction
+            #Obtain direction iwq
+            with open(prj_file, "r") as archivo:
+                lineas = archivo.readlines() 
+                
+            for i in lineas:
+                if i[:3]=="ikw":
+                    ikw = i.split("=")[-1]
+            if not os.path.isabs(ikw): #relative path
+                ikw = os.path.join(os.path.dirname(prj_file), ikw)
+            ikw = ikw.replace("\n", "") #take out the line jumps
+            with open(ikw, 'r') as file:
+                lineas = file.readlines()
+            #Obtain number of pesticides
+            condicion = False
+            for i in lineas[4:]:
+                if len(i.split())==3:
+                    condicion = True
+                if condicion and len(i.split())!=3:
+                    pesticides = int(i.replace("\n", ""))
+                    break
+            return pesticides
+        except:
+            pass
     
     def run_design_part_one(self):
         """Method to run the design"""
@@ -12642,16 +12859,6 @@ class qvfsmod:
                     self.dlg_design_results.tableWidget.setItem(fila, columna, item)
                     item.setTextAlignment(Qt.AlignCenter)
             
-    def update_bat_uh_design(self):
-        """Method to update bat for the execution of UH"""
-        f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
-        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text())}"')
-        linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\uh')}" design.lis'
-        linea_tres = "Pause"
-        f.write("{} \n".format(linea_uno))
-        f.write("{} \n".format(linea_dos))
-        #f.write("{} \n".format(linea_tres))
-        f.close()
     
     def create_folder_for_design(self):
         """Method to create folders for the design if they don't exist"""
@@ -12987,7 +13194,7 @@ class qvfsmod:
         """Metod to update bat for the execution of VFS"""
         f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
         linea_uno = "cd {}".format(f'"{os.path.normpath(os.path.dirname(self.obtain_direction_vfsmod(self.dlg_base.line_project_vfsmod.text())))}"')
-        linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\vfsm')}" {os.path.normpath(os.path.basename(self.dlg_base.line_project_vfsmod.text()))}'
+        linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/vfsm")}" {os.path.normpath(os.path.basename(self.dlg_base.line_project_vfsmod.text()))}'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
         f.write("{} \n".format(linea_dos))
@@ -13362,7 +13569,13 @@ class qvfsmod:
         """Method to select the directory among the local files for VFSMOD"""
         fname = QFileDialog.getExistingDirectory(self.dlg_base, "Select directory", "C/")
         if fname!="":
-            self.dlg_base.working_directory_vfsmod.setText(fname)
+            self.dlg_base.working_directory_vfsmod.setText(os.path.normpath(fname))
+            #Check if output exist
+            self.check_uh_output_exist()
+            self.check_vfsmod_output_exist()
+            #Add pesticides to single value calibration and to design with uncertainity
+            self.add_pesticides_dialog_single_calibration()
+            self.add_pesticides_dialog_sensitivity_design()
     
     def water_quality_dialog(self):
         """Method to add in the dialog the widgets when water quality is selected"""
@@ -13702,7 +13915,7 @@ class qvfsmod:
         """Metod to update bat for the execution of UH"""
         f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
         linea_uno = "cd {}".format(f'"{os.path.dirname(os.path.normpath(self.obtain_direction_vfsmod(self.dlg_base.uh_file.text())))}"')
-        linea_dos = f'"{os.path.normpath(self.plugin_directory+'\\executables\\uh')}" {os.path.normpath(os.path.basename(self.dlg_base.uh_file.text()))}'
+        linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/uh")}" {os.path.normpath(os.path.basename(self.dlg_base.uh_file.text()))}'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
         f.write("{} \n".format(linea_dos))
@@ -13715,9 +13928,9 @@ class qvfsmod:
         here is respect to the working directory of vfsmod"""
         carpeta = self.dlg_base.working_directory_vfsmod.text()
         if not os.path.isabs(direction): #relative path
-            return os.path.join(carpeta, direction)
+            return os.path.normpath(os.path.join(carpeta, direction))
         else: #absolute path
-            return direction
+            return os.path.normpath(direction)
             
     def create_lis_file(self):
         """Metod to create the .lis file for the UH execution"""
@@ -13994,7 +14207,7 @@ class qvfsmod:
                     linea_dos += f"{getattr(self.dlg_water_quality, f'line_kd_{p+2}').text()} "
                 linea_dos += "                     ; IKD (Kd or Koc) (%OC) (repeat Koc or Kd for j species)"
                     
-            linea_tres = f"{clay}			; %Clay content (in sediment?)"
+            linea_tres = f"{clay}			; %Clay content in field soil"
             linea_cuatro = f"{idg} IDG"
             
             linea_cinco = f"{days} {half_life} {field_capacity} {mass} {thickness} {dgld} {dgmres0} "
@@ -14015,8 +14228,26 @@ class qvfsmod:
                 value = item.text()
                 linea_siete += f"{value} "
             linea_siete += "(dgTheta(i),i=1,ndgday (-)"
-            linea_ocho = f"{imob}                                       ; IMOB"
-            linea_nueve = "\n------------------------------------------------------------------\nIWQPRO    : Pesticide trapping: 1=Sabbagh;2= Sabbagh(refit);3=mech.mass bal.;4=Chen\nCSAB(I)   : Coefficients for refitted Sabbagh equation (used when IWQPRO=2)\nIKD       : Sorption type: 0, Kd(L/Kg); 1, Koc (L/Kg)\nKd(j) Koc(j): Sorption coefficient (j species) as distribution Kd (IKD= 0) or Koc (IKD=1) (L/Kg)\n%OC       : Source soil organic carbon, only read when IKD=1 (Koc) (%)\nIDG       : Degradation type: 1: EU-FOCUS k=Kref.k(T).k(theta); 2: US-EPA k=Kref;\n            3: k=Kref.k(T);4: k=Kref.k(1theta; 0: No degradation\nndgday    : no. of days (i) between events (d)\ndgHalf(j) : t0.5, pesticide half-life (d), kref=Ln2/t0.5\nFC        : top soil field capacity (m3/m3). This can be taken from FOCUS R1-R4 scenario\n            parameters used by the PRZM model\ndgPin(j)  : Pin, pesticide mass entering filter for event over source area (mg/m2)\ndgML      : Surface mixing layer thickness (cm, standard= 2cm PRZM)\ndgLD(j)   : lambda, dispersion length of chemical (m). This can be taken as  \n            0.05m from FOCUS-Pearl (Default)\ndgmres0(j): Pesticide residues (i species) on VFS surface (mixing layer) when event starts (mg/m2)\ndgT(i)    : T, daily air temperatures (C) for period between events, PRZM weather\ndgTheta(i): theta, Topsoil daily volumetric moisture (-) for period between events\nIMOB      : Residues remobilization: 1(or none): partial (recomm); 2:full; 3:no remob."
+            linea_ocho = f"{imob}                                       ; IMOB\n"
+            if number_pesticides>1:
+                #Add molar
+                for p in range(number_pesticides):
+                    linea_ocho += f"{getattr(self.dlg_degradation_data, f'pesticide_{p+1}_molar_mass').text()} "
+                linea_ocho += "                            ; Mj molar mass of compounds (g/mol)\n"
+                
+                table = self.dlg_degradation_data.table_degradations
+                num_rows = table.rowCount()
+                #Add degradation
+                for row in range(num_rows):
+                    for col in range(num_rows):
+                        # Obtener el item de la celda en la posición (row, col)
+                        item = table.item(row, col)
+                        value = item.text() if item else ""
+                        linea_ocho += f"{value} "
+                    if row == 0:
+                        linea_ocho += "                            ; fij molar formation fraction matrix {jxj}"
+                    linea_ocho += "\n"
+            linea_nueve = "\n------------------------------------------------------------------\nIWQPRO    : Pesticide trapping: 1=Sabbagh;2= Sabbagh(refit);3=mech.mass bal.;4=Chen\nCSAB(I)   : Coefficients for refitted Sabbagh equation (used when IWQPRO=2)\nIKD       : Sorption type: 0, Kd(L/Kg); 1, Koc (L/Kg)\nKd(j) Koc(j): Sorption coefficient (j species) as distribution Kd (IKD= 0) or Koc (IKD=1) (L/Kg)\n%OC       : Source soil organic carbon, only read when IKD=1 (Koc) (%)\nIDG       : Degradation type: 1: EU-FOCUS k=Kref.k(T).k(theta); 2: US-EPA k=Kref;\n            3: k=Kref.k(T);4: k=Kref.k(1theta; 0: No degradation\nndgday    : no. of days (i) between events (d)\ndgHalf(j) : t0.5, pesticide half-life (d), kref=Ln2/t0.5\nFC        : top soil field capacity (m3/m3). This can be taken from FOCUS R1-R4 scenario\n            parameters used by the PRZM model\ndgPin(j)  : Pin, pesticide mass entering filter for event over source area (mg/m2)\ndgML      : Surface mixing layer thickness (cm, standard= 2cm PRZM)\ndgLD(j)   : lambda, dispersion length of chemical (m). This can be taken as  \n            0.05m from FOCUS-Pearl (Default)\ndgmres0(j): Pesticide residues (i species) on VFS surface (mixing layer) when event starts (mg/m2)\ndgT(i)    : T, daily air temperatures (C) for period between events, PRZM weather\ndgTheta(i): theta, Topsoil daily volumetric moisture (-) for period between events\nIMOB      : Residues remobilization: 1(or none): partial (recomm); 2:full; 3:no remob.\nMj        : Molar mass of compounds (g/mol) (only read when number of compounds is j>1)\nfij       : matrix of molar formation fractions between compounds {jxj} (when number of compounds is j>1)"
             
             archivo.write(f"{linea_uno}\n")
             archivo.write(f"{linea_dos}\n")
@@ -14184,7 +14415,7 @@ class qvfsmod:
     
     def default_values(self):
         """Method to set default values for input values"""
-        self.dlg_base.working_directory_vfsmod.setText(os.path.normpath(r"C:/Users/i.barberena/Documents/Proyect"))
+        self.dlg_base.working_directory_vfsmod.setText(os.path.normpath(r"C:\borrar"))
         #self.dlg_base.name_files.setText("prueba")
         self.dlg_base.uh_file.setText(os.path.normpath(".lis"))
         self.dlg_base.uh_input.setText(os.path.normpath(r"inputs\.inp"))
@@ -15256,8 +15487,9 @@ def save_outputs_design(working_directory,error,length_checked,spacing_checked,n
         
         #Add water quality parameters if present
         if water_quality:
-            df_conc["Pesticide Delivery Ratio"]=[np.nan]
-        
+            #Iterate through all the pesticides
+            for p in range(number_pesticides):
+                df_conc[f"Pesticide Delivery Ratio Pesticide {p+1}"]=[np.nan]
         
         if length_checked:
             df_conc.insert(0,"VFS Length (m)",[combinations_design[number_execution][1]])
@@ -15587,7 +15819,9 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
         #Add water quality parameters if present
         if water_quality:
             df_conc["Leachate depth (m)"]=[-1.0]
-            df_conc["Pesticide Delivery Ratio"]=[-1.0]
+            for p in range(number_pesticides):
+                df_conc[f"Pesticide Delivery Ratio Pesticide {p+1}"]=[-1.0]
+            
     else:
         ruta = working_directory+os.path.normpath(f"\\uncertainity\\output\\uncertainity_{core}.osp")
         with open(ruta, "r") as archivo:
@@ -15702,7 +15936,7 @@ def sensitivity_paralelization_design(number_execution,core,param_values,dic_dat
             return save_results_sensitivity_analysis_design(number_execution,core,working_directory,dic_data,param_values,water_quality ,buffer_lengths,rows_execute,outputs_to_save,error = False)
     except:
         return save_results_sensitivity_analysis_design(number_execution,core,working_directory,dic_data,param_values,water_quality ,buffer_lengths,rows_execute,outputs_to_save,error = True)
-        
+       
     
     
 
@@ -16285,7 +16519,9 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
         #Add water quality parameters if present
         if water_quality:
             df_conc["Leachate depth (m)"]=[-1.0]
-            df_conc["Pesticide Delivery Ratio"]=[-1.0]
+            #Iterate through all the pesticides
+            for p in range(number_pesticides):
+                df_conc[f"Pesticide Delivery Ratio Pesticide {p+1}"]=[-1.0]
 
     else:
         ruta = working_directory+os.path.normpath(f"\\sensitivity\\output\\sensitivity_{core}.osp")
