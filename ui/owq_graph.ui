@@ -127,7 +127,7 @@ QTableCornerButton::section {
      </property>
      <property name="maximumSize">
       <size>
-       <width>500</width>
+       <width>16777215</width>
        <height>16777215</height>
       </size>
      </property>
@@ -141,6 +141,12 @@ QTableCornerButton::section {
    </item>
    <item row="0" column="1">
     <widget class="QFrame" name="frame_3">
+     <property name="maximumSize">
+      <size>
+       <width>183</width>
+       <height>385</height>
+      </size>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>

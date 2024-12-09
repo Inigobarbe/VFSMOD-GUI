@@ -52,6 +52,7 @@ from libraries.SALib.analyze.fast import analyze as analyze_fast
 import math
 import os
 import sys
+import textwrap
 
 
 #LOCAL FILES
@@ -114,8 +115,8 @@ from ui.ohy_graphs import ohy_graphs
 
 
 
-r'''#Detection of non expected errors
-def global_exception_handler(exctype, value, traceback):
+#Detection of non expected errors
+r'''def global_exception_handler(exctype, value, traceback):
     """
     Manejador global de excepciones no controladas.
     """
@@ -127,8 +128,8 @@ def global_exception_handler(exctype, value, traceback):
     print(f"Error capturado globalmente: {value}")
 
 # Configurar el manejador global
-sys.excepthook = global_exception_handler
-'''
+sys.excepthook = global_exception_handler'''
+
 
 class qvfsmod:
     """QGIS Plugin Implementation."""
@@ -3424,6 +3425,8 @@ class qvfsmod:
             #Put ax2 in the front
             self.ax_uncertainity[0].set_zorder(1)
             ax2.set_zorder(2)
+            #Delete grid
+            ax2.grid(visible=False)
             
             #Box plot
             self.ax_uncertainity[1].boxplot([float(x) for x in df[output_column]])
@@ -4209,11 +4212,11 @@ class qvfsmod:
         self.ax_owq_graph_reduction.clear()
         
         #Create graph
-        names = ['Infiltration (dQ)', 'Sediment reduction (dE)', 'Runoff inflow reduction',"Pesticide reduction (dP)"]
+        names = ['Infiltration (dQ)', 'Sediment (dE)', 'Runoff inflow',"Pesticide (dP)"]
         valores = [infiltration, sediment, runoff,pesticide]
 
         # Crear el gráfico de barras
-        bars = self.ax_owq_graph_reduction.bar(names, valores,color ="red",edgecolor="black")
+        bars = self.ax_owq_graph_reduction.bar(names, valores,color ="red")
         
         #Add values to the top of the bars
         for bar in bars:
@@ -4225,8 +4228,6 @@ class qvfsmod:
         #Axis
         self.ax_owq_graph_reduction.set_ylabel("Reduction (%)",size = 10,family="arial",weight = "bold",color = "black")
 
-        #X ticks
-        self.ax_owq_graph_reduction.tick_params(axis = "both",colors = "black",labelsize = 9)
         
         #Change y limit
         self.ax_owq_graph_reduction.set_ylim(0, max(valores)*1.1)
@@ -4645,8 +4646,8 @@ class qvfsmod:
         self.ax_owq_graph[1].plot(ratio, profundidad, marker='o', color='b')
 
         # Etiquetas de los ejes
-        self.ax_owq_graph[0].set_xlabel('Pore water concentration (mg/L)', color='black',weight = "bold")
-        self.ax_owq_graph[1].set_xlabel('Solid phase/liquid phase (mg/mg)', color='black',weight = "bold")
+        self.ax_owq_graph[0].set_xlabel('Pore water concentration \n(mg/L)', color='black',weight = "bold")
+        self.ax_owq_graph[1].set_xlabel('Solid phase/liquid phase \n(mg/mg)', color='black',weight = "bold")
         self.ax_owq_graph[0].set_ylabel('Depth (m)', color='black',weight = "bold")
 
         # Colorear el área entre profundidad 0 y 0.06
@@ -4674,10 +4675,6 @@ class qvfsmod:
                 tick.set_color('red')
         self.ax_owq_graph[1].axvline(x=1, color='red', linestyle='--')
         
-        
-        #Title
-        self.ax_owq_graph[0].set_title("Pore water concentration (mg/L)",pad = 20)
-        self.ax_owq_graph[1].set_title("Solid phase/liquid phase (mg/mg)",pad = 20)
         
         #Change background color
         self.canvas_owq_graph.figure.set_facecolor('#f0f0f0')
@@ -5216,6 +5213,10 @@ class qvfsmod:
             self.ax_vfsmod_hydrograph.xaxis.set_major_formatter(x_format)
             
             
+            #Change background color
+            self.canvas_vfsmod_hydrograph.figure.set_facecolor('#f0f0f0')
+            self.ax_vfsmod_hydrograph.set_facecolor('#f0f0f0')
+            
             # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
             self.canvas_vfsmod_hydrograph.figure.subplots_adjust(left=0.2, bottom=0.2)
 
@@ -5284,6 +5285,10 @@ class qvfsmod:
             x_format = tkr.FuncFormatter(xfunc)
             self.ax_vfsmod_hyetograph.xaxis.set_major_formatter(x_format)
             
+            
+            #Change background color
+            self.canvas_vfsmod_hyetograph.figure.set_facecolor('#f0f0f0')
+            self.ax_vfsmod_hyetograph.set_facecolor('#f0f0f0')
             
             # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
             self.canvas_vfsmod_hyetograph.figure.subplots_adjust(left=0.2, bottom=0.2)
@@ -5459,6 +5464,10 @@ class qvfsmod:
 
         self.ax_buffer_segment.set_xlabel("Distance (m)", size=10, family="arial", weight="bold", color="black")
         self.ax_buffer_segment.set_ylabel("Elevation (m)", size=10, family="arial", weight="bold", color="black")
+        
+        #Change background color
+        self.canvas_buffer_segment.figure.set_facecolor('#f0f0f0')
+        self.ax_buffer_segment.set_facecolor('#f0f0f0')
 
         # Adjust margins for more space
         self.canvas_buffer_segment.figure.subplots_adjust(wspace=0.4) # Spacing between two graphs
@@ -5845,7 +5854,7 @@ class qvfsmod:
             self.ax_calibration_sensitivity.set_ylim(0,max(list(mu_star)+list(sigma))*1.2)
             #Labels
             self.ax_calibration_sensitivity.set_xlabel(r"Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 12,family="arial",weight = "bold",color = "black")
-            self.ax_calibration_sensitivity.set_ylabel(r"Standard Deviation /nof Elementary Effects ($\sigma_{i}$)",size = 12,family="arial",weight = "bold",color = "black")
+            self.ax_calibration_sensitivity.set_ylabel("Standard Deviation /nof Elementary Effects ($\sigma_{i}$)",size = 12,family="arial",weight = "bold",color = "black")
             self.ax_calibration_sensitivity.set_title("Morris sensitivity analysis indexes", size=14, family="arial", weight="bold", color="black")
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
             self.canvas_sensitivity_graph_calibration.figure.subplots_adjust(left=0.2, bottom=0.2)
@@ -5967,7 +5976,7 @@ class qvfsmod:
                 legend.get_frame().set_facecolor('#f0f0f0')
                 #Labels
                 self.ax.set_xlabel(r"Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 14,family="arial",weight = "bold",color = "black")
-                self.ax.set_ylabel(r"Standard Deviation /nof Elementary Effects ($\sigma_{i}$)",size = 14,family="arial",weight = "bold",color = "black")
+                self.ax.set_ylabel("Standard Deviation /nof Elementary Effects ($\sigma_{i}$)",size = 14,family="arial",weight = "bold",color = "black")
                 self.ax.set_title("Morris sensitivity analysis indexes", size=16, family="arial", weight="bold", color="black")
                 #Change background color
                 self.canvas_sensitivity_graph.figure.set_facecolor('#f0f0f0')
@@ -6021,12 +6030,16 @@ class qvfsmod:
                 self.ax_fast[0].bar(names_inputs, st, yerr=st_conf, capsize=5, color='b')
                 self.ax_fast[0].set_title('FAST Total order index (ST)', fontsize=10)
                 self.ax_fast[0].set_ylabel('FAST index')
-                self.ax_fast[0].tick_params(axis='x', rotation=20,labelsize = 8)
+                self.ax_fast[0].tick_params(axis='x', rotation=20,labelsize = 10)
+                for label in self.ax_fast[0].get_xticklabels():
+                    label.set_ha('right')
                 
                 #First order 
                 self.ax_fast[1].bar(names_inputs, s1, yerr=s1_conf, capsize=5, color='b')
                 self.ax_fast[1].set_title('FAST First order index (S1)', fontsize=10)
-                self.ax_fast[1].tick_params(axis='x', rotation=20,labelsize = 8)
+                self.ax_fast[1].tick_params(axis='x', rotation=20,labelsize = 10)
+                for label in self.ax_fast[1].get_xticklabels():
+                    label.set_ha('right')
                 
                 #Change background color
                 self.canvas_sensitivity_graph.figure.set_facecolor('#f0f0f0')
@@ -6083,12 +6096,16 @@ class qvfsmod:
                 self.ax_sobol[0].bar(names_inputs, st, yerr=st_conf, capsize=5, color='b')
                 self.ax_sobol[0].set_title('Sobol Total order index (ST)', fontsize=10)
                 self.ax_sobol[0].set_ylabel('Sobol index')
-                self.ax_sobol[0].tick_params(axis='x', rotation=20,labelsize = 8)
+                self.ax_sobol[0].tick_params(axis='x', rotation=20,labelsize = 10)
+                for label in self.ax_sobol[0].get_xticklabels():
+                    label.set_ha('right')
                 
                 #First order 
                 self.ax_sobol[1].bar(names_inputs, s1, yerr=s1_conf, capsize=5, color='b')
                 self.ax_sobol[1].set_title('Sobol First order index (S1)', fontsize=10)
-                self.ax_sobol[1].tick_params(axis='x', rotation=20,labelsize = 8)
+                self.ax_sobol[1].tick_params(axis='x', rotation=20,labelsize = 10)
+                for label in self.ax_sobol[1].get_xticklabels():
+                    label.set_ha('right')
                 
                 #Change background color
                 self.canvas_sensitivity_graph.figure.set_facecolor('#f0f0f0')
@@ -6148,7 +6165,11 @@ class qvfsmod:
                 values = []
                 for i in range(2,len(lineas)):
                     if len(lineas[i].split(","))>2:
-                        columna = lineas[i].replace("\n", "").split(",").index(output_column)
+                        try:
+                            columna = lineas[i].replace("\n", "").split(",").index(output_column)
+                        except ValueError:
+                            self.warning_message(f"{output_column} is not in this csv")
+                            return
                         for k in range(i+1,len(lineas)):
                             if lineas[k] == "----------------------------------------------------------------------" + '\n':
                                 break
@@ -6161,13 +6182,13 @@ class qvfsmod:
 
                 # Histograma
                 counts, bins, patches = ax1.hist(
-                    values, bins=20, density=True, alpha=0.7, color="lightcoral", edgecolor="black", label="Histogram"
+                    values, bins=20, density=True, alpha=0.7, color="lightcoral", edgecolor="black", label="Density"
                 )
 
                 # Función acumulada
                 cdf = np.cumsum(counts) / np.sum(counts)
                 ax2 = ax1.twinx()
-                ax2.plot(bins[:-1], cdf, color="teal", lw=2, label="Cumulative")
+                ax2.plot(bins[:-1], cdf, color="teal", lw=2, label="Cumulative Probability")
                 
                 #Vertical line
                 try:
@@ -6185,9 +6206,13 @@ class qvfsmod:
                 ax1.grid(visible=True, linestyle="--", linewidth=0.6, alpha=0.5)
                 ax2.grid(visible=False)
 
-                # Leyendas
-                ax1.legend(loc="upper left", fontsize=10, frameon=False)
-                ax2.legend(loc="upper right", fontsize=10, frameon=False)
+                # Add legend
+                handles1, labels1 = ax1.get_legend_handles_labels()
+                handles2, labels2 = ax2.get_legend_handles_labels()
+                combined_handles = handles1 + handles2
+                combined_labels = labels1 + labels2
+
+                legend = ax1.legend(handles1 + handles2, labels1 + labels2, loc="best")
                 
                 #Change background color
                 self.canvas_sensitivity_graph_design.figure.set_facecolor('#f0f0f0')
@@ -6226,7 +6251,11 @@ class qvfsmod:
                 values = []
                 for i in range(len(lineas)):
                     if "Error" in lineas[i].split(","):
-                        columna_output = lineas[i].replace("\n", "").split(",").index(" ".join(output_column.split()[2:-1]))
+                        try:
+                            columna_output = lineas[i].replace("\n", "").split(",").index(" ".join(output_column.split()[2:-1]))
+                        except ValueError:
+                            self.warning_message(f"{output_column} is not in this csv")
+                            return
                         column_buffer = lineas[i].replace("\n", "").split(",").index("Buffer length (m)")
                         for k in range(i+1,len(lineas)):
                             buffer_length = float(lineas[k].split(",")[column_buffer])
@@ -6331,6 +6360,7 @@ class qvfsmod:
                 # Graficar los puntos con color granate y agregar etiquetas
                 add_label_monotonic = True # add label only once
                 add_label_non_monotonic = True # add label only once
+                
                 for i, (x, y) in enumerate(zip(mu_star, sigma)):
                     if np.isnan(x):x = 0
                     if np.isnan(y):y = 0
@@ -6371,7 +6401,7 @@ class qvfsmod:
                 legend.get_frame().set_facecolor('#f0f0f0')
                 #Labels
                 self.ax_design.set_xlabel(r"Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 14,family="arial",weight = "bold",color = "black")
-                self.ax_design.set_ylabel(r"Standard Deviation /nof Elementary Effects ($\sigma_{i}$)",size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_design.set_ylabel("Standard Deviation /nof Elementary Effects ($\sigma_{i}$)",size = 14,family="arial",weight = "bold",color = "black")
                 self.ax_design.set_title("Morris sensitivity analysis indexes", size=16, family="arial", weight="bold", color="black")
                 #Change background color
                 self.canvas_sensitivity_graph_design.figure.set_facecolor('#f0f0f0')
@@ -6422,15 +6452,19 @@ class qvfsmod:
                             st_conf.append(float(k.split(":")[1].split("_")[3]))
                 
                 #Total order 
-                self.ax_fast_design[0].bar(names_inputs, st, yerr=st_conf, capsize=5, color='b')
+                self.ax_fast_design[0].bar(names_inputs, st, yerr=st_conf, capsize=5, color='b') 
                 self.ax_fast_design[0].set_title('FAST Total order index (ST)', fontsize=10)
                 self.ax_fast_design[0].set_ylabel('FAST index')
-                self.ax_fast_design[0].tick_params(axis='x', rotation=20,labelsize = 8)
+                self.ax_fast_design[0].tick_params(axis='x', rotation=20,labelsize = 10)
+                for label in self.ax_fast_design[0].get_xticklabels():
+                    label.set_ha('right')
                 
                 #First order 
                 self.ax_fast_design[1].bar(names_inputs, s1, yerr=s1_conf, capsize=5, color='b')
                 self.ax_fast_design[1].set_title('FAST First order index (S1)', fontsize=10)
-                self.ax_fast_design[1].tick_params(axis='x', rotation=20,labelsize = 8)
+                self.ax_fast_design[1].tick_params(axis='x', rotation=20,labelsize = 10)
+                for label in self.ax_fast_design[1].get_xticklabels():
+                    label.set_ha('right')
                 
                 #Change background color
                 self.canvas_sensitivity_graph_design.figure.set_facecolor('#f0f0f0')
@@ -6487,12 +6521,16 @@ class qvfsmod:
                 self.ax_sobol_design[0].bar(names_inputs, st, yerr=st_conf, capsize=5, color='b')
                 self.ax_sobol_design[0].set_title('Sobol Total order index (ST)', fontsize=10)
                 self.ax_sobol_design[0].set_ylabel('Sobol index')
-                self.ax_sobol_design[0].tick_params(axis='x', rotation=20,labelsize = 8)
+                self.ax_sobol_design[0].tick_params(axis='x', rotation=20,labelsize = 10)
+                for label in self.ax_sobol_design[0].get_xticklabels():
+                    label.set_ha('right')
                 
                 #First order 
                 self.ax_sobol_design[1].bar(names_inputs, s1, yerr=s1_conf, capsize=5, color='b')
                 self.ax_sobol_design[1].set_title('Sobol First order index (S1)', fontsize=10)
-                self.ax_sobol_design[1].tick_params(axis='x', rotation=20,labelsize = 8)
+                self.ax_sobol_design[1].tick_params(axis='x', rotation=20,labelsize = 10)
+                for label in self.ax_sobol_design[1].get_xticklabels():
+                    label.set_ha('right')
                 
                 #Change background color
                 self.canvas_sensitivity_graph_design.figure.set_facecolor('#f0f0f0')
@@ -6543,8 +6581,8 @@ class qvfsmod:
         
     def udpate_buffer_length_cumulative(self):
         """Method to obtain the buffer length according to a confidence level"""
-        values = self.obtain_values_sensitivity_design()
         try:
+            values = self.obtain_values_sensitivity_design()
             #Obtain value
             value = stats.scoreatpercentile(values,float(self.dlg_base.cumulative_probability_sensitivity_design.text()))
             #Disconnect function
@@ -6560,8 +6598,8 @@ class qvfsmod:
     
     def udpate_cumulative_buffer_length(self):
         """Method to obtain confidence level acoording to a buffer length"""
-        values = self.obtain_values_sensitivity_design()
         try:
+            values = self.obtain_values_sensitivity_design()
             value = percentileofscore(values, float(self.dlg_base.buffer_length_sensitivity_design.text()), kind='rank')
             #Disconnect function
             self.dlg_base.cumulative_probability_sensitivity_design.textChanged.disconnect(self.udpate_buffer_length_cumulative)
@@ -6727,7 +6765,6 @@ class qvfsmod:
         has to be used because we need QTrhead to add progress bar"""
         self.number_execution = 0
         self.results = []
-        print("eeee",self.sensitivity_parameters)
         self.rows_execute = [i for i in range(len(self.param_values)) for _ in range(len(self.buffer_lengths_sensitivity_design))] #each row(sample in sensitivity analysis) is going to be executed as many times as combinations of buffer lengths are
         args_list = [(i, i % (self.number_cores*5), 
           self.param_values, self.dic_data, 
@@ -6856,6 +6893,8 @@ class qvfsmod:
                 if i.isChecked():
                     self.pesticide = self.dictionary_radio_inputs_pesticides_single_calibration[i].split()[-1]
                     break
+        else:
+            self.pesticide = np.nan
         
         #Method were the paralelization is achieved
         self.start_analysis_sensitivity_calibration()
@@ -6865,8 +6904,6 @@ class qvfsmod:
         """Method to run whole sensitivity analysis"""
         #Create the dictionary for the sensitivity analysis
         self.dic_data = self.create_dictionary_sensitivity_analysis_design()
-        print("diccionario",self.dic_data)
-        print("sensitivity_parameters",self.sensitivity_parameters)
         self.vfs_sensitivity_file = self.dlg_base.vfs_file_sensitivity_design.text()
         
         #Create problem variable
@@ -6929,6 +6966,7 @@ class qvfsmod:
         #Obtain the list with the buffer lengths that are going to be used to obtain the curves
         self.buffer_lengths_sensitivity_design = self.obtain_buffer_lengths_sensitivity_design()
         
+        print("columnas 1",self.outputs_sensitivity_design.keys())
         
         #Method were the paralelization is achieved
         self.start_analysis_sensitivity_design()
@@ -7088,7 +7126,7 @@ class qvfsmod:
                         f.write(f"{i}" + '\n')
                         si = sobol.analyze(self.problem, np.array(self.results_sensitivity[i]))
                         for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()): 
-                            f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}_{si['S2'][input_parameter_k]}_{si['S2_conf'][input_parameter_k]}" + '\n')
+                            f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}" + '\n')
                     f.write("----------------------------------------------------------------------" + '\n')
                     
             elif self.dlg_base.morris.isChecked():
@@ -7171,10 +7209,8 @@ class qvfsmod:
     def run_sensitivity_analysis_part_two_design(self):
         """Second part of sensitivity analysis for calibration to analyze the results. I have splitted sensitivity running
         in two because we use Thread method and we need to stop till the thread finishes, if not we get an error"""
-        
         #Create DataFrame or results
         self.results_sensitivity_raw = self.create_df_sensitivity_design(self.results)
-        
         
         #Obtain the data with the optimized buffer lengths
         self.results_sensitivity = self.obtain_optimized_vfs_sensitivity_design()
@@ -7198,7 +7234,7 @@ class qvfsmod:
                             return
                         si = sobol.analyze(self.problem, np.array(self.results_sensitivity[i]))
                         for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()): 
-                            f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}_{si['S2'][input_parameter_k]}_{si['S2_conf'][input_parameter_k]}" + '\n')
+                            f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}" + '\n')
                     f.write("----------------------------------------------------------------------" + '\n')
                     
             elif self.dlg_base.morris_design.isChecked():
@@ -7378,15 +7414,18 @@ class qvfsmod:
             return
         if len(inputs_complete)<len(new_df): #if there are less inputs without errors than original df then there are errors
             for output in output_columns:
-                #Create model of linear regression
-                model_output = LinearRegression()
-                #Train model with data that is not with error
-                model_output.fit(inputs_complete, outputs_complete[output])
-                #Predict values with error
-                inputs_nan = inputs[~mask]
-                pred_output = model_output.predict(inputs_nan)
-                #Put predicted values in column
-                new_df.loc[~mask, output] = pred_output
+                try:
+                    #Create model of linear regression
+                    model_output = LinearRegression()
+                    #Train model with data that is not with error
+                    model_output.fit(inputs_complete, outputs_complete[output])
+                    #Predict values with error
+                    inputs_nan = inputs[~mask]
+                    pred_output = model_output.predict(inputs_nan)
+                    #Put predicted values in column
+                    new_df.loc[~mask, output] = pred_output
+                except ValueError: #if error in prediction then put average
+                    new_df.loc[~mask, output] = np.mean(outputs_complete[output])
         
         return new_df
     
@@ -7424,15 +7463,18 @@ class qvfsmod:
             return
         if len(inputs_complete)<len(new_df): #if there are less inputs without errors than original df then there are errors
             for output in output_columns:
-                #Create model of linear regression
-                model_output = LinearRegression()
-                #Train model with data that is not with error
-                model_output.fit(inputs_complete, outputs_complete[output])
-                #Predict values with error
-                inputs_nan = inputs[~mask]
-                pred_output = model_output.predict(inputs_nan)
-                #Put predicted values in column
-                new_df.loc[~mask, output] = pred_output
+                try:
+                    #Create model of linear regression
+                    model_output = LinearRegression()
+                    #Train model with data that is not with error
+                    model_output.fit(inputs_complete, outputs_complete[output])
+                    #Predict values with error
+                    inputs_nan = inputs[~mask]
+                    pred_output = model_output.predict(inputs_nan)
+                    #Put predicted values in column
+                    new_df.loc[~mask, output] = pred_output
+                except ValueError: #if error in prediction then put average
+                    new_df.loc[~mask, output] = np.mean(outputs_complete[output])
         
         return new_df
     
@@ -7465,15 +7507,18 @@ class qvfsmod:
             return
         if len(inputs_complete)<len(new_df): #if there are less inputs without errors than original df then there are errors
             for output in output_columns:
-                #Create model of linear regression
-                model_output = LinearRegression()
-                #Train model with data that is not with error
-                model_output.fit(inputs_complete, outputs_complete[output])
-                #Predict values with error
-                inputs_nan = inputs[~mask]
-                pred_output = model_output.predict(inputs_nan)
-                #Put predicted values in column
-                new_df.loc[~mask, output] = pred_output
+                try:
+                    #Create model of linear regression
+                    model_output = LinearRegression()
+                    #Train model with data that is not with error
+                    model_output.fit(inputs_complete, outputs_complete[output])
+                    #Predict values with error
+                    inputs_nan = inputs[~mask]
+                    pred_output = model_output.predict(inputs_nan)
+                    #Put predicted values in column
+                    new_df.loc[~mask, output] = pred_output
+                except ValueError: #if error in prediction then put average
+                    new_df.loc[~mask, output] = np.mean(outputs_complete[output])
         
         return new_df
     
@@ -8190,17 +8235,17 @@ class qvfsmod:
         lis_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\\uncertainity\\uncertainity.lis")
         #Create file
         with open(lis_file, 'w') as archivo:
-            archivo.write(os.path.normpath(rf"inp=inputs\\uncertainity.inp  \n"))
-            archivo.write(os.path.normpath(rf"iro=inputs\\uncertainity.iro  \n"))
-            archivo.write(os.path.normpath(rf"irn=inputs\\uncertainity.irn  \n"))
-            archivo.write(os.path.normpath(rf"isd=inputs\\uncertainity.isd  \n"))
-            archivo.write(os.path.normpath(rf"out=inputs\\uncertainity.out  \n"))
-            archivo.write(os.path.normpath(rf"hyt=inputs\\uncertainity.hyt  \n"))
+            archivo.write(os.path.normpath(f"inp=inputs\\uncertainity.inp  \n"))
+            archivo.write(os.path.normpath(f"iro=inputs\\uncertainity.iro  \n"))
+            archivo.write(os.path.normpath(f"irn=inputs\\uncertainity.irn  \n"))
+            archivo.write(os.path.normpath(f"isd=inputs\\uncertainity.isd  \n"))
+            archivo.write(os.path.normpath(f"out=inputs\\uncertainity.out  \n"))
+            archivo.write(os.path.normpath(f"hyt=inputs\\uncertainity.hyt  \n"))
         
         #REST OF THE FILES
         #Function to copy and paste the inputs to create the files to use in the uncertainity analysis
         def copy_paste(process,type_input):
-            ruta_pegar = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+rf"\\uncertainity\\inputs\\uncertainity.{type_input}" )
+            ruta_pegar = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\uncertainity\\inputs\\uncertainity.{type_input}" )
             if process == "UH":
                 ruta = self.obtain_direction_vfsmod(self.dlg_base.uh_file_uncertainity.text())
             elif process == "VFS":
@@ -8268,7 +8313,7 @@ class qvfsmod:
             for k in files:
                 shutil.copyfile(os.path.normpath(carpeta+r"\\inputs\\"+k), os.path.normpath(carpeta+r"\\inputs\\"+k.replace("uncertainity",f"uncertainity_{i}")))
         #Replicate executables
-        carpeta_bat = os.path.normpath(self.plugin_directory+"r\\executables")
+        carpeta_bat = os.path.normpath(self.plugin_directory+"\\executables")
         for core in range(self.number_cores*5):
             #Execution UH
             shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_uh_{core}.bat"))
@@ -11752,12 +11797,12 @@ class qvfsmod:
         lis_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\inverse\\inverse.lis")
         #Create file
         with open(lis_file, 'w') as archivo:
-            archivo.write(fos.path.normpath("inp=inputs\\inverse.inp  \n"))
-            archivo.write(fos.path.normpath("iro=inputs\\inverse.iro  \n"))
-            archivo.write(fos.path.normpath("irn=inputs\\inverse.irn  \n"))
-            archivo.write(fos.path.normpath("isd=inputs\\inverse.isd  \n"))
-            archivo.write(fos.path.normpath("out=inputs\\inverse.out  \n"))
-            archivo.write(fos.path.normpath("hyt=inputs\\inverse.hyt  \n"))
+            archivo.write(os.path.normpath("inp=inputs\\inverse.inp  \n"))
+            archivo.write(os.path.normpath("iro=inputs\\inverse.iro  \n"))
+            archivo.write(os.path.normpath("irn=inputs\\inverse.irn  \n"))
+            archivo.write(os.path.normpath("isd=inputs\\inverse.isd  \n"))
+            archivo.write(os.path.normpath("out=inputs\\inverse.out  \n"))
+            archivo.write(os.path.normpath("hyt=inputs\\inverse.hyt  \n"))
         
         #REST OF THE FILES
         #Function to copy and paste the inputs to create the files to use in the design analysis
@@ -14826,6 +14871,12 @@ class qvfsmod:
         add_image_button(search_path,self.dlg_calibration_results_hydrograph.browse)
         add_image_button(search_path,self.dlg_calibration_results_sedimentograph.browse)
         add_image_button(search_path,self.dlg_calibration_results_single.browse)
+        add_image_button(search_path,self.dlg_base.browse_uh_design)
+        add_image_button(search_path,self.dlg_base.browse_vfs_design)
+        add_image_button(search_path,self.dlg_base.browse_file_design)
+        add_image_button(search_path,self.dlg_base.browse_design_sensitivity)
+        add_image_button(search_path,self.dlg_base.browse_fast_csv_design_sensitivity)
+        add_image_button(search_path,self.dlg_base.browse_sobol_design_sensitivity)
         
         
     def add_functions_outputs_hydrograph(self,dialog):
@@ -14933,7 +14984,8 @@ class qvfsmod:
         #self.ax.set_ylim([0, 1])
         #Labels
         self.ax_design_graph.set_xlabel(column_x,size = 10,family="arial",weight = "bold",color = "black")
-        self.ax_design_graph.set_ylabel(column_y,size = 10,family="arial",weight = "bold",color = "black")
+        self.ax_design_graph.set_ylabel("\n".join(textwrap.wrap(column_y, width=24, break_long_words=False)),size = 10,family="arial",weight = "bold",color = "black") #if the text is too long then we add a new row line
+        
         #X ticks
         self.ax_design_graph.tick_params(axis = "both",colors = "black",labelsize = 9)
         # Add legend and change color
@@ -14941,6 +14993,7 @@ class qvfsmod:
             loc="lower center",  # Centrar horizontalmente
             bbox_to_anchor=(0.5, 1.01),  # Posición justo arriba del gráfico
             ncol=4,  # Número de columnas en la leyenda
+            frameon=False
         )
         
         #Change color legend
@@ -15002,7 +15055,7 @@ class qvfsmod:
         self.ax_design_graph.set_facecolor('#f0f0f0')
         
         #Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-        self.canvas_design_graph.figure.subplots_adjust(left=0.2, bottom=0.2,top = 0.8)
+        self.canvas_design_graph.figure.subplots_adjust(left=0.2, bottom=0.2,top = 0.8,right = 0.9)
         #Draw canvas
         self.canvas_design_graph.draw()
         
@@ -15994,9 +16047,9 @@ def execution_sensitivity_analysis_design(number_execution,core,param_values,dic
 def modify_inputs_sensitivity_design(extension, row, column, new_value, process,core,working_directory):
     """Function to modfiy inputs in sensitivity analysis"""
     if process == "uh":
-        ruta = os.path.normpath(working_directory+os.path.normpath(rf"\design\design_{core}.lis"))
+        ruta = os.path.normpath(working_directory+os.path.normpath(f"\\design\\design_{core}.lis"))
     else:
-        ruta = os.path.normpath(working_directory+os.path.normpath(rf"\design\design_{core}.prj"))
+        ruta = os.path.normpath(working_directory+os.path.normpath(f"\\design\\design_{core}.prj"))
     with open(ruta, "r") as archivo:
         lineas_prj = archivo.readlines()
     for i in lineas_prj:
@@ -16163,7 +16216,7 @@ def save_results_sensitivity_analysis_design(number_execution,core,working_direc
             df_conc["SDR"]=[-1.0]
         
         for i in [x.split()[-1] for x in outputs_to_save.keys() if x.split()[0] == "PDR"]:
-            df_conc[f"PDR {i}",]=[-1.0]
+            df_conc[f"PDR {i}"]=[-1.0]
 
     else:
         ruta = working_directory+os.path.normpath(f"\\design\\output\\design_{core}.osp")
@@ -16261,7 +16314,7 @@ def sensitivity_paralelization(number_execution,core,param_values,dic_data,sensi
             return save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality,number_pesticides ,error = False)
     except:
         return save_results_sensitivity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality,number_pesticides ,error = True)
-        
+       
     
     
 
@@ -16317,9 +16370,9 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
 def modify_inputs_sensitivity(extension, row, column, new_value, process,core,working_directory):
     """Function to modfiy inputs in sensitivity analysis"""
     if process == "uh":
-        ruta = os.path.normpath(working_directory+os.path.normpath(rf"\sensitivity\sensitivity_{core}.lis"))
+        ruta = os.path.normpath(working_directory+os.path.normpath(f"\\sensitivity\\sensitivity_{core}.lis"))
     else:
-        ruta = os.path.normpath(working_directory+os.path.normpath(rf"\sensitivity\sensitivity_{core}.prj"))
+        ruta = os.path.normpath(working_directory+os.path.normpath(f"\\sensitivity\\sensitivity_{core}.prj"))
     with open(ruta, "r") as archivo:
         lineas_prj = archivo.readlines()
     for i in lineas_prj:
@@ -16446,7 +16499,7 @@ def change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file,work
         contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
     for i in lineas_ikw_original[-8:]:    
         contenido+=f"{i}"
-    with open(working_directory+os.path.normpath(f"\\sensitivity\\inputs\\sensitivity_{core}.ikw", 'w')) as archivo:
+    with open(working_directory+os.path.normpath(f"\\sensitivity\\inputs\\sensitivity_{core}.ikw"), 'w') as archivo:
         archivo.write(contenido)
     
 def change_filter_manning_sensitivity(value_change,column,core,working_directory):
@@ -16813,7 +16866,7 @@ def change_buffer_length_sensitivity_calibration(value_change,core,vfs_sensitivi
         contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
     for i in lineas_ikw_original[-8:]:    
         contenido+=f"{i}"
-    with open(working_directory+os.path.normpath(f"\\inverse\\inputs\\inverse_{core}.ikw", 'w')) as archivo:
+    with open(working_directory+os.path.normpath(f"\\inverse\\inputs\\inverse_{core}.ikw"), 'w') as archivo:
         archivo.write(contenido)
     
 def change_filter_manning_sensitivity_calibration(value_change,column,core,working_directory):

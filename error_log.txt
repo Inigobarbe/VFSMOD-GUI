@@ -55,3 +55,15 @@ Mensaje: 'NoneType' object has no attribute 'deleteLater'
 Excepción: AttributeError
 Mensaje: 'NoneType' object has no attribute 'deleteLater'
 
+Excepción: AttributeError
+Mensaje: 'NoneType' object has no attribute 'columns'
+
+Excepción: AttributeError
+Mensaje: 'NoneType' object has no attribute 'columns'
+
+Excepción: AttributeError
+Mensaje: 'NoneType' object has no attribute 'columns'
+
+Excepción: TypeError
+Mensaje: normpath() takes 1 positional argument but 2 were given
+

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>965</width>
-    <height>414</height>
+    <width>993</width>
+    <height>447</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -119,16 +119,19 @@ QTableCornerButton::section {
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0">
     <widget class="QScrollArea" name="scrollArea">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
      <widget class="QWidget" name="scrollAreaWidgetContents">
       <property name="geometry">
        <rect>
-        <x>-20</x>
-        <y>-25</y>
-        <width>948</width>
-        <height>414</height>
+        <x>0</x>
+        <y>0</y>
+        <width>975</width>
+        <height>429</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout">
