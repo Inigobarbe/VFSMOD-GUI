@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>901</width>
+    <width>903</width>
     <height>415</height>
    </rect>
   </property>
@@ -119,6 +119,18 @@ QTableCornerButton::section {
   <layout class="QGridLayout" name="gridLayout">
    <item row="2" column="0">
     <widget class="QTableWidget" name="tableWidget">
+     <property name="minimumSize">
+      <size>
+       <width>314</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>314</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <column>
       <property name="text">
        <string>Time (s)</string>
@@ -141,7 +153,7 @@ QTableCornerButton::section {
      </property>
      <property name="maximumSize">
       <size>
-       <width>420</width>
+       <width>16777215</width>
        <height>16777215</height>
       </size>
      </property>
@@ -155,6 +167,12 @@ QTableCornerButton::section {
    </item>
    <item row="1" column="1" rowspan="2">
     <widget class="QFrame" name="frame">
+     <property name="minimumSize">
+      <size>
+       <width>137</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -224,7 +242,11 @@ Continue Editing</string>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="file_hydrograph"/>
+      <widget class="QLineEdit" name="file_hydrograph">
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="browse_hydrograph">

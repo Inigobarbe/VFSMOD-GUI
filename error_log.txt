@@ -67,3 +67,15 @@ Mensaje: 'NoneType' object has no attribute 'columns'
 Excepción: TypeError
 Mensaje: normpath() takes 1 positional argument but 2 were given
 
+Excepción: TypeError
+Mensaje: 'NoneType' object cannot be interpreted as an integer
+
+Excepción: TypeError
+Mensaje: 'NoneType' object cannot be interpreted as an integer
+
+Excepción: TypeError
+Mensaje: 'NoneType' object cannot be interpreted as an integer
+
+Excepción: TypeError
+Mensaje: 'NoneType' object cannot be interpreted as an integer
+

@@ -9,7 +9,7 @@ a = Analysis(
     ['C:\\qvfsmod\\Qvfsmod.py'],
     pathex=[],
     binaries=[],
-    datas=[('C:\\qvfsmod\\ui', 'ui/'), ('C:\\qvfsmod\\resources.py', '.'), ('C:\\qvfsmod\\libraries', 'libraries/'), ('C:\\qvfsmod\\images', 'images/'), ('C:\\qvfsmod\\executables', 'executables/')],
+    datas=[('C:\\qvfsmod\\ui', 'ui/'), ('C:\\qvfsmod\\resources.py', '.'), ('C:\\qvfsmod\\libraries', 'libraries/'), ('C:\\qvfsmod\\images', 'images/'), ('C:\\qvfsmod\\executables', 'executables/'), ('C:\\qvfsmod\\icon.ico', '.'), ('C:\\qvfsmod\\license.txt', '.'), ('C:\\qvfsmod\\images\\about.png', 'images/')],
     hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
@@ -36,6 +36,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=['C:\\qvfsmod\\icon.ico'],
 )
 coll = COLLECT(
     exe,

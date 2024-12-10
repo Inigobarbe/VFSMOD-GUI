@@ -1,0 +1,16 @@
+VFSMOD-W 6.x- système de modélisation de bande filtrante végétalisée ("vegetative filter strip")
+ 
+VFSMOD a été développé initialement au Département Biologie et Agriculture
+de l'Université d'État de Caroline du Nord par les Drs. Rafael Muñoz-Carpena et John E. Parsons. La maintenance du modèle est désormais assurée par le Dr Munoz-Carpena au département Agriculture et Biologie de l'Université de Floride.
+
+Le modèle et la documentation associée sont fournis tels quels sans aucune garantie -
+explicite ou implicite. Le modèle vous est fourni comme un outil d’éducation, de recherche et de développement sous les termes de l'Open Source Initiative,
+Educational Community License, Version 2.0 (http://opensource.org/licenses/ecl2.txt). Comme avec tout modèle, les résultats sont totalement dépendants de la capacité de l'utilisateur de sélectionner à bon escient les paramètres d'entrée qui représentent le «terrain» et d'interpréter les résultats. Nous ferons tout notre possible pour fournir assistance et soutien dans la mesure où nos autres engagements le permettent.
+
+Nous vous demandons de mentionner les auteurs et de faire référence à notre travail si vous l’utilisez pour vos travaux.
+
+-------------------------------------------------- --------------------------
+
+(c) Rafael Munoz-Carpena, Université de Floride, carpena@ufl.edu. 
+Dernière mise à jour 01/12/2010
+

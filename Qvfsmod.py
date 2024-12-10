@@ -15,7 +15,7 @@
 import PyQt5
 from PyQt5 import QtWidgets,QtGui
 from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QThread,pyqtSignal
-from PyQt5.QtGui import QIcon, QFont, QGuiApplication
+from PyQt5.QtGui import QIcon, QFont, QGuiApplication, QPixmap, QImage
 from PyQt5.QtWidgets import QAction, QComboBox,QMessageBox,QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy,QAction, QMenu,QCheckBox, QFrame,QGridLayout,QHBoxLayout
 from sklearn.linear_model import LinearRegression
 from scipy.optimize import differential_evolution, minimize
@@ -114,9 +114,9 @@ from ui.owq_graph_reduction import owq_graph_reduction
 from ui.ohy_graphs import ohy_graphs
 
 
-
+r'''
 #Detection of non expected errors
-r'''def global_exception_handler(exctype, value, traceback):
+def global_exception_handler(exctype, value, traceback):
     """
     Manejador global de excepciones no controladas.
     """
@@ -235,6 +235,8 @@ class qvfsmod:
         self.dlg_ohy_graphs.soil_infiltration.toggled.connect(lambda checked: self.update_ohy_graphs() if checked else None)
         
         
+        #License
+        self.dlg_base.license_button.clicked.connect(self.open_license)
         
         #Degradation data
         self.dlg_water_quality.degradation_data.clicked.connect(self.dlg_degradation_data.show)
@@ -414,6 +416,7 @@ class qvfsmod:
         self.dlg_base.actionLocal_Results.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.oat_results))
         self.dlg_base.actionExecution_of_Uncertainity_Analysis.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.uncertainity_page))
         self.dlg_base.actionResults.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_results_uncertainity))
+        self.dlg_base.actionAbot_this_program.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_about))
         
         #Iso characteristic curve close
         self.dlg_soil_curves.done.clicked.connect(self.dlg_soil_curves.close)
@@ -1035,6 +1038,11 @@ class qvfsmod:
         self.dlg_base.csv_results_uncertainity.textChanged.connect(self.show_graph_sensitivity_uncertainity)
         
     
+    def open_license(self):
+        """Method to open the license"""
+        ruta = os.getcwd() + os.path.normpath("\\documentation\\license.txt")
+        os.startfile(ruta)
+    
     def add_pesticides_dialog_sensitivity_inputs(self,process):
         """Method to add pesticides to the dialog to choose as input"""
         self.variables_water_quality = ["Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Pesticide half-life (days)","Total pesticide mass per unit area source field (mg/m2)","Dispersion length of chemical (m)","Runoff remobilized VFS residue \nfrom last event (mg/m2)"]
@@ -1325,9 +1333,9 @@ class qvfsmod:
             pass
 
         # Etiquetas de los ejes
-        ax1.set_xlabel("Nash–Sutcliffe Efficiency", size = 14,family="arial",weight = "bold",color = "black")
-        ax1.set_ylabel("Density", size = 14,family="arial",weight = "bold",color = "black")
-        ax2.set_ylabel("Cumulative Probability", size = 14,family="arial",weight = "bold",color = "black")
+        ax1.set_xlabel("Nash–Sutcliffe Efficiency")
+        ax1.set_ylabel("Density")
+        ax2.set_ylabel("Cumulative Probability")
 
 
         # Personalización de los grids
@@ -1335,14 +1343,15 @@ class qvfsmod:
         ax2.grid(visible=False)
 
         # Leyendas
-        ax1.legend(loc="upper left", fontsize=10, frameon=False)
-        ax2.legend(loc="upper right", fontsize=10, frameon=False)
+        lines1, labels1 = ax1.get_legend_handles_labels()
+        lines2, labels2 = ax2.get_legend_handles_labels()
+        legend = ax1.legend(lines1 + lines2, labels1 + labels2, loc="best")
         
         #Change background color
         getattr(self,canvas).figure.set_facecolor('#f0f0f0')
         ax1.set_facecolor('#f0f0f0')
         # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-        getattr(self,canvas).figure.subplots_adjust(left=0.2, bottom=0.2)
+        getattr(self,canvas).figure.subplots_adjust(left=0.2, bottom=0.2,right = 0.8)
         #Draw canvas
         getattr(self,canvas).draw()
             
@@ -1399,29 +1408,29 @@ class qvfsmod:
         
             #Obtain number of pesticides
             number_pesticides = self.obtain_number_pestidides(prj_path)
-            
-            self.sensitivity_design_pesticides_present = []
-            for i in range(number_pesticides):
-                pesticide = i+1
-                checkbox = QCheckBox(f"Pesticide {pesticide}")
-                setattr(self.dlg_base, f"sensitivity_design_pesticide_check_{pesticide}", checkbox)
-                self.dlg_base.gridLayout_53.addWidget(checkbox, pesticide+5, 0)
-                #Connect to function
-                getattr(self.dlg_base, f"sensitivity_design_pesticide_check_{pesticide}").stateChanged.connect(self.enable_disable_delivery_ratio_lines)
-                
+            if number_pesticides is not None:
+                self.sensitivity_design_pesticides_present = []
+                for i in range(number_pesticides):
+                    pesticide = i+1
+                    checkbox = QCheckBox(f"Pesticide {pesticide}")
+                    setattr(self.dlg_base, f"sensitivity_design_pesticide_check_{pesticide}", checkbox)
+                    self.dlg_base.gridLayout_53.addWidget(checkbox, pesticide+5, 0)
+                    #Connect to function
+                    getattr(self.dlg_base, f"sensitivity_design_pesticide_check_{pesticide}").stateChanged.connect(self.enable_disable_delivery_ratio_lines)
+                    
 
-                # Crear un QLineEdit
-                line_edit = QLineEdit()
-                setattr(self.dlg_base, f"sensitivity_design_pesticide_line_{pesticide}", line_edit)
-                getattr(self.dlg_base, f"sensitivity_design_pesticide_line_{pesticide}").setAlignment(Qt.AlignCenter)
-                self.dlg_base.gridLayout_53.addWidget(line_edit, pesticide+5, 1)
-                
-                #Disable
-                getattr(self.dlg_base, f"sensitivity_design_pesticide_line_{pesticide}").setEnabled(False)
-                getattr(self.dlg_base, f"sensitivity_design_pesticide_line_{pesticide}").setStyleSheet("background-color: #d9d9d9;")
-                
-                #Save the results
-                self.sensitivity_design_pesticides_present.append(pesticide) 
+                    # Crear un QLineEdit
+                    line_edit = QLineEdit()
+                    setattr(self.dlg_base, f"sensitivity_design_pesticide_line_{pesticide}", line_edit)
+                    getattr(self.dlg_base, f"sensitivity_design_pesticide_line_{pesticide}").setAlignment(Qt.AlignCenter)
+                    self.dlg_base.gridLayout_53.addWidget(line_edit, pesticide+5, 1)
+                    
+                    #Disable
+                    getattr(self.dlg_base, f"sensitivity_design_pesticide_line_{pesticide}").setEnabled(False)
+                    getattr(self.dlg_base, f"sensitivity_design_pesticide_line_{pesticide}").setStyleSheet("background-color: #d9d9d9;")
+                    
+                    #Save the results
+                    self.sensitivity_design_pesticides_present.append(pesticide) 
                 
     
     def enable_disable_delivery_ratio_lines(self):
@@ -1479,30 +1488,31 @@ class qvfsmod:
             #Obtain number of pesticides
             number_pesticides = self.obtain_number_pestidides(prj_path)
             
+            if number_pesticides is not None:
             
-            #Add pesticides
-            # Agrega el QLabel
-            label = QLabel("Select pesticide")
-            layout.addWidget(label)
-            
-            # Lista de nombres para los QRadioButtons
-            pesticides = [f"Pesticide {x+1}" for x in range(number_pesticides)]
-            self.dictionary_radio_inputs_pesticides_single_calibration = {}
-            
-            # Crear y añadir varios QRadioButton
-            for k,opcion in enumerate(pesticides):
-                radio_button = QRadioButton(opcion)
-                setattr(self.dlg_base, f"single_calibration_pesticide_{k}", radio_button)
-                self.dictionary_radio_inputs_pesticides_single_calibration[getattr(self.dlg_base, f"single_calibration_pesticide_{k}")] = opcion
-                layout.addWidget(radio_button)
+                #Add pesticides
+                # Agrega el QLabel
+                label = QLabel("Select pesticide")
+                layout.addWidget(label)
+                
+                # Lista de nombres para los QRadioButtons
+                pesticides = [f"Pesticide {x+1}" for x in range(number_pesticides)]
+                self.dictionary_radio_inputs_pesticides_single_calibration = {}
+                
+                # Crear y añadir varios QRadioButton
+                for k,opcion in enumerate(pesticides):
+                    radio_button = QRadioButton(opcion)
+                    setattr(self.dlg_base, f"single_calibration_pesticide_{k}", radio_button)
+                    self.dictionary_radio_inputs_pesticides_single_calibration[getattr(self.dlg_base, f"single_calibration_pesticide_{k}")] = opcion
+                    layout.addWidget(radio_button)
 
-            # Añade un espaciador para ajustar la posición
-            spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-            layout.addItem(spacer)
+                # Añade un espaciador para ajustar la posición
+                spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+                layout.addItem(spacer)
 
-            # Selecciona el primer QRadioButton
-            if self.dictionary_radio_inputs_pesticides_single_calibration:
-                list(self.dictionary_radio_inputs_pesticides_single_calibration.keys())[0].setChecked(True)
+                # Selecciona el primer QRadioButton
+                if self.dictionary_radio_inputs_pesticides_single_calibration:
+                    list(self.dictionary_radio_inputs_pesticides_single_calibration.keys())[0].setChecked(True)
         
     
     def calculate_total_executions_sensitivity_design(self):
@@ -2208,9 +2218,12 @@ class qvfsmod:
             x_format = tkr.FuncFormatter(xfunc)
             self.ax_hydrograph_edit_calibration.xaxis.set_major_formatter(x_format)
             
-            
+            #Change background color
+            self.canvas_hydrograph_edit_calibration.figure.set_facecolor('#f0f0f0')
+            self.ax_hydrograph_edit_calibration.set_facecolor('#f0f0f0')
+        
             # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
-            self.canvas_hydrograph_edit_calibration.figure.subplots_adjust(left=0.2, bottom=0.2)
+            self.canvas_hydrograph_edit_calibration.figure.subplots_adjust(left=0.25, bottom=0.2)
 
             # Redraw the canvas
             self.canvas_hydrograph_edit_calibration.draw()
@@ -2246,7 +2259,7 @@ class qvfsmod:
 
             #Axis
             self.ax_sedimentograph_edit_calibration.set_xlabel("Time (s)",size = 10,family="arial",weight = "bold",color = "black")
-            self.ax_sedimentograph_edit_calibration.set_ylabel("Discharge (m$^{3}$/s)",size = 10,family="arial",weight = "bold",color = "black")
+            self.ax_sedimentograph_edit_calibration.set_ylabel("Sediment (g/s)",size = 10,family="arial",weight = "bold",color = "black")
 
             #X ticks
             self.ax_sedimentograph_edit_calibration.tick_params(axis = "both",colors = "black",labelsize = 9)
@@ -2260,8 +2273,12 @@ class qvfsmod:
             self.ax_sedimentograph_edit_calibration.xaxis.set_major_formatter(x_format)
             
             
+            #Change background color
+            self.canvas_sedimentograph_edit_calibration.figure.set_facecolor('#f0f0f0')
+            self.ax_sedimentograph_edit_calibration.set_facecolor('#f0f0f0')
+            
             # Adjust bottom margin. If not then the graph is too big and I dont know how to change the graph size
-            self.canvas_sedimentograph_edit_calibration.figure.subplots_adjust(left=0.2, bottom=0.2)
+            self.canvas_sedimentograph_edit_calibration.figure.subplots_adjust(left=0.25, bottom=0.2)
 
             # Redraw the canvas
             self.canvas_sedimentograph_edit_calibration.draw()
@@ -2859,7 +2876,7 @@ class qvfsmod:
     
     def set_working_directory(self):
         """Method to set the directory of the project"""
-        self.working_directory = self.dlg_base.working_directory_vfsmod.text()
+        self.working_directory = os.path.normpath(self.dlg_base.working_directory_vfsmod.text())
     
     def change_rows_water_quality(self):
         """Method to add/delete rows from the water quality dialog"""
@@ -3202,14 +3219,19 @@ class qvfsmod:
             x_sorted = sorted(unique_pairs.keys())
             y_sorted = [unique_pairs[xi] for xi in x_sorted]
             
+            
+            #Create name of output and input with line breaks
+            output_column_breaks = "\n".join(textwrap.wrap(output_column, width=40, break_long_words=False))
+            input_column_breaks = "\n".join(textwrap.wrap(input_parameter, width=40, break_long_words=False))
+            
             #Input output graph
             if self.dlg_base.input_output.isChecked():
                 #Create graph
                 self.ax_oat.plot(x_sorted, y_sorted, marker='o', linestyle='-', color='b')
                 #Labels
-                self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
-                self.ax_oat.set_ylabel(output_column,size = 14,family="arial",weight = "bold",color = "black")
-                self.ax_oat.set_title("Input-output graph",size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_oat.set_xlabel(input_column_breaks)
+                self.ax_oat.set_ylabel(output_column_breaks)
+                self.ax_oat.set_title("Input-output graph")
                 #Change background color
                 self.canvas_sensitivity_graph_oat.figure.set_facecolor('#f0f0f0')
                 self.ax_oat.set_facecolor('#f0f0f0')
@@ -3227,9 +3249,9 @@ class qvfsmod:
                 #Create graph
                 self.ax_oat.plot(x_sorted[:-1], absolute_sensitivity, marker='o', linestyle='-', color='b')
                 #Labels
-                self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
-                self.ax_oat.set_ylabel(f"Absolute sensitivity\n{output_column}",size = 14,family="arial",weight = "bold",color = "black")
-                self.ax_oat.set_title("Absolute sensitivity graph",size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_oat.set_xlabel(input_column_breaks)
+                self.ax_oat.set_ylabel(f"Absolute sensitivity\n{output_column_breaks}")
+                self.ax_oat.set_title("Absolute sensitivity graph")
                 #Change background color
                 self.canvas_sensitivity_graph_oat.figure.set_facecolor('#f0f0f0')
                 self.ax_oat.set_facecolor('#f0f0f0')
@@ -3254,9 +3276,9 @@ class qvfsmod:
                 #Create graph
                 self.ax_oat.plot(x_sorted[:-1], relative_sensitivity, marker='o', linestyle='-', color='b')
                 #Labels
-                self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
-                self.ax_oat.set_ylabel(f"Base relative sensitivity\n{output_column}",size = 14,family="arial",weight = "bold",color = "black")
-                self.ax_oat.set_title("Relative sensitivity graph respect to base",size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_oat.set_xlabel(input_column_breaks)
+                self.ax_oat.set_ylabel(f"Base relative sensitivity\n{output_column_breaks}")
+                self.ax_oat.set_title("Relative sensitivity graph respect to base")
                 #Change background color
                 self.canvas_sensitivity_graph_oat.figure.set_facecolor('#f0f0f0')
                 self.ax_oat.set_facecolor('#f0f0f0')
@@ -3278,9 +3300,9 @@ class qvfsmod:
                 #Create graph
                 self.ax_oat.plot(x_sorted[:-1], relative_sensitivity, marker='o', linestyle='-', color='b')
                 #Labels
-                self.ax_oat.set_xlabel(input_parameter,size = 14,family="arial",weight = "bold",color = "black")
-                self.ax_oat.set_ylabel(f"Relative sensitivity\n{output_column}",size = 14,family="arial",weight = "bold",color = "black")
-                self.ax_oat.set_title("Relative sensitivity graph",size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_oat.set_xlabel(input_column_breaks)
+                self.ax_oat.set_ylabel(f"Relative sensitivity\n{output_column_breaks}")
+                self.ax_oat.set_title("Relative sensitivity graph")
                 #Change background color
                 self.canvas_sensitivity_graph_oat.figure.set_facecolor('#f0f0f0')
                 self.ax_oat.set_facecolor('#f0f0f0')
@@ -3412,8 +3434,9 @@ class qvfsmod:
             bins = 30
             self.ax_uncertainity[0].hist(y, bins=bins, edgecolor='black')
             #Labels
-            self.ax_uncertainity[0].set_xlabel(output_column,size = 12,family="arial",weight = "bold",color = "black")
-            self.ax_uncertainity[0].set_ylabel("Frequency",size = 12,family="arial",weight = "bold",color = "black")
+            output_with_line_breaks = "\n".join(textwrap.wrap(output_column, width=35, break_long_words=False))
+            self.ax_uncertainity[0].set_xlabel(output_with_line_breaks)
+            self.ax_uncertainity[0].set_ylabel("Frequency")
             
             ax2 = self.ax_uncertainity[0].twinx()
             x_sorted = np.sort(y)
@@ -3421,7 +3444,7 @@ class qvfsmod:
             y = np.arange(1, len(x_sorted) + 1) / len(x_sorted)
             # Graficar la frecuencia acumulativa con líneas
             ax2.plot(x_sorted, y, linestyle='-', marker='',color = "black")
-            ax2.set_ylabel("Cumulative Frequency",size = 12,family="arial",weight = "bold",color = "black")
+            ax2.set_ylabel("Cumulative Frequency")
             #Put ax2 in the front
             self.ax_uncertainity[0].set_zorder(1)
             ax2.set_zorder(2)
@@ -3432,9 +3455,9 @@ class qvfsmod:
             self.ax_uncertainity[1].boxplot([float(x) for x in df[output_column]])
             self.ax_uncertainity[1].set_xticks([])
             # Añadir título y etiquetas
-            self.ax_uncertainity[1].set_ylabel(output_column,size = 12,family="arial",weight = "bold",color = "black")
+            self.ax_uncertainity[1].set_ylabel(output_with_line_breaks)
             #Title to graph
-            self.canvas_uncertainity_graph.figure.suptitle(f"Uncertainity of {output_column}", size=16, family="arial", weight="bold", color="black")
+            self.canvas_uncertainity_graph.figure.suptitle(f"Uncertainity of {output_column}", fontsize = 10)
             
             #Add table
             table = self.dlg_base.tableWidget
@@ -3449,6 +3472,12 @@ class qvfsmod:
                 item = QTableWidgetItem(str(round(i,2)))
                 table.setItem(0,k,item)
                 item.setTextAlignment(Qt.AlignCenter)
+            #Change columns widths
+            for col in range(table.columnCount()):
+                table.setColumnWidth(col, 120)
+            #Change row name
+            header_item = QTableWidgetItem("Values")
+            table.setVerticalHeaderItem(0, header_item)
             #Change background color
             self.canvas_uncertainity_graph.figure.set_facecolor('#f0f0f0')
             self.ax_uncertainity[0].set_facecolor('#f0f0f0')
@@ -5626,7 +5655,7 @@ class qvfsmod:
     def browse_sensitivity_calibration_results(self):
         """Method tho browse project for sensitivity for sensitivity for calibration"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
-        fname = QFileDialog.getOpenFileName(self.dlg_sensitivity_calibration_results_hydrograph, "Select CSV Project File",working_directory , "CSV files (*.csv)")
+        fname = QFileDialog.getOpenFileName(self.dlg_sensitivity_calibration_results_hydrograph, "Select CSV Project File",os.path.normpath(working_directory +"\\inverse\\output"), "CSV files (*.csv)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
@@ -5853,9 +5882,9 @@ class qvfsmod:
             self.ax_calibration_sensitivity.set_xlim(0,max(list(mu_star)+list(sigma))*1.2)
             self.ax_calibration_sensitivity.set_ylim(0,max(list(mu_star)+list(sigma))*1.2)
             #Labels
-            self.ax_calibration_sensitivity.set_xlabel(r"Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 12,family="arial",weight = "bold",color = "black")
-            self.ax_calibration_sensitivity.set_ylabel("Standard Deviation /nof Elementary Effects ($\sigma_{i}$)",size = 12,family="arial",weight = "bold",color = "black")
-            self.ax_calibration_sensitivity.set_title("Morris sensitivity analysis indexes", size=14, family="arial", weight="bold", color="black")
+            self.ax_calibration_sensitivity.set_xlabel(r"Mean of Elementary Effects ($\mu_{i}^{*}$)")
+            self.ax_calibration_sensitivity.set_ylabel("Standard Deviation \nof Elementary Effects ($\sigma_{i}$)")
+            self.ax_calibration_sensitivity.set_title("Morris sensitivity analysis indexes")
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
             self.canvas_sensitivity_graph_calibration.figure.subplots_adjust(left=0.2, bottom=0.2)
             #Change background color
@@ -5975,9 +6004,9 @@ class qvfsmod:
                 legend = self.ax.legend(loc="upper right")
                 legend.get_frame().set_facecolor('#f0f0f0')
                 #Labels
-                self.ax.set_xlabel(r"Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 14,family="arial",weight = "bold",color = "black")
-                self.ax.set_ylabel("Standard Deviation /nof Elementary Effects ($\sigma_{i}$)",size = 14,family="arial",weight = "bold",color = "black")
-                self.ax.set_title("Morris sensitivity analysis indexes", size=16, family="arial", weight="bold", color="black")
+                self.ax.set_xlabel(r"Mean of Elementary Effects ($\mu_{i}^{*}$)")
+                self.ax.set_ylabel("Standard Deviation of Elementary Effects ($\sigma_{i}$)")
+                self.ax.set_title("Morris sensitivity analysis indexes")
                 #Change background color
                 self.canvas_sensitivity_graph.figure.set_facecolor('#f0f0f0')
                 self.ax.set_facecolor('#f0f0f0')
@@ -6401,7 +6430,7 @@ class qvfsmod:
                 legend.get_frame().set_facecolor('#f0f0f0')
                 #Labels
                 self.ax_design.set_xlabel(r"Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 14,family="arial",weight = "bold",color = "black")
-                self.ax_design.set_ylabel("Standard Deviation /nof Elementary Effects ($\sigma_{i}$)",size = 14,family="arial",weight = "bold",color = "black")
+                self.ax_design.set_ylabel("Standard Deviation \nof Elementary Effects ($\sigma_{i}$)",size = 14,family="arial",weight = "bold",color = "black")
                 self.ax_design.set_title("Morris sensitivity analysis indexes", size=16, family="arial", weight="bold", color="black")
                 #Change background color
                 self.canvas_sensitivity_graph_design.figure.set_facecolor('#f0f0f0')
@@ -6657,12 +6686,12 @@ class qvfsmod:
                 text = os.path.relpath(fname[0], working_directory)
             else: #absolute path
                 text = fname[0]
-        if information == "prj":
-            self.dlg_base.vfs_file_sensitivity.setText(os.path.normpath(text))
-        elif information == "lis":
-            self.dlg_base.uh_file_sensitivity.setText(os.path.normpath(text))
-        else:
-            self.dlg_base.file_save.setText(os.path.normpath(text))
+            if information == "prj":
+                self.dlg_base.vfs_file_sensitivity.setText(os.path.normpath(text))
+            elif information == "lis":
+                self.dlg_base.uh_file_sensitivity.setText(os.path.normpath(text))
+            else:
+                self.dlg_base.file_save.setText(os.path.normpath(text))
     
     
     def browse_files_sensitivity_design(self,information):
@@ -9032,6 +9061,8 @@ class qvfsmod:
                 change_lines("Mean","Standard deviation")
             if distribution=="Normal truncated":
                 change_lines("Minimum","Maximum","Mean","Standard deviation")
+        #Change the csv where results are going to be saved
+        self.dlg_base.file_save.setText(os.path.normpath("sensitivity\\output\\sensitivity_oat.csv"))
     
     def change_bounds_sensitivity_design(self):
         """Metod to change bounds labels if distribution changed for design"""
@@ -9350,6 +9381,8 @@ class qvfsmod:
                     self.dlg_base.samples.setText("")
                 else:
                     self.dlg_base.samples.setText(str(int(self.dlg_base.trajectories.text())*(2*self.dlg_base.table.rowCount()+2)))
+                #Change the csv where results are going to be saved
+                self.dlg_base.file_save.setText(os.path.normpath("sensitivity\\output\\sensitivity_sobol.csv"))
             except:
                 pass
         elif self.dlg_base.morris.isChecked():
@@ -9359,6 +9392,8 @@ class qvfsmod:
                     self.dlg_base.samples.setText("")
                 else:
                     self.dlg_base.samples.setText(str(int(self.dlg_base.trajectories.text())*(self.dlg_base.table.rowCount()+1)))
+                #Change the csv where results are going to be saved
+                self.dlg_base.file_save.setText(os.path.normpath("sensitivity\\output\\sensitivity_morris.csv"))
             except:
                 pass
         elif self.dlg_base.fast.isChecked():
@@ -9368,6 +9403,8 @@ class qvfsmod:
                     self.dlg_base.samples.setText("")
                 else:
                     self.dlg_base.samples.setText(str(int(self.dlg_base.trajectories.text())*(self.dlg_base.table.rowCount())))
+                #Change the csv where results are going to be saved
+                self.dlg_base.file_save.setText(os.path.normpath("sensitivity\\output\\sensitivity_fast.csv"))
             except:
                 pass
     
@@ -11023,7 +11060,7 @@ class qvfsmod:
             self.ax_calibration_progress.plot(self.hydrograph_calibration_df.Time, self.hydrograph_calibration_df.Discharge,marker='o')
             #Labels
             self.ax_calibration_progress.set_xlabel("Time (s)",size = 12,family="arial",weight = "bold",color = "black")
-            self.ax_calibration_progress.set_ylabel("Discharge (m3/s)",size = 12,family="arial",weight = "bold",color = "black")
+            self.ax_calibration_progress.set_ylabel("Discharge (m$^{3}$/s)",size = 12,family="arial",weight = "bold",color = "black")
             #X ticks
             self.ax_calibration_progress.tick_params(axis = "both",colors = "black",labelsize = 9)
             
@@ -11066,7 +11103,7 @@ class qvfsmod:
                 #Limits
                 #Labels
                 self.ax_calibration_progress.set_xlabel("Time (s)",size = 12,family="arial",weight = "bold",color = "black")
-                self.ax_calibration_progress.set_ylabel("Discharge (m3/s)",size = 12,family="arial",weight = "bold",color = "black")
+                self.ax_calibration_progress.set_ylabel("Discharge (m$^{3}$/s)",size = 12,family="arial",weight = "bold",color = "black")
                 #X ticks
                 self.ax_calibration_progress.tick_params(axis = "both",colors = "black",labelsize = 9)
                 # Add legend
@@ -11226,6 +11263,7 @@ class qvfsmod:
                 self.ax_calibration_progress = [self.canvas_calibration_graph.figure.subplots(1,len(self.output_calibrate_single.keys()))]
             else:
                 self.ax_calibration_progress = self.canvas_calibration_graph.figure.subplots(1,len(self.output_calibrate_single.keys()))
+                self.canvas_calibration_graph.figure.subplots_adjust(wspace=1)
             
             labels = list(self.output_calibrate_single.keys())
             values = list(self.output_calibrate_single.values())
@@ -11590,7 +11628,7 @@ class qvfsmod:
                     label = "Simulated",marker = "o")
                 self.ax_calibration_graph_hydrograph.legend()
                 self.ax_calibration_graph_hydrograph.set_xlabel("Time (s)",size = 12,family="arial",weight = "bold",color = "black")
-                self.ax_calibration_graph_hydrograph.set_ylabel("Discharge (m3/s)",size = 12,family="arial",weight = "bold",color = "black")
+                self.ax_calibration_graph_hydrograph.set_ylabel("Discharge (m$^{3}$/s)",size = 12,family="arial",weight = "bold",color = "black")
                 self.ax_calibration_graph_hydrograph.tick_params(axis = "both",colors = "black",labelsize = 9)
             
             #Change background color
@@ -11715,6 +11753,7 @@ class qvfsmod:
                 self.ax_calibration_results_single = [self.canvas_calibration_graph_single.figure.subplots(1,len(data))]
             else:
                 self.ax_calibration_results_single = self.canvas_calibration_graph_single.figure.subplots(1,len(data))
+                self.canvas_calibration_graph_single.figure.subplots_adjust(wspace=1)
             
             
             for i,k in enumerate(data.keys()):
@@ -13345,8 +13384,11 @@ class qvfsmod:
                 for linea in lineas:
                     columnas = linea.split()
                     if len(columnas) >= 2:
-                        columna_1.append(float(columnas[0]))
-                        columna_2.append(float(columnas[1]))
+                        try:
+                            columna_1.append(float(columnas[0]))
+                            columna_2.append(float(columnas[1]))
+                        except:
+                            break
             #Add source area width, source area flow path length and peak flow of incoming hydrograph
             self.dlg_vfsmod_hydrograph.width.setText(str(columna_1[0]))
             self.dlg_vfsmod_hydrograph.length.setText(str(columna_2[0]))
@@ -14440,19 +14482,23 @@ class qvfsmod:
                 create_folder(directory)
             
     def update_file_names(self):
+        print("aaaaaaaa")
         """Method to update file names when the name of the files is changed"""
-        lineEdits_extension = {self.dlg_base.uh_file:"lis",self.dlg_base.uh_input:"inp",self.dlg_base.line_hydrograph:"iro",
+        lineEdits_extension = {self.dlg_base.uh_file:"lis",self.dlg_base.line_project_vfsmod:"prj",
+            self.dlg_base.uh_input:"inp",self.dlg_base.line_hydrograph:"iro",
             self.dlg_base.line_hyetograph:"irn",self.dlg_base.line_sedimentograph:"isd",self.dlg_base.line_output_1:"out",
             self.dlg_base.line_output_2:"hyt",self.dlg_base.line_overland:"ikw",self.dlg_base.line_infiltration:"iso",
             self.dlg_base.line_buffer:"igr",self.dlg_base.line_incoming:"isd",self.dlg_base.line_storm:"irn",
             self.dlg_base.line_source:"iro",self.dlg_base.line_water:"iwq",self.dlg_base.line_sediment:"og1",
             self.dlg_base.line_flow:"og2",self.dlg_base.line_hydrograph_2:"ohy",self.dlg_base.line_waterland:"osm",
-            self.dlg_base.line_overall:"osp",self.dlg_base.line_quality:"owq",self.dlg_base.line_project_vfsmod:"prj"}
+            self.dlg_base.line_overall:"osp",self.dlg_base.line_quality:"owq"}
 
         for i in lineEdits_extension.keys():
             extension = os.path.normpath(i.text()).split(".")[-1]
             if extension == "": extension = lineEdits_extension[i]
             directory = os.path.dirname(i.text())
+            #If lis or prj is important not to change because the filepaths will be the ones in those files
+            if extension == "lis":
             if directory=="":
                 i.setText(os.path.normpath(self.dlg_base.name_files.text() + "."+extension))
             else:
@@ -14460,10 +14506,14 @@ class qvfsmod:
     
     def default_values(self):
         """Method to set default values for input values"""
-        self.dlg_base.working_directory_vfsmod.setText(os.path.normpath(r"C:\borrar"))
-        #self.dlg_base.name_files.setText("prueba")
+        self.dlg_base.working_directory_vfsmod.setText(os.path.normpath(os.getcwd()))
         self.dlg_base.uh_file.setText(os.path.normpath(".lis"))
         self.dlg_base.uh_input.setText(os.path.normpath(r"inputs\.inp"))
+        self.dlg_base.file_save_design.setText(os.path.normpath("design\\output\\sensitivity_design.csv"))
+        self.dlg_base.file_save.setText(os.path.normpath("sensitivity\\output\\sensitivity_oat.csv"))
+        self.dlg_base.file_save_uncertainity.setText(os.path.normpath("uncertainity\\output\\uncertainity.csv"))
+        self.dlg_calibration_sensitivity_hydrograph.file_save.setText(os.path.normpath("inverse\\output\\calibration_sensitivity.csv"))
+        
         
         #File paths
         #UH
@@ -14488,7 +14538,9 @@ class qvfsmod:
         self.dlg_base.line_overall.setText(os.path.normpath(r"output\.osp"))
         self.dlg_base.line_quality.setText(os.path.normpath(r"output\.owq"))
         
-        self.dlg_base.rainfall.setText("25")
+        self.dlg_base.name_files.setText("sample")
+        
+        r'''self.dlg_base.rainfall.setText("25")
         self.dlg_base.storm_duration.setText("6")
         self.dlg_base.curve_number.setText("85")
         self.dlg_base.length_source.setText("100")
@@ -14498,7 +14550,7 @@ class qvfsmod:
         self.dlg_base.organic_matter.setText("1")
         self.dlg_base.particle_diameter.setText("-1")
         self.dlg_base.crop_factor.setText("1")
-        self.dlg_base.practice_factor.setText("1")
+        self.dlg_base.practice_factor.setText("1")'''
         
         #Values of overland flow inputs
         self.dlg_overland_flow.simulation_title.setText("Unit9, g8, u183-91    ")
@@ -14822,6 +14874,10 @@ class qvfsmod:
         add_image_button("images/remove.svg",self.dlg_base.remove_uncertainity)
         add_image_button("images/add.svg",self.dlg_base.add_design)
         add_image_button("images/remove.svg",self.dlg_base.remove_design)
+        add_image_button("images/add.svg",self.dlg_hydrograph_calibration_edit.add)
+        add_image_button("images/remove.svg",self.dlg_hydrograph_calibration_edit.remove)
+        add_image_button("images/add.svg",self.dlg_sedimentograph_calibration_edit.add)
+        add_image_button("images/remove.svg",self.dlg_sedimentograph_calibration_edit.remove)
         
         #Add search 
         add_image_button(search_path,self.dlg_base.select_directory_vfsmod)
@@ -14877,7 +14933,26 @@ class qvfsmod:
         add_image_button(search_path,self.dlg_base.browse_design_sensitivity)
         add_image_button(search_path,self.dlg_base.browse_fast_csv_design_sensitivity)
         add_image_button(search_path,self.dlg_base.browse_sobol_design_sensitivity)
+        add_image_button(search_path,self.dlg_hydrograph_calibration_edit.browse_hydrograph)
+        add_image_button(search_path,self.dlg_sedimentograph_calibration_edit.browse_sedimentograph)
         
+        #License image
+        add_image_button("images/license.svg",self.dlg_base.license_button)
+        
+        #About image
+        #Initial page
+        image = QImage("images/about.png")
+        scaled_image = image.scaled(960, 720, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        pixmap = QPixmap.fromImage(scaled_image)
+        self.dlg_base.label_111.setPixmap(pixmap)
+        self.dlg_base.label_111.setAlignment(Qt.AlignCenter)
+        #Last page
+        self.dlg_base.label_113.setPixmap(pixmap)
+        self.dlg_base.label_113.setAlignment(Qt.AlignCenter)
+        
+        
+        
+
         
     def add_functions_outputs_hydrograph(self,dialog):
         """When creating the dialog fot hydrograph output for the outputs we add all the functionalities for them"""
@@ -15072,8 +15147,11 @@ class qvfsmod:
         for linea in lineas:
             columnas = linea.split()
             if len(columnas) >= 2:
-                columna_1.append(float(columnas[0]))
-                columna_2.append(float(columnas[1]))
+                try:
+                    columna_1.append(float(columnas[0]))
+                    columna_2.append(float(columnas[1]))
+                except:
+                    break
 
         time = columna_1[2:]
         discharge = columna_2[2:]
@@ -15213,8 +15291,11 @@ class qvfsmod:
         for linea in lineas:
             columnas = linea.split()
             if len(columnas) >= 2:
-                columna_1.append(float(columnas[0]))
-                columna_2.append(float(columnas[1]))
+                try:
+                    columna_1.append(float(columnas[0]))
+                    columna_2.append(float(columnas[1]))
+                except:
+                    break
 
         time = columna_1[1:]
         precipitation = columna_2[1:]
@@ -17006,7 +17087,7 @@ def save_results_sensitivity_analysis_calibration(number_execution,core,working_
                         sediment.append(float(lineas[k].split()[9]))
             calibration_df_progress = pd.DataFrame(data = {"Time":times,"Sediment":sediment})
             #Then obtain the width of the filter
-            with open(working_directory+os.path.normpath(f"\\inverse\\output\\inverse_{core}.osp", "r")) as archivo:
+            with open(working_directory+os.path.normpath(f"\\inverse\\output\\inverse_{core}.osp"), "r") as archivo:
                 lineas = archivo.readlines()
             for i in lineas:
                 if i.split("=")[-1]==" Filter Strip Width (input)\n":

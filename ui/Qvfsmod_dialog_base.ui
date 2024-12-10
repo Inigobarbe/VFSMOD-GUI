@@ -134,7 +134,22 @@ QTableCornerButton::section {
         <string notr="true"/>
        </property>
        <layout class="QGridLayout" name="gridLayout_16">
-        <item row="2" column="0">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_92">
+          <property name="font">
+           <font>
+            <family>Georgia</family>
+            <pointsize>-1</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Project Selection</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
          <spacer name="verticalSpacer_3">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -318,18 +333,10 @@ QTableCornerButton::section {
           </widget>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_92">
-          <property name="font">
-           <font>
-            <family>Georgia</family>
-            <pointsize>-1</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_111">
           <property name="text">
-           <string>Project Selection</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -3933,9 +3940,9 @@ Solution Parameters</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-381</y>
+             <y>0</y>
              <width>759</width>
-             <height>924</height>
+             <height>941</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_9">
@@ -4724,7 +4731,8 @@ for calibration</string>
                           </size>
                          </property>
                          <property name="text">
-                          <string>Filtered pesticide</string>
+                          <string>Filtered pesticide
+(per unit)</string>
                          </property>
                         </widget>
                        </item>
@@ -4913,7 +4921,7 @@ analysis</string>
              <x>0</x>
              <y>0</y>
              <width>908</width>
-             <height>348</height>
+             <height>481</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_65">
@@ -5261,7 +5269,7 @@ analysis</string>
              <x>0</x>
              <y>0</y>
              <width>923</width>
-             <height>613</height>
+             <height>577</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_22">
@@ -5312,6 +5320,12 @@ analysis</string>
                    </item>
                    <item>
                     <widget class="QPushButton" name="browse_uh">
+                     <property name="maximumSize">
+                      <size>
+                       <width>52</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string/>
                      </property>
@@ -5373,6 +5387,12 @@ analysis</string>
                    </item>
                    <item>
                     <widget class="QPushButton" name="browse_vfs">
+                     <property name="maximumSize">
+                      <size>
+                       <width>52</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string/>
                      </property>
@@ -5402,7 +5422,7 @@ analysis</string>
                     </size>
                    </property>
                    <property name="text">
-                    <string>sensitivity\\output\\sensitivity.csv</string>
+                    <string>sensitivity\\output\\sensitivity_morris.csv</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
@@ -5739,18 +5759,14 @@ Solution Parameters</string>
                      <enum>QFrame::Raised</enum>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_21">
-                     <item row="0" column="0">
-                      <widget class="QTableWidget" name="table">
+                     <item row="0" column="1">
+                      <widget class="QTableWidget" name="table_oat">
                        <property name="minimumSize">
                         <size>
                          <width>0</width>
-                         <height>0</height>
+                         <height>220</height>
                         </size>
                        </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="1">
-                      <widget class="QTableWidget" name="table_oat">
                        <property name="maximumSize">
                         <size>
                          <width>16777215</width>
@@ -5759,199 +5775,207 @@ Solution Parameters</string>
                        </property>
                       </widget>
                      </item>
+                     <item row="0" column="0">
+                      <widget class="QTableWidget" name="table">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>220</height>
+                        </size>
+                       </property>
+                      </widget>
+                     </item>
                     </layout>
                    </widget>
                   </item>
                   <item row="0" column="1">
-                   <widget class="QFrame" name="frame_59">
-                    <property name="minimumSize">
-                     <size>
-                      <width>310</width>
-                      <height>276</height>
-                     </size>
-                    </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>317</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
+                   <widget class="QScrollArea" name="scrollArea_20">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
-                    <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
+                    <property name="widgetResizable">
+                     <bool>true</bool>
                     </property>
-                    <layout class="QGridLayout" name="gridLayout_36">
-                     <item row="0" column="0">
-                      <widget class="QLabel" name="label_126">
-                       <property name="font">
-                        <font>
-                         <family>Georgia</family>
-                         <pointsize>-1</pointsize>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>Sensitivity analysis method</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="2" column="0">
-                      <spacer name="verticalSpacer_11">
-                       <property name="orientation">
-                        <enum>Qt::Vertical</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>20</width>
-                         <height>40</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item row="3" column="0">
-                      <widget class="QFrame" name="frame_12">
-                       <property name="frameShape">
-                        <enum>QFrame::StyledPanel</enum>
-                       </property>
-                       <property name="frameShadow">
-                        <enum>QFrame::Raised</enum>
-                       </property>
-                       <layout class="QGridLayout" name="gridLayout_35">
-                        <item row="1" column="0">
-                         <layout class="QHBoxLayout" name="horizontalLayout_123">
-                          <item>
-                           <widget class="QLabel" name="label_127">
-                            <property name="minimumSize">
-                             <size>
-                              <width>85</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>Samples</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QLineEdit" name="samples">
-                            <property name="alignment">
-                             <set>Qt::AlignCenter</set>
-                            </property>
-                           </widget>
-                          </item>
-                         </layout>
-                        </item>
-                        <item row="0" column="0">
-                         <layout class="QHBoxLayout" name="horizontalLayout_122">
-                          <item>
-                           <widget class="QLabel" name="label_125">
-                            <property name="minimumSize">
-                             <size>
-                              <width>85</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>Trajectories</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QLineEdit" name="trajectories">
-                            <property name="alignment">
-                             <set>Qt::AlignCenter</set>
-                            </property>
-                           </widget>
-                          </item>
-                         </layout>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
-                     <item row="1" column="0">
-                      <widget class="QFrame" name="frame_60">
-                       <property name="frameShape">
-                        <enum>QFrame::StyledPanel</enum>
-                       </property>
-                       <property name="frameShadow">
-                        <enum>QFrame::Raised</enum>
-                       </property>
-                       <layout class="QGridLayout" name="gridLayout_85">
-                        <item row="3" column="1">
-                         <widget class="QRadioButton" name="sobol">
-                          <property name="text">
-                           <string>Sobol</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="2" column="1">
-                         <widget class="QRadioButton" name="fast">
-                          <property name="text">
-                           <string>FAST</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="1" column="0">
-                         <widget class="QRadioButton" name="oat">
-                          <property name="text">
-                           <string>OAT</string>
-                          </property>
-                          <property name="checked">
-                           <bool>false</bool>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="1" column="1">
-                         <widget class="QRadioButton" name="morris">
-                          <property name="text">
-                           <string>Morris</string>
-                          </property>
-                          <property name="checkable">
-                           <bool>true</bool>
-                          </property>
-                          <property name="checked">
-                           <bool>true</bool>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="0" column="1">
-                         <widget class="QLabel" name="label_67">
-                          <property name="font">
-                           <font>
-                            <family>Georgia</family>
-                            <pointsize>-1</pointsize>
-                           </font>
-                          </property>
-                          <property name="text">
-                           <string>Global</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="0" column="0">
-                         <widget class="QLabel" name="label_66">
-                          <property name="font">
-                           <font>
-                            <family>Georgia</family>
-                            <pointsize>-1</pointsize>
-                           </font>
-                          </property>
-                          <property name="text">
-                           <string>Local</string>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
-                     <item row="4" column="0">
-                      <widget class="QPushButton" name="accept">
-                       <property name="text">
-                        <string>Run</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
+                    <widget class="QWidget" name="scrollAreaWidgetContents_20">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>298</width>
+                       <height>280</height>
+                      </rect>
+                     </property>
+                     <layout class="QGridLayout" name="gridLayout_36">
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="label_126">
+                        <property name="font">
+                         <font>
+                          <family>Georgia</family>
+                          <pointsize>-1</pointsize>
+                         </font>
+                        </property>
+                        <property name="text">
+                         <string>Sensitivity analysis method</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QFrame" name="frame_60">
+                        <property name="frameShape">
+                         <enum>QFrame::StyledPanel</enum>
+                        </property>
+                        <property name="frameShadow">
+                         <enum>QFrame::Raised</enum>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_85">
+                         <item row="3" column="1">
+                          <widget class="QRadioButton" name="sobol">
+                           <property name="text">
+                            <string>Sobol</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="2" column="1">
+                          <widget class="QRadioButton" name="fast">
+                           <property name="text">
+                            <string>FAST</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="1" column="0">
+                          <widget class="QRadioButton" name="oat">
+                           <property name="text">
+                            <string>OAT</string>
+                           </property>
+                           <property name="checked">
+                            <bool>false</bool>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="1" column="1">
+                          <widget class="QRadioButton" name="morris">
+                           <property name="text">
+                            <string>Morris</string>
+                           </property>
+                           <property name="checkable">
+                            <bool>true</bool>
+                           </property>
+                           <property name="checked">
+                            <bool>true</bool>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="0" column="1">
+                          <widget class="QLabel" name="label_67">
+                           <property name="font">
+                            <font>
+                             <family>Georgia</family>
+                             <pointsize>-1</pointsize>
+                            </font>
+                           </property>
+                           <property name="text">
+                            <string>Global</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="0" column="0">
+                          <widget class="QLabel" name="label_66">
+                           <property name="font">
+                            <font>
+                             <family>Georgia</family>
+                             <pointsize>-1</pointsize>
+                            </font>
+                           </property>
+                           <property name="text">
+                            <string>Local</string>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="2" column="0">
+                       <widget class="QFrame" name="frame_12">
+                        <property name="frameShape">
+                         <enum>QFrame::StyledPanel</enum>
+                        </property>
+                        <property name="frameShadow">
+                         <enum>QFrame::Raised</enum>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_35">
+                         <item row="1" column="0">
+                          <layout class="QHBoxLayout" name="horizontalLayout_123">
+                           <item>
+                            <widget class="QLabel" name="label_127">
+                             <property name="minimumSize">
+                              <size>
+                               <width>85</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Samples</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="samples">
+                             <property name="alignment">
+                              <set>Qt::AlignCenter</set>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item row="0" column="0">
+                          <layout class="QHBoxLayout" name="horizontalLayout_122">
+                           <item>
+                            <widget class="QLabel" name="label_125">
+                             <property name="minimumSize">
+                              <size>
+                               <width>85</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Trajectories</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="trajectories">
+                             <property name="alignment">
+                              <set>Qt::AlignCenter</set>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item row="3" column="0">
+                       <widget class="QPushButton" name="accept">
+                        <property name="text">
+                         <string>Run</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="4" column="0">
+                       <spacer name="verticalSpacer_11">
+                        <property name="orientation">
+                         <enum>Qt::Vertical</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>20</width>
+                          <height>40</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                     </layout>
+                    </widget>
                    </widget>
                   </item>
                  </layout>
@@ -6390,10 +6414,10 @@ Solution Parameters</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_3">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>-400</x>
              <y>0</y>
-             <width>1124</width>
-             <height>453</height>
+             <width>1164</width>
+             <height>481</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_40">
@@ -6606,7 +6630,7 @@ Solution Parameters</string>
                 <widget class="QFrame" name="frame_24">
                  <property name="minimumSize">
                   <size>
-                   <width>460</width>
+                   <width>500</width>
                    <height>0</height>
                   </size>
                  </property>
@@ -6693,7 +6717,7 @@ Solution Parameters</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_10">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>-176</x>
              <y>0</y>
              <width>923</width>
              <height>613</height>
@@ -7528,6 +7552,111 @@ Solution Parameters</string>
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="page_about">
+       <layout class="QGridLayout" name="gridLayout_74">
+        <item row="1" column="0">
+         <widget class="QScrollArea" name="scrollArea_21">
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents_21">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>764</width>
+             <height>498</height>
+            </rect>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_99">
+            <item row="1" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <spacer name="horizontalSpacer_22">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_114">
+                <property name="text">
+                 <string>About the license</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="license_button">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_21">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_113">
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <spacer name="verticalSpacer_24">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_112">
+          <property name="font">
+           <font>
+            <family>Georgia</family>
+            <pointsize>-1</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>About this program</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -7583,12 +7712,19 @@ Solution Parameters</string>
     <addaction name="actionExecution_of_Uncertainity_Analysis"/>
     <addaction name="actionResults"/>
    </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>About</string>
+    </property>
+    <addaction name="actionAbot_this_program"/>
+   </widget>
    <addaction name="menuProject_Selection"/>
    <addaction name="menuModel_Execution"/>
    <addaction name="menuDesign"/>
    <addaction name="menuCalibratoin"/>
    <addaction name="menuSensitivity_Analysis"/>
    <addaction name="menuUncertainity_Analysis"/>
+   <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionProject_Selection">
@@ -7649,6 +7785,11 @@ Solution Parameters</string>
   <action name="actionResults_of_Design_with_Uncertainity">
    <property name="text">
     <string>Results of Design with Uncertainity</string>
+   </property>
+  </action>
+  <action name="actionAbot_this_program">
+   <property name="text">
+    <string>About this program</string>
    </property>
   </action>
  </widget>

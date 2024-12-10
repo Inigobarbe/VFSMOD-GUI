@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>847</width>
+    <width>924</width>
     <height>369</height>
    </rect>
   </property>
@@ -138,7 +138,7 @@ QTextEdit {
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>829</width>
+        <width>906</width>
         <height>351</height>
        </rect>
       </property>
@@ -149,6 +149,12 @@ QTextEdit {
           <size>
            <width>200</width>
            <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>300</width>
+           <height>16777215</height>
           </size>
          </property>
         </widget>
