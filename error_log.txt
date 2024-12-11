@@ -79,3 +79,36 @@ Mensaje: 'NoneType' object cannot be interpreted as an integer
 Excepción: TypeError
 Mensaje: 'NoneType' object cannot be interpreted as an integer
 
+Excepción: TypeError
+Mensaje: can only concatenate list (not "int") to list
+
+Excepción: TypeError
+Mensaje: can only concatenate list (not "int") to list
+
+Excepción: TypeError
+Mensaje: getSaveFileName(parent: QWidget = None, caption: str = '', directory: str = '', filter: str = '', initialFilter: str = '', options: Union[QFileDialog.Options, QFileDialog.Option] = 0): argument 1 has unexpected type 'qvfsmod'
+
+Excepción: NameError
+Mensaje: name 'default_file_name' is not defined
+
+Excepción: AttributeError
+Mensaje: 'qvfsmod' object has no attribute 'canvas_ohy_graph'
+
+Excepción: IndexError
+Mensaje: list index out of range
+
+Excepción: IndexError
+Mensaje: list index out of range
+
+Excepción: IndexError
+Mensaje: list index out of range
+
+Excepción: IndexError
+Mensaje: list index out of range
+
+Excepción: IndexError
+Mensaje: list index out of range
+
+Excepción: IndexError
+Mensaje: list index out of range
+

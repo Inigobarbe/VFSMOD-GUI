@@ -187,14 +187,7 @@ QTableCornerButton::section {
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QPushButton" name="add">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
+      <item row="6" column="0">
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -207,6 +200,28 @@ QTableCornerButton::section {
         </property>
        </spacer>
       </item>
+      <item row="2" column="0">
+       <widget class="QPushButton" name="save_continue">
+        <property name="text">
+         <string>Save and 
+Continue Editing</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QPushButton" name="close_dialog">
+        <property name="text">
+         <string>Close</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QPushButton" name="add">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="0">
        <widget class="QPushButton" name="remove">
         <property name="text">
@@ -215,17 +230,9 @@ QTableCornerButton::section {
        </widget>
       </item>
       <item row="4" column="0">
-       <widget class="QPushButton" name="close_dialog">
+       <widget class="QPushButton" name="print_graph">
         <property name="text">
-         <string>Close</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QPushButton" name="save_continue">
-        <property name="text">
-         <string>Save and 
-Continue Editing</string>
+         <string>Print Plot</string>
         </property>
        </widget>
       </item>

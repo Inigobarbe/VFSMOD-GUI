@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>880</width>
-    <height>443</height>
+    <height>451</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -160,7 +160,7 @@ QTableCornerButton::section {
            <x>0</x>
            <y>0</y>
            <width>391</width>
-           <height>335</height>
+           <height>341</height>
           </rect>
          </property>
          <layout class="QGridLayout" name="gridLayout">
@@ -172,11 +172,22 @@ QTableCornerButton::section {
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QPushButton" name="pushButton_3">
-        <property name="text">
-         <string>Close</string>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QPushButton" name="pushButton_3">
+          <property name="text">
+           <string>Close</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="print_graph">
+          <property name="text">
+           <string>Print Plot</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>

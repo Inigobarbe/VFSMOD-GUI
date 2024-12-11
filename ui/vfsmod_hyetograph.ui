@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>833</width>
+    <width>918</width>
     <height>381</height>
    </rect>
   </property>
@@ -158,14 +158,6 @@ storm, RPEAK (m/s)</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
-       <widget class="QPushButton" name="save_continue">
-        <property name="text">
-         <string>Save and 
-Continue Editing</string>
-        </property>
-       </widget>
-      </item>
       <item row="7" column="0">
        <spacer name="verticalSpacer">
         <property name="orientation">
@@ -186,24 +178,10 @@ Continue Editing</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
-       <widget class="QPushButton" name="close_dialog">
-        <property name="text">
-         <string>Close</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="QLineEdit" name="maximum_rainfall">
         <property name="alignment">
          <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0">
-       <widget class="QPushButton" name="pushButton_4">
-        <property name="text">
-         <string>Help</string>
         </property>
        </widget>
       </item>
@@ -224,6 +202,28 @@ Continue Editing</string>
          </widget>
         </item>
        </layout>
+      </item>
+      <item row="6" column="0">
+       <widget class="QPushButton" name="close_dialog">
+        <property name="text">
+         <string>Close</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QPushButton" name="save_continue">
+        <property name="text">
+         <string>Save and 
+Continue Editing</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QPushButton" name="print_graph">
+        <property name="text">
+         <string>Print Plot</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

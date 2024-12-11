@@ -112,10 +112,11 @@ from ui.fiteval_sedimentograph import fiteval_sedimentograph
 from ui.degradation_data import degradation_data
 from ui.owq_graph_reduction import owq_graph_reduction
 from ui.ohy_graphs import ohy_graphs
+from ui.figure_settings import figure_settings
 
 
-r'''
-#Detection of non expected errors
+
+r'''#Detection of non expected errors
 def global_exception_handler(exctype, value, traceback):
     """
     Manejador global de excepciones no controladas.
@@ -225,6 +226,7 @@ class qvfsmod:
         self.dlg_degradation_data = degradation_data()
         self.dlg_owq_graph_reduction = owq_graph_reduction()
         self.dlg_ohy_graphs = ohy_graphs()
+        self.dlg_figure_settings = figure_settings()
         
         
         #Ohy results
@@ -1037,6 +1039,44 @@ class qvfsmod:
         #Update uncertainity graph
         self.dlg_base.csv_results_uncertainity.textChanged.connect(self.show_graph_sensitivity_uncertainity)
         
+        
+        # Hacer que el stackedWidget capture eventos de clic
+        self.dlg_base.stackedWidget.mousePressEvent = self.hide_about_image
+        
+        #When clicking save then close figures settings dialog
+        self.dlg_figure_settings.accept.clicked.connect(self.save_figures)
+        self.dlg_figure_settings.accept.clicked.connect(self.dlg_figure_settings.close)
+    
+    def figure_settings(self, information):
+        """Method to select the settings of the image that is going to be saved"""
+        self.dlg_figure_settings.show()
+        self.information_figure_save = information
+    
+    
+    def save_figures(self): 
+        """Method to save figures to the computer"""
+        
+        dialog =  self.information_figure_save[0]
+        canvas =  self.information_figure_save[1]
+        
+        
+        file_path, _ = QFileDialog.getSaveFileName(dialog, "Save graph", 
+                                           os.path.join(self.working_directory, "graph.png"), 
+                                           "Image files (*.png *.jpg *.jpeg *.pdf);;All files (*)")
+        if file_path:
+            dpi_value = float(self.dlg_figure_settings.resolution.text())
+            transparent = self.dlg_figure_settings.transparent.isChecked()
+            tight = self.dlg_figure_settings.tight.isChecked()
+            padding = float(self.dlg_figure_settings.padding.text())
+            canvas.figure.savefig(file_path, dpi = dpi_value,bbox_inches='tight' if tight else None, 
+                                         transparent=transparent, 
+                                         pad_inches=padding)
+            
+        
+    def hide_about_image(self, event):
+        """Method to hide the image that appears in the beggining"""
+        self.dlg_base.label_111.hide()
+
     
     def open_license(self):
         """Method to open the license"""
@@ -1354,6 +1394,9 @@ class qvfsmod:
         getattr(self,canvas).figure.subplots_adjust(left=0.2, bottom=0.2,right = 0.8)
         #Draw canvas
         getattr(self,canvas).draw()
+        
+        #Save figure
+        self.dlg_fiteval_hydrograph.print_graph.clicked.connect(lambda _, b= [self.dlg_fiteval_hydrograph,getattr(self,canvas)]:self.figure_settings(b))
             
     
     def update_values_bootstrapping_hydrograph(self,type_calibration):
@@ -2227,6 +2270,11 @@ class qvfsmod:
 
             # Redraw the canvas
             self.canvas_hydrograph_edit_calibration.draw()
+            
+            #Save figure
+            self.dlg_hydrograph_calibration_edit.print_graph.clicked.connect(lambda _, b= [self.dlg_hydrograph_calibration_edit,self.canvas_hydrograph_edit_calibration]:self.figure_settings(b))
+         
+         
         except:
             pass
     
@@ -2282,6 +2330,10 @@ class qvfsmod:
 
             # Redraw the canvas
             self.canvas_sedimentograph_edit_calibration.draw()
+            
+            #Save figure
+            self.dlg_sedimentograph_calibration_edit.print_graph.clicked.connect(lambda _, b= [self.dlg_sedimentograph_calibration_edit,self.canvas_sedimentograph_edit_calibration]:self.figure_settings(b))
+            
         except:
             pass
 
@@ -3194,6 +3246,9 @@ class qvfsmod:
             
             #Take only data that is not an error
             df = df_original[df_original.Error == "0"]
+            if len(df) == 0:
+                self.warning_message(f"All executions gave error for {input_parameter}")
+                return
             
             #Get output
             for i in range(self.dlg_base.frame_22.layout().count()):
@@ -3311,6 +3366,10 @@ class qvfsmod:
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
                 #Draw canvas
                 self.canvas_sensitivity_graph_oat.draw()
+                
+            #Save figure
+            self.dlg_base.print_graph_oat.clicked.connect(lambda _, b= [self.dlg_base,self.canvas_sensitivity_graph_oat]:self.figure_settings(b))
+            
     
     def show_graph_sensitivity_uncertainity(self):
         """Method to add the outputs for the graph visualization"""
@@ -3384,7 +3443,7 @@ class qvfsmod:
             with open(ruta, "r") as archivo:
                 lineas = archivo.readlines()
             #If the csv is not of a Uncertainity sensitivity analysis then give error
-            if lineas[0]!="Uncertainity analysis results" + '\n':
+            if lineas[0]!="Uncertainity analysis results" + '\n' and lineas[0]!="Morris sensitivity indexes" + '\n' and lineas[0]!="FAST sensitivity indexes" + '\n' and lineas[0]!="Sobol sensitivity indexes" + '\n':
                 self.warning_message("Please select a csv file that contains Uncertainity analysis results")
                 return
                 
@@ -3408,12 +3467,13 @@ class qvfsmod:
             #Obtain data 
             with open(ruta, "r") as archivo:
                  lines = archivo.readlines()
-            # Ignorar la primera línea ("Uncertainity analysis results")
-            parameters = lines[1].split(":")[1].split(",")
-            columns = [x.replace('\n', '') for x in lines[2].split(",")]
-            rows = []
-            for i in range(3,len(lines)):
-                rows.append([float(x) for x in lines[i].split(",")])
+            #When we see column error then we have the data
+            for index in range(len(lines)):
+                if "Error" in lines[index].split(","):
+                    columns = [x.replace('\n', '') for x in lines[index].split(",")]
+                    rows = []
+                    for i in range(index+1,len(lines)):
+                        rows.append([float(x) for x in lines[i].split(",")])
 
             df = pd.DataFrame(rows, columns=columns)
             
@@ -3487,6 +3547,9 @@ class qvfsmod:
             self.canvas_uncertainity_graph.figure.subplots_adjust(left=0.1, bottom=0.2)
             #Draw canvas
             self.canvas_uncertainity_graph.draw()
+            
+            #Save figure
+            self.dlg_base.print_graph_uncertainity.clicked.connect(lambda _, b= [self.dlg_base,self.canvas_uncertainity_graph]:self.figure_settings(b))
     
     def add_base_value_dialog_oat(self):
         """Method to add the base value to the dialog of sensitivity when using OAT"""
@@ -4277,6 +4340,9 @@ class qvfsmod:
         
         # Redraw the canvas
         self.canvas_owq_graph_reduction.draw()
+        
+        #Save figure
+        self.dlg_owq_graph_reduction.print_graph.clicked.connect(lambda _, b= [self.dlg_owq_graph_reduction,self.canvas_owq_graph_reduction]:self.figure_settings(b))
     
     
     def show_owq_graph_balance(self):
@@ -4541,6 +4607,10 @@ class qvfsmod:
         # Redraw the canvas
         self.canvas_owq_graph_balance.draw()
         
+        #Save figure
+        self.dlg_owq_graph_balance.print_graph.clicked.connect(lambda _, b= [self.dlg_owq_graph_balance,self.canvas_owq_graph_balance]:self.figure_settings(b))
+    
+        
             
             
     def show_owq_graph(self):
@@ -4718,6 +4788,10 @@ class qvfsmod:
         # Redraw the canvas
         self.canvas_owq_graph.draw()
         
+        #Save figure
+        self.dlg_owq_graph.print_graph.clicked.connect(lambda _, b= [self.dlg_owq_graph,self.canvas_owq_graph]:self.figure_settings(b))
+    
+        
     
     def show_ohy_graphs(self):
         """Method to show ohy graph results"""
@@ -4778,13 +4852,14 @@ class qvfsmod:
         #Create graph
         if self.dlg_ohy_graphs.instantaneous.isChecked():
             #Add lines
-            #Inflow
-            self.ax_ohy_graph.plot(self.time_ohy, self.inflow_ohy, color="#00509e",label="Inflow hydrograph")
-            #Outflow
-            self.ax_ohy_graph.plot(self.time_ohy, self.outflow_ohy, color="#a0c4ff",label="Outflow hydrograph")
             #Precipitation
             self.ax_precipitation_ohy.bar(self.time_ohy, self.rainfall_ohy,width = self.time_ohy[1]-self.time_ohy[0] ,color = "blue", 
-                edgecolor = "blue",label="Rainfall")
+                edgecolor = "blue",label="Rainfall", zorder = 3)
+            #Inflow
+            self.ax_ohy_graph.plot(self.time_ohy, self.inflow_ohy, color="#00509e",label="Inflow hydrograph", zorder = 1)
+            #Outflow
+            self.ax_ohy_graph.plot(self.time_ohy, self.outflow_ohy, color="#a0c4ff",label="Outflow hydrograph", zorder = 2)
+            
             
             #Legend
             # Ajustar la leyenda combinada
@@ -4829,11 +4904,11 @@ class qvfsmod:
             #Add lines
             #Precipitation
             self.ax_precipitation_ohy.bar(self.time_ohy, self.rainfall_ohy,width = self.time_ohy[1]-self.time_ohy[0] ,color = "blue", 
-                edgecolor = "blue",label="Rainfall")
+                edgecolor = "blue",label="Rainfall", zorder = 1)
             #Inflow
-            self.ax_ohy_graph.plot(self.time_ohy, np.cumsum(self.inflow_ohy), color="#00509e",label="Cumulative Inflow")
+            self.ax_ohy_graph.plot(self.time_ohy, np.cumsum(self.inflow_ohy), color="#00509e",label="Cumulative Inflow", zorder = 2)
             #Outflow
-            self.ax_ohy_graph.plot(self.time_ohy, np.cumsum(self.outflow_ohy), color="#a0c4ff",label="Cumulative Outflow")
+            self.ax_ohy_graph.plot(self.time_ohy, np.cumsum(self.outflow_ohy), color="#a0c4ff",label="Cumulative Outflow", zorder = 3)
             
             
             #Legend
@@ -4878,10 +4953,10 @@ class qvfsmod:
         elif self.dlg_ohy_graphs.wetting.isChecked():
             #Add lines
             #Wetting front
-            self.ax_ohy_graph.plot(self.time_ohy, self.wetting_front_ohy)
+            self.ax_ohy_graph.plot(self.time_ohy, self.wetting_front_ohy, zorder = 2)
             #Precipitation
             self.ax_precipitation_ohy.bar(self.time_ohy, self.rainfall_ohy,width = self.time_ohy[1]-self.time_ohy[0] ,color = "blue", 
-                edgecolor = "blue",label="Rainfall")
+                edgecolor = "blue",label="Rainfall", zorder = 1)
             
             
             #Thousand separator
@@ -4920,10 +4995,10 @@ class qvfsmod:
         elif self.dlg_ohy_graphs.soil_infiltration.isChecked():
             #Add lines
             #Wetting front
-            self.ax_ohy_graph.plot(self.time_ohy, self.infiltration_ohy)
+            self.ax_ohy_graph.plot(self.time_ohy, self.infiltration_ohy, zorder = 2)
             #Precipitation
             self.ax_precipitation_ohy.bar(self.time_ohy, self.rainfall_ohy,width = self.time_ohy[1]-self.time_ohy[0] ,color = "blue", 
-                edgecolor = "blue",label="Rainfall")
+                edgecolor = "blue",label="Rainfall", zorder = 1)
             
             
             #Thousand separator
@@ -4937,7 +5012,7 @@ class qvfsmod:
             self.ax_precipitation_ohy.grid(False)
             
             #Y limit for precipitation
-            self.ax_precipitation_ohy.set_ylim(0, max(self.rainfall_ohy)*2)
+            self.ax_precipitation_ohy.set_ylim(0, max(self.rainfall_ohy)*3)
 
             
             #Invert y axis for precipitation
@@ -4958,6 +5033,9 @@ class qvfsmod:
             self.canvas_ohy_graph.figure.subplots_adjust(left=0.15, bottom=0.2,right=0.85)
             #Draw canvas
             self.canvas_ohy_graph.draw()
+        
+        #Save figure
+        self.dlg_ohy_graphs.print_graph.clicked.connect(lambda _, b= [self.dlg_ohy_graphs,self.canvas_ohy_graph]:self.figure_settings(b))
             
         
         
@@ -5051,6 +5129,9 @@ class qvfsmod:
 
         # Redraw the canvas
         self.canvas_runoff_result.draw()
+        #Save figure
+        self.dlg_runoff_graph.print_graph.clicked.connect(lambda _, b= [self.dlg_runoff_graph,self.canvas_runoff_result]:self.figure_settings(b))
+    
         
         #Show dialog
         self.dlg_runoff_graph.show()
@@ -5142,6 +5223,9 @@ class qvfsmod:
 
         # Redraw the canvas
         self.canvas_sediment_result.draw()
+        #Save figure
+        self.dlg_sediment_graph.print_graph.clicked.connect(lambda _, b= [self.dlg_sediment_graph,self.canvas_sediment_result]:self.figure_settings(b))
+    
         
         #Show dialog
         self.dlg_sediment_graph.show()
@@ -5251,6 +5335,9 @@ class qvfsmod:
 
             # Redraw the canvas
             self.canvas_vfsmod_hydrograph.draw()
+            #Save figure
+            self.dlg_vfsmod_hydrograph.print_graph.clicked.connect(lambda _, b= [self.dlg_vfsmod_hydrograph,self.canvas_vfsmod_hydrograph]:self.figure_settings(b))
+    
         except:
             pass
     
@@ -5324,6 +5411,10 @@ class qvfsmod:
 
             # Redraw the canvas
             self.canvas_vfsmod_hyetograph.draw()
+            #Save figure
+            self.dlg_vfsmod_hyetograph.print_graph.clicked.connect(lambda _, b= [self.dlg_vfsmod_hyetograph,self.canvas_vfsmod_hyetograph]:self.figure_settings(b))
+    
+    
         except:
             pass
         
@@ -5416,6 +5507,9 @@ class qvfsmod:
         self.canvas_user_defined_storm.figure.subplots_adjust(left=0.15, bottom=0.2)
         #Draw canvas
         self.canvas_user_defined_storm.draw()
+        #Save figure
+        self.dlg_user_storm.print_graph.clicked.connect(lambda _, b= [self.dlg_user_storm,self.canvas_user_defined_storm]:self.figure_settings(b))
+    
     
     
     def update_buffer_segment_graph(self):
@@ -5504,6 +5598,9 @@ class qvfsmod:
 
         # Redraw the canvas
         self.canvas_buffer_segment.draw()
+        #Save figure
+        self.dlg_buffer_segment.print_graph.clicked.connect(lambda _, b= [self.dlg_buffer_segment,self.canvas_buffer_segment]:self.figure_settings(b))
+    
         
         #Update buffer length in dialog
         try:
@@ -5892,6 +5989,9 @@ class qvfsmod:
             self.ax_calibration_sensitivity.set_facecolor('#f0f0f0')
             #Draw canvas
             self.canvas_sensitivity_graph_calibration.draw()
+            #Save figure
+            self.dlg_sensitivity_calibration_results_hydrograph.print_graph.clicked.connect(lambda _, b= [self.dlg_sensitivity_calibration_results_hydrograph,self.canvas_sensitivity_graph_calibration]:self.figure_settings(b))
+    
             
             #Put data in table
             data = [[names_inputs[x],mu_star[x],sigma[x]] for x in range(len(mu_star)) if mu_star[x]>=threshold]
@@ -6146,6 +6246,9 @@ class qvfsmod:
                 self.canvas_sensitivity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
                 #Draw canvas
                 self.canvas_sensitivity_graph.draw()
+        
+        #Save figure
+        self.dlg_base.print_graph_sensitivity.clicked.connect(lambda _, b= [self.dlg_base,self.canvas_sensitivity_graph]:self.figure_settings(b))
     
     
     
@@ -6571,6 +6674,10 @@ class qvfsmod:
                 self.canvas_sensitivity_graph_design.figure.subplots_adjust(left=0.2, bottom=0.2)
                 #Draw canvas
                 self.canvas_sensitivity_graph_design.draw()
+        
+        #Save figure
+        self.dlg_base.print_graph_design_uncertainity.clicked.connect(lambda _, b= [self.dlg_base,self.canvas_sensitivity_graph_design]:self.figure_settings(b))
+            
     
     
     def obtain_values_sensitivity_design(self):
@@ -11640,6 +11747,9 @@ class qvfsmod:
             self.canvas_calibration_graph_hydrograph.figure.subplots_adjust(left=0.2, bottom=0.2)
             #Draw canvas
             self.canvas_calibration_graph_hydrograph.draw()
+            #Save figure
+            self.dlg_calibration_results_hydrograph.print_graph.clicked.connect(lambda _, b= [self.dlg_calibration_results_hydrograph,self.canvas_calibration_graph_hydrograph]:self.figure_settings(b))
+            
     
     def update_graph_calibration_sedimentograph(self):
         """Method to update the graph of calibration"""
@@ -11715,6 +11825,10 @@ class qvfsmod:
             self.canvas_calibration_graph_sedimentograph.figure.subplots_adjust(left=0.2, bottom=0.2)
             #Draw canvas
             self.canvas_calibration_graph_sedimentograph.draw()
+            
+            #Save figure
+            self.dlg_calibration_results_sedimentograph.print_graph.clicked.connect(lambda _, b= [self.dlg_calibration_results_sedimentograph,self.canvas_calibration_graph_sedimentograph]:self.figure_settings(b))
+            
     
     def update_graph_calibration_single(self):
         """Method to update the graph of calibration"""
@@ -11782,6 +11896,9 @@ class qvfsmod:
             self.canvas_calibration_graph_single.figure.subplots_adjust(left=0.1, bottom=0.2)
             #Draw canvas
             self.canvas_calibration_graph_single.draw()
+            
+            #Save figure
+            self.dlg_calibration_results_single.print_graph.clicked.connect(lambda _, b= [self.dlg_calibration_results_single,self.canvas_calibration_graph_single]:self.figure_settings(b))
             
             
             
@@ -14484,25 +14601,52 @@ class qvfsmod:
     def update_file_names(self):
         print("aaaaaaaa")
         """Method to update file names when the name of the files is changed"""
-        lineEdits_extension = {self.dlg_base.uh_file:"lis",self.dlg_base.line_project_vfsmod:"prj",
-            self.dlg_base.uh_input:"inp",self.dlg_base.line_hydrograph:"iro",
-            self.dlg_base.line_hyetograph:"irn",self.dlg_base.line_sedimentograph:"isd",self.dlg_base.line_output_1:"out",
-            self.dlg_base.line_output_2:"hyt",self.dlg_base.line_overland:"ikw",self.dlg_base.line_infiltration:"iso",
-            self.dlg_base.line_buffer:"igr",self.dlg_base.line_incoming:"isd",self.dlg_base.line_storm:"irn",
-            self.dlg_base.line_source:"iro",self.dlg_base.line_water:"iwq",self.dlg_base.line_sediment:"og1",
-            self.dlg_base.line_flow:"og2",self.dlg_base.line_hydrograph_2:"ohy",self.dlg_base.line_waterland:"osm",
-            self.dlg_base.line_overall:"osp",self.dlg_base.line_quality:"owq"}
-
+        #First see if "lis" and "prj" files exist. If they exist the rest of the filepaths will be filled automatically in other method
+        lis_exist = False
+        prj_exist = False
+        lineEdits_extension = {self.dlg_base.uh_file:"lis",self.dlg_base.line_project_vfsmod:"prj"}
         for i in lineEdits_extension.keys():
             extension = os.path.normpath(i.text()).split(".")[-1]
             if extension == "": extension = lineEdits_extension[i]
             directory = os.path.dirname(i.text())
-            #If lis or prj is important not to change because the filepaths will be the ones in those files
-            if extension == "lis":
             if directory=="":
                 i.setText(os.path.normpath(self.dlg_base.name_files.text() + "."+extension))
             else:
                 i.setText(os.path.normpath(directory + "\\"+ self.dlg_base.name_files.text() + "."+extension))
+            if lineEdits_extension[i] == "lis" and os.path.exists(self.obtain_direction_vfsmod(i.text())):
+                lis_exist = True
+            elif lineEdits_extension[i] == "prf" and os.path.exists(self.obtain_direction_vfsmod(i.text())):
+                prj_exist = True
+        
+        #If lis doesnt exist then files are not added automatically and they have to be added
+        if not lis_exist:
+            lineEdits_extension = {self.dlg_base.uh_input:"inp",self.dlg_base.line_hydrograph:"iro",
+                self.dlg_base.line_hyetograph:"irn",self.dlg_base.line_sedimentograph:"isd",self.dlg_base.line_output_1:"out",
+                self.dlg_base.line_output_2:"hyt"}
+            for i in lineEdits_extension.keys():
+                extension = os.path.normpath(i.text()).split(".")[-1]
+                if extension == "": extension = lineEdits_extension[i]
+                directory = os.path.dirname(i.text())
+                if directory=="":
+                    i.setText(os.path.normpath(self.dlg_base.name_files.text() + "."+extension))
+                else:
+                    i.setText(os.path.normpath(directory + "\\"+ self.dlg_base.name_files.text() + "."+extension))
+        #Same for prj
+        if not prj_exist:
+            lineEdits_extension = {self.dlg_base.line_overland:"ikw",self.dlg_base.line_infiltration:"iso",
+                self.dlg_base.line_buffer:"igr",self.dlg_base.line_incoming:"isd",self.dlg_base.line_storm:"irn",
+                self.dlg_base.line_source:"iro",self.dlg_base.line_water:"iwq",self.dlg_base.line_sediment:"og1",
+                self.dlg_base.line_flow:"og2",self.dlg_base.line_hydrograph_2:"ohy",self.dlg_base.line_waterland:"osm",
+                self.dlg_base.line_overall:"osp",self.dlg_base.line_quality:"owq"}
+
+            for i in lineEdits_extension.keys():
+                extension = os.path.normpath(i.text()).split(".")[-1]
+                if extension == "": extension = lineEdits_extension[i]
+                directory = os.path.dirname(i.text())
+                if directory=="":
+                    i.setText(os.path.normpath(self.dlg_base.name_files.text() + "."+extension))
+                else:
+                    i.setText(os.path.normpath(directory + "\\"+ self.dlg_base.name_files.text() + "."+extension))
     
     def default_values(self):
         """Method to set default values for input values"""
@@ -14952,15 +15096,6 @@ class qvfsmod:
         
         
         
-
-        
-    def add_functions_outputs_hydrograph(self,dialog):
-        """When creating the dialog fot hydrograph output for the outputs we add all the functionalities for them"""
-        #Copy hydrograph to Clipboard
-        self.dlg_output_hydrograph.copy.clicked.connect(self.copy_to_clipboard_hydrograph)
-        #Print plot
-        self.dlg_output_hydrograph.print.clicked.connect(self.save_hydrograph)
-        
     def save_hydrograph(self):
         """Method to save the hydrograph in the local files"""
         opciones = QFileDialog.Options()
@@ -15134,11 +15269,13 @@ class qvfsmod:
         #Draw canvas
         self.canvas_design_graph.draw()
         
+        #Save figure
+        self.dlg_design_results_graph.print_graph.clicked.connect(lambda _, b= [self.dlg_design_results_graph,self.canvas_design_graph]:self.figure_settings(b))
+        
     def show_hydrograph(self):
         """Method to show hydrograph results"""
         #First we clear the frame that is going to contain the graph
         self.dlg_output_hydrograph = output_hydrograph()
-        self.add_functions_outputs_hydrograph(self.dlg_output_hydrograph)
         #We obtain the information of the .iro file
         with open(self.obtain_direction_vfsmod(self.dlg_base.line_hydrograph.text()), "r") as archivo:
             lineas = archivo.readlines()
@@ -15273,6 +15410,10 @@ class qvfsmod:
         # Mostrar el diálogo o ventana
         self.dlg_output_hydrograph.show()
         self.dlg_output_hydrograph.raise_()
+        
+        #Save figure
+        self.dlg_output_hydrograph.print_graph.clicked.connect(lambda _, b= [self.dlg_output_hydrograph,self.canvas]:self.figure_settings(b))
+        
     
     def add_functions_outputs_hyetograph(self):
         """When creating the dialog fot hyetograph output for the outputs we add all the functionalities for them"""
@@ -15415,6 +15556,9 @@ class qvfsmod:
         
         #This is to save the plot
         self.figure_hyetograph = fig
+        
+        #Save figure
+        self.dlg_output_hyetograph.print_graph.clicked.connect(lambda _, b= [self.dlg_output_hyetograph,self.canvas]:self.figure_settings(b))
 
         # Mostrar el diálogo o ventana
         self.dlg_output_hyetograph.show()

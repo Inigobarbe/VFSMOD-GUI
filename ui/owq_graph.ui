@@ -173,14 +173,7 @@ QTableCornerButton::section {
       <item row="0" column="0">
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QPushButton" name="pushButton">
-          <property name="text">
-           <string>Copy to Clipoard</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButton_2">
+         <widget class="QPushButton" name="print_graph">
           <property name="text">
            <string>Print Plot</string>
           </property>

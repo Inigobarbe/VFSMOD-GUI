@@ -146,31 +146,6 @@ QTableCornerButton::section {
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="1" column="0">
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QLabel" name="label_2">
-          <property name="minimumSize">
-           <size>
-            <width>176</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Source area flow path
-length, SLENGTH (m)</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="length">
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
       <item row="2" column="0">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
@@ -197,10 +172,10 @@ hydrograph, BCROPEAK
         </item>
        </layout>
       </item>
-      <item row="6" column="0">
-       <widget class="QPushButton" name="close_dialog">
+      <item row="5" column="0">
+       <widget class="QPushButton" name="save_close">
         <property name="text">
-         <string>Close</string>
+         <string>Save and Close</string>
         </property>
        </widget>
       </item>
@@ -209,33 +184,6 @@ hydrograph, BCROPEAK
         <property name="text">
          <string>Save and 
 Continue Editing</string>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="0">
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="7" column="0">
-       <widget class="QPushButton" name="pushButton_4">
-        <property name="text">
-         <string>Help</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QPushButton" name="save_close">
-        <property name="text">
-         <string>Save and Close</string>
         </property>
        </widget>
       </item>
@@ -264,6 +212,51 @@ SWIDTH</string>
         </item>
        </layout>
       </item>
+      <item row="1" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="minimumSize">
+           <size>
+            <width>176</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Source area flow path
+length, SLENGTH (m)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="length">
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="8" column="0">
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="7" column="0">
+       <widget class="QPushButton" name="close_dialog">
+        <property name="text">
+         <string>Close</string>
+        </property>
+       </widget>
+      </item>
       <item row="3" column="0">
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
@@ -281,6 +274,13 @@ SWIDTH</string>
          </widget>
         </item>
        </layout>
+      </item>
+      <item row="6" column="0">
+       <widget class="QPushButton" name="print_graph">
+        <property name="text">
+         <string>Print Plot</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

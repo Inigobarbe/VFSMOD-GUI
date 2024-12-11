@@ -117,6 +117,28 @@ QTableCornerButton::section {
 }</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="1" rowspan="3">
+    <widget class="QFrame" name="frame">
+     <property name="minimumSize">
+      <size>
+       <width>460</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
@@ -148,26 +170,38 @@ QTableCornerButton::section {
      </item>
     </layout>
    </item>
-   <item row="0" column="1" rowspan="3">
-    <widget class="QFrame" name="frame">
+   <item row="2" column="0">
+    <widget class="QTableWidget" name="tableWidget">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="minimumSize">
       <size>
-       <width>460</width>
+       <width>406</width>
        <height>0</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>16777215</width>
+       <width>406</width>
        <height>16777215</height>
       </size>
      </property>
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
+     <column>
+      <property name="text">
+       <string>Parameter</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Mean of E.E.</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>S.D. of E.E.</string>
+      </property>
+     </column>
     </widget>
    </item>
    <item row="1" column="0">
@@ -213,38 +247,11 @@ QTableCornerButton::section {
      </item>
     </layout>
    </item>
-   <item row="2" column="0">
-    <widget class="QTableWidget" name="tableWidget">
-     <property name="enabled">
-      <bool>true</bool>
+   <item row="3" column="0">
+    <widget class="QPushButton" name="print_graph">
+     <property name="text">
+      <string>Print Plot</string>
      </property>
-     <property name="minimumSize">
-      <size>
-       <width>406</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>406</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <column>
-      <property name="text">
-       <string>Parameter</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Mean of E.E.</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>S.D. of E.E.</string>
-      </property>
-     </column>
     </widget>
    </item>
   </layout>

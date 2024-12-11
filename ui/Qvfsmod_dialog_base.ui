@@ -278,7 +278,7 @@ QTableCornerButton::section {
                  </size>
                 </property>
                 <property name="text">
-                 <string>New project name:</string>
+                 <string>Project name:</string>
                 </property>
                </widget>
               </item>
@@ -3026,9 +3026,9 @@ default 5 min</string>
                      <property name="geometry">
                       <rect>
                        <x>0</x>
-                       <y>0</y>
+                       <y>-173</y>
                        <width>231</width>
-                       <height>381</height>
+                       <height>474</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_90">
@@ -3039,6 +3039,12 @@ default 5 min</string>
                         </property>
                         <item>
                          <widget class="QPushButton" name="all_parameters_design">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>All Parameters</string>
                           </property>
@@ -3046,6 +3052,12 @@ default 5 min</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="rainfall_event_design">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Rainfall Event and Runoff</string>
                           </property>
@@ -3053,6 +3065,12 @@ default 5 min</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="source_area_design">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Source Area</string>
                           </property>
@@ -3060,6 +3078,12 @@ default 5 min</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="erosion_parameters_design">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Erosion Parameters</string>
                           </property>
@@ -3067,6 +3091,12 @@ default 5 min</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="buffer_dimensions_design">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Buffer Dimensions</string>
                           </property>
@@ -3074,6 +3104,12 @@ default 5 min</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="kinematic_wave_design">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Kinematic Wave Numerical 
 Solution Parameters</string>
@@ -3082,6 +3118,12 @@ Solution Parameters</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="infiltration_design">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Infiltration</string>
                           </property>
@@ -3089,6 +3131,12 @@ Solution Parameters</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="buffer_vegetation_design">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Buffer Vegetation</string>
                           </property>
@@ -3099,7 +3147,7 @@ Solution Parameters</string>
                           <property name="minimumSize">
                            <size>
                             <width>0</width>
-                            <height>0</height>
+                            <height>40</height>
                            </size>
                           </property>
                           <property name="text">
@@ -3112,7 +3160,7 @@ Solution Parameters</string>
                           <property name="minimumSize">
                            <size>
                             <width>0</width>
-                            <height>0</height>
+                            <height>40</height>
                            </size>
                           </property>
                           <property name="text">
@@ -4987,88 +5035,54 @@ analysis</string>
                  </item>
                 </layout>
                </item>
-               <item row="1" column="0" colspan="3">
-                <layout class="QHBoxLayout" name="horizontalLayout_148">
-                 <item>
-                  <widget class="QLabel" name="label_158">
-                   <property name="minimumSize">
-                    <size>
-                     <width>125</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>FAST results file</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="csv_results_fast_design_uncertainity">
-                   <property name="minimumSize">
-                    <size>
-                     <width>213</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="browse_fast_csv_design_sensitivity">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="2" column="0" colspan="3">
-                <layout class="QHBoxLayout" name="horizontalLayout_149">
-                 <item>
-                  <widget class="QLabel" name="label_159">
-                   <property name="minimumSize">
-                    <size>
-                     <width>125</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Sobol results file</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="csv_results_sobol_design_uncertainity">
-                   <property name="minimumSize">
-                    <size>
-                     <width>213</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="browse_sobol_design_sensitivity">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="3" column="0">
-                <widget class="QFrame" name="frame_39">
+               <item row="4" column="0" colspan="3">
+                <widget class="QFrame" name="frame_38">
                  <property name="frameShape">
                   <enum>QFrame::StyledPanel</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
                  </property>
+                 <layout class="QGridLayout" name="gridLayout_66">
+                  <item row="0" column="1">
+                   <widget class="QLineEdit" name="cumulative_probability_sensitivity_design">
+                    <property name="text">
+                     <string>97.5</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_90">
+                    <property name="text">
+                     <string>Cumulative probability (%)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QLineEdit" name="buffer_length_sensitivity_design">
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_91">
+                    <property name="text">
+                     <string>Buffer length (m)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QPushButton" name="print_graph_design_uncertainity">
+                    <property name="text">
+                     <string>Print Plot</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </widget>
                </item>
                <item row="3" column="1">
@@ -5183,48 +5197,89 @@ analysis</string>
                  </layout>
                 </widget>
                </item>
-               <item row="4" column="0" colspan="3">
-                <widget class="QFrame" name="frame_38">
+               <item row="3" column="0">
+                <widget class="QFrame" name="frame_39">
                  <property name="frameShape">
                   <enum>QFrame::StyledPanel</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
                  </property>
-                 <layout class="QGridLayout" name="gridLayout_66">
-                  <item row="0" column="1">
-                   <widget class="QLineEdit" name="cumulative_probability_sensitivity_design">
-                    <property name="text">
-                     <string>97.5</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_90">
-                    <property name="text">
-                     <string>Cumulative probability (%)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="1">
-                   <widget class="QLineEdit" name="buffer_length_sensitivity_design">
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_91">
-                    <property name="text">
-                     <string>Buffer length (m)</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
                 </widget>
+               </item>
+               <item row="1" column="0" colspan="3">
+                <layout class="QHBoxLayout" name="horizontalLayout_148">
+                 <item>
+                  <widget class="QLabel" name="label_158">
+                   <property name="minimumSize">
+                    <size>
+                     <width>125</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>FAST results file</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="csv_results_fast_design_uncertainity">
+                   <property name="minimumSize">
+                    <size>
+                     <width>213</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browse_fast_csv_design_sensitivity">
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="2" column="0" colspan="3">
+                <layout class="QHBoxLayout" name="horizontalLayout_149">
+                 <item>
+                  <widget class="QLabel" name="label_159">
+                   <property name="minimumSize">
+                    <size>
+                     <width>125</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Sobol results file</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="csv_results_sobol_design_uncertainity">
+                   <property name="minimumSize">
+                    <size>
+                     <width>213</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browse_sobol_design_sensitivity">
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
               </layout>
              </widget>
@@ -5464,7 +5519,7 @@ analysis</string>
                        <x>0</x>
                        <y>0</y>
                        <width>231</width>
-                       <height>381</height>
+                       <height>474</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_78">
@@ -5475,6 +5530,12 @@ analysis</string>
                         </property>
                         <item>
                          <widget class="QPushButton" name="all_parameters">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>All Parameters</string>
                           </property>
@@ -5482,6 +5543,12 @@ analysis</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="rainfall_event">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Rainfall Event and Runoff</string>
                           </property>
@@ -5489,6 +5556,12 @@ analysis</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="source_area">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Source Area</string>
                           </property>
@@ -5496,6 +5569,12 @@ analysis</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="erosion_parameters">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Erosion Parameters</string>
                           </property>
@@ -5503,6 +5582,12 @@ analysis</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="buffer_dimensions">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Buffer Dimensions</string>
                           </property>
@@ -5510,6 +5595,12 @@ analysis</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="kinematic_wave">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Kinematic Wave Numerical 
 Solution Parameters</string>
@@ -5518,6 +5609,12 @@ Solution Parameters</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="infiltration">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Infiltration</string>
                           </property>
@@ -5525,6 +5622,12 @@ Solution Parameters</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="buffer_vegetation">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Buffer Vegetation</string>
                           </property>
@@ -5535,7 +5638,7 @@ Solution Parameters</string>
                           <property name="minimumSize">
                            <size>
                             <width>0</width>
-                            <height>0</height>
+                            <height>40</height>
                            </size>
                           </property>
                           <property name="text">
@@ -5548,7 +5651,7 @@ Solution Parameters</string>
                           <property name="minimumSize">
                            <size>
                             <width>0</width>
-                            <height>0</height>
+                            <height>40</height>
                            </size>
                           </property>
                           <property name="text">
@@ -6034,8 +6137,8 @@ Solution Parameters</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_9">
            <property name="geometry">
             <rect>
-             <x>0</x>
-             <y>0</y>
+             <x>-253</x>
+             <y>-72</y>
              <width>1000</width>
              <height>553</height>
             </rect>
@@ -6060,23 +6163,9 @@ Solution Parameters</string>
             <item row="1" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout_127">
               <item>
-               <widget class="QPushButton" name="pushButton_27">
+               <widget class="QPushButton" name="print_graph_sensitivity">
                 <property name="text">
-                 <string>Copy to Clipboard</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pushButton_28">
-                <property name="text">
-                 <string>Print</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pushButton_29">
-                <property name="text">
-                 <string>Edit</string>
+                 <string>Print Plot</string>
                 </property>
                </widget>
               </item>
@@ -6414,7 +6503,7 @@ Solution Parameters</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_3">
            <property name="geometry">
             <rect>
-             <x>-400</x>
+             <x>-330</x>
              <y>0</y>
              <width>1164</width>
              <height>481</height>
@@ -6655,23 +6744,9 @@ Solution Parameters</string>
                <item row="2" column="3">
                 <layout class="QHBoxLayout" name="horizontalLayout_129">
                  <item>
-                  <widget class="QPushButton" name="pushButton_30">
+                  <widget class="QPushButton" name="print_graph_oat">
                    <property name="text">
-                    <string>Copy to Clipboard</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="pushButton_31">
-                   <property name="text">
-                    <string>Print</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="pushButton_32">
-                   <property name="text">
-                    <string>Edit</string>
+                    <string>Print Plot</string>
                    </property>
                   </widget>
                  </item>
@@ -6717,7 +6792,7 @@ Solution Parameters</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_10">
            <property name="geometry">
             <rect>
-             <x>-176</x>
+             <x>0</x>
              <y>0</y>
              <width>923</width>
              <height>613</height>
@@ -6814,7 +6889,7 @@ Solution Parameters</string>
                        <x>0</x>
                        <y>0</y>
                        <width>231</width>
-                       <height>381</height>
+                       <height>474</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_82">
@@ -6825,6 +6900,12 @@ Solution Parameters</string>
                         </property>
                         <item>
                          <widget class="QPushButton" name="all_parameters_2">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>All Parameters</string>
                           </property>
@@ -6832,6 +6913,12 @@ Solution Parameters</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="rainfall_event_2">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Rainfall Event and Runoff</string>
                           </property>
@@ -6839,6 +6926,12 @@ Solution Parameters</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="source_area_2">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Source Area</string>
                           </property>
@@ -6846,6 +6939,12 @@ Solution Parameters</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="erosion_parameters_2">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Erosion Parameters</string>
                           </property>
@@ -6853,6 +6952,12 @@ Solution Parameters</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="buffer_dimensions_2">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Buffer Dimensions</string>
                           </property>
@@ -6860,6 +6965,12 @@ Solution Parameters</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="kinematic_wave_2">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Kinematic Wave Numerical 
 Solution Parameters</string>
@@ -6868,6 +6979,12 @@ Solution Parameters</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="infiltration_2">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Infiltration</string>
                           </property>
@@ -6875,6 +6992,12 @@ Solution Parameters</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="buffer_vegetation_2">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>40</height>
+                           </size>
+                          </property>
                           <property name="text">
                            <string>Buffer Vegetation</string>
                           </property>
@@ -6885,7 +7008,7 @@ Solution Parameters</string>
                           <property name="minimumSize">
                            <size>
                             <width>0</width>
-                            <height>0</height>
+                            <height>40</height>
                            </size>
                           </property>
                           <property name="text">
@@ -6898,7 +7021,7 @@ Solution Parameters</string>
                           <property name="minimumSize">
                            <size>
                             <width>0</width>
-                            <height>0</height>
+                            <height>40</height>
                            </size>
                           </property>
                           <property name="text">
@@ -7324,7 +7447,7 @@ Solution Parameters</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-128</y>
              <width>1068</width>
              <height>609</height>
             </rect>
@@ -7506,23 +7629,9 @@ Solution Parameters</string>
                <item row="2" column="0">
                 <layout class="QHBoxLayout" name="horizontalLayout_138">
                  <item>
-                  <widget class="QPushButton" name="pushButton_33">
+                  <widget class="QPushButton" name="print_graph_uncertainity">
                    <property name="text">
-                    <string>Copy to Clipboard</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="pushButton_34">
-                   <property name="text">
-                    <string>Print</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="pushButton_35">
-                   <property name="text">
-                    <string>Edit</string>
+                    <string>Print Plot</string>
                    </property>
                   </widget>
                  </item>
