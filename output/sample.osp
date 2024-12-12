@@ -1,45 +1,43 @@
-File: output\sample.osp                               VFSMOD v4.5.2 02/2023
+File: C:\qvfsmod\output\sample.osp                    VFSMOD v4.6.0 11/2024
  
  Files for this simulation
-   File #=  1 code:ikw=inputs\sampleP.ikw                                                         
-   File #=  2 code:irn=inputs\sample.irn                                                          
-   File #=  3 code:iro=inputs\sample.iro                                                          
-   File #=  4 code:iso=inputs\sample.iso                                                          
-   File #=  5 code:osm=output\sample.osm                                                          
-   File #=  6 code:ohy=output\sample.ohy                                                          
-   File #=  7 code:igr=inputs\sample.igr                                                          
-   File #=  8 code:og1=output\sample.og1                                                          
-   File #=  9 code:og2=output\sample.og2                                                          
-   File #= 10 code:osp=output\sample.osp                                                          
-   File #= 11 code:isd=inputs\sample.isd                                                          
-   File #= 12 code:iwq=inputs\sampleP.iwq                                                         
-   File #= 13 code:owq=output\sample.owq                                                          
+   File #=  1 code:ikw=C:\qvfsmod\inputs\sample.ikw                                               
+   File #=  2 code:irn=C:\qvfsmod\inputs\sample.irn                                               
+   File #=  3 code:iro=C:\qvfsmod\inputs\sample.iro                                               
+   File #=  4 code:iso=C:\qvfsmod\inputs\sample.iso                                               
+   File #=  5 code:osm=C:\qvfsmod\output\sample.osm                                               
+   File #=  6 code:ohy=C:\qvfsmod\output\sample.ohy                                               
+   File #=  7 code:igr=C:\qvfsmod\inputs\sample.igr                                               
+   File #=  8 code:og1=C:\qvfsmod\output\sample.og1                                               
+   File #=  9 code:og2=C:\qvfsmod\output\sample.og2                                               
+   File #= 10 code:osp=C:\qvfsmod\output\sample.osp                                               
+   File #= 11 code:isd=C:\qvfsmod\inputs\sample.isd                                               
   
        Summary of Buffer Performance Indicators:
   
-      136.0 m^2 = Source Area (input)
-      34.00 m   = Source Flow Length (input)
-       4.00 m   = Source Area Width (input)
+     5000.0 m^2 = Source Area (input)
+     100.00 m   = Source Flow Length (input)
+      50.00 m   = Source Area Width (input)
        8.65 m   = Filter Strip Length (input)
        3.87 m   = Filter Strip Width (input)
       0.400     = Mean Filter Mannings Roughness (input)
   
-      25.46 %   = Ratio of Filter Length to Source Flow Length
-     25.147 mm  = Total Rainfall
-      0.842 m3  = Total Rainfall on Filter
-      9.743 mm  = Total Runoff from Source (mm depth over Source Area)
-      1.325 m3  = Total Runoff from Source
-      4.459 mm  = Total Runoff out from Filter (mm depth over Source+Filter)
-      0.756 m3  = Total Runoff out from Filter
-      1.412 m3  = Total Infiltration in Filter
-      0.570     = Runoff Delivery Ratio
+       8.65 %   = Ratio of Filter Length to Source Flow Length
+     26.268 mm  = Total Rainfall
+      0.880 m3  = Total Rainfall on Filter
+      4.241 mm  = Total Runoff from Source (mm depth over Source Area)
+     21.204 m3  = Total Runoff from Source
+      3.097 mm  = Total Runoff out from Filter (mm depth over Source+Filter)
+     15.589 m3  = Total Runoff out from Filter
+      6.967 m3  = Total Infiltration in Filter
+      0.735     = Runoff Delivery Ratio
   
-      45.053 kg = Mass Sediment Input to Filter
-      34.000 g/L= Concentration Sediment in Runoff from source Area
-       1.191 kg = Mass Sediment Output from Filter
-       1.576 g/L= Concentration Sediment in Runoff exiting the Filter
-      43.862 kg = Mass Sediment retained in Filter
-       0.026    = Sediment Delivery Ratio
+     215.889 kg = Mass Sediment Input to Filter
+      10.182 g/L= Concentration Sediment in Runoff from source Area
+      21.787 kg = Mass Sediment Output from Filter
+       1.398 g/L= Concentration Sediment in Runoff exiting the Filter
+     194.102 kg = Mass Sediment retained in Filter
+       0.101    = Sediment Delivery Ratio
   
        8.65 m   = Effective Filter Length
        0.00 m   = Wedge Distance

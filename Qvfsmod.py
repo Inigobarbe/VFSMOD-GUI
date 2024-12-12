@@ -15,7 +15,7 @@
 import PyQt5
 from PyQt5 import QtWidgets,QtGui
 from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QThread,pyqtSignal
-from PyQt5.QtGui import QIcon, QFont, QGuiApplication, QPixmap, QImage
+from PyQt5.QtGui import QIcon, QFont, QGuiApplication, QPixmap, QImage, QBrush, QColor
 from PyQt5.QtWidgets import QAction, QComboBox,QMessageBox,QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy,QAction, QMenu,QCheckBox, QFrame,QGridLayout,QHBoxLayout
 from sklearn.linear_model import LinearRegression
 from scipy.optimize import differential_evolution, minimize
@@ -420,6 +420,11 @@ class qvfsmod:
         self.dlg_base.actionResults.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_results_uncertainity))
         self.dlg_base.actionAbot_this_program.triggered.connect(lambda: self.dlg_base.stackedWidget.setCurrentWidget(self.dlg_base.page_about))
         
+        #Update pesticides into dialog
+        self.dlg_base.actionComplete_Calibration.triggered.connect(self.add_pesticides_dialog_single_calibration)
+        self.dlg_base.actionDesign_with_Uncertainity.triggered.connect(self.add_pesticides_dialog_sensitivity_design)
+        
+        
         #Iso characteristic curve close
         self.dlg_soil_curves.done.clicked.connect(self.dlg_soil_curves.close)
         
@@ -483,12 +488,25 @@ class qvfsmod:
         self.dlg_base.soil_type.addItems(["Clay","Silty clay","Sandy clay","Silty clay loam","Clay loam","Sandy clay loam","Silt","Silt loam","Loam",
             "Very fine sandy loam","Fine sandy loam","Sandy loam","Coarse sandy loam","Loamy very fine sand","Loamy fine sandy",
             "Loamy sand","Loamy coarse sand","Very fine sandy","Fine sand","Sand","Coarse sand"])
-        self.dlg_base.combo_water.addItems(["1. Pesticides","2. Solute Transport","3. Multi-Reactive"])
         self.dlg_water_quality.calculation.addItems(["No calculation","Degradation changes with temperature and moisture","Degradation only","Degradation changes with temperature","Degradation changes with moisture"])
         self.dlg_water_quality.trapping_equation.addItems(["Sabbagh","Refit Sabbagh","Mass balance","Chen"])
         self.dlg_calibration_advanced_settings_hydrograph.objective_function.addItems(["RMSE","NSE","NNSE"])
         self.dlg_calibration_advanced_settings_sedimentograph.objective_function.addItems(["RMSE","NSE","NNSE"])
         self.dlg_water_quality.imob.addItems(["Partial/porewater","100% residues remobilize","No remobilization"])
+        self.dlg_incoming_sediment.particle_class.addItems(["Clay","Silt (1)","Small aggregate","Large aggregate","Sand","Silt (2)","User selected","Internal d50 calculation"])
+        self.dlg_base.rainfall_factor.addItems(["Foster","Williams","GLEAMS","Cooley","PRZM MUSLE","PRZM MUSS (recommended)"])
+        self.dlg_base.rainfall_factor.setCurrentIndex(5)
+        
+        
+        self.dlg_base.combo_water.addItems(["1. Pesticides","2. Solute Transport","3. Multi-Reactive"])
+        #Disable selection of "2. Solute Transport" and "3. Multi-Reactive"
+        model = self.dlg_base.combo_water.model()
+        item2 = model.item(1)  # Índice 1 corresponde al segundo elemento
+        item2.setFlags(Qt.NoItemFlags)  # Hacer que no sea seleccionable
+        item2.setBackground(QBrush(QColor("#d9d9d9")))
+        item2 = model.item(2)  # Índice 1 corresponde al segundo elemento
+        item2.setFlags(Qt.NoItemFlags)  # Hacer que no sea seleccionable
+        item2.setBackground(QBrush(QColor("#d9d9d9")))
         
         self.dlg_water_quality.trapping_equation.currentIndexChanged.connect(self.update_pesticide_coefficients)
         self.dlg_water_quality.frame_2.hide()
@@ -897,10 +915,10 @@ class qvfsmod:
                 "Soil erodibility (K)":["inp",3,0,"uh"],"Percent organic matter":["inp",5,0,"uh"],"Crop factor":["inp",3,1,"uh"],"Particle Class Diameter":["inp",3,3,"uh"],"Practice Factor":["inp",3,2,"uh"],
                 "Buffer length (m)":["ikw",2,0,"vfs"],"Width of the Strip (m)":["ikw",1,0,"vfs"],"Filter Manning n (RNA s/m^1/3)":["ikw","nan","nan","vfs"],"Average Filter Slope":["ikw","nan","nan","vfs"],
                 "Number of Nodes":["ikw",2,1,"vfs"],"Time Weight Factor":["ikw",2,2,"vfs"],"Number of Elemental Nodal Points":["ikw",2,5,"vfs"],"Courant Number":["ikw",2,3,"vfs"],"Maximum Iterations":["ikw",2,4,"vfs"],
-                "Vertical Saturated K":["iso",0,0,"vfs"],"Average Suction at the Wetting Front":["iso",0,1,"vfs"],"Initial Water Content":["iso",0,3,"vfs"],"Saturated Water Content":["iso",0,2,"vfs"],"Maximum Surface Storage":["iso",0,4,"vfs"],"Fraction of the filter where ponding is checked":["iso",0,5,"vfs"],"Water table depth":["iso",1,0,"vfs"],"Soil saturated hydraulic\nconductivity ansiotropy ratio":["iso",4,0,"vfs"],"Soil water characteristic OR":["iso",2,1,"vfs"],"Soil water characteristic VGALPHA":["iso",2,2,"vfs"],"Soil water characteristic VGN":["iso",2,3,"vfs"],"Soil water characteristic VGM":["iso",2,4,"vfs"],"Soil water characteristic BCALPHA":["iso",2,2,"vfs"],"Soil water characteristic BCLAMDA":["iso",2,3,"vfs"],"Unsaturated hydraulic \nconductivity curve VGM":["iso",3,1,"vfs"],"Unsaturated hydraulic \nconductivity curve BCETA":["iso",3,1,"vfs"],"Unsaturated hydraulic \nconductivity curve BCALPHA":["iso",3,2,"vfs"],"Unsaturated hydraulic \nconductivity curve GDALPHA":["iso",3,1,"vfs"],
+                "Vertical Saturated K":["iso",0,0,"vfs"],"Average Suction at the Wetting Front":["iso",0,1,"vfs"],"Initial Water Content":["iso",0,3,"vfs"],"Saturated Water Content":["iso",0,2,"vfs"],"Maximum Surface Storage":["iso",0,4,"vfs"],"Fraction of the filter where ponding is checked":["iso",0,5,"vfs"],"Water table depth":["iso",1,0,"vfs"],"Soil saturated hydraulic conductivity ansiotropy ratio":["iso",4,0,"vfs"],"Soil water characteristic OR":["iso",2,1,"vfs"],"Soil water characteristic VGALPHA":["iso",2,2,"vfs"],"Soil water characteristic VGN":["iso",2,3,"vfs"],"Soil water characteristic VGM":["iso",2,4,"vfs"],"Soil water characteristic BCALPHA":["iso",2,2,"vfs"],"Soil water characteristic BCLAMDA":["iso",2,3,"vfs"],"Unsaturated hydraulic conductivity curve VGM":["iso",3,1,"vfs"],"Unsaturated hydraulic conductivity curve BCETA":["iso",3,1,"vfs"],"Unsaturated hydraulic conductivity curve BCALPHA":["iso",3,2,"vfs"],"Unsaturated hydraulic conductivity curve GDALPHA":["iso",3,1,"vfs"],
                 "Spacing for grass stems (cm)":["igr",0,0,"vfs"],"Roughness-Grass Mannings n VN":["igr",0,1,"vfs"],"Height of grass (cm)":["igr",0,2,"vfs"],"Roughness-Bare surface Mannings n (Vn2)":["igr",0,3,"vfs"],
-                "Incoming flow sediment concentration (g/cm^3)":["isd",0,2,"vfs"],"Sediment particle size diameter d50 (cm)":["isd",1,0,"vfs"],"Porosity of deposited sediment as a fraction":["isd",0,3,"vfs"],"Portion of Particles from incoming sediment \nwith diameter >0.0037 cm":["isd",0,1,"vfs"],"Sediment particle density (g/cm^3)":["isd",1,1,"vfs"],
-                "Linear sorption coefficient (L/Kg)":["iwq",1,1,"vfs"],"Adsorption coefficient (L/Kg)":["iwq",1,1,"vfs"],"Organic Carbon (%)":["iwq",1,2,"vfs"],"Clay in incoming sediment (%)":["iwq",2,0,"vfs"],"Pesticide half-life (days)":["iwq",4,1,"vfs"],"Topsoil field capacity (m3/m3)":["iwq",4,2,"vfs"],"Total pesticide mass per unit area source field (mg/m2)":["iwq",4,3,"vfs"],"Surface mixing layer thickness (cm)":["iwq",4,4,"vfs"],"Dispersion length of chemical (m)":["iwq",4,5,"vfs"],"Runoff remobilized VFS residue \nfrom last event (mg/m2)":["iwq",4,6,"vfs"]}
+                "Incoming flow sediment concentration (g/cm^3)":["isd",0,2,"vfs"],"Sediment particle size diameter d50 (cm)":["isd",1,0,"vfs"],"Porosity of deposited sediment as a fraction":["isd",0,3,"vfs"],"Portion of Particles from incoming sediment with diameter >0.0037 cm":["isd",0,1,"vfs"],"Sediment particle density (g/cm^3)":["isd",1,1,"vfs"],
+                "Linear sorption coefficient (L/Kg)":["iwq",1,1,"vfs"],"Adsorption coefficient (L/Kg)":["iwq",1,1,"vfs"],"Organic Carbon (%)":["iwq",1,2,"vfs"],"Clay in incoming sediment (%)":["iwq",2,0,"vfs"],"Pesticide half-life (days)":["iwq",4,1,"vfs"],"Topsoil field capacity (m3/m3)":["iwq",4,2,"vfs"],"Total pesticide mass per unit area source field (mg/m2)":["iwq",4,3,"vfs"],"Surface mixing layer thickness (cm)":["iwq",4,4,"vfs"],"Dispersion length of chemical (m)":["iwq",4,5,"vfs"],"Runoff remobilized VFS residue from last event (mg/m2)":["iwq",4,6,"vfs"]}
         for i in buttons:
             i.clicked.connect(lambda _, b = i:self.show_buttons_sensitivity_dialog(b))
         
@@ -1062,7 +1080,7 @@ class qvfsmod:
         
         file_path, _ = QFileDialog.getSaveFileName(dialog, "Save graph", 
                                            os.path.join(self.working_directory, "graph.png"), 
-                                           "Image files (*.png *.jpg *.jpeg *.pdf);;All files (*)")
+                                            "PNG Files (*.png);;JPEG Files (*.jpg *.jpeg);;PDF Files (*.pdf);;All Files (*)")
         if file_path:
             dpi_value = float(self.dlg_figure_settings.resolution.text())
             transparent = self.dlg_figure_settings.transparent.isChecked()
@@ -1075,7 +1093,8 @@ class qvfsmod:
         
     def hide_about_image(self, event):
         """Method to hide the image that appears in the beggining"""
-        self.dlg_base.label_111.hide()
+        self.dlg_base.label_160.hide()
+        self.dlg_base.label_115.hide()
 
     
     def open_license(self):
@@ -1085,11 +1104,17 @@ class qvfsmod:
     
     def add_pesticides_dialog_sensitivity_inputs(self,process):
         """Method to add pesticides to the dialog to choose as input"""
-        self.variables_water_quality = ["Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Pesticide half-life (days)","Total pesticide mass per unit area source field (mg/m2)","Dispersion length of chemical (m)","Runoff remobilized VFS residue \nfrom last event (mg/m2)"]
+        self.variables_water_quality = ["Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Pesticide half-life (days)","Total pesticide mass per unit area source field (mg/m2)","Dispersion length of chemical (m)","Runoff remobilized VFS residue from last event (mg/m2)"]
         
         #Design with uncertainity
         if process == "design_uncertainity":
             if self.dlg_base.parameter_name_design.text() in self.variables_water_quality:
+                #Quit widgets
+                if hasattr(self.dlg_base, 'pesticide_input_design_uncertainity'):
+                    self.dlg_base.pesticide_input_design_uncertainity.deleteLater()
+                    delattr(self.dlg_base,"pesticide_input_design_uncertainity")
+                    self.dlg_base.pesticide_input_design_uncertainity_combo.deleteLater()
+                    delattr(self.dlg_base,"pesticide_input_design_uncertainity_combo")
                 #Create label and combobox
                 if not hasattr(self.dlg_base, 'pesticide_input_design_uncertainity'):
                     number_pesticides = self.obtain_number_pestidides(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity_design.text()))
@@ -1102,8 +1127,8 @@ class qvfsmod:
                         row_count = self.dlg_base.gridLayout_93.rowCount()
                         self.dlg_base.gridLayout_93.addWidget(self.dlg_base.pesticide_input_design_uncertainity, row_count, 0)
                         self.dlg_base.gridLayout_93.addWidget(self.dlg_base.pesticide_input_design_uncertainity_combo, row_count, 1)
-            #Quit widgets
             else:
+                #Quit widgets
                 if hasattr(self.dlg_base, 'pesticide_input_design_uncertainity'):
                     self.dlg_base.pesticide_input_design_uncertainity.deleteLater()
                     delattr(self.dlg_base,"pesticide_input_design_uncertainity")
@@ -1113,6 +1138,12 @@ class qvfsmod:
         #Identifiability
         elif process == "identifiability": 
             if self.dlg_calibration_sensitivity_hydrograph.parameter_name.text() in self.variables_water_quality:
+                #Quit widgets
+                if hasattr(self.dlg_calibration_sensitivity_hydrograph, 'pesticide_input_identifiability'):
+                    self.dlg_calibration_sensitivity_hydrograph.pesticide_input_identifiability.deleteLater()
+                    delattr(self.dlg_calibration_sensitivity_hydrograph,"pesticide_input_identifiability")
+                    self.dlg_calibration_sensitivity_hydrograph.pesticide_input_identifiability_combo.deleteLater()
+                    delattr(self.dlg_calibration_sensitivity_hydrograph,"pesticide_input_identifiability_combo")
                 #Create label and combobox
                 if not hasattr(self.dlg_calibration_sensitivity_hydrograph, 'pesticide_input_identifiability'):
                     number_pesticides = self.obtain_number_pestidides(self.obtain_direction_vfsmod(self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.text()))
@@ -1125,8 +1156,8 @@ class qvfsmod:
                         row_count = self.dlg_calibration_sensitivity_hydrograph.gridLayout_81.rowCount()
                         self.dlg_calibration_sensitivity_hydrograph.gridLayout_81.addWidget(self.dlg_calibration_sensitivity_hydrograph.pesticide_input_identifiability, row_count, 0)
                         self.dlg_calibration_sensitivity_hydrograph.gridLayout_81.addWidget(self.dlg_calibration_sensitivity_hydrograph.pesticide_input_identifiability_combo, row_count, 1)
-            #Quit widgets
             else:
+                #Quit widgets
                 if hasattr(self.dlg_calibration_sensitivity_hydrograph, 'pesticide_input_identifiability'):
                     self.dlg_calibration_sensitivity_hydrograph.pesticide_input_identifiability.deleteLater()
                     delattr(self.dlg_calibration_sensitivity_hydrograph,"pesticide_input_identifiability")
@@ -1136,6 +1167,12 @@ class qvfsmod:
         #Sensitivity analysis
         if process == "sensitivity_analysis":
             if self.dlg_base.parameter_name.text() in self.variables_water_quality:
+                #Quit widgets
+                if hasattr(self.dlg_base, 'pesticide_input_sensitivity'):
+                    self.dlg_base.pesticide_input_sensitivity.deleteLater()
+                    delattr(self.dlg_base,"pesticide_input_sensitivity")
+                    self.dlg_base.pesticide_input_sensitivity_combo.deleteLater()
+                    delattr(self.dlg_base,"pesticide_input_sensitivity_combo")
                 #Create label and combobox
                 if not hasattr(self.dlg_base, 'pesticide_input_sensitivity'):
                     number_pesticides = self.obtain_number_pestidides(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity.text()))
@@ -1148,17 +1185,24 @@ class qvfsmod:
                         row_count = self.dlg_base.gridLayout_81.rowCount()
                         self.dlg_base.gridLayout_81.addWidget(self.dlg_base.pesticide_input_sensitivity, row_count, 0)
                         self.dlg_base.gridLayout_81.addWidget(self.dlg_base.pesticide_input_sensitivity_combo, row_count, 1)
-            #Quit widgets
+            
             else:
+                #Quit widgets
                 if hasattr(self.dlg_base, 'pesticide_input_sensitivity'):
                     self.dlg_base.pesticide_input_sensitivity.deleteLater()
                     delattr(self.dlg_base,"pesticide_input_sensitivity")
                     self.dlg_base.pesticide_input_sensitivity_combo.deleteLater()
                     delattr(self.dlg_base,"pesticide_input_sensitivity_combo")
-        
+            
         #Uncertainity
         if process == "uncertainity":
             if self.dlg_base.parameter_name_uncertainity.text() in self.variables_water_quality:
+                #Quit widgets
+                if hasattr(self.dlg_base, 'pesticide_input_uncertainity'):
+                    self.dlg_base.pesticide_input_uncertainity.deleteLater()
+                    delattr(self.dlg_base,"pesticide_input_uncertainity")
+                    self.dlg_base.pesticide_input_uncertainity_combo.deleteLater()
+                    delattr(self.dlg_base,"pesticide_input_uncertainity_combo")
                 #Create label and combobox
                 if not hasattr(self.dlg_base, 'pesticide_input_uncertainity'):
                     number_pesticides = self.obtain_number_pestidides(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_uncertainity.text()))
@@ -1171,13 +1215,13 @@ class qvfsmod:
                         row_count = self.dlg_base.gridLayout_84.rowCount()
                         self.dlg_base.gridLayout_84.addWidget(self.dlg_base.pesticide_input_uncertainity, row_count, 0)
                         self.dlg_base.gridLayout_84.addWidget(self.dlg_base.pesticide_input_uncertainity_combo, row_count, 1)
-            #Quit widgets
             else:
                 if hasattr(self.dlg_base, 'pesticide_input_uncertainity'):
                     self.dlg_base.pesticide_input_uncertainity.deleteLater()
                     delattr(self.dlg_base,"pesticide_input_uncertainity")
                     self.dlg_base.pesticide_input_uncertainity_combo.deleteLater()
                     delattr(self.dlg_base,"pesticide_input_uncertainity_combo")
+            
                     
     
     def calibration_hydrograph_bootstraping_show(self,type_calibration):
@@ -1757,7 +1801,6 @@ class qvfsmod:
                 #Create variable to know how many pesticides there are
                 self.number_pesticides_dialog = number_pesticides
                 
-                print(number_pesticides)
                 #Put molar masses
                 
                 
@@ -1968,7 +2011,7 @@ class qvfsmod:
             #Create variable to know which type of sensitivity analysis for calibration we are doing
             self.type_calibration_sensitivity = "sedimentograph"
             inputs = ["Spacing for grass stems (cm)","Roughness-Grass Mannings n VN","Height of grass (cm)","Roughness-Bare surface Mannings n (Vn2)",
-                "Portion of Particles from incoming sediment \nwith diameter >0.0037 cm","Incoming flow sediment concentration (g/cm^3)",
+                "Portion of Particles from incoming sediment with diameter >0.0037 cm","Incoming flow sediment concentration (g/cm^3)",
                 "Porosity of deposited sediment as a fraction","Sediment particle size diameter d50 (cm)","Sediment particle density (g/cm^3)"]
             #Delete all elements of vertical layout of scroll area
             while self.dlg_calibration_sensitivity_hydrograph.verticalLayout_19.count():
@@ -2066,7 +2109,7 @@ class qvfsmod:
             #Sedimentograph inputs
             if self.dlg_base.check_total_sediment.isChecked() or self.dlg_base.check_filtered_sediment.isChecked():
                 inputs += ["Spacing for grass stems (cm)","Roughness-Grass Mannings n VN","Height of grass (cm)","Roughness-Bare surface Mannings n (Vn2)",
-                    "Portion of Particles from incoming sediment \nwith diameter >0.0037 cm","Incoming flow sediment concentration (g/cm^3)",
+                    "Portion of Particles from incoming sediment with diameter >0.0037 cm","Incoming flow sediment concentration (g/cm^3)",
                     "Porosity of deposited sediment as a fraction","Sediment particle size diameter d50 (cm)","Sediment particle density (g/cm^3)"]
             
             #Pesticide inputs
@@ -2934,10 +2977,22 @@ class qvfsmod:
         """Method to add/delete rows from the water quality dialog"""
         try:
             num_rows = int(self.dlg_water_quality.days.text())
-            self.dlg_water_quality.tableWidget.setRowCount(num_rows)
-            for row in range(num_rows):
+            current_row_count = self.dlg_water_quality.tableWidget.rowCount()  # Número de filas actuales
+            self.dlg_water_quality.tableWidget.setRowCount(num_rows)  # Establecer el número total de filas
+
+            # Para las filas nuevas
+            for row in range(current_row_count, num_rows):
+                # Primera columna no editable
                 item = QTableWidgetItem(str(row+1))
-                self.dlg_water_quality.tableWidget.setItem(row, 0, item) 
+                self.dlg_water_quality.tableWidget.setItem(row, 0, item)
+                item.setFlags(item.flags() & ~Qt.ItemIsEditable)  # Primera columna no editable
+                item.setTextAlignment(Qt.AlignCenter)
+
+                # Segunda y tercera columna editable y centrado
+                for col in range(1, 3):  # Para las columnas 1 y 2 (segunda y tercera)
+                    item = QTableWidgetItem("")
+                    self.dlg_water_quality.tableWidget.setItem(row, col, item)
+                    item.setTextAlignment(Qt.AlignCenter)
 
         except:
             pass
@@ -3292,7 +3347,7 @@ class qvfsmod:
                 self.ax_oat.set_facecolor('#f0f0f0')
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
-                self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
+                self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.25, bottom=0.2)
                 #Draw canvas
                 self.canvas_sensitivity_graph_oat.draw()
             
@@ -3312,7 +3367,7 @@ class qvfsmod:
                 self.ax_oat.set_facecolor('#f0f0f0')
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
-                self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
+                self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.25, bottom=0.2)
                 #Draw canvas
                 self.canvas_sensitivity_graph_oat.draw()
             
@@ -3339,7 +3394,7 @@ class qvfsmod:
                 self.ax_oat.set_facecolor('#f0f0f0')
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
-                self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
+                self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.25, bottom=0.2)
                 #Draw canvas
                 self.canvas_sensitivity_graph_oat.draw()
             
@@ -3363,7 +3418,7 @@ class qvfsmod:
                 self.ax_oat.set_facecolor('#f0f0f0')
                 # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
                 self.canvas_sensitivity_graph_oat.figure.subplots_adjust(wspace=0.4) #spacing beteween two graphs
-                self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.2, bottom=0.2)
+                self.canvas_sensitivity_graph_oat.figure.subplots_adjust(left=0.25, bottom=0.2)
                 #Draw canvas
                 self.canvas_sensitivity_graph_oat.draw()
                 
@@ -3553,46 +3608,49 @@ class qvfsmod:
     
     def add_base_value_dialog_oat(self):
         """Method to add the base value to the dialog of sensitivity when using OAT"""
-        if self.dlg_base.oat.isChecked() and self.dlg_base.parameter_name.text()!="":
-            parameter = self.dlg_base.parameter_name.text()
-            extension = self.sensitivity_parameters[parameter][0]
-            row = self.sensitivity_parameters[parameter][1]
-            column = self.sensitivity_parameters[parameter][2]
-            process = self.sensitivity_parameters[parameter][3]
-            
-            if extension == "inp":
-                path = self.obtain_direction_vfsmod(self.dlg_base.uh_file_sensitivity.text())
-            else:
-                path = self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity.text())
-            
-            if os.path.exists(path) and os.path.isfile(path):
-                #First we open the file and obtain the direction of the copying file
-                with open(path, "r") as archivo:
-                    lineas = archivo.readlines()
-                for i in lineas:
-                    if i[:3]==extension:
-                        path_input = i.split("=")[-1]
-                if not os.path.isabs(path_input): #relative path
-                    path_input = os.path.join(os.path.dirname(path), path_input)
-                path_input = path_input.replace("\n", "") #take out the line jumps
+        try: #one error is if the parameter that has been chosen is not present (i.e. water quality parameter when iwq doesnt exist)
+            if self.dlg_base.oat.isChecked() and self.dlg_base.parameter_name.text()!="":
+                parameter = self.dlg_base.parameter_name.text()
+                extension = self.sensitivity_parameters[parameter][0]
+                row = self.sensitivity_parameters[parameter][1]
+                column = self.sensitivity_parameters[parameter][2]
+                process = self.sensitivity_parameters[parameter][3]
                 
+                if extension == "inp":
+                    path = self.obtain_direction_vfsmod(self.dlg_base.uh_file_sensitivity.text())
+                else:
+                    path = self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity.text())
                 
-                if os.path.exists(path_input):  
-                    with open(path_input, 'r') as file:
-                        lineas = file.readlines()
-                    if parameter == "Filter Manning n (RNA s/m^1/3)" or parameter == "Average Filter Slope":
-                        number_segments = int(lineas[3])
-                        df = pd.DataFrame(data = {"Distance":[list(map(float, lineas[x].split()))[0] for x in range(4,4+number_segments)],
-                                                 "Roughness":[list(map(float, lineas[x].split()))[1] for x in range(4,4+number_segments)],
-                                                 "Slope":[list(map(float, lineas[x].split()))[2] for x in range(4,4+number_segments)]})
-                        if parameter == "Filter Manning n (RNA s/m^1/3)":
-                            value = sum(df["Roughness"])/len(df)
-                        elif parameter == "Average Filter Slope":
-                            value = round(sum(df["Slope"])/len(df),4)
-                    else:
-                        value = self.add_values_dialog(lineas,row,column,self.dlg_base.rainfall,retrieve = True)
-                        
-                    self.dlg_base.first.setText(str(value))
+                if os.path.exists(path) and os.path.isfile(path):
+                    #First we open the file and obtain the direction of the copying file
+                    with open(path, "r") as archivo:
+                        lineas = archivo.readlines()
+                    for i in lineas:
+                        if i[:3]==extension:
+                            path_input = i.split("=")[-1]
+                    if not os.path.isabs(path_input): #relative path
+                        path_input = os.path.join(os.path.dirname(path), path_input)
+                    path_input = path_input.replace("\n", "") #take out the line jumps
+                    
+                    
+                    if os.path.exists(path_input):  
+                        with open(path_input, 'r') as file:
+                            lineas = file.readlines()
+                        if parameter == "Filter Manning n (RNA s/m^1/3)" or parameter == "Average Filter Slope":
+                            number_segments = int(lineas[3])
+                            df = pd.DataFrame(data = {"Distance":[list(map(float, lineas[x].split()))[0] for x in range(4,4+number_segments)],
+                                                     "Roughness":[list(map(float, lineas[x].split()))[1] for x in range(4,4+number_segments)],
+                                                     "Slope":[list(map(float, lineas[x].split()))[2] for x in range(4,4+number_segments)]})
+                            if parameter == "Filter Manning n (RNA s/m^1/3)":
+                                value = sum(df["Roughness"])/len(df)
+                            elif parameter == "Average Filter Slope":
+                                value = round(sum(df["Slope"])/len(df),4)
+                        else:
+                            value = self.add_values_dialog(lineas,row,column,self.dlg_base.rainfall,retrieve = True)
+                            
+                        self.dlg_base.first.setText(str(value))
+        except:
+            pass
 
                     
                     
@@ -3712,6 +3770,7 @@ class qvfsmod:
     
     def add_values_inp_dialog(self):
         """Method to add values of the inp to the dialog"""
+        print(1)
         path = self.obtain_direction_vfsmod(self.dlg_base.uh_input.text())
         #Disconnect storm type
         self.dlg_base.storm_type.currentIndexChanged.disconnect(self.user_defined_storm_type)
@@ -3775,10 +3834,9 @@ class qvfsmod:
                 #P
                 self.add_values_dialog(lineas,3,2,self.dlg_base.practice_factor)
                 #R
-                r = int(self.add_values_dialog(lineas,4,0,self.dlg_base.williams,True))
-                if r==1: self.dlg_base.williams.setChecked(True)
-                elif r==2: self.dlg_base.creams_gleams.setChecked(True)
-                elif r==0: self.dlg_base.foster.setChecked(True)
+                r = int(self.add_values_dialog(lineas,4,0,self.dlg_base.practice_factor,True))
+                self.dlg_base.rainfall_factor.setCurrentIndex(r)
+        
                 #Timestep
                 self.dlg_base.timestep_check.setChecked(False)
                 timestep = self.add_values_dialog(lineas,0,7,self.dlg_base.timestep, True)
@@ -3946,7 +4004,8 @@ class qvfsmod:
                 #Concentration
                 self.add_values_dialog(lineas,0,2,self.dlg_incoming_sediment.line_concentration)
                 #Class
-                self.add_values_dialog(lineas,0,0,self.dlg_incoming_sediment.line_class)
+                value = int(self.add_values_dialog(lineas,0,0,self.dlg_incoming_sediment.line_concentration, True))
+                self.dlg_incoming_sediment.particle_class.setCurrentIndex(value-1)
                 #Diameter
                 self.add_values_dialog(lineas,1,0,self.dlg_incoming_sediment.line_size)
                 #Porosity
@@ -4837,8 +4896,8 @@ class qvfsmod:
         self.ax_ohy_graph= self.canvas_ohy_graph.figure.subplots()
         self.ax_precipitation_ohy = self.ax_ohy_graph.twinx()  
         
-        #Check instantaneaous flow graph so that graph is updated
-        self.dlg_ohy_graphs.instantaneous.setChecked(True)
+        #Update graph
+        self.update_ohy_graphs()
         
         #Show dialog
         self.dlg_ohy_graphs.show()
@@ -4854,11 +4913,12 @@ class qvfsmod:
             #Add lines
             #Precipitation
             self.ax_precipitation_ohy.bar(self.time_ohy, self.rainfall_ohy,width = self.time_ohy[1]-self.time_ohy[0] ,color = "blue", 
-                edgecolor = "blue",label="Rainfall", zorder = 3)
+                edgecolor = "blue",label="Rainfall", zorder = 0)
             #Inflow
-            self.ax_ohy_graph.plot(self.time_ohy, self.inflow_ohy, color="#00509e",label="Inflow hydrograph", zorder = 1)
+            self.ax_ohy_graph.plot(self.time_ohy, self.inflow_ohy, color="#00509e",label="Inflow hydrograph", zorder = 2)
             #Outflow
-            self.ax_ohy_graph.plot(self.time_ohy, self.outflow_ohy, color="#a0c4ff",label="Outflow hydrograph", zorder = 2)
+            self.ax_ohy_graph.plot(self.time_ohy, self.outflow_ohy, color="#a0c4ff",label="Outflow hydrograph", zorder = 3)
+            
             
             
             #Legend
@@ -4890,7 +4950,8 @@ class qvfsmod:
             self.ax_precipitation_ohy.set_ylabel("Rainfall (m/s)")
             
             #Graph title
-            self.ax_ohy_graph.set_title("Instantaneaous flow graph",color = "black")
+            self.ax_ohy_graph.set_title("Instantaneous flow graph",color = "black")
+            
             
             #Change background color
             self.canvas_ohy_graph.figure.set_facecolor('#f0f0f0')
@@ -6960,6 +7021,7 @@ class qvfsmod:
         has to be used because we need QTrhead to add progress bar"""
         self.number_execution = 0
         self.results = []
+        print(self.working_directory)
         args_list = [(i, i % (self.number_cores*5), 
           self.param_values, self.dic_data, 
           self.sensitivity_parameters, self.working_directory, 
@@ -7040,6 +7102,7 @@ class qvfsmod:
         """Method to run whole sensitivity analysis"""
         #Create the dictionary for the sensitivity analysis
         self.dic_data = self.create_dictionary_sensitivity_analysis_design()
+
         self.vfs_sensitivity_file = self.dlg_base.vfs_file_sensitivity_design.text()
         
         #Create problem variable
@@ -7102,7 +7165,6 @@ class qvfsmod:
         #Obtain the list with the buffer lengths that are going to be used to obtain the curves
         self.buffer_lengths_sensitivity_design = self.obtain_buffer_lengths_sensitivity_design()
         
-        print("columnas 1",self.outputs_sensitivity_design.keys())
         
         #Method were the paralelization is achieved
         self.start_analysis_sensitivity_design()
@@ -8763,7 +8825,7 @@ class qvfsmod:
         elif name == "Dispersion length of chemical (m)":
             self.sensitivity_parameters[name+f" Pesticide {pesticide}"] =  ["iwq",4,4*pesticide +1,"vfs"]
         
-        elif name == "Runoff remobilized VFS residue \nfrom last event (mg/m2)":
+        elif name == "Runoff remobilized VFS residue from last event (mg/m2)":
             self.sensitivity_parameters[name+f" Pesticide {pesticide}"] =  ["iwq",4,4*pesticide +2,"vfs"]
             
         elif name == "Linear sorption coefficient (L/Kg)":
@@ -9649,7 +9711,7 @@ class qvfsmod:
                     self.dlg_base.verticalLayout_21.addWidget(boton)
                     política_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                     boton.setSizePolicy(política_tamaño)
-                    boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
+                    boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
             except:
                 pass
     
@@ -9672,7 +9734,7 @@ class qvfsmod:
         if button == self.dlg_base.rainfall_event:
             parameters = ["Rainfall (mm)","Storm duration (h)","Curve number"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_19.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9682,7 +9744,7 @@ class qvfsmod:
         if button == self.dlg_base.source_area:
             parameters = ["Source Area Length along the slope (m)", "Source Area Slope as a fraction","Source Area (ha)"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_19.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9692,7 +9754,7 @@ class qvfsmod:
         if button == self.dlg_base.erosion_parameters:
             parameters = ["Soil erodibility (K)","Percent organic matter","Crop factor","Particle Class Diameter","Practice Factor"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_19.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9702,7 +9764,7 @@ class qvfsmod:
         if button == self.dlg_base.buffer_dimensions:
             parameters = ["Buffer length (m)","Width of the Strip (m)","Filter Manning n (RNA s/m^1/3)","Average Filter Slope"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_19.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9712,7 +9774,7 @@ class qvfsmod:
         if button == self.dlg_base.kinematic_wave:
             parameters = ["Number of Nodes","Time Weight Factor","Number of Elemental Nodal Points","Courant Number","Maximum Iterations"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_19.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9720,9 +9782,9 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
                 
         if button == self.dlg_base.infiltration:
-            parameters = ["Vertical Saturated K","Average Suction at the Wetting Front","Initial Water Content","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked","Water table depth","Soil saturated hydraulic\nconductivity ansiotropy ratio","Soil water characteristic OR","Soil water characteristic VGALPHA","Soil water characteristic VGN","Soil water characteristic VGM","Soil water characteristic BCALPHA","Soil water characteristic BCLAMDA","Unsaturated hydraulic \nconductivity curve VGM","Unsaturated hydraulic \nconductivity curve BCETA","Unsaturated hydraulic \nconductivity curve BCALPHA","Unsaturated hydraulic \nconductivity curve GDALPHA"]
+            parameters = ["Vertical Saturated K","Average Suction at the Wetting Front","Initial Water Content","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked","Water table depth","Soil saturated hydraulic conductivity ansiotropy ratio","Soil water characteristic OR","Soil water characteristic VGALPHA","Soil water characteristic VGN","Soil water characteristic VGM","Soil water characteristic BCALPHA","Soil water characteristic BCLAMDA","Unsaturated hydraulic conductivity curve VGM","Unsaturated hydraulic conductivity curve BCETA","Unsaturated hydraulic conductivity curve BCALPHA","Unsaturated hydraulic conductivity curve GDALPHA"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_19.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9732,7 +9794,7 @@ class qvfsmod:
         if button == self.dlg_base.buffer_vegetation:
             parameters = ["Spacing for grass stems (cm)","Roughness-Grass Mannings n VN","Height of grass (cm)","Roughness-Bare surface Mannings n (Vn2)"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_19.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9740,9 +9802,9 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
                 
         if button == self.dlg_base.incoming_sediment:
-            parameters = ["Incoming flow sediment concentration (g/cm^3)","Sediment particle size diameter d50 (cm)","Porosity of deposited sediment as a fraction","Portion of Particles from incoming sediment \nwith diameter >0.0037 cm","Sediment particle density (g/cm^3)"]
+            parameters = ["Incoming flow sediment concentration (g/cm^3)","Sediment particle size diameter d50 (cm)","Porosity of deposited sediment as a fraction","Portion of Particles from incoming sediment with diameter >0.0037 cm","Sediment particle density (g/cm^3)"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_19.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9750,9 +9812,9 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity(b))
         
         if button == self.dlg_base.water_quality_button:
-            parameters = ["Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Organic Carbon (%)","Clay in incoming sediment (%)","Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)","Dispersion length of chemical (m)","Runoff remobilized VFS residue \nfrom last event (mg/m2)"]
+            parameters = ["Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Organic Carbon (%)","Clay in incoming sediment (%)","Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)","Dispersion length of chemical (m)","Runoff remobilized VFS residue from last event (mg/m2)"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_19.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9770,7 +9832,7 @@ class qvfsmod:
         if button == self.dlg_base.all_parameters_design:
             for nombre in self.sensitivity_parameters.keys():
                 if nombre!="Rainfall (mm)" and nombre!="Buffer length (m)":#eliminate rainfall and vfs length
-                    boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                    boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_18)
                     boton.setObjectName(nombre)
                     self.dlg_base.verticalLayout_27.addWidget(boton)
                     politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9779,7 +9841,7 @@ class qvfsmod:
         if button == self.dlg_base.rainfall_event_design:
             parameters = ["Storm duration (h)","Curve number"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_18)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_27.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9789,7 +9851,7 @@ class qvfsmod:
         if button == self.dlg_base.source_area_design:
             parameters = ["Source Area Length along the slope (m)", "Source Area Slope as a fraction","Source Area (ha)"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_18)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_27.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9799,7 +9861,7 @@ class qvfsmod:
         if button == self.dlg_base.erosion_parameters_design:
             parameters = ["Soil erodibility (K)","Percent organic matter","Crop factor","Particle Class Diameter","Practice Factor"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_18)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_27.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9809,7 +9871,7 @@ class qvfsmod:
         if button == self.dlg_base.buffer_dimensions_design:
             parameters = ["Width of the Strip (m)","Filter Manning n (RNA s/m^1/3)","Average Filter Slope"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_18)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_27.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9819,7 +9881,7 @@ class qvfsmod:
         if button == self.dlg_base.kinematic_wave_design:
             parameters = ["Number of Nodes","Time Weight Factor","Number of Elemental Nodal Points","Courant Number","Maximum Iterations"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_18)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_27.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9827,9 +9889,9 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity_desing(b))
                 
         if button == self.dlg_base.infiltration_design:
-            parameters = ["Vertical Saturated K","Average Suction at the Wetting Front","Initial Water Content","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked","Water table depth","Soil saturated hydraulic\nconductivity ansiotropy ratio","Soil water characteristic OR","Soil water characteristic VGALPHA","Soil water characteristic VGN","Soil water characteristic VGM","Soil water characteristic BCALPHA","Soil water characteristic BCLAMDA","Unsaturated hydraulic \nconductivity curve VGM","Unsaturated hydraulic \nconductivity curve BCETA","Unsaturated hydraulic \nconductivity curve BCALPHA","Unsaturated hydraulic \nconductivity curve GDALPHA"]
+            parameters = ["Vertical Saturated K","Average Suction at the Wetting Front","Initial Water Content","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked","Water table depth","Soil saturated hydraulic conductivity ansiotropy ratio","Soil water characteristic OR","Soil water characteristic VGALPHA","Soil water characteristic VGN","Soil water characteristic VGM","Soil water characteristic BCALPHA","Soil water characteristic BCLAMDA","Unsaturated hydraulic conductivity curve VGM","Unsaturated hydraulic conductivity curve BCETA","Unsaturated hydraulic conductivity curve BCALPHA","Unsaturated hydraulic conductivity curve GDALPHA"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_18)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_27.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9839,7 +9901,7 @@ class qvfsmod:
         if button == self.dlg_base.buffer_vegetation_design:
             parameters = ["Spacing for grass stems (cm)","Roughness-Grass Mannings n VN","Height of grass (cm)","Roughness-Bare surface Mannings n (Vn2)"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_18)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_27.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9847,9 +9909,9 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity_desing(b))
                 
         if button == self.dlg_base.incoming_sediment_design:
-            parameters = ["Incoming flow sediment concentration (g/cm^3)","Sediment particle size diameter d50 (cm)","Porosity of deposited sediment as a fraction","Portion of Particles from incoming sediment \nwith diameter >0.0037 cm","Sediment particle density (g/cm^3)"]
+            parameters = ["Incoming flow sediment concentration (g/cm^3)","Sediment particle size diameter d50 (cm)","Porosity of deposited sediment as a fraction","Portion of Particles from incoming sediment with diameter >0.0037 cm","Sediment particle density (g/cm^3)"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_18)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_27.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9857,9 +9919,9 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_sensitivity_desing(b))
         
         if button == self.dlg_base.water_quality_button_design:
-            parameters = ["Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Organic Carbon (%)","Clay in incoming sediment (%)","Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)","Dispersion length of chemical (m)","Runoff remobilized VFS residue \nfrom last event (mg/m2)"]
+            parameters = ["Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Organic Carbon (%)","Clay in incoming sediment (%)","Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)","Dispersion length of chemical (m)","Runoff remobilized VFS residue from last event (mg/m2)"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_18)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_18)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_27.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9876,7 +9938,7 @@ class qvfsmod:
         #Add element
         if button == self.dlg_base.all_parameters_2:
             for nombre in self.sensitivity_parameters.keys():
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_15)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_21.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9885,7 +9947,7 @@ class qvfsmod:
         if button == self.dlg_base.rainfall_event_2:
             parameters = ["Rainfall (mm)","Storm duration (h)","Curve number"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_15)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_21.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9895,7 +9957,7 @@ class qvfsmod:
         if button == self.dlg_base.source_area_2:
             parameters = ["Source Area Length along the slope (m)", "Source Area Slope as a fraction","Source Area (ha)"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_15)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_21.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9905,7 +9967,7 @@ class qvfsmod:
         if button == self.dlg_base.erosion_parameters_2:
             parameters = ["Soil erodibility (K)","Percent organic matter","Crop factor","Particle Class Diameter","Practice Factor"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_15)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_21.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9915,7 +9977,7 @@ class qvfsmod:
         if button == self.dlg_base.buffer_dimensions_2:
             parameters = ["Buffer length (m)","Width of the Strip (m)","Filter Manning n (RNA s/m^1/3)","Average Filter Slope"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_15)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_21.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9925,7 +9987,7 @@ class qvfsmod:
         if button == self.dlg_base.kinematic_wave_2:
             parameters = ["Number of Nodes","Time Weight Factor","Number of Elemental Nodal Points","Courant Number","Maximum Iterations"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_15)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_21.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9933,9 +9995,9 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
                 
         if button == self.dlg_base.infiltration_2:
-            parameters = ["Vertical Saturated K","Average Suction at the Wetting Front","Initial Water Content","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked","Water table depth","Soil saturated hydraulic\nconductivity ansiotropy ratio","Soil water characteristic OR","Soil water characteristic VGALPHA","Soil water characteristic VGN","Soil water characteristic VGM","Soil water characteristic BCALPHA","Soil water characteristic BCLAMDA","Unsaturated hydraulic \nconductivity curve VGM","Unsaturated hydraulic \nconductivity curve BCETA","Unsaturated hydraulic \nconductivity curve BCALPHA","Unsaturated hydraulic \nconductivity curve GDALPHA"]
+            parameters = ["Vertical Saturated K","Average Suction at the Wetting Front","Initial Water Content","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked","Water table depth","Soil saturated hydraulic conductivity ansiotropy ratio","Soil water characteristic OR","Soil water characteristic VGALPHA","Soil water characteristic VGN","Soil water characteristic VGM","Soil water characteristic BCALPHA","Soil water characteristic BCLAMDA","Unsaturated hydraulic conductivity curve VGM","Unsaturated hydraulic conductivity curve BCETA","Unsaturated hydraulic conductivity curve BCALPHA","Unsaturated hydraulic conductivity curve GDALPHA"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_15)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_21.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9945,7 +10007,7 @@ class qvfsmod:
         if button == self.dlg_base.buffer_vegetation_2:
             parameters = ["Spacing for grass stems (cm)","Roughness-Grass Mannings n VN","Height of grass (cm)","Roughness-Bare surface Mannings n (Vn2)"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_15)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_21.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9953,9 +10015,9 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
                 
         if button == self.dlg_base.incoming_sediment_2:
-            parameters = ["Incoming flow sediment concentration (g/cm^3)","Sediment particle size diameter d50 (cm)","Porosity of deposited sediment as a fraction","Portion of Particles from incoming sediment \nwith diameter >0.0037 cm","Sediment particle density (g/cm^3)"]
+            parameters = ["Incoming flow sediment concentration (g/cm^3)","Sediment particle size diameter d50 (cm)","Porosity of deposited sediment as a fraction","Portion of Particles from incoming sediment with diameter >0.0037 cm","Sediment particle density (g/cm^3)"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_15)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_21.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9963,9 +10025,9 @@ class qvfsmod:
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
         
         if button == self.dlg_base.water_quality_button_2:
-            parameters = ["Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Organic Carbon (%)","Clay in incoming sediment (%)","Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)","Dispersion length of chemical (m)","Runoff remobilized VFS residue \nfrom last event (mg/m2)"]
+            parameters = ["Linear sorption coefficient (L/Kg)","Adsorption coefficient (L/Kg)","Organic Carbon (%)","Clay in incoming sediment (%)","Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)","Dispersion length of chemical (m)","Runoff remobilized VFS residue from last event (mg/m2)"]
             for nombre in parameters:
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_15)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_15)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_21.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -9974,19 +10036,19 @@ class qvfsmod:
 
     def add_parameter_name_sensitivity(self,name):
         """Method to add the parameter name to the lineEdit in sensitivity analysis dialog"""
-        self.dlg_base.parameter_name.setText(name)
+        self.dlg_base.parameter_name.setText(name.replace("\n", ""))
     
     def add_parameter_name_sensitivity_desing(self,name):
         """Method to add the parameter name to the lineEdit in sensitivity analysis dialog for design"""
-        self.dlg_base.parameter_name_design.setText(name)
+        self.dlg_base.parameter_name_design.setText(name.replace("\n", ""))
     
     def add_parameter_name_uncertainity(self,name):
         """Method to add the parameter name to the lineEdit in sensitivity analysis dialog"""
-        self.dlg_base.parameter_name_uncertainity.setText(name)
+        self.dlg_base.parameter_name_uncertainity.setText(name.replace("\n", ""))
     
     def add_parameter_name_calibration_sensitivity(self,name):
         """Method to add the parameter name to the lineEdit in sensitivity analysis dialog for calibration"""
-        self.dlg_calibration_sensitivity_hydrograph.parameter_name.setText(name)
+        self.dlg_calibration_sensitivity_hydrograph.parameter_name.setText(name.replace("\n", ""))
     
     def browse_files_calibration(self,information):
         """Method to select the file between the local files"""
@@ -12892,6 +12954,9 @@ class qvfsmod:
         #The hietograph file with this version of the executable creates .irn file with one more rain steps and it gets error
         #self.correct_irn_file(self.obtain_direction_vfsmod(self.dlg_base.line_storm.text()))
         
+        #Update the number of pesticides that are in ikw file, just in case
+        self.update_ikw_pesticide()
+        
         #We update the bat for the execution fo VFSMOD
         self.update_bat_vfsmod()
         
@@ -12903,7 +12968,10 @@ class qvfsmod:
         
         #Put warning
         if not "...FINISHED..." in resultado.stdout:
-            self.warning_message(str(resultado.stderr), courier = True)
+            if str(resultado.stderr) != "":
+                self.warning_message(str(resultado.stderr), courier = True)
+            else:
+                self.warning_message(str(resultado.stdout), courier = True)
         else:
             self.warning_message("VFS executed succesfully!")
         
@@ -13764,7 +13832,7 @@ class qvfsmod:
         """Run method that performs all the real work"""
         
         # show the dialog
-        self.dlg_base.showMaximized()
+        self.dlg_base.show()
         self.dlg_base.raise_()
         self.dlg_base.activateWindow()
     
@@ -14077,7 +14145,10 @@ class qvfsmod:
         
         #Put warning
         if not "...FINISHED..." in resultado.stdout:
-            self.warning_message(str(resultado.stderr), courier = True)
+            if str(resultado.stderr) != "":
+                self.warning_message(str(resultado.stderr), courier = True)
+            else:
+                self.warning_message(str(resultado.stdout), courier = True)
         else:
             self.warning_message("UH executed succesfully!")
             
@@ -14173,9 +14244,7 @@ class qvfsmod:
         else:
             timestep = ""
         
-        if self.dlg_base.williams.isChecked(): rainfall_factor = 1
-        elif self.dlg_base.creams_gleams.isChecked(): rainfall_factor = 2
-        elif self.dlg_base.foster.isChecked(): rainfall_factor = 0
+        rainfall_factor = self.dlg_base.rainfall_factor.currentIndex()
         
         soil_type = [self.dlg_base.soil_type.itemText(i) for i in range(self.dlg_base.soil_type.count())][self.dlg_base.soil_type.currentIndex()]
         storm_type = int(self.dlg_base.storm_type.currentIndex())+1
@@ -14497,7 +14566,7 @@ class qvfsmod:
         """Method to create the .isd file"""
         #Inputs
         concentration = float(self.dlg_incoming_sediment.line_concentration.text())
-        particle_class = int(self.dlg_incoming_sediment.line_class.text())
+        particle_class = self.dlg_incoming_sediment.particle_class.currentIndex()+1
         size = float(self.dlg_incoming_sediment.line_size.text())
         porosity = float(self.dlg_incoming_sediment.line_porosity.text())
         portion = float(self.dlg_incoming_sediment.line_portion.text())
@@ -14515,7 +14584,8 @@ class qvfsmod:
             archivo.write(f"{linea_dos}\n")
         
         #Close dialog
-        self.dlg_incoming_sediment.close()
+        if close:
+            self.dlg_incoming_sediment.close()
     
     def create_irn_file(self,close=False):
         """Method to create the .irn file"""
@@ -14599,7 +14669,6 @@ class qvfsmod:
                 create_folder(directory)
             
     def update_file_names(self):
-        print("aaaaaaaa")
         """Method to update file names when the name of the files is changed"""
         #First see if "lis" and "prj" files exist. If they exist the rest of the filepaths will be filled automatically in other method
         lis_exist = False
@@ -14722,6 +14791,17 @@ class qvfsmod:
                 item = QTableWidgetItem(str(buffer_segment.iloc[fila,columna]))
                 self.dlg_buffer_segment.tableWidget.setItem(fila, columna, item)
                 item.setTextAlignment(Qt.AlignCenter)
+        
+        #Values for water quality table
+        df = pd.DataFrame(data ={"Day":[1,2,3],
+            "Temperature":[9.5,8.6,6.3],
+            "Water content":[0.265,0.264,0.265]})
+        for fila in range(len(df)):
+            for columna in range(len(df.columns)):
+                item = QTableWidgetItem(str(df.iloc[fila,columna]))
+                self.dlg_water_quality.tableWidget.setItem(fila, columna, item)
+                item.setTextAlignment(Qt.AlignCenter)
+                
         
         #Calibration
         #Hydrograph
@@ -15086,22 +15166,43 @@ class qvfsmod:
         #About image
         #Initial page
         image = QImage("images/about.png")
-        scaled_image = image.scaled(960, 720, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        scaled_image = image.scaled(540, 405, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         pixmap = QPixmap.fromImage(scaled_image)
-        self.dlg_base.label_111.setPixmap(pixmap)
-        self.dlg_base.label_111.setAlignment(Qt.AlignCenter)
+        self.dlg_base.label_115.setPixmap(pixmap)
+        self.dlg_base.label_115.setAlignment(Qt.AlignCenter)
         #Last page
         self.dlg_base.label_113.setPixmap(pixmap)
         self.dlg_base.label_113.setAlignment(Qt.AlignCenter)
+        #Add license text
+        html_text = """
+            Grafical User Interface for VFSMOD and UH<br>
+            <b>Model developers</b>: <br>
+            - Rafael Muñoz-Carpena, University of Florida<br>
+            - John E. Parsons, North Carolina State University<br>
+            <b>GUI developer</b>: <br>
+            - Iñigo Barberena Ruiz, Public University of Navarre<br>
+            Version 1.0.0<br>
+            Contact for Questions or Problems: carpena@ufl.edu<br>
+            This work is licensed under <b>CC BY-ND 4.0</b>
+                <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src="images/cc.svg" alt="">
+                <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src="images/by.svg" alt="">
+                <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src="images/nd.svg" alt="">
+
+            <br>
+            Copyright 2024
+        """
         
+        self.dlg_base.label_160.setText(html_text)
+        self.dlg_base.label_161.setText(html_text)
         
-        
-    def save_hydrograph(self):
-        """Method to save the hydrograph in the local files"""
-        opciones = QFileDialog.Options()
-        archivo, _ = QFileDialog.getSaveFileName(None, "Save hydrograph", self.dlg_base.working_directory_vfsmod.text(), "PNG Files (*.png);;All Files (*)", options=opciones)
-        if archivo:
-            self.figure_hydrograph.savefig(archivo)
+        self.dlg_base.label_160.setStyleSheet("""
+            font-family: 'Times New Roman';  /* Cambia la fuente */
+            font-size: 12pt;      /* Tamaño de la fuente */
+            """)
+        self.dlg_base.label_161.setStyleSheet("""
+            font-family: 'Times New Roman';  /* Cambia la fuente */
+            font-size: 12pt;      /* Tamaño de la fuente */
+            """)
     
     
     def show_design_graph(self):
@@ -15866,15 +15967,15 @@ def wrapper_uncertainity_paralelization(args):
 
 def uncertainity_paralelization(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_uncertainity_file_file,water_quality,number_pesticides):
     '''Function to run in paralell uncertainity analysis'''
-    try: #if there is an error in the execution then return a dataframe with error
-        execution = execution_uncertainity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_uncertainity_file_file)
-        #Save results
-        if execution == "error":
-            return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,number_pesticides,error = True)
-        else:
-            return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,number_pesticides,error = False)
-    except:
-        return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality,number_pesticides ,error = True)
+    #try: #if there is an error in the execution then return a dataframe with error
+    execution = execution_uncertainity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_uncertainity_file_file)
+    #Save results
+    if execution == "error":
+        return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,number_pesticides,error = True)
+    else:
+        return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,number_pesticides,error = False)
+    r'''except:
+        return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality,number_pesticides ,error = True)'''
 
 def execution_uncertainity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_uncertainity_file):
     """Function for the each execution of the uncertainity analysis"""
@@ -15946,6 +16047,9 @@ def modify_inputs_uncertainity(extension, row, column, new_value, process,core,w
     # Use regex to find all numbers in the string
     matches = re.findall(r'\S+', numbers_str)
     # Replace the specific number at the given index
+    texto = f"{extension}, {row}, {column}, {new_value}, {process},{core},{working_directory}"
+    with open(r"C:\qvfsmod\text.txt", "w") as archivo:  # "w" es para escribir (sobrescribe si ya existe) #borrar
+        archivo.write(texto)
     matches[column] = str(new_value)
     # Rebuild the string by replacing only the specific number
     lineas[row] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
@@ -17525,10 +17629,10 @@ class UncertainityAnalysisThread(QThread):
             
             # Captura y maneja las excepciones
             for i, async_result in enumerate(async_results):
-                try:
-                    async_result.get()  # Esto lanzará la excepción si ocurrió alguna
-                except Exception as e:
-                    print(f"Error en proceso {i}: {e}")
+                #try:
+                async_result.get()  # Esto lanzará la excepción si ocurrió alguna
+                r'''except Exception as e:
+                    print(f"Error en proceso {i}: {e}")'''
             
         
 

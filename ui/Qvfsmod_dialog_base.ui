@@ -134,7 +134,7 @@ QTableCornerButton::section {
         <string notr="true"/>
        </property>
        <layout class="QGridLayout" name="gridLayout_16">
-        <item row="0" column="0">
+        <item row="0" column="0" colspan="2">
          <widget class="QLabel" name="label_92">
           <property name="font">
            <font>
@@ -149,20 +149,51 @@ QTableCornerButton::section {
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
-         <spacer name="verticalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
+        <item row="2" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_50">
+          <item>
+           <spacer name="horizontalSpacer_24">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_115">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_160">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_25">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
         </item>
-        <item row="1" column="0">
+        <item row="1" column="0" colspan="2">
          <widget class="QScrollArea" name="scrollArea">
           <property name="maximumSize">
            <size>
@@ -333,12 +364,25 @@ QTableCornerButton::section {
           </widget>
          </widget>
         </item>
-        <item row="2" column="0">
+        <item row="4" column="0">
          <widget class="QLabel" name="label_111">
           <property name="text">
            <string/>
           </property>
          </widget>
+        </item>
+        <item row="5" column="0">
+         <spacer name="verticalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </widget>
@@ -488,6 +532,7 @@ example 1%</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
+                   <underline>true</underline>
                   </font>
                  </property>
                  <property name="text">
@@ -633,6 +678,7 @@ typical 0.01-0.07</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
+                   <underline>true</underline>
                   </font>
                  </property>
                  <property name="text">
@@ -730,6 +776,7 @@ typical 0.01-0.07</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
+                   <underline>true</underline>
                   </font>
                  </property>
                  <property name="text">
@@ -761,6 +808,7 @@ typical 0.01-0.07</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
+                   <underline>true</underline>
                   </font>
                  </property>
                  <property name="text">
@@ -1087,6 +1135,7 @@ typical 0.01-0.07</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
+                   <underline>true</underline>
                   </font>
                  </property>
                  <property name="text">
@@ -1239,6 +1288,7 @@ default 5 min</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
+                   <underline>true</underline>
                   </font>
                  </property>
                  <property name="text">
@@ -1247,28 +1297,27 @@ default 5 min</string>
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QRadioButton" name="williams">
-                 <property name="text">
-                  <string>Williams (Recommended)</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
+                <widget class="QComboBox" name="rainfall_factor">
+                 <property name="minimumSize">
+                  <size>
+                   <width>200</width>
+                   <height>0</height>
+                  </size>
                  </property>
                 </widget>
                </item>
                <item row="1" column="1">
-                <widget class="QRadioButton" name="creams_gleams">
-                 <property name="text">
-                  <string>CREAMS/GLEAMS</string>
+                <spacer name="horizontalSpacer_23">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
                  </property>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="QRadioButton" name="foster">
-                 <property name="text">
-                  <string>Foster</string>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
                  </property>
-                </widget>
+                </spacer>
                </item>
               </layout>
              </widget>
@@ -1358,116 +1407,27 @@ default 5 min</string>
              <x>0</x>
              <y>0</y>
              <width>573</width>
-             <height>722</height>
+             <height>728</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_17">
-            <item row="0" column="0">
-             <widget class="QFrame" name="frame_7">
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_11">
-               <item row="0" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_4">
-                 <item>
-                  <widget class="QLabel" name="label_4">
-                   <property name="minimumSize">
-                    <size>
-                     <width>246</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Filter Strip Project File:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="line_project_vfsmod">
-                   <property name="maximumSize">
-                    <size>
-                     <width>315</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="browse_vfsmod_project">
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="icon">
-                    <iconset>
-                     <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QFrame" name="frame_11">
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_15">
-               <item row="0" column="0">
-                <widget class="QCheckBox" name="water_quality">
-                 <property name="minimumSize">
-                  <size>
-                   <width>246</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>246</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Include Water Quality</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QComboBox" name="combo_water">
-                 <property name="minimumSize">
-                  <size>
-                   <width>204</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <spacer name="horizontalSpacer_3">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </widget>
+            <item row="3" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_51">
+              <item>
+               <widget class="QPushButton" name="run_vfsmod">
+                <property name="text">
+                 <string>Run This Project</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="save_vfs_project">
+                <property name="text">
+                 <string>Save This Project</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item row="2" column="0">
              <widget class="QFrame" name="frame_8">
@@ -1484,6 +1444,7 @@ default 5 min</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
+                   <underline>true</underline>
                   </font>
                  </property>
                  <property name="text">
@@ -1788,23 +1749,58 @@ default 5 min</string>
               </layout>
              </widget>
             </item>
-            <item row="3" column="0">
-             <layout class="QHBoxLayout" name="horizontalLayout_51">
-              <item>
-               <widget class="QPushButton" name="run_vfsmod">
-                <property name="text">
-                 <string>Run This Project</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="save_vfs_project">
-                <property name="text">
-                 <string>Save This Project</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
+            <item row="0" column="0">
+             <widget class="QFrame" name="frame_7">
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_11">
+               <item row="0" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_4">
+                 <item>
+                  <widget class="QLabel" name="label_4">
+                   <property name="minimumSize">
+                    <size>
+                     <width>246</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Filter Strip Project File:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="line_project_vfsmod">
+                   <property name="maximumSize">
+                    <size>
+                     <width>315</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browse_vfsmod_project">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normaloff>:/icons/images/search.svg</normaloff>:/icons/images/search.svg</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
             </item>
             <item row="4" column="0">
              <widget class="QFrame" name="frame_10">
@@ -1939,6 +1935,7 @@ default 5 min</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
+                   <underline>true</underline>
                   </font>
                  </property>
                  <property name="text">
@@ -2184,6 +2181,73 @@ default 5 min</string>
                </item>
               </layout>
              </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QFrame" name="frame_11">
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_15">
+               <item row="0" column="0">
+                <widget class="QCheckBox" name="water_quality">
+                 <property name="minimumSize">
+                  <size>
+                   <width>246</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>246</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Include Water Quality</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QComboBox" name="combo_water">
+                 <property name="minimumSize">
+                  <size>
+                   <width>204</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <spacer name="horizontalSpacer_3">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <spacer name="verticalSpacer_25">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
             </item>
            </layout>
           </widget>
@@ -3026,7 +3090,7 @@ default 5 min</string>
                      <property name="geometry">
                       <rect>
                        <x>0</x>
-                       <y>-173</y>
+                       <y>0</y>
                        <width>231</width>
                        <height>474</height>
                       </rect>
@@ -3293,6 +3357,9 @@ Solution Parameters</string>
                        </item>
                        <item row="2" column="1">
                         <widget class="QLineEdit" name="first_design">
+                         <property name="text">
+                          <string/>
+                         </property>
                          <property name="alignment">
                           <set>Qt::AlignCenter</set>
                          </property>
@@ -3573,6 +3640,12 @@ Solution Parameters</string>
                     <layout class="QGridLayout" name="gridLayout_62">
                      <item row="0" column="1" rowspan="2">
                       <widget class="QScrollArea" name="scrollArea_7">
+                       <property name="minimumSize">
+                        <size>
+                         <width>360</width>
+                         <height>0</height>
+                        </size>
+                       </property>
                        <property name="frameShape">
                         <enum>QFrame::NoFrame</enum>
                        </property>
@@ -3584,8 +3657,8 @@ Solution Parameters</string>
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>335</width>
-                          <height>228</height>
+                          <width>360</width>
+                          <height>245</height>
                          </rect>
                         </property>
                         <layout class="QGridLayout" name="gridLayout_61">
@@ -3616,6 +3689,9 @@ Solution Parameters</string>
                             <widget class="QLabel" name="label_65">
                              <property name="text">
                               <string>Lower</string>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignCenter</set>
                              </property>
                             </widget>
                            </item>
@@ -3648,6 +3724,9 @@ Solution Parameters</string>
                              <property name="text">
                               <string>Increment</string>
                              </property>
+                             <property name="alignment">
+                              <set>Qt::AlignCenter</set>
+                             </property>
                             </widget>
                            </item>
                            <item row="2" column="0">
@@ -3674,6 +3753,9 @@ Solution Parameters</string>
                             <widget class="QLabel" name="label_78">
                              <property name="text">
                               <string>Upper</string>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignCenter</set>
                              </property>
                             </widget>
                            </item>
@@ -4779,7 +4861,7 @@ for calibration</string>
                           </size>
                          </property>
                          <property name="text">
-                          <string>Filtered pesticide
+                          <string>Filtered pesticide (dp)
 (per unit)</string>
                          </property>
                         </widget>
@@ -5321,8 +5403,8 @@ analysis</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_8">
            <property name="geometry">
             <rect>
-             <x>0</x>
-             <y>0</y>
+             <x>-176</x>
+             <y>-96</y>
              <width>923</width>
              <height>577</height>
             </rect>
@@ -6137,8 +6219,8 @@ Solution Parameters</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_9">
            <property name="geometry">
             <rect>
-             <x>-253</x>
-             <y>-72</y>
+             <x>0</x>
+             <y>0</y>
              <width>1000</width>
              <height>553</height>
             </rect>
@@ -6503,7 +6585,7 @@ Solution Parameters</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_3">
            <property name="geometry">
             <rect>
-             <x>-330</x>
+             <x>0</x>
              <y>0</y>
              <width>1164</width>
              <height>481</height>
@@ -7447,7 +7529,7 @@ Solution Parameters</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-128</y>
+             <y>0</y>
              <width>1068</width>
              <height>609</height>
             </rect>
@@ -7662,7 +7744,22 @@ Solution Parameters</string>
        </layout>
       </widget>
       <widget class="QWidget" name="page_about">
-       <layout class="QGridLayout" name="gridLayout_74">
+       <layout class="QGridLayout" name="gridLayout_99">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_112">
+          <property name="font">
+           <font>
+            <family>Georgia</family>
+            <pointsize>-1</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>About this program</string>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="0">
          <widget class="QScrollArea" name="scrollArea_21">
           <property name="frameShape">
@@ -7680,7 +7777,51 @@ Solution Parameters</string>
              <height>498</height>
             </rect>
            </property>
-           <layout class="QGridLayout" name="gridLayout_99">
+           <layout class="QGridLayout" name="gridLayout_74">
+            <item row="0" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_53">
+              <item>
+               <spacer name="horizontalSpacer_26">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_113">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_161">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_27">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
             <item row="1" column="0">
              <layout class="QHBoxLayout" name="horizontalLayout">
               <item>
@@ -7725,13 +7866,6 @@ Solution Parameters</string>
               </item>
              </layout>
             </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_113">
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
             <item row="2" column="0">
              <spacer name="verticalSpacer_24">
               <property name="orientation">
@@ -7747,21 +7881,6 @@ Solution Parameters</string>
             </item>
            </layout>
           </widget>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_112">
-          <property name="font">
-           <font>
-            <family>Georgia</family>
-            <pointsize>-1</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>About this program</string>
-          </property>
          </widget>
         </item>
        </layout>

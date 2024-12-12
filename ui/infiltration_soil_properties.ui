@@ -126,7 +126,7 @@ QTableCornerButton::section {
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
+        <y>-385</y>
         <width>870</width>
         <height>772</height>
        </rect>
@@ -1143,13 +1143,6 @@ conductivity anisotropy ratio </string>
           <widget class="QPushButton" name="close_dialog">
            <property name="text">
             <string>Close</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_5">
-           <property name="text">
-            <string>Help</string>
            </property>
           </widget>
          </item>

@@ -445,13 +445,6 @@ Element [KPG=1 (recommended) or 0]</string>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QPushButton" name="pushButton">
-       <property name="text">
-        <string>Help</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
   </layout>

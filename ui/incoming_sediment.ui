@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>700</width>
+    <width>789</width>
     <height>279</height>
    </rect>
   </property>
@@ -126,10 +126,10 @@ QTableCornerButton::section {
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="3">
-       <widget class="QPushButton" name="pushButton_4">
+      <item row="0" column="1">
+       <widget class="QPushButton" name="save_close">
         <property name="text">
-         <string>Help</string>
+         <string>Save and Close</string>
         </property>
        </widget>
       </item>
@@ -137,13 +137,6 @@ QTableCornerButton::section {
        <widget class="QPushButton" name="save_continue">
         <property name="text">
          <string>Save - Continue Editing</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QPushButton" name="save_close">
-        <property name="text">
-         <string>Save and Close</string>
         </property>
        </widget>
       </item>
@@ -212,6 +205,12 @@ concentration (g/cm^3)-Cl</string>
         </item>
         <item>
          <widget class="QLineEdit" name="line_porosity">
+          <property name="minimumSize">
+           <size>
+            <width>103</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
            <string>0.434</string>
           </property>
@@ -239,14 +238,7 @@ concentration (g/cm^3)-Cl</string>
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="line_class">
-          <property name="text">
-           <string>7</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
+         <widget class="QComboBox" name="particle_class"/>
         </item>
        </layout>
       </item>
@@ -269,6 +261,12 @@ sediment with diameter &gt; 0.0037 cm
         </item>
         <item>
          <widget class="QLineEdit" name="line_portion">
+          <property name="minimumSize">
+           <size>
+            <width>103</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
            <string>1</string>
           </property>
@@ -297,6 +295,12 @@ sediment with diameter &gt; 0.0037 cm
         </item>
         <item>
          <widget class="QLineEdit" name="line_sediment">
+          <property name="minimumSize">
+           <size>
+            <width>103</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
            <string>2.6</string>
           </property>
