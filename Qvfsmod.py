@@ -116,7 +116,7 @@ from ui.figure_settings import figure_settings
 
 
 
-r'''#Detection of non expected errors
+#Detection of non expected errors
 def global_exception_handler(exctype, value, traceback):
     """
     Manejador global de excepciones no controladas.
@@ -129,7 +129,7 @@ def global_exception_handler(exctype, value, traceback):
     print(f"Error capturado globalmente: {value}")
 
 # Configurar el manejador global
-sys.excepthook = global_exception_handler'''
+sys.excepthook = global_exception_handler
 
 
 class qvfsmod:
@@ -4518,23 +4518,24 @@ class qvfsmod:
                         except:
                             pass
         #Obtain inputs
-        pesticide_input = obtain_result_owq(" Pesticide input (mi)\n",number_pesticide)
-        pesticide_output = obtain_result_owq(" Pesticide output (mo)\n",number_pesticide)
-        output_liquid = obtain_result_owq(" Pesticide outflow in liquid phase (mod)\n",number_pesticide)
-        output_solid = obtain_result_owq(" Pesticide outflow in solid phase (mop)\n",number_pesticide)
-        trapped_in_vfs = obtain_result_owq(" Pesticide trapped in VFS (mf)\n",number_pesticide)
-        trapped_in_sediment = obtain_result_owq(" Pesticide trapped with sediment (mfsed)\n",number_pesticide)
-        trapped_in_mixing_layer = obtain_result_owq(" Pesticide trapped in mixing layer (mfml)\n",number_pesticide)
+        source_area = obtain_result_owq(" Source Area (input)\n",number_pesticide)
+        pesticide_input = obtain_result_owq(" Pesticide input (mi)\n",number_pesticide)/source_area
+        pesticide_output = obtain_result_owq(" Pesticide output (mo)\n",number_pesticide)/source_area
+        output_liquid = obtain_result_owq(" Pesticide outflow in liquid phase (mod)\n",number_pesticide)/source_area
+        output_solid = obtain_result_owq(" Pesticide outflow in solid phase (mop)\n",number_pesticide)/source_area
+        trapped_in_vfs = obtain_result_owq(" Pesticide trapped in VFS (mf)\n",number_pesticide)/source_area
+        trapped_in_sediment = obtain_result_owq(" Pesticide trapped with sediment (mfsed)\n",number_pesticide)/source_area
+        trapped_in_mixing_layer = obtain_result_owq(" Pesticide trapped in mixing layer (mfml)\n",number_pesticide)/source_area
 
-        soil_profile = obtain_result_owq_2("        Soil profile total mass (mfF mg)",number_pesticide)
-        soil_profile_dissolved = obtain_result_owq_2("   Soil profile dissolved mass (mfFd mg)",number_pesticide)
-        soil_profile_sorbed = obtain_result_owq_2("      Soil profile sorbed mass (mfFp mg)",number_pesticide)
-        mixing_layer_dissolved = obtain_result_owq_2("  Mixing layer dissolved mass (mfmld mg)",number_pesticide)
-        mixing_layer_sorbed = obtain_result_owq_2("     Mixing layer sorbed mass (mfmlp mg)",number_pesticide)
+        soil_profile = obtain_result_owq_2("        Soil profile total mass (mfF mg)",number_pesticide)/source_area
+        soil_profile_dissolved = obtain_result_owq_2("   Soil profile dissolved mass (mfFd mg)",number_pesticide)/source_area
+        soil_profile_sorbed = obtain_result_owq_2("      Soil profile sorbed mass (mfFp mg)",number_pesticide)/source_area
+        mixing_layer_dissolved = obtain_result_owq_2("  Mixing layer dissolved mass (mfmld mg)",number_pesticide)/source_area
+        mixing_layer_sorbed = obtain_result_owq_2("     Mixing layer sorbed mass (mfmlp mg)",number_pesticide)/source_area
         
-        total_residue_after_degradation = obtain_result_owq_3(" Total surface residue after degradation",number_pesticide)
-        dissolved_surface_residue_after_degradation = obtain_result_owq_3(" Dissolved surface residue after degradation",number_pesticide)
-        sorbed_surface_residue_after_degradation = obtain_result_owq_3(" Sorbed surface residue after degradation",number_pesticide)
+        total_residue_after_degradation = obtain_result_owq_3(" Total surface residue after degradation",number_pesticide)/source_area
+        dissolved_surface_residue_after_degradation = obtain_result_owq_3(" Dissolved surface residue after degradation",number_pesticide)/source_area
+        sorbed_surface_residue_after_degradation = obtain_result_owq_3(" Sorbed surface residue after degradation",number_pesticide)/source_area
         
         #Create graph
         #Add layout
@@ -4568,7 +4569,78 @@ class qvfsmod:
         ]
         sizes_today = [output_solid, output_liquid, mixing_layer_sorbed, mixing_layer_dissolved, soil_profile_sorbed-mixing_layer_sorbed, 
             soil_profile_dissolved-mixing_layer_dissolved, trapped_in_sediment]  # Proporciones
+            
+        
+        colors = [
+            '#1f77b4',  # Outflow solid
+            '#3498db',  # Outflow liquid
+            '#ff7f0e',  # Mixing layer sorbed
+            '#f39c12',  # Mixing layer dissolved
+            '#2ca02c',  # Infiltrated sorbed
+            '#27ae60',  # Infiltrated dissolved
+            '#e74c3c'   # Trapped with sediment
+        ]
+        
+        threshold = sum(sizes_today)*0.05  # Umbral para los valores pequeños
 
+        # Crear el gráfico de pastel
+        self.ax_owq_graph_balance[0].pie(
+            sizes_today,
+            colors=colors,
+            autopct=None,
+            startangle=140,
+            wedgeprops={'edgecolor': 'black'},
+            pctdistance=0.85,  # Para valores absolutos dentro del pie
+            labeldistance=None  # Elimina las etiquetas fuera del pie
+        )
+
+        # Recorrer cada segmento del gráfico de pastel
+        for i, p in enumerate(self.ax_owq_graph_balance[0].patches):
+            # Cálculo del ángulo central del arco
+            ang = (p.theta2 - p.theta1) / 2. + p.theta1
+            x = 0.6 * np.cos(np.deg2rad(ang))  # Coordenada x dentro del segmento
+            y = 0.6 * np.sin(np.deg2rad(ang))  # Coordenada y dentro del segmento
+            horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
+
+            # Si el valor es pequeño (por debajo del umbral), mover la etiqueta fuera
+            if sizes_today[i] < threshold:
+                connectionstyle = "angle,angleA=0,angleB={}".format(ang)
+                self.ax_owq_graph_balance[0].annotate(
+                    f'{round(sizes_today[i], 2)} mg/m\u00b2',
+                    xy=(x, y),
+                    xytext=(1.35 * np.sign(x), 1.4 * y),
+                    horizontalalignment=horizontalalignment,
+                    arrowprops=dict(arrowstyle="->", connectionstyle=connectionstyle)
+                )
+            else:
+                # Si el valor es mayor o igual al umbral, poner la etiqueta dentro del pie
+                self.ax_owq_graph_balance[0].annotate(
+                    f'{round(sizes_today[i], 2)} mg/m\u00b2',
+                    xy=(x, y),
+                    horizontalalignment='center',  # Centrar dentro del segmento
+                    verticalalignment='center'
+                )
+
+        self.ax_owq_graph_balance[0].legend(
+            labels_today,  # Etiquetas de la leyenda
+            loc='best',  # Ubicación de la leyenda
+            bbox_to_anchor=(1, 0.5),  # Fuera del gráfico, alineada al centro verticalmente
+            title="Legend",  # Título opcional para la leyenda
+            fontsize='small'  # Tamaño de fuente
+        )
+        
+        
+        # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+        self.canvas_owq_graph_balance.figure.subplots_adjust(left=0.1, bottom=0.1)
+        #Change background color
+        self.canvas_owq_graph_balance.figure.set_facecolor('#f0f0f0')
+        self.ax_owq_graph_balance[0].set_facecolor('#f0f0f0')
+        #self.ax_owq_graph_balance[1].set_facecolor('#f0f0f0')
+        
+        # Redraw the canvas
+        self.canvas_owq_graph_balance.draw()
+        
+        r'''
         # Datos para Tomorrow
         labels_tomorrow = [
             'Dissolved surface residue \nafter degradation', 'Sorbed surface residue \nafter degradation'
@@ -4668,7 +4740,7 @@ class qvfsmod:
         
         #Save figure
         self.dlg_owq_graph_balance.print_graph.clicked.connect(lambda _, b= [self.dlg_owq_graph_balance,self.canvas_owq_graph_balance]:self.figure_settings(b))
-    
+    '''
         
             
             
@@ -7102,7 +7174,17 @@ class qvfsmod:
         """Method to run whole sensitivity analysis"""
         #Create the dictionary for the sensitivity analysis
         self.dic_data = self.create_dictionary_sensitivity_analysis_design()
-
+        
+        #Check if all the parameters that the user has choosen are available in the project
+        error_parameters = self.check_inputs_exist_sensitivity_analysis(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity_design.text()))
+        
+        if len(error_parameters)>0:
+            if len(error_parameters)==1:
+                self.warning_message(f"{','.join(error_parameters)} is not in your original project. \nPlease delete them here or add them to the project.")
+            else:
+                self.warning_message(f"{','.join(error_parameters)} are not in your original project. \nPlease delete them here or add them to the project.")
+            return
+        
         self.vfs_sensitivity_file = self.dlg_base.vfs_file_sensitivity_design.text()
         
         #Create problem variable
@@ -7183,10 +7265,98 @@ class qvfsmod:
                     vl.append(vl[-1]+increment)
         return vl
     
+    
+    def check_inputs_exist_sensitivity_analysis(self,project):  
+        """Method to check if inputs selected in sensitivity analysis are in the project.
+        It will return the parameters that should not be present"""
+        #Method to check if a line contains a number before text
+        def contiene_numero_antes_de_texto(texto):
+            match = re.match(r'^\s*(\d+)', texto)
+            return bool(match)
+        #First create a list of parameters that shoud not be selected
+        list_parameters = []
+        prj = project
+        water_quality = False
+        if os.path.exists(prj) and os.path.isfile(prj):
+            #First we open .prj and obtain the direction of the copying file
+            with open(prj, "r") as archivo:
+                lineas = archivo.readlines()
+            for i in lineas:
+                if i[:3]=="iso":
+                    iso = i.split("=")[-1]
+                    if not os.path.isabs(iso): #relative path
+                        iso = os.path.join(os.path.dirname(prj), iso)
+                    iso = iso.replace("\n", "") #take out the line jumps
+                elif i[:3]=="iwq":
+                    iwq = i.split("=")[-1]
+                    water_quality = True
+                    if not os.path.isabs(iwq): #relative path
+                        iwq = os.path.join(os.path.dirname(prj), iwq)
+                    iwq = iwq.replace("\n", "") #take out the line jumps
+            
+            #We start with iso (infiltration) parameters
+            with open(iso, "r") as archivo:
+                lineas_iso = archivo.readlines()
+            if len(lineas_iso) > 0:
+                if not contiene_numero_antes_de_texto(lineas_iso[1]):
+                    list_parameters+=["Water table depth","Soil saturated hydraulic conductivity ansiotropy ratio","Soil water characteristic OR","Soil water characteristic VGALPHA","Soil water characteristic VGN","Soil water characteristic VGM","Soil water characteristic BCALPHA","Soil water characteristic BCLAMDA","Unsaturated hydraulic conductivity curve VGM","Unsaturated hydraulic conductivity curve BCETA","Unsaturated hydraulic conductivity curve BCALPHA","Unsaturated hydraulic conductivity curve GDALPHA"]
+                elif lineas_iso[2].split()[0]=="1":
+                    list_parameters+=["Soil water characteristic BCALPHA","Soil water characteristic BCLAMDA"]
+                elif lineas_iso[2].split()[0]=="2":
+                    list_parameters+=["Soil water characteristic VGALPHA","Soil water characteristic VGN","Soil water characteristic VGM"]
+                if lineas_iso[3].split()[0]=="1":
+                    list_parameters+=["Unsaturated hydraulic conductivity curve BCETA","Unsaturated hydraulic conductivity curve BCALPHA","Unsaturated hydraulic conductivity curve GDALPHA"]
+                elif lineas_iso[3].split()[0]=="2":
+                    list_parameters+=["Unsaturated hydraulic conductivity curve VGM","Unsaturated hydraulic conductivity curve GDALPHA"]
+                elif lineas_iso[3].split()[0]=="3":
+                    list_parameters+=["Unsaturated hydraulic conductivity curve VGM","Unsaturated hydraulic conductivity curve BCETA","Unsaturated hydraulic conductivity curve BCALPHA"]
+            if len(lineas_iso) == 0: 
+                list_parameters+=["Water table depth","Soil saturated hydraulic conductivity ansiotropy ratio","Soil water characteristic OR","Soil water characteristic VGALPHA","Soil water characteristic VGN","Soil water characteristic VGM","Soil water characteristic BCALPHA","Soil water characteristic BCLAMDA","Unsaturated hydraulic conductivity curve VGM","Unsaturated hydraulic conductivity curve BCETA","Unsaturated hydraulic conductivity curve BCALPHA","Unsaturated hydraulic conductivity curve GDALPHA"]
+            if len(lineas_iso) > 4:
+                if not contiene_numero_antes_de_texto(lineas_iso[4]):
+                    list_parameters.append("Soil saturated hydraulic conductivity ansiotropy ratio")
+            elif not len(lineas_iso) > 4:
+                list_parameters.append("Soil saturated hydraulic conductivity ansiotropy ratio")
+            
+            #Then water quality
+            if water_quality:
+                with open(iwq, "r") as archivo:
+                    lineas_iwq= archivo.readlines()
+                
+                if lineas_iwq[1].split()[0]=="0":
+                    list_parameters+=["Adsorption coefficient (L/Kg)","Organic Carbon (%)"]
+                elif lineas_iwq[1].split()[0]=="1":
+                    list_parameters+=["Linear sorption coefficient (L/Kg)"]
+                
+                if lineas_iwq[3].split()[0]=="0":
+                    list_parameters+=["Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)","Dispersion length of chemical (m)","Runoff remobilized VFS residue from last event (mg/m2)"]
+                
+            
+            #Avoid repetitions
+            list_parameters = list(set(list_parameters))
+            
+            #See if this parameters that should not be there are chosen by the user
+            #We have to consider that in iwq parameters they might be added Pesticide x
+            error_parameters = []
+            for i in list_parameters:
+                if i in self.dic_data.keys():
+                    error_parameters.append(i)
+            return error_parameters
+    
     def run_sensitivity_analysis_part_one(self):
         """Method to run whole sensitivity analysis"""
         #Create the dictionary for the sensitivity analysis
         self.dic_data = self.create_dictionary_sensitivity_analysis()
+        
+        #Check if all the parameters that the user has choosen are available in the project
+        error_parameters = self.check_inputs_exist_sensitivity_analysis(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_sensitivity.text()))
+        
+        if len(error_parameters)>0:
+            if len(error_parameters)==1:
+                self.warning_message(f"{','.join(error_parameters)} is not in your original project. \nPlease delete them here or add them to the project.")
+            else:
+                self.warning_message(f"{','.join(error_parameters)} are not in your original project. \nPlease delete them here or add them to the project.")
+            return
         
         self.vfs_sensitivity_file = self.dlg_base.vfs_file_sensitivity.text()
         
@@ -7733,6 +7903,16 @@ class qvfsmod:
         """Method to run parallel processing of uncertainity analysis"""
         #Create the dictionary for the sensitivity analysis
         self.dic_data = self.create_dictionary_uncertainity_analysis()
+        #Check if all the parameters that the user has choosen are available in the project
+        error_parameters = self.check_inputs_exist_sensitivity_analysis(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_uncertainity.text()))
+        
+        if len(error_parameters)>0:
+            if len(error_parameters)==1:
+                self.warning_message(f"{','.join(error_parameters)} is not in your original project. \nPlease delete them here or add them to the project.")
+            else:
+                self.warning_message(f"{','.join(error_parameters)} are not in your original project. \nPlease delete them here or add them to the project.")
+            return
+            
         self.vfs_uncertainity_file = self.dlg_base.vfs_file_uncertainity.text()
         
         #Warning
@@ -9725,7 +9905,7 @@ class qvfsmod:
         #Add element
         if button == self.dlg_base.all_parameters:
             for nombre in self.sensitivity_parameters.keys():
-                boton = QtWidgets.QPushButton(nombre, self.dlg_base.scrollAreaWidgetContents_12)
+                boton = QtWidgets.QPushButton("\n".join(textwrap.wrap(nombre, width=30, break_long_words=False)), self.dlg_base.scrollAreaWidgetContents_12)
                 boton.setObjectName(nombre)
                 self.dlg_base.verticalLayout_19.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -15196,11 +15376,11 @@ class qvfsmod:
         self.dlg_base.label_161.setText(html_text)
         
         self.dlg_base.label_160.setStyleSheet("""
-            font-family: 'Times New Roman';  /* Cambia la fuente */
+            font-family: 'MS Shell Dlg 2';  /* Cambia la fuente */
             font-size: 12pt;      /* Tamaño de la fuente */
             """)
         self.dlg_base.label_161.setStyleSheet("""
-            font-family: 'Times New Roman';  /* Cambia la fuente */
+            font-family: 'MS Shell Dlg 2';  /* Cambia la fuente */
             font-size: 12pt;      /* Tamaño de la fuente */
             """)
     
@@ -15244,7 +15424,8 @@ class qvfsmod:
         
         self.dlg_design_results_graph.column.currentIndexChanged.disconnect(self.update_design_graph)
         self.dlg_design_results_graph.column.clear()
-        self.dlg_design_results_graph.column.addItems(list_outputs)
+        #Add items but the delivery ratio parameters go first
+        self.dlg_design_results_graph.column.addItems(sorted(list_outputs, key=lambda x: "Delivery" not in x))
         self.dlg_design_results_graph.column.currentIndexChanged.connect(self.update_design_graph)
         
 
@@ -15267,6 +15448,8 @@ class qvfsmod:
         columns = table.columnCount()
         # Obtain name of columns
         column_headers = self.columns_design_results
+        
+        
         #Save data
         data = []
         for row in range(rows):
@@ -15289,7 +15472,7 @@ class qvfsmod:
             mask = df["Rainfall (mm)"]==i
             x = df[mask][column_x]
             y = df[mask][column_y]
-            self.ax_design_graph.plot(x,y, linewidth=2, marker='o', markersize=4,label = f"{i} mm")
+            self.ax_design_graph.plot(x,y, linewidth=2, marker='o', markersize=4,label = f"{i} mm",zorder = 0)
             
         #Limits
         #self.ax.set_ylim([0, 1])
@@ -15360,6 +15543,7 @@ class qvfsmod:
             self.dlg_design_results_graph.tableWidget.setVerticalHeaderLabels(["VFS Length (m)"])
         elif column_x == "Vegetation Spacing (cm)":
             self.dlg_design_results_graph.tableWidget.setVerticalHeaderLabels(["Vegetation Spacing (cm)"])
+            
         
         #Change background color
         self.canvas_design_graph.figure.set_facecolor('#f0f0f0')
@@ -15967,15 +16151,15 @@ def wrapper_uncertainity_paralelization(args):
 
 def uncertainity_paralelization(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_uncertainity_file_file,water_quality,number_pesticides):
     '''Function to run in paralell uncertainity analysis'''
-    #try: #if there is an error in the execution then return a dataframe with error
-    execution = execution_uncertainity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_uncertainity_file_file)
-    #Save results
-    if execution == "error":
-        return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,number_pesticides,error = True)
-    else:
-        return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,number_pesticides,error = False)
-    r'''except:
-        return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality,number_pesticides ,error = True)'''
+    try: #if there is an error in the execution then return a dataframe with error
+        execution = execution_uncertainity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_uncertainity_file_file)
+        #Save results
+        if execution == "error":
+            return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,number_pesticides,error = True)
+        else:
+            return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality ,number_pesticides,error = False)
+    except:
+        return save_results_uncertainity_analysis(number_execution,core,working_directory,dic_data,param_values,water_quality,number_pesticides ,error = True)
 
 def execution_uncertainity_analysis(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_uncertainity_file):
     """Function for the each execution of the uncertainity analysis"""
@@ -16047,9 +16231,6 @@ def modify_inputs_uncertainity(extension, row, column, new_value, process,core,w
     # Use regex to find all numbers in the string
     matches = re.findall(r'\S+', numbers_str)
     # Replace the specific number at the given index
-    texto = f"{extension}, {row}, {column}, {new_value}, {process},{core},{working_directory}"
-    with open(r"C:\qvfsmod\text.txt", "w") as archivo:  # "w" es para escribir (sobrescribe si ya existe) #borrar
-        archivo.write(texto)
     matches[column] = str(new_value)
     # Rebuild the string by replacing only the specific number
     lineas[row] = re.sub(r'\S+', lambda m, it=iter(matches): next(it), numbers_str, count=len(matches))
@@ -17629,10 +17810,10 @@ class UncertainityAnalysisThread(QThread):
             
             # Captura y maneja las excepciones
             for i, async_result in enumerate(async_results):
-                #try:
-                async_result.get()  # Esto lanzará la excepción si ocurrió alguna
-                r'''except Exception as e:
-                    print(f"Error en proceso {i}: {e}")'''
+                try:
+                    async_result.get()  # Esto lanzará la excepción si ocurrió alguna
+                except Exception as e:
+                    print(f"Error en proceso {i}: {e}")
             
         
 

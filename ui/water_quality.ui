@@ -159,7 +159,7 @@ QTableCornerButton::section {
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-453</y>
+        <y>-337</y>
         <width>679</width>
         <height>949</height>
        </rect>
@@ -189,12 +189,19 @@ QTableCornerButton::section {
                 <widget class="QLabel" name="label_11">
                  <property name="minimumSize">
                   <size>
-                   <width>221</width>
+                   <width>158</width>
                    <height>0</height>
                   </size>
                  </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>158</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
-                  <string>Top soil field capacity (m3/m3)</string>
+                  <string>Top soil field capacity
+ (m3/m3)</string>
                  </property>
                 </widget>
                </item>
@@ -264,7 +271,7 @@ of residues</string>
                 <widget class="QLabel" name="label_12">
                  <property name="minimumSize">
                   <size>
-                   <width>245</width>
+                   <width>221</width>
                    <height>0</height>
                   </size>
                  </property>

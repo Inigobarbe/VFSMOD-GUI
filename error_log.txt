@@ -112,3 +112,12 @@ Mensaje: list index out of range
 Excepción: IndexError
 Mensaje: list index out of range
 
+Excepción: AttributeError
+Mensaje: 'AxesSubplot' object has no attribute 'autotexts'
+
+Excepción: ValueError
+Mensaje: not enough values to unpack (expected 3, got 2)
+
+Excepción: NameError
+Mensaje: name 'adjust_text' is not defined
+
