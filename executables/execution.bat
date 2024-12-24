@@ -1,2 +1,2 @@
-cd "C:\qvfsmod" 
-"C:\qvfsmod\executables\vfsm" sample.prj 
+cd "C:\qvfsmod\inverse" 
+"C:\qvfsmod\executables\vfsm" inverse.prj 

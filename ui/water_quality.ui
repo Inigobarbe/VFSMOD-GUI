@@ -159,7 +159,7 @@ QTableCornerButton::section {
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-337</y>
+        <y>0</y>
         <width>679</width>
         <height>949</height>
        </rect>
@@ -299,8 +299,6 @@ layer thickness (cm)</string>
                 <font>
                  <family>Georgia</family>
                  <pointsize>-1</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">
@@ -426,6 +424,9 @@ from last event (mg/m2)</string>
                    <bold>true</bold>
                   </font>
                  </property>
+                 <property name="styleSheet">
+                  <string notr="true">font-weight: bold;</string>
+                 </property>
                  <property name="text">
                   <string>Pesticide 1 data</string>
                  </property>
@@ -444,6 +445,21 @@ from last event (mg/m2)</string>
               <height>200</height>
              </size>
             </property>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
             <column>
              <property name="text">
               <string>Day</string>
@@ -459,6 +475,51 @@ from last event (mg/m2)</string>
               <string>Top soil water content (m3/m3)</string>
              </property>
             </column>
+            <item row="0" column="0">
+             <property name="text">
+              <string>1</string>
+             </property>
+            </item>
+            <item row="0" column="1">
+             <property name="text">
+              <string>9.5</string>
+             </property>
+            </item>
+            <item row="0" column="2">
+             <property name="text">
+              <string>0.265</string>
+             </property>
+            </item>
+            <item row="1" column="0">
+             <property name="text">
+              <string>2</string>
+             </property>
+            </item>
+            <item row="1" column="1">
+             <property name="text">
+              <string>8.6</string>
+             </property>
+            </item>
+            <item row="1" column="2">
+             <property name="text">
+              <string>0.264</string>
+             </property>
+            </item>
+            <item row="2" column="0">
+             <property name="text">
+              <string>3</string>
+             </property>
+            </item>
+            <item row="2" column="1">
+             <property name="text">
+              <string>6.3</string>
+             </property>
+            </item>
+            <item row="2" column="2">
+             <property name="text">
+              <string>0.265</string>
+             </property>
+            </item>
            </widget>
           </item>
           <item row="5" column="0">
@@ -495,8 +556,6 @@ from last event (mg/m2)</string>
                 <font>
                  <family>Georgia</family>
                  <pointsize>-1</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">
@@ -885,6 +944,9 @@ from last event (mg/m2)</string>
                    <weight>75</weight>
                    <bold>true</bold>
                   </font>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">font-weight: bold;</string>
                  </property>
                  <property name="text">
                   <string>Pesticide 1 data</string>

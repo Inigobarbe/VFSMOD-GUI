@@ -116,7 +116,7 @@ from ui.figure_settings import figure_settings
 
 
 
-#Detection of non expected errors
+r'''#Detection of non expected errors
 def global_exception_handler(exctype, value, traceback):
     """
     Manejador global de excepciones no controladas.
@@ -129,7 +129,7 @@ def global_exception_handler(exctype, value, traceback):
     print(f"Error capturado globalmente: {value}")
 
 # Configurar el manejador global
-sys.excepthook = global_exception_handler
+sys.excepthook = global_exception_handler'''
 
 
 class qvfsmod:
@@ -236,12 +236,14 @@ class qvfsmod:
         self.dlg_ohy_graphs.wetting.toggled.connect(lambda checked: self.update_ohy_graphs() if checked else None)
         self.dlg_ohy_graphs.soil_infiltration.toggled.connect(lambda checked: self.update_ohy_graphs() if checked else None)
         
+        #Fraction of the filter where ponding is checked must be 0.5 or below
+        self.dlg_infiltration_soil.line_fraction.textChanged.connect(self.correct_fraction_filter_ponding_checked)
         
         #License
         self.dlg_base.license_button.clicked.connect(self.open_license)
         
         #Degradation data
-        self.dlg_water_quality.degradation_data.clicked.connect(self.dlg_degradation_data.show)
+        self.dlg_water_quality.degradation_data.clicked.connect(self.dlg_degradation_data_show)
         
         #Create FITEVAL evaluation 
         self.dlg_calibration_results_hydrograph.bootstraping.clicked.connect(lambda _, b ="hydrograph":self.calibration_hydrograph_bootstraping_show(b))
@@ -286,6 +288,7 @@ class qvfsmod:
         self.dlg_base.radio_sobol_design.toggled.connect(lambda checked: self.udpate_buffer_length_cumulative() if checked else None)
         
         #Add widgets for having more than one species of pesticide
+        self.maximum_number_pesticides_dialog = 10
         self.create_pesticides_widgets()
         
         #Enable disable adding timestep
@@ -1065,6 +1068,20 @@ class qvfsmod:
         self.dlg_figure_settings.accept.clicked.connect(self.save_figures)
         self.dlg_figure_settings.accept.clicked.connect(self.dlg_figure_settings.close)
     
+    def correct_fraction_filter_ponding_checked(self):
+        """Method to put the fraction of the filter where ponding is checked to 0.5 if a higher value than 0.5 is added"""
+        try:
+            if float(self.dlg_infiltration_soil.line_fraction.text())>0.5:
+                self.dlg_infiltration_soil.line_fraction.setText("0.5")
+                self.warning_message("Fraction of the filter where ponding is checked is recommended to be not higher than 0.5. \nChanging value to 0.5.")
+        except:
+            pass
+    
+    def dlg_degradation_data_show(self):
+        """Method to show degratadion data"""
+        self.dlg_degradation_data.show()
+        self.dlg_degradation_data.raise_()
+    
     def figure_settings(self, information):
         """Method to select the settings of the image that is going to be saved"""
         self.dlg_figure_settings.show()
@@ -1078,10 +1095,19 @@ class qvfsmod:
         canvas =  self.information_figure_save[1]
         
         
+        
+        
         file_path, _ = QFileDialog.getSaveFileName(dialog, "Save graph", 
                                            os.path.join(self.working_directory, "graph.png"), 
                                             "PNG Files (*.png);;JPEG Files (*.jpg *.jpeg);;PDF Files (*.pdf);;All Files (*)")
         if file_path:
+            #Change background color to white
+            canvas.figure.set_facecolor('white')
+            fig = canvas.figure
+            axes = fig.get_axes()
+            for axe in axes: 
+                axe.set_facecolor('white')
+            
             dpi_value = float(self.dlg_figure_settings.resolution.text())
             transparent = self.dlg_figure_settings.transparent.isChecked()
             tight = self.dlg_figure_settings.tight.isChecked()
@@ -1089,6 +1115,12 @@ class qvfsmod:
             canvas.figure.savefig(file_path, dpi = dpi_value,bbox_inches='tight' if tight else None, 
                                          transparent=transparent, 
                                          pad_inches=padding)
+        
+            #Change background color again to original
+            canvas.figure.set_facecolor('#f0f0f0')
+            for axe in axes: 
+                axe.set_facecolor('#f0f0f0')
+            canvas.draw()
             
         
     def hide_about_image(self, event):
@@ -1622,7 +1654,7 @@ class qvfsmod:
     def create_pesticides_widgets(self):
         """Method to create the widgets for all the species of pesticides that then can be deleted"""
         try:
-            number_pesticides = 10     
+            number_pesticides = self.maximum_number_pesticides_dialog     
             #Add pesticides
             for i in range(number_pesticides-1):
                 #Create widgets
@@ -1682,6 +1714,16 @@ class qvfsmod:
                 setattr(self.dlg_water_quality, f"remobilized_{pesticide}", line)
                 getattr(self.dlg_water_quality, f"remobilized_{pesticide}").setAlignment(Qt.AlignCenter)
                 
+                #Degradation
+                label = QLabel(f"Pesticide {pesticide} molar mass (g/mol)")
+                setattr(self.dlg_degradation_data, f"label_pesticide_{pesticide}_molar_mass", label)
+                
+                line = QLineEdit()
+                setattr(self.dlg_degradation_data, f"pesticide_{pesticide}_molar_mass", line)
+                getattr(self.dlg_degradation_data, f"pesticide_{pesticide}_molar_mass").setAlignment(Qt.AlignCenter)
+                        
+                        
+                        
                 
                 #Add widgets
                 #Direct inputs
@@ -1701,6 +1743,12 @@ class qvfsmod:
                 self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"half_life_{pesticide}"), 3*pesticide-2, 3)
                 self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"remobilized_label_{pesticide}"), 3*pesticide-1, 2)
                 self.dlg_water_quality.gridLayout_10.addWidget(getattr(self.dlg_water_quality, f"remobilized_{pesticide}"), 3*pesticide-1, 3)
+                
+                #Degradation
+                self.dlg_degradation_data.gridLayout_2.addWidget(getattr(self.dlg_degradation_data, f"label_pesticide_{pesticide}_molar_mass"), pesticide-1, 0)
+                self.dlg_degradation_data.gridLayout_2.addWidget(getattr(self.dlg_degradation_data, f"pesticide_{pesticide}_molar_mass"), pesticide-1, 1)
+                
+                
                 
                 #Then hide them
                 widget = getattr(self.dlg_water_quality, f"pesticide_direct_label_{pesticide}")
@@ -1738,10 +1786,16 @@ class qvfsmod:
                 widget = getattr(self.dlg_water_quality, f"remobilized_{pesticide}")
                 widget.hide()
                 
+                #Degradation
+                widget = getattr(self.dlg_degradation_data, f"label_pesticide_{pesticide}_molar_mass")
+                widget.hide()
+                widget = getattr(self.dlg_degradation_data, f"pesticide_{pesticide}_molar_mass")
+                widget.hide()
+                
+            
             #Create variable to know how many pesticides there are
             self.number_pesticides_dialog = number_pesticides
             
-            self.enable_disable_water_quality_dialog() #update enabling/disabling direct input
                 
         except:
             pass
@@ -1750,7 +1804,7 @@ class qvfsmod:
         """Method to add widgets to pesticide dialog when more than a pesticide species is added"""
         try:
             number_pesticides = int(self.dlg_water_quality.number_pesticides.text())
-            if number_pesticides<=10: #if not the dialog can freeze and close
+            if number_pesticides<=self.maximum_number_pesticides_dialog: #if not the dialog can freeze and close
                 #Delete previous pesticides
                 if self.number_pesticides_dialog>1:
                     widgets_to_delete = ["pesticide_direct_label_","label_kd_","label_koc_","line_kd_","line_koc_",
@@ -1767,10 +1821,9 @@ class qvfsmod:
                     try:
                         pesticide = p+1
                         widget = getattr(self.dlg_degradation_data, f"label_pesticide_{pesticide}_molar_mass")
-                        widget.deleteLater()
+                        widget.hide()
                         widget = getattr(self.dlg_degradation_data, f"pesticide_{pesticide}_molar_mass")
-                        widget.deleteLater()
-                        
+                        widget.hide()
                     except:
                         pass
                     
@@ -1805,23 +1858,12 @@ class qvfsmod:
                 
                 
                 #Then add them
+                
                 for p in range(number_pesticides):
                     pesticide = p+1
-                    #Label
-                    label = QLabel(f"Pesticide {pesticide} molar mass (g/mol)")
-                    setattr(self.dlg_degradation_data, f"label_pesticide_{pesticide}_molar_mass", label)
-                    getattr(self.dlg_degradation_data, f"label_pesticide_{pesticide}_molar_mass").setMinimumHeight(50)
-                    
-                    #LineEdit                
-                    line = QLineEdit()
-                    setattr(self.dlg_degradation_data, f"pesticide_{pesticide}_molar_mass", line)
-                    getattr(self.dlg_degradation_data, f"pesticide_{pesticide}_molar_mass").setAlignment(Qt.AlignCenter)
-                    
                     #Add widgets
-                    self.dlg_degradation_data.gridLayout_2.addWidget(getattr(self.dlg_degradation_data, f"label_pesticide_{pesticide}_molar_mass"), 2*pesticide, 0)
-                    self.dlg_degradation_data.gridLayout_2.addWidget(getattr(self.dlg_degradation_data, f"pesticide_{pesticide}_molar_mass"), 2*pesticide, 1)
-                    
-                
+                    getattr(self.dlg_degradation_data, f"label_pesticide_{pesticide}_molar_mass").show()
+                    getattr(self.dlg_degradation_data, f"pesticide_{pesticide}_molar_mass").show()
                 
                 
                 #Same for the degradation            
@@ -1872,13 +1914,8 @@ class qvfsmod:
                 for col in range(number_pesticides):
                     table.setColumnWidth(col, 160)
                 
-                
-                
-                
-            self.enable_disable_water_quality_dialog() #update enabling/disabling direct input
-        
-        
-        
+                #Adjust size of dialog
+                self.dlg_degradation_data.adjustSize()
                 
         except:
             pass
@@ -3549,7 +3586,7 @@ class qvfsmod:
             bins = 30
             self.ax_uncertainity[0].hist(y, bins=bins, edgecolor='black')
             #Labels
-            output_with_line_breaks = "\n".join(textwrap.wrap(output_column, width=35, break_long_words=False))
+            output_with_line_breaks = "\n".join(textwrap.wrap(output_column, width=37, break_long_words=False))
             self.ax_uncertainity[0].set_xlabel(output_with_line_breaks)
             self.ax_uncertainity[0].set_ylabel("Frequency")
             
@@ -3906,6 +3943,10 @@ class qvfsmod:
     def dlg_infiltration_soil_show(self):
         """Method to add values of the iso to the dialog"""
         path = self.obtain_direction_vfsmod(self.dlg_base.line_infiltration.text())
+        #Show dialog
+        self.dlg_infiltration_soil.show()
+        self.dlg_infiltration_soil.raise_()
+        #Add values
         if os.path.exists(path) and os.path.isfile(path):
             try:
                 with open(path, 'r') as file:
@@ -3964,9 +4005,7 @@ class qvfsmod:
                 pass
             
             
-        #Show dialog
-        self.dlg_infiltration_soil.show()
-        self.dlg_infiltration_soil.raise_()
+        
     
     def dlg_buffer_properties_show(self):
         """Method to add values of the igr to the dialog"""
@@ -4107,6 +4146,9 @@ class qvfsmod:
                             item = QTableWidgetItem(str(value))
                             self.dlg_degradation_data.table_degradations.setItem(fila, columna, item)
                             item.setTextAlignment(Qt.AlignCenter)
+                            if fila == columna: 
+                                item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+                                item.setBackground(Qt.lightGray)
                             
                         
                     #Flag for remobilization of residues
@@ -4856,13 +4898,17 @@ class qvfsmod:
         concentracion = df["c"]
         ratio = df["s"]
         
+        # Graficar concentración vs. profundidad
+        self.ax_owq_graph[0].plot(concentracion, profundidad, marker='o', color='#007FFF')
+        self.ax_owq_graph[1].plot(ratio, profundidad, marker='o', color='#007FFF')
+        
         #Change y axis to limit to the maximum among all the pesticides. Same with x values.
         all_depths = [sublista[0] for pesticide in self.data_owq_graph.values() for sublista in pesticide]
         all_water_concentrations = [sublista[1] for pesticide in self.data_owq_graph.values() for sublista in pesticide]
         all_phases = [sublista[2] for pesticide in self.data_owq_graph.values() for sublista in pesticide]
         
-        self.ax_owq_graph[0].set_ylim(0, max(all_depths)*1.05)
-        self.ax_owq_graph[1].set_ylim(0, max(all_depths)*1.05)
+        self.ax_owq_graph[0].set_ylim(-max(all_depths)*0.05, max(all_depths)*1.05)
+        self.ax_owq_graph[1].set_ylim(-max(all_depths)*0.05, max(all_depths)*1.05)
         self.ax_owq_graph[0].set_xlim(-max(all_water_concentrations)/10,max(all_water_concentrations)*1.05)
         self.ax_owq_graph[1].set_xlim(-max(all_phases)/10,max(all_phases)*1.05)
 
@@ -4870,10 +4916,6 @@ class qvfsmod:
         # Invertir el eje y para que 0 esté arriba y aumentar hacia abajo
         self.ax_owq_graph[0].invert_yaxis()
         self.ax_owq_graph[1].invert_yaxis()
-
-        # Graficar concentración vs. profundidad
-        self.ax_owq_graph[0].plot(concentracion, profundidad, marker='o', color='b')
-        self.ax_owq_graph[1].plot(ratio, profundidad, marker='o', color='b')
 
         # Etiquetas de los ejes
         self.ax_owq_graph[0].set_xlabel('Pore water concentration \n(mg/L)', color='black',weight = "bold")
@@ -4982,14 +5024,14 @@ class qvfsmod:
         self.ax_precipitation_ohy.clear()
         #Create graph
         if self.dlg_ohy_graphs.instantaneous.isChecked():
-            #Add lines
             #Precipitation
-            self.ax_precipitation_ohy.bar(self.time_ohy, self.rainfall_ohy,width = self.time_ohy[1]-self.time_ohy[0] ,color = "blue", 
-                edgecolor = "blue",label="Rainfall", zorder = 0)
+            bars = self.ax_precipitation_ohy.bar(self.time_ohy, self.rainfall_ohy,width = self.time_ohy[1]-self.time_ohy[0] ,color = "blue", 
+                label="Rainfall",zorder = 1,alpha = 0.3)
+            #Add lines
             #Inflow
-            self.ax_ohy_graph.plot(self.time_ohy, self.inflow_ohy, color="#00509e",label="Inflow hydrograph", zorder = 2)
+            line_inflow, = self.ax_ohy_graph.plot(self.time_ohy, self.inflow_ohy, color="olive",label="Inflow hydrograph",zorder = 2)
             #Outflow
-            self.ax_ohy_graph.plot(self.time_ohy, self.outflow_ohy, color="#a0c4ff",label="Outflow hydrograph", zorder = 3)
+            line_outflow, = self.ax_ohy_graph.plot(self.time_ohy, self.outflow_ohy, color="forestgreen",label="Outflow hydrograph",zorder = 2)
             
             
             
@@ -4997,7 +5039,15 @@ class qvfsmod:
             # Ajustar la leyenda combinada
             lines1, labels1 = self.ax_ohy_graph.get_legend_handles_labels()
             lines2, labels2 = self.ax_precipitation_ohy.get_legend_handles_labels()
-            legend = self.ax_ohy_graph.legend(lines1 + lines2, labels1 + labels2, loc="best")
+            legend = self.ax_ohy_graph.legend(lines1 + lines2, labels1 + labels2, 
+                loc="lower center",  # Centrar horizontalmente
+                bbox_to_anchor=(0.5,-0.47),  # Posición justo arriba del gráfico
+                ncol=3,  # Número de columnas en la leyenda
+                frameon=False)
+            
+            #Change color legend
+            legend.get_frame().set_facecolor("#f0f0f0")
+        
             
             #Thousand separator
             def xfunc(x,pos):
@@ -5020,16 +5070,16 @@ class qvfsmod:
             self.ax_ohy_graph.set_xlabel("Time (s)")
             self.ax_ohy_graph.set_ylabel("Discharge (m$^{3}$/s)")
             self.ax_precipitation_ohy.set_ylabel("Rainfall (m/s)")
+            self.ax_precipitation_ohy.yaxis.set_label_position("right") 
             
             #Graph title
             self.ax_ohy_graph.set_title("Instantaneous flow graph",color = "black")
-            
             
             #Change background color
             self.canvas_ohy_graph.figure.set_facecolor('#f0f0f0')
             self.ax_ohy_graph.set_facecolor('#f0f0f0')
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-            self.canvas_ohy_graph.figure.subplots_adjust(left=0.15, bottom=0.2,right=0.85)
+            self.canvas_ohy_graph.figure.subplots_adjust(left=0.15, bottom=0.25,right=0.85)
             #Draw canvas
             self.canvas_ohy_graph.draw()
         
@@ -5037,18 +5087,25 @@ class qvfsmod:
             #Add lines
             #Precipitation
             self.ax_precipitation_ohy.bar(self.time_ohy, self.rainfall_ohy,width = self.time_ohy[1]-self.time_ohy[0] ,color = "blue", 
-                edgecolor = "blue",label="Rainfall", zorder = 1)
+                label="Rainfall", zorder = 1,alpha = 0.3)
             #Inflow
-            self.ax_ohy_graph.plot(self.time_ohy, np.cumsum(self.inflow_ohy), color="#00509e",label="Cumulative Inflow", zorder = 2)
+            self.ax_ohy_graph.plot(self.time_ohy, np.cumsum(self.inflow_ohy), color="olive",label="Cumulative Inflow", zorder = 2)
             #Outflow
-            self.ax_ohy_graph.plot(self.time_ohy, np.cumsum(self.outflow_ohy), color="#a0c4ff",label="Cumulative Outflow", zorder = 3)
+            self.ax_ohy_graph.plot(self.time_ohy, np.cumsum(self.outflow_ohy), color="forestgreen",label="Cumulative Outflow", zorder = 3)
             
             
             #Legend
             # Ajustar la leyenda combinada
             lines1, labels1 = self.ax_ohy_graph.get_legend_handles_labels()
             lines2, labels2 = self.ax_precipitation_ohy.get_legend_handles_labels()
-            legend = self.ax_ohy_graph.legend(lines1 + lines2, labels1 + labels2, loc="best")
+            legend = self.ax_ohy_graph.legend(lines1 + lines2, labels1 + labels2, 
+                loc="lower center",  # Centrar horizontalmente
+                bbox_to_anchor=(0.5,-0.47),  # Posición justo arriba del gráfico
+                ncol=3,  # Número de columnas en la leyenda
+                frameon=False)
+            
+            #Change color legend
+            legend.get_frame().set_facecolor("#f0f0f0")
             
             #Thousand separator
             def xfunc(x,pos):
@@ -5071,6 +5128,7 @@ class qvfsmod:
             self.ax_ohy_graph.set_xlabel("Time (s)")
             self.ax_ohy_graph.set_ylabel("Cumulative Discharge (m$^{3}$/s)")
             self.ax_precipitation_ohy.set_ylabel("Rainfall (m/s)")
+            self.ax_precipitation_ohy.yaxis.set_label_position("right") 
             
             #Graph title
             self.ax_ohy_graph.set_title("Cumulative flow graph",color = "black")
@@ -5079,18 +5137,31 @@ class qvfsmod:
             self.canvas_ohy_graph.figure.set_facecolor('#f0f0f0')
             self.ax_ohy_graph.set_facecolor('#f0f0f0')
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-            self.canvas_ohy_graph.figure.subplots_adjust(left=0.15, bottom=0.2,right=0.85)
+            self.canvas_ohy_graph.figure.subplots_adjust(left=0.15, bottom=0.25,right=0.85)
             #Draw canvas
             self.canvas_ohy_graph.draw()
         
         elif self.dlg_ohy_graphs.wetting.isChecked():
             #Add lines
             #Wetting front
-            self.ax_ohy_graph.plot(self.time_ohy, self.wetting_front_ohy, zorder = 2)
+            self.ax_ohy_graph.plot(self.time_ohy, self.wetting_front_ohy, zorder = 2,label = "Wetting front depth")
             #Precipitation
             self.ax_precipitation_ohy.bar(self.time_ohy, self.rainfall_ohy,width = self.time_ohy[1]-self.time_ohy[0] ,color = "blue", 
-                edgecolor = "blue",label="Rainfall", zorder = 1)
+                label="Rainfall", zorder = 1,alpha = 0.3)
             
+            
+            #Legend
+            # Ajustar la leyenda combinada
+            lines1, labels1 = self.ax_ohy_graph.get_legend_handles_labels()
+            lines2, labels2 = self.ax_precipitation_ohy.get_legend_handles_labels()
+            legend = self.ax_ohy_graph.legend(lines1 + lines2, labels1 + labels2, 
+                loc="lower center",  # Centrar horizontalmente
+                bbox_to_anchor=(0.5,-0.47),  # Posición justo arriba del gráfico
+                ncol=3,  # Número de columnas en la leyenda
+                frameon=False)
+            
+            #Change color legend
+            legend.get_frame().set_facecolor("#f0f0f0")
             
             #Thousand separator
             def xfunc(x,pos):
@@ -5113,6 +5184,7 @@ class qvfsmod:
             self.ax_ohy_graph.set_xlabel("Time (s)")
             self.ax_ohy_graph.set_ylabel("Wetting front depth (m)")
             self.ax_precipitation_ohy.set_ylabel("Rainfall (m/s)")
+            self.ax_precipitation_ohy.yaxis.set_label_position("right") 
             
             #Graph title
             self.ax_ohy_graph.set_title("Wetting front depth graph",color = "black")
@@ -5121,18 +5193,30 @@ class qvfsmod:
             self.canvas_ohy_graph.figure.set_facecolor('#f0f0f0')
             self.ax_ohy_graph.set_facecolor('#f0f0f0')
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-            self.canvas_ohy_graph.figure.subplots_adjust(left=0.15, bottom=0.2,right=0.85)
+            self.canvas_ohy_graph.figure.subplots_adjust(left=0.15, bottom=0.25,right=0.85)
             #Draw canvas
             self.canvas_ohy_graph.draw()
         
         elif self.dlg_ohy_graphs.soil_infiltration.isChecked():
             #Add lines
             #Wetting front
-            self.ax_ohy_graph.plot(self.time_ohy, self.infiltration_ohy, zorder = 2)
+            self.ax_ohy_graph.plot(self.time_ohy, self.infiltration_ohy, zorder = 2,label = "Soil infiltration")
             #Precipitation
             self.ax_precipitation_ohy.bar(self.time_ohy, self.rainfall_ohy,width = self.time_ohy[1]-self.time_ohy[0] ,color = "blue", 
-                edgecolor = "blue",label="Rainfall", zorder = 1)
+                label="Rainfall", zorder = 1,alpha = 0.3)
             
+            #Legend
+            # Ajustar la leyenda combinada
+            lines1, labels1 = self.ax_ohy_graph.get_legend_handles_labels()
+            lines2, labels2 = self.ax_precipitation_ohy.get_legend_handles_labels()
+            legend = self.ax_ohy_graph.legend(lines1 + lines2, labels1 + labels2, 
+                loc="lower center",  # Centrar horizontalmente
+                bbox_to_anchor=(0.5,-0.47),  # Posición justo arriba del gráfico
+                ncol=3,  # Número de columnas en la leyenda
+                frameon=False)
+            
+            #Change color legend
+            legend.get_frame().set_facecolor("#f0f0f0")
             
             #Thousand separator
             def xfunc(x,pos):
@@ -5155,6 +5239,7 @@ class qvfsmod:
             self.ax_ohy_graph.set_xlabel("Time (s)")
             self.ax_ohy_graph.set_ylabel("Soil infiltration (m/s)")
             self.ax_precipitation_ohy.set_ylabel("Rainfall (m/s)")
+            self.ax_precipitation_ohy.yaxis.set_label_position("right") 
             
             #Graph title
             self.ax_ohy_graph.set_title("Soil infiltration graph",color = "black")
@@ -5163,7 +5248,7 @@ class qvfsmod:
             self.canvas_ohy_graph.figure.set_facecolor('#f0f0f0')
             self.ax_ohy_graph.set_facecolor('#f0f0f0')
             # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-            self.canvas_ohy_graph.figure.subplots_adjust(left=0.15, bottom=0.2,right=0.85)
+            self.canvas_ohy_graph.figure.subplots_adjust(left=0.15, bottom=0.25,right=0.85)
             #Draw canvas
             self.canvas_ohy_graph.draw()
         
@@ -6234,8 +6319,14 @@ class qvfsmod:
                 self.ax.set_ylim(0,max(list(mu_star)+list(sigma))*1.2)
                 
                 #Add legend
-                legend = self.ax.legend(loc="upper right")
-                legend.get_frame().set_facecolor('#f0f0f0')
+                legend = self.ax.legend(
+                    loc="lower center",  # Centrar horizontalmente
+                    bbox_to_anchor=(0.9, 1.01),  # Posición justo arriba del gráfico
+                    ncol=1,  # Número de columnas en la leyenda
+                    frameon=False
+                )
+                legend.get_frame().set_alpha(0)
+        
                 #Labels
                 self.ax.set_xlabel(r"Mean of Elementary Effects ($\mu_{i}^{*}$)")
                 self.ax.set_ylabel("Standard Deviation of Elementary Effects ($\sigma_{i}$)")
@@ -6462,9 +6553,9 @@ class qvfsmod:
                     pass
 
                 # Etiquetas de los ejes
-                ax1.set_xlabel("Buffer Length (m)", size = 14,family="arial",weight = "bold",color = "black")
-                ax1.set_ylabel("Density", size = 14,family="arial",weight = "bold",color = "black")
-                ax2.set_ylabel("Cumulative Probability", size = 14,family="arial",weight = "bold",color = "black")
+                ax1.set_xlabel("Buffer Length (m)")
+                ax1.set_ylabel("Density")
+                ax2.set_ylabel("Cumulative Probability")
 
 
                 # Personalización de los grids
@@ -6478,6 +6569,8 @@ class qvfsmod:
                 combined_labels = labels1 + labels2
 
                 legend = ax1.legend(handles1 + handles2, labels1 + labels2, loc="best")
+                legend.get_frame().set_alpha(0)
+                
                 
                 #Change background color
                 self.canvas_sensitivity_graph_design.figure.set_facecolor('#f0f0f0')
@@ -6560,21 +6653,26 @@ class qvfsmod:
                     pass
                     
                 #Labels
-                ax1.set_xlabel("Buffer lengths (m)",size = 14,family="arial",weight = "bold",color = "black")
+                ax1.set_xlabel("Buffer lengths (m)")
                 if output_column.split()[2] == "RDR":
-                    ax1.set_ylabel("Runoff delivery ratio",size = 14,family="arial",weight = "bold",color = "black")
+                    ax1.set_ylabel("Runoff delivery ratio")
                     ax1.set_title (f"Buffer length for a runoff delivery ratio of {output_column.split()[-1]}",color = "black")
                 elif output_column.split()[2] == "SDR":
-                    ax1.set_ylabel("Sediment delivery ratio",size = 14,family="arial",weight = "bold",color = "black")
+                    ax1.set_ylabel("Sediment delivery ratio")
                     ax1.set_title (f"Buffer length for a sediment delivery ratio of {output_column.split()[-1]}",color = "black")
                 elif output_column.split()[2] == "PDR":
-                    ax1.set_ylabel(f"Pesticide delivery ratio \nfor Pesticide {output_column.split()[3]}",size = 14,family="arial",weight = "bold",color = "black")
+                    ax1.set_ylabel(f"Pesticide delivery ratio \nfor Pesticide {output_column.split()[3]}")
                     ax1.set_title (f"Buffer length for a pesticide delivery ratio of {output_column.split()[-1]}",color = "black")
                     
                 #X ticks
                 ax1.tick_params(axis = "both",colors = "black",labelsize = 9)
                 # Add legend
-                ax1.legend()
+                legend = ax1.legend(
+                    loc="best",
+                    ncol=1,
+                    frameon=False
+                )
+                legend.get_frame().set_alpha(0)
                 
                 #Change background color
                 self.canvas_sensitivity_graph_design.figure.set_facecolor('#f0f0f0')
@@ -6662,12 +6760,17 @@ class qvfsmod:
                 self.ax_design.set_ylim(0,max(list(mu_star)+list(sigma))*1.2)
                 
                 #Add legend
-                legend = self.ax_design.legend(loc="upper right")
-                legend.get_frame().set_facecolor('#f0f0f0')
+                legend = self.ax_design.legend(
+                    loc="lower center",  # Centrar horizontalmente
+                    bbox_to_anchor=(0.9, 1.01),  # Posición justo arriba del gráfico
+                    ncol=1,  # Número de columnas en la leyenda
+                    frameon=False
+                )
+                legend.get_frame().set_alpha(0)
                 #Labels
-                self.ax_design.set_xlabel(r"Mean of Elementary Effects ($\mu_{i}^{*}$)",size = 14,family="arial",weight = "bold",color = "black")
-                self.ax_design.set_ylabel("Standard Deviation \nof Elementary Effects ($\sigma_{i}$)",size = 14,family="arial",weight = "bold",color = "black")
-                self.ax_design.set_title("Morris sensitivity analysis indexes", size=16, family="arial", weight="bold", color="black")
+                self.ax_design.set_xlabel(r"Mean of Elementary Effects ($\mu_{i}^{*}$)")
+                self.ax_design.set_ylabel("Standard Deviation of Elementary Effects ($\sigma_{i}$)")
+                self.ax_design.set_title("Morris sensitivity analysis indexes")
                 #Change background color
                 self.canvas_sensitivity_graph_design.figure.set_facecolor('#f0f0f0')
                 self.ax_design.set_facecolor('#f0f0f0')
@@ -13779,12 +13882,9 @@ class qvfsmod:
         
     def enable_disable_water_quality_dialog(self):
         """Method to enable/disable widgets in the water quality dialog"""
-        try: #if number of pesticides is not added correctly
-            if self.dlg_water_quality.number_pesticides.text() =="": number_pesticides =1
-            else:
-                number_pesticides = int(self.dlg_water_quality.number_pesticides.text())
-            if self.dlg_water_quality.check_direct.isChecked():
-                for p in range(number_pesticides):
+        try:
+            for p in range(self.maximum_number_pesticides_dialog):
+                if self.dlg_water_quality.check_direct.isChecked():
                     pesticide = p+1
                     getattr(self.dlg_water_quality, f"line_koc_{pesticide}").setReadOnly(True)
                     getattr(self.dlg_water_quality, f"line_kd_{pesticide}").setReadOnly(False)
@@ -13792,8 +13892,7 @@ class qvfsmod:
                     getattr(self.dlg_water_quality, f"line_kd_{pesticide}").setStyleSheet("background-color: #f0f0f0;")
                     self.dlg_water_quality.line_oc_1.setReadOnly(True)
                     self.dlg_water_quality.line_oc_1.setStyleSheet("background-color: #d9d9d9;")
-            else:
-                for p in range(number_pesticides):
+                else:
                     pesticide = p+1
                     getattr(self.dlg_water_quality, f"line_koc_{pesticide}").setReadOnly(False)
                     getattr(self.dlg_water_quality, f"line_kd_{pesticide}").setReadOnly(True)
@@ -14981,7 +15080,17 @@ class qvfsmod:
                 item = QTableWidgetItem(str(df.iloc[fila,columna]))
                 self.dlg_water_quality.tableWidget.setItem(fila, columna, item)
                 item.setTextAlignment(Qt.AlignCenter)
-                
+        
+        #Center and disable degradation table data
+        table = self.dlg_degradation_data.table_degradations
+        item = QTableWidgetItem("-1")
+        item.setTextAlignment(Qt.AlignCenter)  # Centra el texto
+        item.setFlags(Qt.NoItemFlags)  # Deshabilita completamente la celda
+        item.setBackground(Qt.gray)  # Fondo deshabilitado
+        table.setItem(0, 0, item)
+        table.setColumnWidth(0, 160)
+        
+
         
         #Calibration
         #Hydrograph
@@ -15472,13 +15581,16 @@ class qvfsmod:
             mask = df["Rainfall (mm)"]==i
             x = df[mask][column_x]
             y = df[mask][column_y]
-            self.ax_design_graph.plot(x,y, linewidth=2, marker='o', markersize=4,label = f"{i} mm",zorder = 0)
+            self.ax_design_graph.plot(x,y, linewidth=2, marker='o', markersize=4,label = f"{i} mm",zorder = 1)
             
         #Limits
         #self.ax.set_ylim([0, 1])
         #Labels
         self.ax_design_graph.set_xlabel(column_x,size = 10,family="arial",weight = "bold",color = "black")
         self.ax_design_graph.set_ylabel("\n".join(textwrap.wrap(column_y, width=24, break_long_words=False)),size = 10,family="arial",weight = "bold",color = "black") #if the text is too long then we add a new row line
+        
+        #Grids in the back
+        self.ax_design_graph.grid(True, zorder=0)
         
         #X ticks
         self.ax_design_graph.tick_params(axis = "both",colors = "black",labelsize = 9)
@@ -15503,7 +15615,7 @@ class qvfsmod:
         value = self.dlg_design_results_graph.threshold.text()
         try:
             value = float(value)
-            self.line = self.ax_design_graph.axhline(y=value, color='r', linestyle='--', linewidth=2, zorder=1)
+            self.line = self.ax_design_graph.axhline(y=value, color='r', linestyle='--', linewidth=2, zorder=2)
         except ValueError:
             value = 0
         

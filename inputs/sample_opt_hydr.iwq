@@ -2,13 +2,13 @@
 1 147 30 100 120                      ; IKD (Kd or Koc) (%OC) (repeat Koc or Kd for j species)
 40			; %Clay content in field soil
 1 IDG
-3 27.995 0.26 6.097 2 0.05 0.58 25 7 0.05 0.4 26 8 0.05 0.3 ; ndgday dgHalf FC dgPin dgML dgLD dgmres0 (repeat {dgHalf,dgPIN,dgLD,dgmres0}_j for j species)
-9.5 8.6 6.3 (dgT(i),i=1,ndgday) (Celsius)
-0.265 0.264 0.265 (dgTheta(i),i=1,ndgday (-)
+5 27.995 0.26 6.097 2 0.05 0.58 20 6 0.01 0.4 21 7 0.04 0.6 ; ndgday dgHalf FC dgPin dgML dgLD dgmres0 (repeat {dgHalf,dgPIN,dgLD,dgmres0}_j for j species)
+9.5 8.6 6.3 8 2 (dgT(i),i=1,ndgday) (Celsius)
+0.265 0.264 0.265 0.2 0.25 (dgTheta(i),i=1,ndgday (-)
 1                                       ; IMOB
-                               ; Mj molar mass of compounds (g/mol)
+100 200 120                             ; Mj molar mass of compounds (g/mol)
 -1 0 0                             ; fij molar formation fraction matrix {jxj}
-0 -1 0 
+0 -1 0.23 
 0 0 -1 
 
 

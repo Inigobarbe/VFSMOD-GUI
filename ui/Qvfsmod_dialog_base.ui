@@ -140,8 +140,6 @@ QTableCornerButton::section {
            <font>
             <family>Georgia</family>
             <pointsize>-1</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
            </font>
           </property>
           <property name="text">
@@ -532,7 +530,6 @@ example 1%</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <underline>true</underline>
                   </font>
                  </property>
                  <property name="text">
@@ -678,7 +675,6 @@ typical 0.01-0.07</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <underline>true</underline>
                   </font>
                  </property>
                  <property name="text">
@@ -776,7 +772,6 @@ typical 0.01-0.07</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <underline>true</underline>
                   </font>
                  </property>
                  <property name="text">
@@ -808,7 +803,6 @@ typical 0.01-0.07</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <underline>true</underline>
                   </font>
                  </property>
                  <property name="text">
@@ -1135,7 +1129,6 @@ typical 0.01-0.07</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <underline>true</underline>
                   </font>
                  </property>
                  <property name="text">
@@ -1288,7 +1281,6 @@ default 5 min</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <underline>true</underline>
                   </font>
                  </property>
                  <property name="text">
@@ -1371,8 +1363,6 @@ default 5 min</string>
            <font>
             <family>Georgia</family>
             <pointsize>-1</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
            </font>
           </property>
           <property name="text">
@@ -1444,7 +1434,6 @@ default 5 min</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <underline>true</underline>
                   </font>
                  </property>
                  <property name="text">
@@ -1935,7 +1924,6 @@ default 5 min</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <underline>true</underline>
                   </font>
                  </property>
                  <property name="text">
@@ -2272,8 +2260,6 @@ default 5 min</string>
            <font>
             <family>Georgia</family>
             <pointsize>-1</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
            </font>
           </property>
           <property name="text">
@@ -3011,8 +2997,6 @@ default 5 min</string>
            <font>
             <family>Georgia</family>
             <pointsize>-1</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
            </font>
           </property>
           <property name="text">
@@ -4039,8 +4023,6 @@ Solution Parameters</string>
            <font>
             <family>Georgia</family>
             <pointsize>-1</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
            </font>
           </property>
           <property name="text">
@@ -4071,7 +4053,7 @@ Solution Parameters</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>759</width>
+             <width>747</width>
              <height>941</height>
             </rect>
            </property>
@@ -4104,8 +4086,6 @@ Solution Parameters</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -4272,8 +4252,6 @@ analysis</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -4451,8 +4429,6 @@ analysis</string>
                   <font>
                    <family>Georgia</family>
                    <pointsize>-1</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -5024,8 +5000,6 @@ analysis</string>
            <font>
             <family>Georgia</family>
             <pointsize>-1</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
            </font>
           </property>
           <property name="text">
@@ -5376,8 +5350,6 @@ analysis</string>
            <font>
             <family>Georgia</family>
             <pointsize>-1</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
            </font>
           </property>
           <property name="text">
@@ -5403,8 +5375,8 @@ analysis</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_8">
            <property name="geometry">
             <rect>
-             <x>-176</x>
-             <y>-96</y>
+             <x>0</x>
+             <y>0</y>
              <width>923</width>
              <height>577</height>
             </rect>
@@ -6192,8 +6164,6 @@ Solution Parameters</string>
            <font>
             <family>Georgia</family>
             <pointsize>-1</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
            </font>
           </property>
           <property name="text">
@@ -6219,8 +6189,8 @@ Solution Parameters</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_9">
            <property name="geometry">
             <rect>
-             <x>0</x>
-             <y>0</y>
+             <x>-253</x>
+             <y>-72</y>
              <width>1000</width>
              <height>553</height>
             </rect>
@@ -6245,11 +6215,37 @@ Solution Parameters</string>
             <item row="1" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout_127">
               <item>
+               <spacer name="horizontalSpacer_29">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
                <widget class="QPushButton" name="print_graph_sensitivity">
                 <property name="text">
                  <string>Print Plot</string>
                 </property>
                </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_28">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
              </layout>
             </item>
@@ -6558,8 +6554,6 @@ Solution Parameters</string>
            <font>
             <family>Georgia</family>
             <pointsize>-1</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
            </font>
           </property>
           <property name="text">
@@ -6847,8 +6841,6 @@ Solution Parameters</string>
            <font>
             <family>Georgia</family>
             <pointsize>-1</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
            </font>
           </property>
           <property name="text">
@@ -7501,8 +7493,6 @@ Solution Parameters</string>
            <font>
             <family>Georgia</family>
             <pointsize>-1</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
            </font>
           </property>
           <property name="text">
@@ -7529,7 +7519,7 @@ Solution Parameters</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-128</y>
              <width>1068</width>
              <height>609</height>
             </rect>
@@ -7711,11 +7701,37 @@ Solution Parameters</string>
                <item row="2" column="0">
                 <layout class="QHBoxLayout" name="horizontalLayout_138">
                  <item>
+                  <spacer name="horizontalSpacer_31">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
                   <widget class="QPushButton" name="print_graph_uncertainity">
                    <property name="text">
                     <string>Print Plot</string>
                    </property>
                   </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_30">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
                  </item>
                 </layout>
                </item>
@@ -7732,8 +7748,6 @@ Solution Parameters</string>
            <font>
             <family>Georgia</family>
             <pointsize>-1</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
            </font>
           </property>
           <property name="text">
@@ -7751,8 +7765,6 @@ Solution Parameters</string>
            <font>
             <family>Georgia</family>
             <pointsize>-1</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
            </font>
           </property>
           <property name="text">

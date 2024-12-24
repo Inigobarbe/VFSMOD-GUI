@@ -1,123 +1,12 @@
-Excepción: ValueError
-Mensaje: could not convert string to float: 'l'
+Excepción: PermissionError
+Mensaje: [Errno 13] Permission denied: 'C:/qvfsmod/graph.pdf'
 
 Excepción: ValueError
-Mensaje: could not convert string to float: 'p'
+Mensaje: Axis limits cannot be NaN or Inf
 
 Excepción: ValueError
-Mensaje: could not convert string to float: 'p'
-
-Excepción: ValueError
-Mensaje: could not convert string to float: 'p'
-
-Excepción: ValueError
-Mensaje: could not convert string to float: ''
-
-Excepción: ValueError
-Mensaje: invalid literal for int() with base 10: 'a'
-
-Excepción: ValueError
-Mensaje: invalid literal for int() with base 10: ''
-
-Excepción: ValueError
-Mensaje: invalid literal for int() with base 10: ''
-
-Excepción: ValueError
-Mensaje: invalid literal for int() with base 10: ''
-
-Excepción: NameError
-Mensaje: name 'pesticides' is not defined
-
-Excepción: TypeError
-Mensaje: object of type 'int' has no len()
+Mensaje: 'right' is not a valid value for loc; supported values are 'bottom', 'center', 'top'
 
 Excepción: AttributeError
-Mensaje: 'degradation_data' object has no attribute 'label_pesticide_1_molar_mass'
-
-Excepción: AttributeError
-Mensaje: 'degradation_data' object has no attribute 'label_pesticide_1_molar_mass'
-
-Excepción: AttributeError
-Mensaje: 'degradation_data' object has no attribute 'label_pesticide_1_molar_mass'
-
-Excepción: AttributeError
-Mensaje: 'NoneType' object has no attribute 'deleteLater'
-
-Excepción: RuntimeError
-Mensaje: wrapped C/C++ object of type QLabel has been deleted
-
-Excepción: ValueError
-Mensaje: invalid literal for int() with base 10: ''
-
-Excepción: AttributeError
-Mensaje: 'NoneType' object has no attribute 'deleteLater'
-
-Excepción: AttributeError
-Mensaje: 'NoneType' object has no attribute 'deleteLater'
-
-Excepción: AttributeError
-Mensaje: 'NoneType' object has no attribute 'columns'
-
-Excepción: AttributeError
-Mensaje: 'NoneType' object has no attribute 'columns'
-
-Excepción: AttributeError
-Mensaje: 'NoneType' object has no attribute 'columns'
-
-Excepción: TypeError
-Mensaje: normpath() takes 1 positional argument but 2 were given
-
-Excepción: TypeError
-Mensaje: 'NoneType' object cannot be interpreted as an integer
-
-Excepción: TypeError
-Mensaje: 'NoneType' object cannot be interpreted as an integer
-
-Excepción: TypeError
-Mensaje: 'NoneType' object cannot be interpreted as an integer
-
-Excepción: TypeError
-Mensaje: 'NoneType' object cannot be interpreted as an integer
-
-Excepción: TypeError
-Mensaje: can only concatenate list (not "int") to list
-
-Excepción: TypeError
-Mensaje: can only concatenate list (not "int") to list
-
-Excepción: TypeError
-Mensaje: getSaveFileName(parent: QWidget = None, caption: str = '', directory: str = '', filter: str = '', initialFilter: str = '', options: Union[QFileDialog.Options, QFileDialog.Option] = 0): argument 1 has unexpected type 'qvfsmod'
-
-Excepción: NameError
-Mensaje: name 'default_file_name' is not defined
-
-Excepción: AttributeError
-Mensaje: 'qvfsmod' object has no attribute 'canvas_ohy_graph'
-
-Excepción: IndexError
-Mensaje: list index out of range
-
-Excepción: IndexError
-Mensaje: list index out of range
-
-Excepción: IndexError
-Mensaje: list index out of range
-
-Excepción: IndexError
-Mensaje: list index out of range
-
-Excepción: IndexError
-Mensaje: list index out of range
-
-Excepción: IndexError
-Mensaje: list index out of range
-
-Excepción: AttributeError
-Mensaje: 'AxesSubplot' object has no attribute 'autotexts'
-
-Excepción: ValueError
-Mensaje: not enough values to unpack (expected 3, got 2)
-
-Excepción: NameError
-Mensaje: name 'adjust_text' is not defined
+Mensaje: 'list' object has no attribute 'set_zorder'
 

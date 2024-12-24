@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>907</width>
-    <height>405</height>
+    <height>417</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -126,9 +126,9 @@ QTableCornerButton::section {
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-385</y>
+        <y>-154</y>
         <width>870</width>
-        <height>772</height>
+        <height>787</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_9">
@@ -209,8 +209,6 @@ QTableCornerButton::section {
              <font>
               <family>Georgia</family>
               <pointsize>-1</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
              </font>
             </property>
             <property name="text">
@@ -233,8 +231,6 @@ QTableCornerButton::section {
                 <font>
                  <family>Georgia</family>
                  <pointsize>-1</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">
@@ -406,8 +402,6 @@ Wetting Front, Sav (m)</string>
                 <font>
                  <family>Georgia</family>
                  <pointsize>-1</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">
@@ -515,8 +509,6 @@ Wetting Front, Sav (m)</string>
                 <font>
                  <family>Georgia</family>
                  <pointsize>-1</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">
@@ -688,8 +680,6 @@ Wetting Front, Sav (m)</string>
                 <font>
                  <family>Georgia</family>
                  <pointsize>-1</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">
@@ -866,7 +856,8 @@ Wetting Front, Sav (m)</string>
                   </size>
                  </property>
                  <property name="text">
-                  <string>Fraction of the filter where ponding is checked, (0&lt;=SCHK&lt;=1)</string>
+                  <string>Fraction of the filter where ponding 
+is checked, (0&lt;=SCHK&lt;=0.5)</string>
                  </property>
                 </widget>
                </item>
@@ -937,8 +928,6 @@ Wetting Front, Sav (m)</string>
                 <font>
                  <family>Georgia</family>
                  <pointsize>-1</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">
@@ -993,8 +982,6 @@ Wetting Front, Sav (m)</string>
              <font>
               <family>Georgia</family>
               <pointsize>-1</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
              </font>
             </property>
             <property name="text">
@@ -1032,8 +1019,6 @@ Parameters</string>
                 <font>
                  <family>Georgia</family>
                  <pointsize>-1</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
                 </font>
                </property>
                <property name="text">

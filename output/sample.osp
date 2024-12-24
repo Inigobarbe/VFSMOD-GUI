@@ -12,6 +12,8 @@ File: C:\qvfsmod\output\sample.osp                    VFSMOD v4.6.0 11/2024
    File #=  9 code:og2=C:\qvfsmod\output\sample.og2                                               
    File #= 10 code:osp=C:\qvfsmod\output\sample.osp                                               
    File #= 11 code:isd=C:\qvfsmod\inputs\sample.isd                                               
+   File #= 12 code:iwq=C:\qvfsmod\inputs\sample.iwq                                               
+   File #= 13 code:owq=C:\qvfsmod\output\sample.owq                                               
   
        Summary of Buffer Performance Indicators:
   
@@ -27,17 +29,17 @@ File: C:\qvfsmod\output\sample.osp                    VFSMOD v4.6.0 11/2024
       0.842 m3  = Total Rainfall on Filter
       9.743 mm  = Total Runoff from Source (mm depth over Source Area)
       1.325 m3  = Total Runoff from Source
-      6.940 mm  = Total Runoff out from Filter (mm depth over Source+Filter)
-      1.176 m3  = Total Runoff out from Filter
-      1.023 m3  = Total Infiltration in Filter
-      0.888     = Runoff Delivery Ratio
+      4.331 mm  = Total Runoff out from Filter (mm depth over Source+Filter)
+      0.734 m3  = Total Runoff out from Filter
+      1.433 m3  = Total Infiltration in Filter
+      0.554     = Runoff Delivery Ratio
   
-      45.053 kg = Mass Sediment Input to Filter
-      34.000 g/L= Concentration Sediment in Runoff from source Area
-       1.529 kg = Mass Sediment Output from Filter
-       1.300 g/L= Concentration Sediment in Runoff exiting the Filter
-      43.524 kg = Mass Sediment retained in Filter
-       0.034    = Sediment Delivery Ratio
+      34.187 kg = Mass Sediment Input to Filter
+      25.800 g/L= Concentration Sediment in Runoff from source Area
+      12.700 kg = Mass Sediment Output from Filter
+      17.301 g/L= Concentration Sediment in Runoff exiting the Filter
+      21.487 kg = Mass Sediment retained in Filter
+       0.371    = Sediment Delivery Ratio
   
        8.65 m   = Effective Filter Length
        0.00 m   = Wedge Distance

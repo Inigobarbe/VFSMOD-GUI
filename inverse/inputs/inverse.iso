@@ -1,9 +1,7 @@
-0.00044771607563805454  0.37904 0.311    0.125	0.0  1
-_______________________________________
-Ks  	 Sav	Theta-s	Theta-i	Sm   schk
-(m/s)	 (m)			(m)  (ponding check)
-Grass (lab):
-1.32780e-5  0.37904 0.311    0.30	0.0 
-Rip (lab):
-1.7056e-5 0.08825 0.306	0.3	0.0 
-
+  5.984699846072318e-06   0.37904   0.33492750493720513   0.125   0.0   0.5
+ 
+     -------------------------------------
+ Ks(m/s)   Sav(m)  Theta-s   Theta-i   Sm(m)   Schk(ponding ck)  WTD(Water Table Depth / No value means 'standard' iso file)
+ WTD(m, no value or non numeric value means no water table present and lines below not needed)
+ ITHETATYPE OR/OR  VGALPHA/BCALPHA VGN/BCLAMBDA VGM
+ IKUNSATYPE VGM/BCETA/GDNALPHA         BCALPHA 
