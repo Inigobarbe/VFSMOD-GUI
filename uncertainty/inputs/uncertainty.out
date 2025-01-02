@@ -12,7 +12,7 @@ SCS Curve number=  85.0
 Watershed area=    0.50 ha
 Maximum flow path length=  100.00 m
 Average slope of flow path=    2.00 %
-MUSLE type=  2 where R-factor is (see manual)
+MUSLE type=  5 where R-factor is (see manual)
   0=Foster, 1=Williams,   2=GLEAMS
   3=Cooley, 4=PRZM-MUSLE, 5=PRZM-MUSS
   

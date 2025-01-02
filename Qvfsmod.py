@@ -539,7 +539,7 @@ class qvfsmod:
         self.dlg_base.parameter_name_design.textChanged.connect(lambda _, b= "design_uncertainity":self.add_pesticides_dialog_sensitivity_inputs(b))
         self.dlg_calibration_sensitivity_hydrograph.parameter_name.textChanged.connect(lambda _, b= "identifiability":self.add_pesticides_dialog_sensitivity_inputs(b))
         self.dlg_base.parameter_name.textChanged.connect(lambda _, b= "sensitivity_analysis":self.add_pesticides_dialog_sensitivity_inputs(b))
-        self.dlg_base.parameter_name_uncertainity.textChanged.connect(lambda _, b= "uncertainity":self.add_pesticides_dialog_sensitivity_inputs(b))
+        self.dlg_base.parameter_name_uncertainity.textChanged.connect(lambda _, b= "uncertainty":self.add_pesticides_dialog_sensitivity_inputs(b))
         
         #If text of the outputs is changed then check if the output exist for UH
         lineEdits = [self.dlg_base.uh_file,self.dlg_base.uh_input,self.dlg_base.line_hydrograph,
@@ -553,7 +553,7 @@ class qvfsmod:
         for i in lineEdits:
             i.textChanged.connect(self.check_vfsmod_output_exist)
         
-        #When project file name changes then update to design, calibration, sensitivity analysis and uncertainity
+        #When project file name changes then update to design, calibration, sensitivity analysis and uncertainty
         self.dlg_base.name_files.textChanged.connect(self.update_project_files)
         
         #Check if added outputs exist in UH and in VFSMOD
@@ -1226,8 +1226,8 @@ class qvfsmod:
                     self.dlg_base.pesticide_input_sensitivity_combo.deleteLater()
                     delattr(self.dlg_base,"pesticide_input_sensitivity_combo")
             
-        #Uncertainity
-        if process == "uncertainity":
+        #Uncertainty
+        if process == "uncertainty":
             if self.dlg_base.parameter_name_uncertainity.text() in self.variables_water_quality:
                 #Quit widgets
                 if hasattr(self.dlg_base, 'pesticide_input_uncertainity'):
@@ -3143,8 +3143,9 @@ class qvfsmod:
                             break
                         else:
                             outputs.append(lines[i+1])
-        #Obtain unique values
+        #Obtain unique values and order them alphabetically
         outputs = list(set(outputs))
+        outputs.sort()
                 
         #Obtain the name of the output that was selected previously
         for i in range(self.dlg_base.frame_18.layout().count()):
@@ -3243,6 +3244,7 @@ class qvfsmod:
                 #Add the outputs
                 columns = lines[4].split(",")
                 outputs = len(columns)- (len(inputs) + 1)
+                
                 #Then add them
                 if self.dlg_base.frame_22.layout() is not None:
                     layout_frame_22 = self.dlg_base.frame_22.layout()
@@ -3262,7 +3264,9 @@ class qvfsmod:
                         layout_frame_22.removeItem(item)
 
                 # Lista de nuevos nombres para los QRadioButtons a añadir
-                nuevos_inputs = columns[-outputs:]
+                nuevos_inputs = list(columns[-outputs:])
+                #Sort alphabetically the outputs
+                nuevos_inputs.sort()
 
                 # Crear y añadir nuevos QRadioButtons
                 outputs_checks = []
@@ -3480,6 +3484,9 @@ class qvfsmod:
                     outputs.append(i)
                 if i == "Error":
                     condicion = True
+            
+            #Sort outputs alphabetically
+            outputs.sort()
                 
             #Obtain the name of the output that was selected previously
             for i in range(self.dlg_base.frame_69.layout().count()):
@@ -3535,7 +3542,7 @@ class qvfsmod:
             with open(ruta, "r") as archivo:
                 lineas = archivo.readlines()
             #If the csv is not of a Uncertainity sensitivity analysis then give error
-            if lineas[0]!="Uncertainity analysis results" + '\n' and lineas[0]!="Morris sensitivity indexes" + '\n' and lineas[0]!="FAST sensitivity indexes" + '\n' and lineas[0]!="Sobol sensitivity indexes" + '\n':
+            if lineas[0]!="Uncertainty analysis results" + '\n' and lineas[0]!="Morris sensitivity indexes" + '\n' and lineas[0]!="FAST sensitivity indexes" + '\n' and lineas[0]!="Sobol sensitivity indexes" + '\n':
                 self.warning_message("Please select a csv file that contains Uncertainity analysis results")
                 return
                 
@@ -3609,7 +3616,7 @@ class qvfsmod:
             # Añadir título y etiquetas
             self.ax_uncertainity[1].set_ylabel(output_with_line_breaks)
             #Title to graph
-            self.canvas_uncertainity_graph.figure.suptitle(f"Uncertainity of {output_column}", fontsize = 10)
+            self.canvas_uncertainity_graph.figure.suptitle(f"Uncertainty of {output_column}", fontsize = 10)
             
             #Add table
             table = self.dlg_base.tableWidget
@@ -6108,7 +6115,7 @@ class qvfsmod:
     def browse_csv_uncertainity(self):
         """Method to add csv of uncertainity results"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
-        fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Uncertainity Analysis Results File",os.path.normpath(working_directory+"\\uncertainity\\output") , "CSV files (*.csv)")
+        fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Uncertainty Analysis Results File",os.path.normpath(working_directory+"\\uncertainty\\output") , "CSV files (*.csv)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
@@ -6180,7 +6187,7 @@ class qvfsmod:
                 if np.isnan(x):x = 0
                 if np.isnan(y):y = 0
                 self.ax_calibration_sensitivity.scatter(x, y, marker="o", color="maroon")
-                self.ax_calibration_sensitivity.annotate(f'{names_inputs[i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
+                self.ax_calibration_sensitivity.annotate("\n".join(textwrap.wrap(names_inputs[i], width=20, break_long_words=False)), (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
                     fontweight='bold',fontsize = 10)
             #Linea 1:1
             line_plot = list(range(-1,int(max(list(mu_star)+list(sigma))*1.2)+2))
@@ -6220,7 +6227,10 @@ class qvfsmod:
             self.dlg_sensitivity_calibration_results_hydrograph.tableWidget.setRowCount(len(data_ordered))
             for fila in range(len(data_ordered)):
                 for columna in range(3):
-                    item = QTableWidgetItem(str(data_ordered[fila][columna]))
+                    if columna == 0:    
+                        item = QTableWidgetItem(str(data_ordered[fila][columna]))
+                    else: #round values
+                        item = QTableWidgetItem(str(round(float(data_ordered[fila][columna]),2)))
                     self.dlg_sensitivity_calibration_results_hydrograph.tableWidget.setItem(fila, columna, item)
                     item.setTextAlignment(Qt.AlignCenter)
             #Change width of first column
@@ -6299,7 +6309,7 @@ class qvfsmod:
                             add_label_non_monotonic = False
                         else:
                             self.ax.scatter(x, y, color="blue", marker="*")
-                        self.ax.annotate(f'{names_inputs[i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
+                        self.ax.annotate("\n".join(textwrap.wrap(names_inputs[i], width=20, break_long_words=False)), (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
                             fontweight='bold',fontsize = 10)
                     else:
                         if add_label_monotonic: # add label only once
@@ -6308,7 +6318,7 @@ class qvfsmod:
                         else:
                             self.ax.scatter(x, y, marker="o", color="maroon")
                             
-                        self.ax.annotate(f'{names_inputs[i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
+                        self.ax.annotate("\n".join(textwrap.wrap(names_inputs[i], width=20, break_long_words=False)), (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
                             fontweight='bold',fontsize = 10)
                         
                 #Linea 1:1
@@ -6740,7 +6750,7 @@ class qvfsmod:
                             add_label_non_monotonic = False
                         else:
                             self.ax_design.scatter(x, y, color="blue", marker="*")
-                        self.ax_design.annotate(f'{names_inputs[i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
+                        self.ax_design.annotate("\n".join(textwrap.wrap(names_inputs[i], width=20, break_long_words=False)), (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
                             fontweight='bold',fontsize = 10)
                     else:
                         if add_label_monotonic: # add label only once
@@ -6749,7 +6759,7 @@ class qvfsmod:
                         else:
                             self.ax_design.scatter(x, y, marker="o", color="maroon")
                             
-                        self.ax_design.annotate(f'{names_inputs[i]}', (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
+                        self.ax_design.annotate("\n".join(textwrap.wrap(names_inputs[i], width=20, break_long_words=False)), (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
                             fontweight='bold',fontsize = 10)
                         
                 #Linea 1:1
@@ -7196,12 +7206,11 @@ class qvfsmod:
         has to be used because we need QTrhead to add progress bar"""
         self.number_execution = 0
         self.results = []
-        print(self.working_directory)
         args_list = [(i, i % (self.number_cores*5), 
           self.param_values, self.dic_data, 
           self.sensitivity_parameters, self.working_directory, 
           self.obtain_direction_vfsmod(self.vfs_uncertainity_file),self.water_quality,self.number_pesticides) for i in range(len(self.param_values))]
-        self.progress_dialog = QProgressDialog("Starting uncertainity analysis...", "Cancel", 0, len(args_list))
+        self.progress_dialog = QProgressDialog("Starting uncertainty analysis...", "Cancel", 0, len(args_list))
         self.progress_dialog.setWindowModality(Qt.WindowModal)
         self.progress_dialog.setWindowTitle("Progress")
         self.progress_dialog.show()
@@ -7226,6 +7235,18 @@ class qvfsmod:
     
     def run_sensitivity_analysis_calibration_part_one(self):
         """Method to run whole sensitivity analysis for calibration"""
+        #First check if a correct file has been selected
+        if self.type_calibration_sensitivity == "hydrograph":
+            ruta = self.obtain_direction_vfsmod(self.dlg_base.hydrograph_file.text())
+            if not os.path.isfile(ruta) or not os.path.exists(ruta): 
+                self.warning_message("Please select a correct hydrograph")
+                return 
+        elif self.type_calibration_sensitivity == "sedimentograph":
+            ruta = self.obtain_direction_vfsmod(self.dlg_base.sedimentograph_file.text())
+            if not os.path.isfile(ruta) or not os.path.exists(ruta): 
+                self.warning_message("Please select a correct sedigraph")
+                return 
+            
         #Create the dictionary for the sensitivity analysis
         self.dic_data = self.create_dictionary_sensitivity_analysis_calibration()
         
@@ -7519,9 +7540,6 @@ class qvfsmod:
             "Mass Sediment Input to Filter (kg)","Concentration Sediment in Runoff from source Area (g/L)",
             "Mass Sediment Output from Filter (kg)","Concentration Sediment in Runoff exiting the Filter (g/L)",
             "Sediment Delivery Ratio","Runoff Delivery Ratio","Water Front Depth (m)"])
-        #Add water quality parameters if present
-        if self.water_quality:
-            self.results_sensitivity.insert(len(self.results_sensitivity.columns),"Leachate depth (m)",None)
         
         
         #Add the parameters names 
@@ -8020,7 +8038,7 @@ class qvfsmod:
         
         #Warning
         if int(self.dlg_base.samples_uncertainity.text())<256:
-            self.warning_message("N value must be higher than 256 when executing Uncertainity Analysis")
+            self.warning_message("N value must be higher than 256 when executing Uncertainty Analysis")
             return
         
         #We will use the fast sample to obtain randomized samples for each input
@@ -8048,9 +8066,6 @@ class qvfsmod:
             "Mass Sediment Output from Filter (kg)","Concentration Sediment in Runoff exiting the Filter (g/L)",
             "Sediment Delivery Ratio","Runoff Delivery Ratio","Water Front Depth (m)"])
         
-        #Add water quality parameters if present
-        if self.water_quality:
-            self.results_sensitivity.insert(len(self.results_sensitivity.columns),"Leachate depth (m)",None)
         
         number_outputs = len(self.results_sensitivity.columns)-1
         #Add the parameters names 
@@ -8078,7 +8093,7 @@ class qvfsmod:
         path = self.obtain_direction_vfsmod(self.dlg_base.file_save_uncertainity.text())
         try:
             with open(path, 'w') as f:
-                f.write("Uncertainity analysis results" + '\n')
+                f.write("Uncertainty analysis results" + '\n')
                 string = f"Studied parameters:"
                 for i in range(len(self.dic_data)):
                     string += list(self.dic_data.keys())[i]
@@ -8088,7 +8103,7 @@ class qvfsmod:
                         string += "\n"
                 f.write(string)
         except PermissionError:
-            self.warning_message(f"{path} file is opened and Uncertainity Analysis data could not be saved")
+            self.warning_message(f"{path} file is opened and Uncertainty Analysis data could not be saved")
             return
         self.results_sensitivity.to_csv(path, mode='a',index=False, float_format='%.5f')
         
@@ -8098,7 +8113,7 @@ class qvfsmod:
         
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)
-        self.warning_message("Uncertainity analysis completed succesfully!")
+        self.warning_message("Uncertainty analysis completed succesfully!")
     
     
     def move_files_design_analysis(self):
@@ -8674,18 +8689,18 @@ class qvfsmod:
             os.remove(i)
     
     def delete_files_uncertainity(self):
-        """Method to delete files of uncertainity analysis after parallelization"""
-        files_delete = [os.path.normpath(self.working_directory+"\\uncertainity\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\uncertainity")) if "uncertainity" in x and "_" in x]
-        files_delete += [os.path.normpath(self.working_directory+"\\uncertainity\\inputs\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\uncertainity"+"\\inputs")) if "uncertainity" in x and "_" in x]
-        files_delete += [os.path.normpath(self.working_directory+"\\uncertainity\\output\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\uncertainity"+"\\output")) if "uncertainity" in x and "_" in x and x[-3:]!="csv"]
+        """Method to delete files of uncertainty analysis after parallelization"""
+        files_delete = [os.path.normpath(self.working_directory+"\\uncertainty\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\uncertainty")) if "uncertainty" in x and "_" in x]
+        files_delete += [os.path.normpath(self.working_directory+"\\uncertainty\\inputs\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\uncertainty"+"\\inputs")) if "uncertainty" in x and "_" in x]
+        files_delete += [os.path.normpath(self.working_directory+"\\uncertainty\\output\\"+x) for x in os.listdir(os.path.normpath(self.working_directory+"\\uncertainty"+"\\output")) if "uncertainty" in x and "_" in x and x[-3:]!="csv"]
         files_delete += [os.path.normpath(self.plugin_directory+"\\executables\\"+x) for x in os.listdir(os.path.normpath(self.plugin_directory+"\\executables")) if "execution" in x and "_" in x]
         for i in files_delete:
             os.remove(i)
     
     def move_files_uncertainity_analysis(self):
-        """Method to move files to the corresponding folders for uncertainity analysis"""
+        """Method to move files to the corresponding folders for uncertainty analysis"""
         #Prj
-        prj_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\uncertainity\\uncertainity.prj")
+        prj_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"\\uncertainty\\uncertainty.prj")
         #Check if water quality is simulated
         with open(self.obtain_direction_vfsmod(self.dlg_base.vfs_file_uncertainity.text()), "r") as archivo:
             lineas = archivo.readlines()
@@ -8696,37 +8711,37 @@ class qvfsmod:
             
         #Create file
         with open(prj_file, 'w') as archivo:
-            archivo.write(os.path.normpath(f"ikw=inputs\\uncertainity.ikw  \n"))
-            archivo.write(os.path.normpath(f"iso=inputs\\uncertainity.iso  \n"))
-            archivo.write(os.path.normpath(f"igr=inputs\\uncertainity.igr  \n"))
-            archivo.write(os.path.normpath(f"isd=inputs\\uncertainity.isd  \n"))
-            archivo.write(os.path.normpath(f"irn=inputs\\uncertainity.irn  \n"))
-            archivo.write(os.path.normpath(f"iro=inputs\\uncertainity.iro  \n"))
+            archivo.write(os.path.normpath(f"ikw=inputs\\uncertainty.ikw  \n"))
+            archivo.write(os.path.normpath(f"iso=inputs\\uncertainty.iso  \n"))
+            archivo.write(os.path.normpath(f"igr=inputs\\uncertainty.igr  \n"))
+            archivo.write(os.path.normpath(f"isd=inputs\\uncertainty.isd  \n"))
+            archivo.write(os.path.normpath(f"irn=inputs\\uncertainty.irn  \n"))
+            archivo.write(os.path.normpath(f"iro=inputs\\uncertainty.iro  \n"))
             if self.water_quality:
-                archivo.write(f"iwq=inputs\\uncertainity.iwq  \n")
-            archivo.write(os.path.normpath(f"og1=output\\uncertainity.og1  \n"))
-            archivo.write(os.path.normpath(f"og2=output\\uncertainity.og2  \n"))
-            archivo.write(os.path.normpath(f"ohy=output\\uncertainity.ohy  \n"))
-            archivo.write(os.path.normpath(f"osm=output\\uncertainity.osm  \n"))
-            archivo.write(os.path.normpath(f"osp=output\\uncertainity.osp  \n"))
+                archivo.write(f"iwq=inputs\\uncertainty.iwq  \n")
+            archivo.write(os.path.normpath(f"og1=output\\uncertainty.og1  \n"))
+            archivo.write(os.path.normpath(f"og2=output\\uncertainty.og2  \n"))
+            archivo.write(os.path.normpath(f"ohy=output\\uncertainty.ohy  \n"))
+            archivo.write(os.path.normpath(f"osm=output\\uncertainty.osm  \n"))
+            archivo.write(os.path.normpath(f"osp=output\\uncertainty.osp  \n"))
             if self.water_quality:
-                archivo.write(os.path.normpath(f"owq=output\\uncertainity.owq  \n"))
+                archivo.write(os.path.normpath(f"owq=output\\uncertainty.owq  \n"))
         
         #UH
-        lis_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\\uncertainity\\uncertainity.lis")
+        lis_file = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\\uncertainty\\uncertainty.lis")
         #Create file
         with open(lis_file, 'w') as archivo:
-            archivo.write(os.path.normpath(f"inp=inputs\\uncertainity.inp  \n"))
-            archivo.write(os.path.normpath(f"iro=inputs\\uncertainity.iro  \n"))
-            archivo.write(os.path.normpath(f"irn=inputs\\uncertainity.irn  \n"))
-            archivo.write(os.path.normpath(f"isd=inputs\\uncertainity.isd  \n"))
-            archivo.write(os.path.normpath(f"out=inputs\\uncertainity.out  \n"))
-            archivo.write(os.path.normpath(f"hyt=inputs\\uncertainity.hyt  \n"))
+            archivo.write(os.path.normpath(f"inp=inputs\\uncertainty.inp  \n"))
+            archivo.write(os.path.normpath(f"iro=inputs\\uncertainty.iro  \n"))
+            archivo.write(os.path.normpath(f"irn=inputs\\uncertainty.irn  \n"))
+            archivo.write(os.path.normpath(f"isd=inputs\\uncertainty.isd  \n"))
+            archivo.write(os.path.normpath(f"out=inputs\\uncertainty.out  \n"))
+            archivo.write(os.path.normpath(f"hyt=inputs\\uncertainty.hyt  \n"))
         
         #REST OF THE FILES
-        #Function to copy and paste the inputs to create the files to use in the uncertainity analysis
+        #Function to copy and paste the inputs to create the files to use in the uncertainty analysis
         def copy_paste(process,type_input):
-            ruta_pegar = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\uncertainity\\inputs\\uncertainity.{type_input}" )
+            ruta_pegar = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+f"\\uncertainty\\inputs\\uncertainty.{type_input}" )
             if process == "UH":
                 ruta = self.obtain_direction_vfsmod(self.dlg_base.uh_file_uncertainity.text())
             elif process == "VFS":
@@ -8772,8 +8787,8 @@ class qvfsmod:
         for core in range(self.number_cores*5):#we do *5 because if not there can be problems of overlapping:processes executing files that are already executing
             with open(prj_file, 'r') as file:
                 lineas = file.readlines()
-            lineas = [linea.replace("uncertainity",f"uncertainity_{core}") for linea in lineas]
-            new_filepath = prj_file.replace("uncertainity.prj",f"uncertainity_{core}.prj")
+            lineas = [linea.replace("uncertainty",f"uncertainty_{core}") for linea in lineas]
+            new_filepath = prj_file.replace("uncertainty.prj",f"uncertainty_{core}.prj")
             with open(new_filepath, 'w') as archivo:
                 for i in lineas:
                     archivo.write(i)
@@ -8781,26 +8796,26 @@ class qvfsmod:
         for core in range(self.number_cores*5):
             with open(lis_file, 'r') as file:
                 lineas = file.readlines()
-            lineas = [linea.replace("uncertainity",f"uncertainity_{core}") for linea in lineas]
-            new_filepath = lis_file.replace("uncertainity.lis",f"uncertainity_{core}.lis")
+            lineas = [linea.replace("uncertainty",f"uncertainty_{core}") for linea in lineas]
+            new_filepath = lis_file.replace("uncertainty.lis",f"uncertainty_{core}.lis")
             with open(new_filepath, 'w') as archivo:
                 for i in lineas:
                     archivo.write(i)
         #Move replicated input files 
-        carpeta = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\\uncertainity")
+        carpeta = os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\\uncertainty")
         folder_path = os.path.join(carpeta, "inputs")
         files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f)) and "_" not in f]
         for i in range(self.number_cores*5):
             for k in files:
-                shutil.copyfile(os.path.normpath(carpeta+r"\\inputs\\"+k), os.path.normpath(carpeta+r"\\inputs\\"+k.replace("uncertainity",f"uncertainity_{i}")))
+                shutil.copyfile(os.path.normpath(carpeta+r"\\inputs\\"+k), os.path.normpath(carpeta+r"\\inputs\\"+k.replace("uncertainty",f"uncertainty_{i}")))
         #Replicate executables
         carpeta_bat = os.path.normpath(self.plugin_directory+"\\executables")
         for core in range(self.number_cores*5):
             #Execution UH
             shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_uh_{core}.bat"))
             f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_uh_{core}.bat"),"w+")
-            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/uncertainity/")}"')
-            linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/uh")}" uncertainity_{core}.lis'
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/uncertainty/")}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/uh")}" uncertainty_{core}.lis'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
@@ -8809,8 +8824,8 @@ class qvfsmod:
             #Execution VFS
             shutil.copyfile(os.path.normpath(carpeta_bat+"\\execution.bat"), os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"))
             f = open(os.path.normpath(carpeta_bat+"\\"+f"execution_vfs_{core}.bat"),"w+")
-            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/uncertainity/")}"')
-            linea_dos = f'"{os.path.normpath(self.plugin_directory+r"/executables/vfsm")}" uncertainity_{core}.prj'
+            linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/uncertainty/")}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+r"/executables/vfsm")}" uncertainty_{core}.prj'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
@@ -8873,7 +8888,7 @@ class qvfsmod:
             create_folder(os.path.normpath(r"inverse\output"))
     
     def create_folder_uncertainity_analysis(self):
-        """Method to create the folder needed to uncertainity analysis"""
+        """Method to create the folder needed to uncertainty analysis"""
         def create_folder(name_folder): #function to create a folder
             parent_dir = self.dlg_base.working_directory_vfsmod.text()
             path_file = os.path.join(parent_dir, name_folder)
@@ -8883,12 +8898,12 @@ class qvfsmod:
             except:
                 pass
             
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\uncertainity")):
-            create_folder("uncertainity")
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\uncertainity\inputs")):
-            create_folder(os.path.normpath(r"uncertainity\inputs"))
-        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\uncertainity\output")):
-            create_folder(os.path.normpath(r"uncertainity\output"))
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\uncertainty")):
+            create_folder("uncertainty")
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\uncertainty\inputs")):
+            create_folder(os.path.normpath(r"uncertainty\inputs"))
+        if not os.path.exists(os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+r"\uncertainty\output")):
+            create_folder(os.path.normpath(r"uncertainty\output"))
     
     
     def update_bat_uh_sensitivity(self):
@@ -8903,10 +8918,10 @@ class qvfsmod:
         f.close()
     
     def update_bat_uh_uncertainity(self):
-        """Method to update the bat for execution of UH for uncertainity analysis"""
+        """Method to update the bat for execution of UH for uncertainty analysis"""
         f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
-        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/uncertainity/")}"')
-        linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/uh")}" uncertainity.lis'
+        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/uncertainty/")}"')
+        linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/uh")}" uncertainty.lis'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
         f.write("{} \n".format(linea_dos))
@@ -8925,10 +8940,10 @@ class qvfsmod:
         f.close()
         
     def update_bat_vfs_uncertainity(self):
-        """Method to update the bat for execution of VFS for uncertainity analysis"""
+        """Method to update the bat for execution of VFS for uncertainty analysis"""
         f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
-        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/uncertainity/")}"')
-        linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/vfsm")}" uncertainity.prj'
+        linea_uno = "cd {}".format(f'"{os.path.normpath(self.dlg_base.working_directory_vfsmod.text()+"/uncertainty/")}"')
+        linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/vfsm")}" uncertainty.prj'
         linea_tres = "Pause"
         f.write("{} \n".format(linea_uno))
         f.write("{} \n".format(linea_dos))
@@ -8937,7 +8952,7 @@ class qvfsmod:
     
     
     def create_dictionary_uncertainity_analysis(self):
-        """Method to create the dictionary that will contain the parameters of the uncertainity analysis"""
+        """Method to create the dictionary that will contain the parameters of the uncertainty analysis"""
         #Functions to convert user specified inputs into inputs that SALib can read
         def distribution_parameters_fun(row):
             if str(self.dlg_base.table_uncertainity.item(row, 1).text()) == "Uniform":
@@ -15003,7 +15018,7 @@ class qvfsmod:
         self.dlg_base.uh_input.setText(os.path.normpath(r"inputs\.inp"))
         self.dlg_base.file_save_design.setText(os.path.normpath("design\\output\\sensitivity_design.csv"))
         self.dlg_base.file_save.setText(os.path.normpath("sensitivity\\output\\sensitivity_oat.csv"))
-        self.dlg_base.file_save_uncertainity.setText(os.path.normpath("uncertainity\\output\\uncertainity.csv"))
+        self.dlg_base.file_save_uncertainity.setText(os.path.normpath("uncertainty\\output\\uncertainty.csv"))
         self.dlg_calibration_sensitivity_hydrograph.file_save.setText(os.path.normpath("inverse\\output\\calibration_sensitivity.csv"))
         
         
@@ -16308,7 +16323,7 @@ def execution_uncertainity_analysis(number_execution,core,param_values,dic_data,
             return "error"
             
         #Correct hietograph file
-        #correct_irn_file(os.path.normpath(working_directory+f"\\uncertainity\\inputs\\uncertainity_{core}.irn")) 
+        #correct_irn_file(os.path.normpath(working_directory+f"\\uncertainty\\inputs\\uncertainty_{core}.irn")) 
     
     #VFS
     resultado = subprocess.run([os.path.normpath(os.path.dirname(__file__)+f"\\executables\\execution_vfs_{core}.bat")],
@@ -16324,9 +16339,9 @@ def execution_uncertainity_analysis(number_execution,core,param_values,dic_data,
 def modify_inputs_uncertainity(extension, row, column, new_value, process,core,working_directory):
     """Method to modfiy inputs in uncertainity analysis"""
     if process == "uh":
-        ruta = os.path.normpath(working_directory+fr"\uncertainity\uncertainity_{core}.lis")
+        ruta = os.path.normpath(working_directory+fr"\uncertainty\uncertainty_{core}.lis")
     else:
-        ruta = os.path.normpath(working_directory+fr"\uncertainity\uncertainity_{core}.prj")
+        ruta = os.path.normpath(working_directory+fr"\uncertainty\uncertainty_{core}.prj")
     with open(ruta, "r") as archivo:
         lineas_prj = archivo.readlines()
     for i in lineas_prj:
@@ -16352,10 +16367,10 @@ def modify_inputs_uncertainity(extension, row, column, new_value, process,core,w
 
 
 def change_buffer_length_uncertainity(value_change,core,vfs_uncertainity_file,working_directory):
-    """Method to modifi length of buffer in uncertainity analysis"""
+    """Method to modifi length of buffer in uncertainty analysis"""
     #First we save the .ikw file path
     ruta = vfs_uncertainity_file
-    ikw = working_directory+os.path.normpath(f"\\uncertainity\\inputs\\uncertainity_{core}.ikw")
+    ikw = working_directory+os.path.normpath(f"\\uncertainty\\inputs\\uncertainty_{core}.ikw")
     #We substitute value of length
     with open(ikw, "r") as archivo:
         lineas = archivo.readlines()
@@ -16453,13 +16468,13 @@ def change_buffer_length_uncertainity(value_change,core,vfs_uncertainity_file,wo
         contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
     for i in lineas_ikw_original[-8:]:    
         contenido+=f"{i}"
-    with open(working_directory+os.path.normpath(f"\\uncertainity\\inputs\\uncertainity_{core}.ikw"), 'w') as archivo:
+    with open(working_directory+os.path.normpath(f"\\uncertainty\\inputs\\uncertainty_{core}.ikw"), 'w') as archivo:
         archivo.write(contenido)
 
 def change_filter_manning_uncertainity(value_change,column,core,working_directory):
-    """Method to change the manning and slope value of the buffer in uncertainity analysis"""
+    """Method to change the manning and slope value of the buffer in uncertainty analysis"""
     #We obtain information of ikw file
-    ikw = working_directory+os.path.normpath(f"\\uncertainity\\inputs\\uncertainity_{core}.ikw")
+    ikw = working_directory+os.path.normpath(f"\\uncertainty\\inputs\\uncertainty_{core}.ikw")
     
     with open(ikw, "r") as archivo:
         lineas = archivo.readlines()
@@ -16490,15 +16505,15 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
             "Total Runoff out from Filter (m3)":[-1],"Total Infiltration in Filter (m3)":[-1],
             "Mass Sediment Input to Filter (kg)":[-1],"Concentration Sediment in Runoff from source Area (g/L)":[-1],
             "Mass Sediment Output from Filter (kg)":[-1],"Concentration Sediment in Runoff exiting the Filter (g/L)":[-1],
-            "Sediment Delivery Ratio":[-1],"Runoff Delivery Ratio":[-1]})
+            "Sediment Delivery Ratio":[-1],"Runoff Delivery Ratio":[-1],"Water Front Depth (m)":[-1]})
         #Add water quality parameters if present
         if water_quality:
-            df_conc["Leachate depth (m)"]=[-1.0]
             for p in range(number_pesticides):
                 df_conc[f"Pesticide Delivery Ratio Pesticide {p+1}"]=[-1.0]
+                df_conc[f"Leachate depth (m) Pesticide {p+1}"]=[-1.0]
             
     else:
-        ruta = working_directory+os.path.normpath(f"\\uncertainity\\output\\uncertainity_{core}.osp")
+        ruta = working_directory+os.path.normpath(f"\\uncertainty\\output\\uncertainty_{core}.osp")
         with open(ruta, "r") as archivo:
             lineas = archivo.readlines()
         #Function to obtain specific results form .osp file
@@ -16531,7 +16546,7 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
         rdr = obtain_result(" Runoff Delivery Ratio\n")
         
         #Obtain results ohy
-        ruta = working_directory+os.path.normpath(f"\\uncertainity\\output\\uncertainity_{core}.ohy")
+        ruta = working_directory+os.path.normpath(f"\\uncertainty\\output\\uncertainty_{core}.ohy")
         with open(ruta, "r") as archivo:
             lineas_ohy = archivo.readlines()
         water_front_depth =float(lineas_ohy[-1].split()[-2])
@@ -16546,15 +16561,18 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
         #Add water quality parameters if present
         if water_quality:
             #Obtain results water quality
-            with open(working_directory+os.path.normpath(f"\\uncertainity\\output\\uncertainity_{core}.owq"), "r") as archivo:
+            with open(working_directory+os.path.normpath(f"\\uncertainty\\output\\uncertainty_{core}.owq"), "r") as archivo:
                 lineas_owq = archivo.readlines()
-            valores = []
-            for i in range(len(lineas_owq)):
-                if lineas_owq[i] == "      Z(m)      C(mg/L)      S(mg/mg)\n":
-                    for k in range(i+2,len(lineas_owq)):
-                        if len(lineas_owq[k].split())==0 or (float(lineas_owq[k].split()[1])==float(0)) and (float(lineas_owq[k].split()[2])==float(0)):
-                            profundidad_lixiviado = float(lineas_owq[k].split()[0])
-                            break
+            def obtain_leachate_depth(pesticide):
+                condition = False
+                for i in range(len(lineas_owq)):
+                    if lineas_owq[i] == f"PRODUCT  {pesticide}- Soil leaching and mixing layer calculations (CDE)\n":
+                        condition = True
+                    if lineas_owq[i] == "      Z(m)      C(mg/L)      S(mg/mg)\n" and condition:
+                        for k in range(i+2,len(lineas_owq)):
+                            if len(lineas_owq[k].split())==0 or (float(lineas_owq[k].split()[1])==float(0)) and (float(lineas_owq[k].split()[2])==float(0)):
+                                profundidad_lixiviado = float(lineas_owq[k].split()[0])
+                                return profundidad_lixiviado
             
             def obtain_result_owq(string,number_pesticide):
                 condition = False
@@ -16579,8 +16597,8 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
                     pesticide_delivery = np.nan
                 
                 df_conc[f"Pesticide Delivery Ratio Pesticide {p+1}"]=pesticide_delivery
-                 
-            df_conc["Leachate depth (m)"]=profundidad_lixiviado
+                df_conc[f"Leachate depth (m) Pesticide {p+1}"]=obtain_leachate_depth(p+1)
+            
     
     #Add the values of inputs 
     for k,i in enumerate(dic_data.keys()):
@@ -17193,10 +17211,10 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
             "Sediment Delivery Ratio":[-1.0],"Runoff Delivery Ratio":[-1.0],"Water Front Depth (m)":[-1.0]})
         #Add water quality parameters if present
         if water_quality:
-            df_conc["Leachate depth (m)"]=[-1.0]
             #Iterate through all the pesticides
             for p in range(number_pesticides):
                 df_conc[f"Pesticide Delivery Ratio Pesticide {p+1}"]=[-1.0]
+                df_conc[f"Leachate depth (m) Pesticide {p+1}"]=[-1.0]
 
     else:
         ruta = working_directory+os.path.normpath(f"\\sensitivity\\output\\sensitivity_{core}.osp")
@@ -17255,13 +17273,17 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
             #Obtain results water quality
             with open(working_directory+os.path.normpath(f"\\sensitivity\\output\\sensitivity_{core}.owq"), "r") as archivo:
                 lineas_owq = archivo.readlines()
-            valores = []
-            for i in range(len(lineas_owq)):
-                if lineas_owq[i] == "      Z(m)      C(mg/L)      S(mg/mg)\n":
-                    for k in range(i+2,len(lineas_owq)):
-                        if len(lineas_owq[k].split())==0 or (float(lineas_owq[k].split()[1])==float(0)) and (float(lineas_owq[k].split()[2])==float(0)):
-                            profundidad_lixiviado = float(lineas_owq[k].split()[0])
-                            break
+            def obtain_leachate_depth(pesticide):
+                condition = False
+                for i in range(len(lineas_owq)):
+                    if lineas_owq[i] == f"PRODUCT  {pesticide}- Soil leaching and mixing layer calculations (CDE)\n":
+                        condition = True
+                    if lineas_owq[i] == "      Z(m)      C(mg/L)      S(mg/mg)\n" and condition:
+                        for k in range(i+2,len(lineas_owq)):
+                            if len(lineas_owq[k].split())==0 or (float(lineas_owq[k].split()[1])==float(0)) and (float(lineas_owq[k].split()[2])==float(0)):
+                                profundidad_lixiviado = float(lineas_owq[k].split()[0])
+                                return profundidad_lixiviado
+                 
             
             def obtain_result_owq(string,number_pesticide):
                 condition = False
@@ -17286,9 +17308,7 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
                     pesticide_delivery = np.nan
                 
                 df_conc[f"Pesticide Delivery Ratio Pesticide {p+1}"]=pesticide_delivery
-            
-
-            df_conc["Leachate depth (m)"]=profundidad_lixiviado
+                df_conc[f"Leachate depth (m) Pesticide {p+1}"]=obtain_leachate_depth(p+1)
         
     #Add the values of inputs 
     for k,i in enumerate(dic_data.keys()):

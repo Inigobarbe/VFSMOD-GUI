@@ -1786,6 +1786,19 @@ default 5 min</string>
                    </property>
                   </widget>
                  </item>
+                 <item>
+                  <spacer name="horizontalSpacer_33">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
                 </layout>
                </item>
               </layout>
@@ -3024,7 +3037,7 @@ default 5 min</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1318</width>
+             <width>1324</width>
              <height>743</height>
             </rect>
            </property>
@@ -4013,6 +4026,19 @@ Solution Parameters</string>
               </property>
              </spacer>
             </item>
+            <item row="0" column="1">
+             <spacer name="horizontalSpacer_32">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
            </layout>
           </widget>
          </widget>
@@ -4026,7 +4052,7 @@ Solution Parameters</string>
            </font>
           </property>
           <property name="text">
-           <string>Design with Uncertainity</string>
+           <string>Design with Uncertainty</string>
           </property>
          </widget>
         </item>
@@ -4255,7 +4281,7 @@ analysis</string>
                   </font>
                  </property>
                  <property name="text">
-                  <string>Sedimentograph calibration</string>
+                  <string>Sedigraph calibration</string>
                  </property>
                 </widget>
                </item>
@@ -5353,7 +5379,7 @@ analysis</string>
            </font>
           </property>
           <property name="text">
-           <string>Results of Design with Uncertainity</string>
+           <string>Results of Design with Uncertainty</string>
           </property>
          </widget>
         </item>
@@ -5378,7 +5404,7 @@ analysis</string>
              <x>0</x>
              <y>0</y>
              <width>923</width>
-             <height>577</height>
+             <height>583</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_22">
@@ -5416,9 +5442,15 @@ analysis</string>
                    </item>
                    <item>
                     <widget class="QLineEdit" name="uh_file_sensitivity">
+                     <property name="minimumSize">
+                      <size>
+                       <width>249</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="maximumSize">
                       <size>
-                       <width>248</width>
+                       <width>249</width>
                        <height>16777215</height>
                       </size>
                      </property>
@@ -5429,6 +5461,12 @@ analysis</string>
                    </item>
                    <item>
                     <widget class="QPushButton" name="browse_uh">
+                     <property name="minimumSize">
+                      <size>
+                       <width>52</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="maximumSize">
                       <size>
                        <width>52</width>
@@ -5485,7 +5523,7 @@ analysis</string>
                      </property>
                      <property name="maximumSize">
                       <size>
-                       <width>248</width>
+                       <width>249</width>
                        <height>16777215</height>
                       </size>
                      </property>
@@ -5496,6 +5534,12 @@ analysis</string>
                    </item>
                    <item>
                     <widget class="QPushButton" name="browse_vfs">
+                     <property name="minimumSize">
+                      <size>
+                       <width>52</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="maximumSize">
                       <size>
                        <width>52</width>
@@ -6154,6 +6198,19 @@ Solution Parameters</string>
               </property>
              </spacer>
             </item>
+            <item row="1" column="0">
+             <spacer name="verticalSpacer_27">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
            </layout>
           </widget>
          </widget>
@@ -6189,8 +6246,8 @@ Solution Parameters</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_9">
            <property name="geometry">
             <rect>
-             <x>-253</x>
-             <y>-72</y>
+             <x>0</x>
+             <y>0</y>
              <width>1000</width>
              <height>553</height>
             </rect>
@@ -6869,7 +6926,7 @@ Solution Parameters</string>
              <x>0</x>
              <y>0</y>
              <width>923</width>
-             <height>613</height>
+             <height>619</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_24">
@@ -6907,6 +6964,18 @@ Solution Parameters</string>
                    </item>
                    <item>
                     <widget class="QLineEdit" name="uh_file_uncertainity">
+                     <property name="minimumSize">
+                      <size>
+                       <width>249</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>249</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
                      <property name="alignment">
                       <set>Qt::AlignCenter</set>
                      </property>
@@ -6914,6 +6983,18 @@ Solution Parameters</string>
                    </item>
                    <item>
                     <widget class="QPushButton" name="browse_uh_uncertainity">
+                     <property name="minimumSize">
+                      <size>
+                       <width>52</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>52</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string/>
                      </property>
@@ -7301,6 +7382,12 @@ Solution Parameters</string>
                        <height>0</height>
                       </size>
                      </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>249</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
                      <property name="alignment">
                       <set>Qt::AlignCenter</set>
                      </property>
@@ -7308,6 +7395,18 @@ Solution Parameters</string>
                    </item>
                    <item>
                     <widget class="QPushButton" name="browse_vfs_uncertainity">
+                     <property name="minimumSize">
+                      <size>
+                       <width>52</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>52</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string/>
                      </property>
@@ -7483,6 +7582,19 @@ Solution Parameters</string>
               </property>
              </spacer>
             </item>
+            <item row="1" column="0">
+             <spacer name="verticalSpacer_26">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
            </layout>
           </widget>
          </widget>
@@ -7496,7 +7608,7 @@ Solution Parameters</string>
            </font>
           </property>
           <property name="text">
-           <string>Execution of Uncertainity Analysis</string>
+           <string>Execution of Uncertainty Analysis</string>
           </property>
          </widget>
         </item>
@@ -7519,7 +7631,7 @@ Solution Parameters</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-128</y>
+             <y>0</y>
              <width>1068</width>
              <height>609</height>
             </rect>
@@ -7682,7 +7794,7 @@ Solution Parameters</string>
                  <item>
                   <widget class="QLabel" name="label_143">
                    <property name="text">
-                    <string>Uncertainity results file</string>
+                    <string>Uncertainty results file</string>
                    </property>
                   </widget>
                  </item>
@@ -7751,7 +7863,7 @@ Solution Parameters</string>
            </font>
           </property>
           <property name="text">
-           <string>Results of Uncertainity Analysis</string>
+           <string>Results of Uncertainty Analysis</string>
           </property>
          </widget>
         </item>
@@ -7947,7 +8059,7 @@ Solution Parameters</string>
    </widget>
    <widget class="QMenu" name="menuUncertainity_Analysis">
     <property name="title">
-     <string>Uncertainity Analysis</string>
+     <string>Uncertainty Analysis</string>
     </property>
     <addaction name="actionExecution_of_Uncertainity_Analysis"/>
     <addaction name="actionResults"/>
