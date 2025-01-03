@@ -863,10 +863,10 @@ class qvfsmod:
         self.dlg_base.run_calibration_single.clicked.connect(self.run_calibration_single)
         
         #Add distributions to combobox
-        self.dlg_base.distributions.addItems(["Uniform","Logaritmic uniform","Triangular","Normal","Lognormal","Normal truncated"])
-        self.dlg_base.distributions_design.addItems(["Uniform","Logaritmic uniform","Triangular","Normal","Lognormal","Normal truncated"])
-        self.dlg_base.distributions_uncertainity.addItems(["Uniform","Logaritmic uniform","Triangular","Normal","Lognormal","Normal truncated"])
-        self.dlg_calibration_sensitivity_hydrograph.distributions.addItems(["Uniform","Logaritmic uniform","Triangular","Normal","Lognormal","Normal truncated"])
+        self.dlg_base.distributions.addItems(["Uniform","Logaritmic uniform","Triangular","Normal truncated"])
+        self.dlg_base.distributions_design.addItems(["Uniform","Logaritmic uniform","Triangular","Normal truncated"])
+        self.dlg_base.distributions_uncertainity.addItems(["Uniform","Logaritmic uniform","Triangular","Normal truncated"])
+        self.dlg_calibration_sensitivity_hydrograph.distributions.addItems(["Uniform","Logaritmic uniform","Triangular","Normal truncated"])
         
         #Change bounds in sensitivity dialog if distribution changed
         self.dlg_base.distributions.currentIndexChanged.connect(self.change_bounds_sensitivity)
@@ -4610,24 +4610,27 @@ class qvfsmod:
         self.ax_owq_graph_balance[0].clear()
         self.ax_owq_graph_balance[1].clear()
         
-        labels_today = [
-        'Outlflow solid', 'Outflow liquid',
-        'Mixing layer sorbed', 'Mixing layer dissolved',
-        'Infiltrated sorbed', 'Infiltrated dissolved',
-        'Trapped with sediment'
-        ]
+        
         sizes_today = [output_solid, output_liquid, mixing_layer_sorbed, mixing_layer_dissolved, soil_profile_sorbed-mixing_layer_sorbed, 
             soil_profile_dissolved-mixing_layer_dissolved, trapped_in_sediment]  # Proporciones
+        
+        #Labels with percentage
+        labels_today = [
+            f'Outlflow solid ({round(100*output_solid/sum(sizes_today),2)}%)', f'Outflow liquid ({round(100*output_liquid/sum(sizes_today),2)}%)',
+            f'Mixing layer sorbed ({round(100*mixing_layer_sorbed/sum(sizes_today),2)}%)', f'Mixing layer dissolved ({round(100*mixing_layer_dissolved/sum(sizes_today),2)}%)',
+            f'Infiltrated sorbed ({round(100*(soil_profile_sorbed-mixing_layer_sorbed)/sum(sizes_today),2)}%)', f'Infiltrated dissolved ({round(100*(soil_profile_dissolved-mixing_layer_dissolved)/sum(sizes_today),2)}%)',
+            f'Trapped with sediment ({round(100*trapped_in_sediment/sum(sizes_today),2)}%)'
+            ]
             
         
         colors = [
-            '#1f77b4',  # Outflow solid
-            '#3498db',  # Outflow liquid
-            '#ff7f0e',  # Mixing layer sorbed
-            '#f39c12',  # Mixing layer dissolved
-            '#2ca02c',  # Infiltrated sorbed
-            '#27ae60',  # Infiltrated dissolved
-            '#e74c3c'   # Trapped with sediment
+            '#1f77b4',  # Outflow solid (azul claro)
+            '#66b3ff',  # Outflow liquid (azul más claro)
+            '#ff7f0e',  # Mixing layer sorbed (naranja)
+            '#d35400',  # Mixing layer dissolved (naranja más oscuro)
+            '#2ca02c',  # Infiltrated sorbed (verde claro)
+            '#145a32',  # Infiltrated dissolved (verde más oscuro)
+            '#e74c3c'   # Trapped with sediment (rojo)
         ]
         
         threshold = sum(sizes_today)*0.05  # Umbral para los valores pequeños
@@ -4650,149 +4653,99 @@ class qvfsmod:
             x = 0.6 * np.cos(np.deg2rad(ang))  # Coordenada x dentro del segmento
             y = 0.6 * np.sin(np.deg2rad(ang))  # Coordenada y dentro del segmento
             horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
-
-            # Si el valor es pequeño (por debajo del umbral), mover la etiqueta fuera
-            if sizes_today[i] < threshold:
-                connectionstyle = "angle,angleA=0,angleB={}".format(ang)
-                self.ax_owq_graph_balance[0].annotate(
-                    f'{round(sizes_today[i], 2)} mg/m\u00b2',
-                    xy=(x, y),
-                    xytext=(1.35 * np.sign(x), 1.4 * y),
-                    horizontalalignment=horizontalalignment,
-                    arrowprops=dict(arrowstyle="->", connectionstyle=connectionstyle)
-                )
-            else:
+            #Only put data if is above threshold
+            if sizes_today[i] > threshold:
                 # Si el valor es mayor o igual al umbral, poner la etiqueta dentro del pie
                 self.ax_owq_graph_balance[0].annotate(
                     f'{round(sizes_today[i], 2)} mg/m\u00b2',
                     xy=(x, y),
                     horizontalalignment='center',  # Centrar dentro del segmento
-                    verticalalignment='center'
+                    verticalalignment='center',fontsize = 10, fontweight = "bold"
                 )
 
         self.ax_owq_graph_balance[0].legend(
-            labels_today,  # Etiquetas de la leyenda
-            loc='best',  # Ubicación de la leyenda
-            bbox_to_anchor=(1, 0.5),  # Fuera del gráfico, alineada al centro verticalmente
-            title="Legend",  # Título opcional para la leyenda
-            fontsize='small'  # Tamaño de fuente
+            labels_today,
+            loc='lower center',
+            bbox_to_anchor=(0.6, -0.4),
+            fontsize='small',
+            ncol=2,  # Dos columnas en la leyenda
+            frameon=False  # Fondo transparente y sin borde
         )
+        self.ax_owq_graph_balance[0].set_title("Residues after event")
         
-        
-        # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-        self.canvas_owq_graph_balance.figure.subplots_adjust(left=0.1, bottom=0.1)
-        #Change background color
-        self.canvas_owq_graph_balance.figure.set_facecolor('#f0f0f0')
-        self.ax_owq_graph_balance[0].set_facecolor('#f0f0f0')
-        #self.ax_owq_graph_balance[1].set_facecolor('#f0f0f0')
-        
-        # Redraw the canvas
-        self.canvas_owq_graph_balance.draw()
-        
-        r'''
-        # Datos para Tomorrow
-        labels_tomorrow = [
-            'Dissolved surface residue \nafter degradation', 'Sorbed surface residue \nafter degradation'
-        ]
         
         sizes_tomorrow = [dissolved_surface_residue_after_degradation, sorbed_surface_residue_after_degradation]  # Proporciones diferentes
 
-        # Colores principales y subdivisiones
-        base_colors = {
-            'Outflow': '#ff9999',
-            'Mixing layer': '#66b3ff',
-            'Infiltrated': '#99ff99',
-            'Sediment': '#ffcc99'
-        }
-        colors_today = [
-            base_colors['Outflow'], '#ffcccc',            # Outflow
-            base_colors['Mixing layer'], '#c2cfff',      # Mixing layer
-            base_colors['Infiltrated'], '#b3ffb3',     # Infiltrated
-            base_colors['Sediment']                    # Sediment
+        #Labels with percetage
+        labels_tomorrow = [
+            f'Dissolved surface residue \nafter degradation ({round(100*dissolved_surface_residue_after_degradation/sum(sizes_tomorrow),2)}%)', 
+            f'Sorbed surface residue \nafter degradation ({round(100*sorbed_surface_residue_after_degradation/sum(sizes_tomorrow),2)}%)'
         ]
+        
+        #Colors
         colors_tomorrow = [
             '#c2f0f0',  # Dissolved surface residue
             '#ffb3b3'   # Sorbed surface residue
         ]
+        
+        #Create pie
+        self.ax_owq_graph_balance[1].pie(
+            sizes_tomorrow,
+            colors=colors_tomorrow,
+            autopct=None,
+            startangle=140,
+            wedgeprops={'edgecolor': 'black'},
+            pctdistance=0.85,  # Para valores absolutos dentro del pie
+            labeldistance=None  # Elimina las etiquetas fuera del pie
+        )
+        
+        threshold = sum(sizes_tomorrow)*0.05  # Umbral para los valores pequeños
+        # Recorrer cada segmento del gráfico de pastel
+        for i, p in enumerate(self.ax_owq_graph_balance[1].patches):
+            # Cálculo del ángulo central del arco
+            ang = (p.theta2 - p.theta1) / 2. + p.theta1
+            x = 0.5 * np.cos(np.deg2rad(ang))  # Coordenada x dentro del segmento
+            y = 0.5 * np.sin(np.deg2rad(ang))  # Coordenada y dentro del segmento
+            horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
 
-        # Propiedades de las líneas (estéticas)
-        wedgeprops_parents = {'edgecolor': '#333333', 'linewidth': 2, 'linestyle': '-.'}  # Grueso y discontinua para padres
-        wedgeprops_children = {'edgecolor': '#666666', 'linewidth': 1, 'linestyle': ':'}  # Fina y punteada para hijos
+            #Only put data if is above threshold
+            if sizes_tomorrow[i] > threshold:
+                # Si el valor es mayor o igual al umbral, poner la etiqueta dentro del pie
+                self.ax_owq_graph_balance[1].annotate(
+                    f'{round(sizes_tomorrow[i], 2)} mg/m\u00b2',
+                    xy=(x, y),
+                    horizontalalignment='center',  # Centrar dentro del segmento
+                    verticalalignment='center',fontsize = 10, fontweight = "bold"
+                )
 
-        # Determinar los padres y las subdivisiones
-        parents_today = [0, 2, 4, 6]  # Índices de los segmentos principales en "Today"
-        parents_tomorrow = [0, 1]  # Índices de los segmentos principales en "Tomorrow"
-
-        # Pie chart de "Today"
-        startangle = 90
-        current_angle = startangle
-        total_today = sum(sizes_today)  # Total para calcular porcentajes
-
-        for i, size in enumerate(sizes_today):
-            # Seleccionar propiedades según si es padre o hijo
-            wedgeprops = wedgeprops_parents if i in parents_today else wedgeprops_children
-
-            # Formatear etiqueta con nombre y valor
-            label = f"{labels_today[i]} ({size})"
-            
-            # Dibujar cada segmento
-            self.ax_owq_graph_balance[0].pie(
-                [size, total_today - size],  # Tamaño del segmento actual y resto
-                colors=[colors_today[i], "none"],  # Color del segmento actual
-                startangle=current_angle,
-                radius=1.0,  # Escala uniforme
-                wedgeprops=wedgeprops,
-                labels=[label, None],  # Mostrar etiqueta del segmento actual
-                labeldistance=0.5,  # Etiquetas dentro del pie, más cerca del centro
-                textprops={'fontsize': 14, 'color': '#333333', 'weight': 'bold'}  # Etiquetas más grandes y estéticas
-            )
-            current_angle += size / total_today * 360  # Calcular el siguiente ángulo
-
-        # Pie chart de "Tomorrow"
-        current_angle = startangle
-        total_tomorrow = sum(sizes_tomorrow)  # Total para calcular porcentajes
-
-        for i, size in enumerate(sizes_tomorrow):
-            # Seleccionar propiedades según si es padre o hijo
-            wedgeprops = wedgeprops_parents if i in parents_tomorrow else wedgeprops_children
-
-            # Formatear etiqueta con nombre y valor
-            label = f"{labels_tomorrow[i]} ({size})"
-            
-            # Dibujar cada segmento
-            self.ax_owq_graph_balance[1].pie(
-                [size, total_tomorrow - size],  # Tamaño del segmento actual y resto
-                colors=[colors_tomorrow[i], "none"],  # Color del segmento actual
-                startangle=current_angle,
-                radius=1.0,  # Escala uniforme
-                wedgeprops=wedgeprops,
-                labels=[label, None],  # Mostrar etiqueta del segmento actual
-                labeldistance=0.5,  # Etiquetas dentro del pie, más cerca del centro
-                textprops={'fontsize': 14, 'color': '#333333', 'weight': 'bold'}  # Etiquetas más grandes y estéticas
-            )
-            current_angle += size / total_tomorrow * 360  # Calcular el siguiente ángulo
-
-
-        # Títulos de los pies
-        self.ax_owq_graph_balance[0].set_title("After event", fontsize=16, color='#333333', weight='bold')
-        self.ax_owq_graph_balance[1].set_title("For the next event", fontsize=16, color='#333333', weight='bold')
+        
+        self.ax_owq_graph_balance[1].legend(
+            labels_tomorrow,
+            loc='lower center',
+            bbox_to_anchor=(0.6, -0.4),
+            fontsize='small',
+            ncol=1,  # Dos columnas en la leyenda
+            frameon=False  # Fondo transparente y sin borde
+        )
+        self.ax_owq_graph_balance[1].set_title("Residues after degradation")
+        
+        
 
         # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-        self.canvas_owq_graph_balance.figure.subplots_adjust(left=0.1, bottom=0.1)
+        self.canvas_owq_graph_balance.figure.subplots_adjust(left=0.2, bottom=0.2)
         #Change background color
         self.canvas_owq_graph_balance.figure.set_facecolor('#f0f0f0')
         self.ax_owq_graph_balance[0].set_facecolor('#f0f0f0')
         self.ax_owq_graph_balance[1].set_facecolor('#f0f0f0')
-        
+        #Adjust distance between piecharts
+        self.canvas_owq_graph_balance.figure.subplots_adjust(wspace=0.5)
         # Redraw the canvas
         self.canvas_owq_graph_balance.draw()
         
         #Save figure
         self.dlg_owq_graph_balance.print_graph.clicked.connect(lambda _, b= [self.dlg_owq_graph_balance,self.canvas_owq_graph_balance]:self.figure_settings(b))
-    '''
+    
         
-            
-            
     def show_owq_graph(self):
         """Method to show the dialog with water quality graph"""
         #Delete radio buttons of pesticides
@@ -7589,7 +7542,7 @@ class qvfsmod:
         
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)
-        self.warning_message("Sensitivity analysis completed succesfully!")
+        self.warning_message("Identifiability analysis completed succesfully!")
     
     
     def run_sensitivity_analysis_part_two(self):
@@ -7782,7 +7735,7 @@ class qvfsmod:
         
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)
-        self.warning_message("Sensitivity analysis completed succesfully!")
+        self.warning_message("Design with uncertainty completed succesfully!")
     
     def obtain_optimized_vfs_sensitivity_design(self):
         """Method to obtain the buffer length to analyze sensitivity"""
@@ -8968,16 +8921,8 @@ class qvfsmod:
                 texto = str(self.dlg_base.table_uncertainity.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
                 parameters[-1] = (parameters[-1] - parameters[0])/(parameters[1]-parameters[0])
-            elif str(self.dlg_base.table_uncertainity.item(row, 1).text()) == "Normal":
-                distribution = "norm"
-                texto = str(self.dlg_base.table_uncertainity.item(row, 2).text())
-                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
             elif str(self.dlg_base.table_uncertainity.item(row, 1).text()) == "Normal truncated":
                 distribution = "truncnorm"
-                texto = str(self.dlg_base.table_uncertainity.item(row, 2).text())
-                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-            elif str(self.dlg_base.table_uncertainity.item(row, 1).text()) == "Lognormal":
-                distribution = "lognorm"
                 texto = str(self.dlg_base.table_uncertainity.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
             return distribution, parameters
@@ -9035,16 +8980,8 @@ class qvfsmod:
                     texto = str(self.dlg_base.table.item(row, 2).text())
                     parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
                     parameters[-1] = (parameters[-1] - parameters[0])/(parameters[1]-parameters[0])
-                elif str(self.dlg_base.table.item(row, 1).text()) == "Normal":
-                    distribution = "norm"
-                    texto = str(self.dlg_base.table.item(row, 2).text())
-                    parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
                 elif str(self.dlg_base.table.item(row, 1).text()) == "Normal truncated":
                     distribution = "truncnorm"
-                    texto = str(self.dlg_base.table.item(row, 2).text())
-                    parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-                elif str(self.dlg_base.table.item(row, 1).text()) == "Lognormal":
-                    distribution = "lognorm"
                     texto = str(self.dlg_base.table.item(row, 2).text())
                     parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
                 return distribution, parameters
@@ -9082,16 +9019,8 @@ class qvfsmod:
                 texto = str(self.dlg_base.table_2.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
                 parameters[-1] = (parameters[-1] - parameters[0])/(parameters[1]-parameters[0])
-            elif str(self.dlg_base.table_2.item(row, 1).text()) == "Normal":
-                distribution = "norm"
-                texto = str(self.dlg_base.table_2.item(row, 2).text())
-                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
             elif str(self.dlg_base.table_2.item(row, 1).text()) == "Normal truncated":
                 distribution = "truncnorm"
-                texto = str(self.dlg_base.table_2.item(row, 2).text())
-                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-            elif str(self.dlg_base.table_2.item(row, 1).text()) == "Lognormal":
-                distribution = "lognorm"
                 texto = str(self.dlg_base.table_2.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
             return distribution, parameters
@@ -9151,16 +9080,8 @@ class qvfsmod:
                 texto = str(self.dlg_calibration_sensitivity_hydrograph.table.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
                 parameters[-1] = (parameters[-1] - parameters[0])/(parameters[1]-parameters[0])
-            elif str(self.dlg_calibration_sensitivity_hydrograph.table.item(row, 1).text()) == "Normal":
-                distribution = "norm"
-                texto = str(self.dlg_calibration_sensitivity_hydrograph.table.item(row, 2).text())
-                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
             elif str(self.dlg_calibration_sensitivity_hydrograph.table.item(row, 1).text()) == "Normal truncated":
                 distribution = "truncnorm"
-                texto = str(self.dlg_calibration_sensitivity_hydrograph.table.item(row, 2).text())
-                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-            elif str(self.dlg_calibration_sensitivity_hydrograph.table.item(row, 1).text()) == "Lognormal":
-                distribution = "lognorm"
                 texto = str(self.dlg_calibration_sensitivity_hydrograph.table.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
             return distribution, parameters
@@ -9247,13 +9168,7 @@ class qvfsmod:
                 self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third_label, 4, 0)
                 self.dlg_base.gridLayout_81.addWidget(self.dlg_base.third, 4, 1)
 
-            elif distribution=="Normal":
-                #Primero se borra
-                delete_elements()
             
-            if distribution=="Lognormal":
-                #Primero se borra
-                delete_elements()
             
             if distribution=="Normal truncated":
                 #Primero se borra
@@ -9324,13 +9239,6 @@ class qvfsmod:
             self.dlg_base.gridLayout_93.addWidget(self.dlg_base.third_label_design, 4, 0)
             self.dlg_base.gridLayout_93.addWidget(self.dlg_base.third_design, 4, 1)
 
-        elif distribution=="Normal":
-            #Primero se borra
-            delete_elements()
-        
-        if distribution=="Lognormal":
-            #Primero se borra
-            delete_elements()
         
         if distribution=="Normal truncated":
             #Primero se borra
@@ -9401,13 +9309,6 @@ class qvfsmod:
             self.dlg_base.gridLayout_84.addWidget(self.dlg_base.third_label_2, 5, 0)
             self.dlg_base.gridLayout_84.addWidget(self.dlg_base.third_2, 5, 1)
 
-        elif distribution=="Normal":
-            #Primero se borra
-            delete_elements()
-        
-        if distribution=="Lognormal":
-            #Primero se borra
-            delete_elements()
         
         if distribution=="Normal truncated":
             #Primero se borra
@@ -9478,13 +9379,6 @@ class qvfsmod:
             self.dlg_calibration_sensitivity_hydrograph.gridLayout_81.addWidget(self.dlg_calibration_sensitivity_hydrograph.third_label, 4, 0)
             self.dlg_calibration_sensitivity_hydrograph.gridLayout_81.addWidget(self.dlg_calibration_sensitivity_hydrograph.third, 4, 1)
 
-        elif distribution=="Normal":
-            #Primero se borra
-            delete_elements()
-        
-        if distribution=="Lognormal":
-            #Primero se borra
-            delete_elements()
         
         if distribution=="Normal truncated":
             #Primero se borra
@@ -9522,10 +9416,6 @@ class qvfsmod:
                 change_lines("Minimum","Maximum")
             if distribution=="Triangular":
                 change_lines("Minimum","Maximum","Peak")
-            if distribution=="Normal":
-                change_lines("Mean","Standard deviation")
-            if distribution=="Lognormal":
-                change_lines("Mean","Standard deviation")
             if distribution=="Normal truncated":
                 change_lines("Minimum","Maximum","Mean","Standard deviation")
         #Change the csv where results are going to be saved
@@ -9543,10 +9433,6 @@ class qvfsmod:
             change_lines("Minimum","Maximum")
         if distribution=="Triangular":
             change_lines("Minimum","Maximum","Peak")
-        if distribution=="Normal":
-            change_lines("Mean","Standard deviation")
-        if distribution=="Lognormal":
-            change_lines("Mean","Standard deviation")
         if distribution=="Normal truncated":
             change_lines("Minimum","Maximum","Mean","Standard deviation")
     
@@ -9563,10 +9449,6 @@ class qvfsmod:
             change_lines("Minimum","Maximum")
         if distribution=="Triangular":
             change_lines("Minimum","Maximum","Peak")
-        if distribution=="Normal":
-            change_lines("Mean","Standard deviation")
-        if distribution=="Lognormal":
-            change_lines("Mean","Standard deviation")
         if distribution=="Normal truncated":
             change_lines("Minimum","Maximum","Mean","Standard deviation")
     
@@ -9583,10 +9465,6 @@ class qvfsmod:
             change_lines("Minimum","Maximum")
         if distribution=="Triangular":
             change_lines("Minimum","Maximum","Peak")
-        if distribution=="Normal":
-            change_lines("Mean","Standard deviation")
-        if distribution=="Lognormal":
-            change_lines("Mean","Standard deviation")
         if distribution=="Normal truncated":
             change_lines("Minimum","Maximum","Mean","Standard deviation")
     
@@ -9686,8 +9564,6 @@ class qvfsmod:
                 add_element(2,f"min:{self.dlg_base.first.text()},max:{self.dlg_base.second.text()}")
             elif distribution == "Triangular":
                 add_element(2,f"min:{self.dlg_base.first.text()},max:{self.dlg_base.second.text()},peak:{self.dlg_base.third.text()}")
-            elif distribution == "Normal" or distribution == "Lognormal":
-                add_element(2,f"mean:{self.dlg_base.first.text()},stdv:{self.dlg_base.second.text()}")
             elif distribution == "Normal truncated":
                 add_element(2,f"min:{self.dlg_base.first.text()},max:{self.dlg_base.second.text()},mean:{self.dlg_base.third.text()},stdv:{self.dlg_base.fourth.text()}")
             #Add pesticide
@@ -9734,8 +9610,6 @@ class qvfsmod:
             add_element(2,f"min:{self.dlg_base.first_design.text()},max:{self.dlg_base.second_design.text()}")
         elif distribution == "Triangular":
             add_element(2,f"min:{self.dlg_base.first_design.text()},max:{self.dlg_base.second_design.text()},peak:{self.dlg_base.third_design.text()}")
-        elif distribution == "Normal" or distribution == "Lognormal":
-            add_element(2,f"mean:{self.dlg_base.first_design.text()},stdv:{self.dlg_base.second_design.text()}")
         elif distribution == "Normal truncated":
             add_element(2,f"min:{self.dlg_base.first_design.text()},max:{self.dlg_base.second_design.text()},mean:{self.dlg_base.third_design.text()},stdv:{self.dlg_base.fourth_design.text()}")
         
@@ -9782,8 +9656,6 @@ class qvfsmod:
             add_element(2,f"min:{self.dlg_calibration_sensitivity_hydrograph.first.text()},max:{self.dlg_calibration_sensitivity_hydrograph.second.text()}")
         elif distribution == "Triangular":
             add_element(2,f"min:{self.dlg_calibration_sensitivity_hydrograph.first.text()},max:{self.dlg_calibration_sensitivity_hydrograph.second.text()},peak:{self.dlg_calibration_sensitivity_hydrograph.third.text()}")
-        elif distribution == "Normal" or distribution == "Lognormal":
-            add_element(2,f"mean:{self.dlg_calibration_sensitivity_hydrograph.first.text()},stdv:{self.dlg_calibration_sensitivity_hydrograph.second.text()}")
         elif distribution == "Normal truncated":
             add_element(2,f"min:{self.dlg_calibration_sensitivity_hydrograph.first.text()},max:{self.dlg_calibration_sensitivity_hydrograph.second.text()},mean:{self.dlg_calibration_sensitivity_hydrograph.third.text()},stdv:{self.dlg_calibration_sensitivity_hydrograph.fourth.text()}")
         
@@ -9829,8 +9701,6 @@ class qvfsmod:
             add_element(2,f"min:{self.dlg_base.first_2.text()},max:{self.dlg_base.second_2.text()}")
         elif distribution == "Triangular":
             add_element(2,f"min:{self.dlg_base.first_2.text()},max:{self.dlg_base.second_2.text()},peak:{self.dlg_base.third_2.text()}")
-        elif distribution == "Normal" or distribution == "Lognormal":
-            add_element(2,f"mean:{self.dlg_base.first_2.text()},stdv:{self.dlg_base.second_2.text()}")
         elif distribution == "Normal truncated":
             add_element(2,f"min:{self.dlg_base.first_2.text()},max:{self.dlg_base.second_2.text()},mean:{self.dlg_base.third_2.text()},stdv:{self.dlg_base.fourth_2.text()}")
         #Add pesticide
