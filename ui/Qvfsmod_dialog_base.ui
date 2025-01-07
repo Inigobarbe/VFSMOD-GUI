@@ -3035,7 +3035,7 @@ default 5 min</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_13">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>-353</x>
              <y>0</y>
              <width>1324</width>
              <height>743</height>
@@ -3484,7 +3484,7 @@ Solution Parameters</string>
                     </size>
                    </property>
                    <property name="text">
-                    <string>design\\output\\sensitivity_design.csv</string>
+                    <string>design\\output\\sensitivity_design_morris.csv</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
@@ -5401,7 +5401,7 @@ analysis</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_8">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>-176</x>
              <y>0</y>
              <width>923</width>
              <height>583</height>
@@ -6639,7 +6639,7 @@ Solution Parameters</string>
              <x>0</x>
              <y>0</y>
              <width>1164</width>
-             <height>481</height>
+             <height>453</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_40">
@@ -7043,7 +7043,7 @@ Solution Parameters</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>231</width>
+                       <width>204</width>
                        <height>474</height>
                       </rect>
                      </property>
@@ -7349,7 +7349,7 @@ Solution Parameters</string>
                        <x>0</x>
                        <y>0</y>
                        <width>290</width>
-                       <height>173</height>
+                       <height>28</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_86">

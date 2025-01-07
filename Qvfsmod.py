@@ -3814,7 +3814,6 @@ class qvfsmod:
     
     def add_values_inp_dialog(self):
         """Method to add values of the inp to the dialog"""
-        print(1)
         path = self.obtain_direction_vfsmod(self.dlg_base.uh_input.text())
         #Disconnect storm type
         self.dlg_base.storm_type.currentIndexChanged.disconnect(self.user_defined_storm_type)
@@ -6153,9 +6152,14 @@ class qvfsmod:
             except:
                 threshold = 0
             
-
-            self.ax_calibration_sensitivity.set_xlim(0,max(list(mu_star)+list(sigma))*1.2)
-            self.ax_calibration_sensitivity.set_ylim(0,max(list(mu_star)+list(sigma))*1.2)
+            if max(list(mu_star)+list(sigma))>0:
+                self.ax_calibration_sensitivity.set_xlim(0,max(list(mu_star)+list(sigma))*1.2)
+                self.ax_calibration_sensitivity.set_ylim(0,max(list(mu_star)+list(sigma))*1.2)
+            else:
+                self.ax_calibration_sensitivity.set_xlim(0,1)
+                self.ax_calibration_sensitivity.set_ylim(0,1)
+                    
+                    
             #Labels
             self.ax_calibration_sensitivity.set_xlabel(r"Mean of Elementary Effects ($\mu_{i}^{*}$)")
             self.ax_calibration_sensitivity.set_ylabel("Standard Deviation \nof Elementary Effects ($\sigma_{i}$)")
@@ -6207,6 +6211,14 @@ class qvfsmod:
         else:
             # Si ya existe, simplemente limpiar el canvas
             self.canvas_sensitivity_graph.figure.clear()
+        
+        #Function to convert nans to 0
+        def nan_function(value):
+            if not np.isnan(value):
+                return value
+            else:
+                return 0
+            
         #MORRIS
         if self.dlg_base.radio_morris.isChecked():
             ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_morris.text())
@@ -6218,8 +6230,6 @@ class qvfsmod:
                     self.warning_message("Please select a csv file that contains Morris sensitivity analysis results")
                     return
                 
-                
-                self.ax = self.canvas_sensitivity_graph.figure.subplots()
                 #Obtain output
                 for i in range(self.dlg_base.frame_18.layout().count()):
                     item = self.dlg_base.frame_18.layout().itemAt(i)
@@ -6239,10 +6249,20 @@ class qvfsmod:
                             if k == "----------------------------------------------------------------------" + '\n':
                                     break
                             names_inputs.append(k.split(":")[0])
-                            mu_star.append(float(k.split(":")[1].split("_")[0]))
-                            sigma.append(float(k.split(":")[1].split("_")[1]))
-                            mu.append(float(k.split(":")[1].split("_")[2]))
-                            
+                            print(output_column)
+                            print(k)
+                            mu_star.append(nan_function(float(k.split(":")[1].split("_")[0])))
+                            sigma.append(nan_function(float(k.split(":")[1].split("_")[1])))
+                            mu.append(nan_function(float(k.split(":")[1].split("_")[2])))
+                
+                #If output doesnt exist, then stop with the code
+                if len(mu_star) == 0:
+                    self.canvas_sensitivity_graph.figure.clear()
+                    #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
+                    self.canvas_sensitivity_graph.draw()
+                    return
+                    
+                self.ax = self.canvas_sensitivity_graph.figure.subplots()
                 # Graficar los puntos con color granate y agregar etiquetas
                 add_label_monotonic = True # add label only once
                 add_label_non_monotonic = True # add label only once
@@ -6278,8 +6298,12 @@ class qvfsmod:
                 line_plot = list(range(-1,int(max(list(mu_star)+list(sigma))*1.2)+2))
                 self.ax.plot(line_plot, line_plot, color="red",linestyle="--")
                 
-                self.ax.set_xlim(0,max(list(mu_star)+list(sigma))*1.2)
-                self.ax.set_ylim(0,max(list(mu_star)+list(sigma))*1.2)
+                if max(list(mu_star)+list(sigma))>0:
+                    self.ax.set_xlim(0,max(list(mu_star)+list(sigma))*1.2)
+                    self.ax.set_ylim(0,max(list(mu_star)+list(sigma))*1.2)
+                else:
+                    self.ax.set_xlim(0,1)
+                    self.ax.set_ylim(0,1)
                 
                 #Add legend
                 legend = self.ax.legend(
@@ -6301,6 +6325,12 @@ class qvfsmod:
                 self.canvas_sensitivity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
                 #Draw canvas
                 self.canvas_sensitivity_graph.draw()
+            
+            else: #if path doesnt exist then clear figure
+                self.canvas_sensitivity_graph.figure.clear()
+                #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
+                self.canvas_sensitivity_graph.draw()
+                
         
         #FAST
         if self.dlg_base.radio_fast.isChecked():
@@ -6337,10 +6367,17 @@ class qvfsmod:
                             if k == "----------------------------------------------------------------------" + '\n':
                                     break
                             names_inputs.append(k.split(":")[0])
-                            s1.append(float(k.split(":")[1].split("_")[0]))
-                            s1_conf.append(float(k.split(":")[1].split("_")[1]))
-                            st.append(float(k.split(":")[1].split("_")[2]))
-                            st_conf.append(float(k.split(":")[1].split("_")[3]))
+                            s1.append(nan_function(float(k.split(":")[1].split("_")[0])))
+                            s1_conf.append(nan_function(float(k.split(":")[1].split("_")[1])))
+                            st.append(nan_function(float(k.split(":")[1].split("_")[2])))
+                            st_conf.append(nan_function(float(k.split(":")[1].split("_")[3])))
+                
+                #If output doesnt exist, then stop with the code
+                if len(s1) == 0:
+                    self.canvas_sensitivity_graph.figure.clear()
+                    #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
+                    self.canvas_sensitivity_graph.draw()
+                    return
                 
                 #Total order 
                 self.ax_fast[0].bar(names_inputs, st, yerr=st_conf, capsize=5, color='b')
@@ -6367,6 +6404,12 @@ class qvfsmod:
                 self.canvas_sensitivity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
                 #Draw canvas
                 self.canvas_sensitivity_graph.draw()
+            
+            else:#if path doesnt exist then clear figure
+                self.canvas_sensitivity_graph.figure.clear()
+                #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
+                self.canvas_sensitivity_graph.draw()
+                
         
         #Sobol
         elif self.dlg_base.radio_sobol.isChecked():
@@ -6403,10 +6446,17 @@ class qvfsmod:
                             if k == "----------------------------------------------------------------------" + '\n':
                                     break
                             names_inputs.append(k.split(":")[0])
-                            s1.append(float(k.split(":")[1].split("_")[0]))
-                            s1_conf.append(float(k.split(":")[1].split("_")[1]))
-                            st.append(float(k.split(":")[1].split("_")[2]))
-                            st_conf.append(float(k.split(":")[1].split("_")[3]))
+                            s1.append(nan_function(float(k.split(":")[1].split("_")[0])))
+                            s1_conf.append(nan_function(float(k.split(":")[1].split("_")[1])))
+                            st.append(nan_function(float(k.split(":")[1].split("_")[2])))
+                            st_conf.append(nan_function(float(k.split(":")[1].split("_")[3])))
+                
+                #If output doesnt exist, then stop with the code
+                if len(s1) == 0:
+                    self.canvas_sensitivity_graph.figure.clear()
+                    #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
+                    self.canvas_sensitivity_graph.draw()
+                    return
                 
                 #Total order 
                 self.ax_sobol[0].bar(names_inputs, st, yerr=st_conf, capsize=5, color='b')
@@ -6433,6 +6483,12 @@ class qvfsmod:
                 self.canvas_sensitivity_graph.figure.subplots_adjust(left=0.2, bottom=0.2)
                 #Draw canvas
                 self.canvas_sensitivity_graph.draw()
+            
+            else: #if path doesnt exist then clear figure
+                self.canvas_sensitivity_graph.figure.clear()
+                #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
+                self.canvas_sensitivity_graph.draw()
+                
         
         #Save figure
         self.dlg_base.print_graph_sensitivity.clicked.connect(lambda _, b= [self.dlg_base,self.canvas_sensitivity_graph]:self.figure_settings(b))
@@ -6466,12 +6522,10 @@ class qvfsmod:
                 ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_fast_design_uncertainity.text())
             elif self.dlg_base.radio_sobol_design.isChecked():
                 ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_sobol_design_uncertainity.text())
-            
             #Obtain data 
             if os.path.exists(ruta) and os.path.isfile(ruta):
                 with open(ruta, "r") as archivo:
                     lineas = archivo.readlines()
-
                 #Obtain output
                 for i in range(self.dlg_base.frame_39.layout().count()):
                     item = self.dlg_base.frame_39.layout().itemAt(i)
@@ -6480,20 +6534,25 @@ class qvfsmod:
                     #Checks if the widget is a QCheckBox and if it is selected.
                     if isinstance(widget, QRadioButton) and widget.isChecked():
                         output_column = widget.text()
-                
                 values = []
                 for i in range(2,len(lineas)):
                     if len(lineas[i].split(","))>2:
                         try:
                             columna = lineas[i].replace("\n", "").split(",").index(output_column)
                         except ValueError:
-                            self.warning_message(f"{output_column} is not in this csv")
+                            self.canvas_sensitivity_graph_design.figure.clear()
+                            #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
+                            self.canvas_sensitivity_graph_design.draw()
                             return
                         for k in range(i+1,len(lineas)):
                             if lineas[k] == "----------------------------------------------------------------------" + '\n':
                                 break
-                            values.append(float(lineas[k].split(",")[columna]))
+                            try:#it can be the case where there is not a value
+                                values.append(float(lineas[k].split(",")[columna]))
+                            except ValueError:
+                                pass
                         break
+                
                 
                 #Create graph
                 # Crear figura y ejes
@@ -6542,6 +6601,11 @@ class qvfsmod:
                 self.canvas_sensitivity_graph_design.figure.subplots_adjust(left=0.2, bottom=0.2)
                 #Draw canvas
                 self.canvas_sensitivity_graph_design.draw()
+            else: #if path doesnt exist then clear graph
+                self.canvas_sensitivity_graph_design.figure.clear()
+                #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
+                self.canvas_sensitivity_graph_design.draw()
+                
                
 
         #ALL LENGTHS
@@ -6575,13 +6639,18 @@ class qvfsmod:
                         try:
                             columna_output = lineas[i].replace("\n", "").split(",").index(" ".join(output_column.split()[2:-1]))
                         except ValueError:
-                            self.warning_message(f"{output_column} is not in this csv")
+                            self.canvas_sensitivity_graph_design.figure.clear()
+                            #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
+                            self.canvas_sensitivity_graph_design.draw()
                             return
                         column_buffer = lineas[i].replace("\n", "").split(",").index("Buffer length (m)")
                         for k in range(i+1,len(lineas)):
-                            buffer_length = float(lineas[k].split(",")[column_buffer])
-                            value_output = float(lineas[k].split(",")[columna_output])
-                            values.append([buffer_length,value_output])
+                            try:#it can be the case where there is not a value
+                                value_output = float(lineas[k].split(",")[columna_output])
+                                buffer_length = float(lineas[k].split(",")[column_buffer])
+                                values.append([buffer_length,value_output])
+                            except ValueError:
+                                pass
                         break
                 
                 #Create graph
@@ -6645,9 +6714,18 @@ class qvfsmod:
                 #Draw canvas
                 self.canvas_sensitivity_graph_design.draw()
                 
-                
-                
-                            
+            else: #if path doesnt exist then clear graph
+                self.canvas_sensitivity_graph_design.figure.clear()
+                #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
+                self.canvas_sensitivity_graph_design.draw()    
+        
+        #Function to convert nans to 0
+        def nan_function(value):
+            if not np.isnan(value):
+                return value
+            else:
+                return 0
+        
         #MORRIS
         if self.dlg_base.radio_morris_design.isChecked() and self.dlg_base.radio_sensitivity_index.isChecked():
             ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_morris_design_uncertainity.text())
@@ -6679,10 +6757,16 @@ class qvfsmod:
                             if k == "----------------------------------------------------------------------" + '\n':
                                     break
                             names_inputs.append(k.split(":")[0])
-                            mu_star.append(float(k.split(":")[1].split("_")[0]))
-                            sigma.append(float(k.split(":")[1].split("_")[1]))
-                            mu.append(float(k.split(":")[1].split("_")[2]))
-                            
+                            mu_star.append(nan_function(float(k.split(":")[1].split("_")[0])))
+                            sigma.append(nan_function(float(k.split(":")[1].split("_")[1])))
+                            mu.append(nan_function(float(k.split(":")[1].split("_")[2])))
+                
+                if len(mu_star) == 0:
+                    self.canvas_sensitivity_graph_design.figure.clear()
+                    #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
+                    self.canvas_sensitivity_graph_design.draw()
+                    return
+                    
                 # Graficar los puntos con color granate y agregar etiquetas
                 add_label_monotonic = True # add label only once
                 add_label_non_monotonic = True # add label only once
@@ -6719,8 +6803,14 @@ class qvfsmod:
                 line_plot = list(range(-1,int(max(list(mu_star)+list(sigma))*1.2)+2))
                 self.ax_design.plot(line_plot, line_plot, color="red",linestyle="--")
                 
-                self.ax_design.set_xlim(0,max(list(mu_star)+list(sigma))*1.2)
-                self.ax_design.set_ylim(0,max(list(mu_star)+list(sigma))*1.2)
+                
+                
+                if max(list(mu_star)+list(sigma))>0:
+                    self.ax_design.set_xlim(0,max(list(mu_star)+list(sigma))*1.2)
+                    self.ax_design.set_ylim(0,max(list(mu_star)+list(sigma))*1.2)
+                else:
+                    self.ax_design.set_xlim(0,1)
+                    self.ax_design.set_ylim(0,1)
                 
                 #Add legend
                 legend = self.ax_design.legend(
@@ -6741,6 +6831,12 @@ class qvfsmod:
                 self.canvas_sensitivity_graph_design.figure.subplots_adjust(left=0.2, bottom=0.2)
                 #Draw canvas
                 self.canvas_sensitivity_graph_design.draw()
+            
+            else: #if path doesnt exist then clear graph
+                self.canvas_sensitivity_graph_design.figure.clear()
+                #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
+                self.canvas_sensitivity_graph_design.draw()
+                
         
         #FAST
         elif self.dlg_base.radio_fast_design.isChecked() and self.dlg_base.radio_sensitivity_index.isChecked():
@@ -6777,10 +6873,15 @@ class qvfsmod:
                             if k == "----------------------------------------------------------------------" + '\n':
                                     break
                             names_inputs.append(k.split(":")[0])
-                            s1.append(float(k.split(":")[1].split("_")[0]))
-                            s1_conf.append(float(k.split(":")[1].split("_")[1]))
-                            st.append(float(k.split(":")[1].split("_")[2]))
-                            st_conf.append(float(k.split(":")[1].split("_")[3]))
+                            s1.append(nan_function(float(k.split(":")[1].split("_")[0])))
+                            s1_conf.append(nan_function(float(k.split(":")[1].split("_")[1])))
+                            st.append(nan_function(float(k.split(":")[1].split("_")[2])))
+                            st_conf.append(nan_function(float(k.split(":")[1].split("_")[3])))
+                if len(s1) == 0:
+                    self.canvas_sensitivity_graph_design.figure.clear()
+                    #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
+                    self.canvas_sensitivity_graph_design.draw()
+                    return
                 
                 #Total order 
                 self.ax_fast_design[0].bar(names_inputs, st, yerr=st_conf, capsize=5, color='b') 
@@ -6807,7 +6908,12 @@ class qvfsmod:
                 self.canvas_sensitivity_graph_design.figure.subplots_adjust(left=0.2, bottom=0.2)
                 #Draw canvas
                 self.canvas_sensitivity_graph_design.draw()
-        
+            
+            else: #if path doesnt exist then clear graph
+                self.canvas_sensitivity_graph_design.figure.clear()
+                #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
+                self.canvas_sensitivity_graph_design.draw()
+                
         #Sobol
         elif self.dlg_base.radio_sobol_design.isChecked() and self.dlg_base.radio_sensitivity_index.isChecked():
             ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_sobol_design_uncertainity.text())
@@ -6843,10 +6949,16 @@ class qvfsmod:
                             if k == "----------------------------------------------------------------------" + '\n':
                                     break
                             names_inputs.append(k.split(":")[0])
-                            s1.append(float(k.split(":")[1].split("_")[0]))
-                            s1_conf.append(float(k.split(":")[1].split("_")[1]))
-                            st.append(float(k.split(":")[1].split("_")[2]))
-                            st_conf.append(float(k.split(":")[1].split("_")[3]))
+                            s1.append(nan_function(float(k.split(":")[1].split("_")[0])))
+                            s1_conf.append(nan_function(float(k.split(":")[1].split("_")[1])))
+                            st.append(nan_function(float(k.split(":")[1].split("_")[2])))
+                            st_conf.append(nan_function(float(k.split(":")[1].split("_")[3])))
+                            
+                if len(s1) == 0:
+                    self.canvas_sensitivity_graph_design.figure.clear()
+                    #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
+                    self.canvas_sensitivity_graph_design.draw()
+                    return
                 
                 #Total order 
                 self.ax_sobol_design[0].bar(names_inputs, st, yerr=st_conf, capsize=5, color='b')
@@ -6873,7 +6985,12 @@ class qvfsmod:
                 self.canvas_sensitivity_graph_design.figure.subplots_adjust(left=0.2, bottom=0.2)
                 #Draw canvas
                 self.canvas_sensitivity_graph_design.draw()
-        
+            
+            else: #if path doesnt exist then clear graph
+                self.canvas_sensitivity_graph_design.figure.clear()
+                #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
+                self.canvas_sensitivity_graph_design.draw()
+                
         #Save figure
         self.dlg_base.print_graph_design_uncertainity.clicked.connect(lambda _, b= [self.dlg_base,self.canvas_sensitivity_graph_design]:self.figure_settings(b))
             
@@ -6905,7 +7022,14 @@ class qvfsmod:
             values = []
             for i in range(2,len(lineas)):
                 if len(lineas[i].split(","))>2:
-                    columna = lineas[i].replace("\n", "").split(",").index(output_column)
+                    try:
+                        columna = lineas[i].replace("\n", "").split(",").index(output_column)
+                    except ValueError:
+                        self.canvas_sensitivity_graph_design.figure.clear()
+                        #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
+                        self.canvas_sensitivity_graph_design.draw()
+                        return
+                        
                     for k in range(i+1,len(lineas)):
                         if lineas[k] == "----------------------------------------------------------------------" + '\n':
                             break
@@ -6913,6 +7037,11 @@ class qvfsmod:
                     break
                     
             return values
+        
+        else: #if path doesnt exist then clear graph
+            self.canvas_sensitivity_graph_design.figure.clear()
+            #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
+            self.canvas_sensitivity_graph_design.draw()
         
     def udpate_buffer_length_cumulative(self):
         """Method to obtain the buffer length according to a confidence level"""
@@ -7631,12 +7760,15 @@ class qvfsmod:
             
         #Add csv result to the lineEdit and update graph
         if self.dlg_base.sobol.isChecked():
+            self.dlg_base.radio_sobol.setChecked(True)
             self.dlg_base.csv_results_2.setText(self.dlg_base.file_save.text())
             self.show_sensitivity_graph_global()
         elif self.dlg_base.morris.isChecked():
+            self.dlg_base.radio_morris.setChecked(True)
             self.dlg_base.csv_results_morris.setText(self.dlg_base.file_save.text())
             self.show_sensitivity_graph_global()
         elif self.dlg_base.fast.isChecked():
+            self.dlg_base.radio_fast.setChecked(True)
             self.dlg_base.csv_results_fast.setText(self.dlg_base.file_save.text())
             self.show_sensitivity_graph_global()
         elif self.dlg_base.oat.isChecked():
@@ -7723,12 +7855,14 @@ class qvfsmod:
         self.results_sensitivity_raw.to_csv(path, mode='a',index=False, float_format='%.5f')
             
         #Add csv result to the lineEdit and update graph
-        
         if self.dlg_base.sobol_design.isChecked():
+            self.dlg_base.radio_sobol_design.setChecked(True)
             self.dlg_base.csv_results_sobol_design_uncertainity.setText(self.dlg_base.file_save_design.text())
         elif self.dlg_base.morris_design.isChecked():
+            self.dlg_base.radio_morris_design.setChecked(True)
             self.dlg_base.csv_results_morris_design_uncertainity.setText(self.dlg_base.file_save_design.text())
         elif self.dlg_base.fast_design.isChecked():
+            self.dlg_base.radio_fast_design.setChecked(True)
             self.dlg_base.csv_results_fast_design_uncertainity.setText(self.dlg_base.file_save_design.text())
 
         self.show_sensitivity_graph_design()
@@ -9754,6 +9888,7 @@ class qvfsmod:
                     self.dlg_base.samples_design.setText("")
                 else:
                     self.dlg_base.samples_design.setText(str(int(self.dlg_base.trajectories_design.text())*(2*self.dlg_base.table_2.rowCount()+2)))
+                self.dlg_base.file_save_design.setText(os.path.normpath("design\\output\\sensitivity_design_sobol.csv"))
             except:
                 pass
         elif self.dlg_base.morris_design.isChecked():
@@ -9763,6 +9898,7 @@ class qvfsmod:
                     self.dlg_base.samples_design.setText("")
                 else:
                     self.dlg_base.samples_design.setText(str(int(self.dlg_base.trajectories_design.text())*(self.dlg_base.table_2.rowCount()+1)))
+                self.dlg_base.file_save_design.setText(os.path.normpath("design\\output\\sensitivity_design_morris.csv"))
             except:
                 pass
         elif self.dlg_base.fast_design.isChecked():
@@ -9772,6 +9908,7 @@ class qvfsmod:
                     self.dlg_base.samples_design.setText("")
                 else:
                     self.dlg_base.samples_design.setText(str(int(self.dlg_base.trajectories_design.text())*(self.dlg_base.table_2.rowCount())))
+                self.dlg_base.file_save_design.setText(os.path.normpath("design\\output\\sensitivity_design_fast.csv"))
             except:
                 pass
     
@@ -14886,7 +15023,7 @@ class qvfsmod:
         self.dlg_base.working_directory_vfsmod.setText(os.path.normpath(os.getcwd()))
         self.dlg_base.uh_file.setText(os.path.normpath(".lis"))
         self.dlg_base.uh_input.setText(os.path.normpath(r"inputs\.inp"))
-        self.dlg_base.file_save_design.setText(os.path.normpath("design\\output\\sensitivity_design.csv"))
+        self.dlg_base.file_save_design.setText(os.path.normpath("design\\output\\sensitivity_design_morris.csv"))
         self.dlg_base.file_save.setText(os.path.normpath("sensitivity\\output\\sensitivity_oat.csv"))
         self.dlg_base.file_save_uncertainity.setText(os.path.normpath("uncertainty\\output\\uncertainty.csv"))
         self.dlg_calibration_sensitivity_hydrograph.file_save.setText(os.path.normpath("inverse\\output\\calibration_sensitivity.csv"))
