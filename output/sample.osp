@@ -18,26 +18,26 @@ File: C:\qvfsmod\output\sample.osp                    VFSMOD v4.6.0 11/2024
      5000.0 m^2 = Source Area (input)
      100.00 m   = Source Flow Length (input)
       50.00 m   = Source Area Width (input)
-       8.65 m   = Filter Strip Length (input)
+       8.66 m   = Filter Strip Length (input)
        3.87 m   = Filter Strip Width (input)
       0.400     = Mean Filter Mannings Roughness (input)
   
-       8.65 %   = Ratio of Filter Length to Source Flow Length
-     26.268 mm  = Total Rainfall
-      0.880 m3  = Total Rainfall on Filter
-      4.241 mm  = Total Runoff from Source (mm depth over Source Area)
-     21.204 m3  = Total Runoff from Source
-      3.108 mm  = Total Runoff out from Filter (mm depth over Source+Filter)
-     15.644 m3  = Total Runoff out from Filter
-      6.967 m3  = Total Infiltration in Filter
-      0.738     = Runoff Delivery Ratio
+       8.66 %   = Ratio of Filter Length to Source Flow Length
+     24.254 mm  = Total Rainfall
+      0.813 m3  = Total Rainfall on Filter
+      0.094 mm  = Total Runoff from Source (mm depth over Source Area)
+      0.470 m3  = Total Runoff from Source
+      0.000 mm  = Total Runoff out from Filter (mm depth over Source+Filter)
+      0.000 m3  = Total Runoff out from Filter
+      1.283 m3  = Total Infiltration in Filter
+      0.000     = Runoff Delivery Ratio
   
-     269.171 kg = Mass Sediment Input to Filter
-      12.695 g/L= Concentration Sediment in Runoff from source Area
-      40.700 kg = Mass Sediment Output from Filter
-       2.602 g/L= Concentration Sediment in Runoff exiting the Filter
-     228.471 kg = Mass Sediment retained in Filter
-       0.151    = Sediment Delivery Ratio
+       1.094 kg = Mass Sediment Input to Filter
+       2.330 g/L= Concentration Sediment in Runoff from source Area
+       0.000 kg = Mass Sediment Output from Filter
+       0.000 g/L= Concentration Sediment in Runoff exiting the Filter
+       1.094 kg = Mass Sediment retained in Filter
+       0.000    = Sediment Delivery Ratio
   
-       8.65 m   = Effective Filter Length
+       8.66 m   = Effective Filter Length
        0.00 m   = Wedge Distance

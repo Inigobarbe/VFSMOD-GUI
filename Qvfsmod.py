@@ -3072,8 +3072,8 @@ class qvfsmod:
                 item = self.dlg_base.frame_39.layout().itemAt(i)
                 widget = item.widget()
                 
-                #Checks if the widget is a QCheckBox and if it is selected.
-                if isinstance(widget, QRadioButton) and widget.isChecked():
+                #Checks if the widget is a QCheckBox and if it is selected and it is a present output.
+                if isinstance(widget, QRadioButton) and widget.isChecked() and widget.text() in outputs:
                     output_previously = True
                     output = widget.text()
         
@@ -3111,9 +3111,6 @@ class qvfsmod:
             # Añade el espaciador de nuevo después de los nuevos QRadioButtons
             spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
             layout_frame_22.addItem(spacer)
-            
-            
-            
             #Select one radiobutton
             if output_previously:
                 for i in outputs_checks:
@@ -3298,6 +3295,7 @@ class qvfsmod:
                 return
             
             #Obtain input parameter
+            print(self.dictionary_radio_inputs)
             for i in self.dictionary_radio_inputs:
                 if i.isChecked():
                     input_parameter = self.dictionary_radio_inputs[i]
@@ -6193,8 +6191,6 @@ class qvfsmod:
             #Change width of first column
             self.dlg_water_quality.tableWidget.setColumnWidth(0, 400)
     
-    
-    
     def update_sensitivity_graph_global(self):
         """Method to update the graph of the sensitivity for Sobol"""
         #Create and clear axis before drawing
@@ -6214,9 +6210,9 @@ class qvfsmod:
         
         #Function to convert nans to 0
         def nan_function(value):
-            if not np.isnan(value):
-                return value
-            else:
+            try:
+                return float(value)
+            except:
                 return 0
             
         #MORRIS
@@ -6249,11 +6245,9 @@ class qvfsmod:
                             if k == "----------------------------------------------------------------------" + '\n':
                                     break
                             names_inputs.append(k.split(":")[0])
-                            print(output_column)
-                            print(k)
-                            mu_star.append(nan_function(float(k.split(":")[1].split("_")[0])))
-                            sigma.append(nan_function(float(k.split(":")[1].split("_")[1])))
-                            mu.append(nan_function(float(k.split(":")[1].split("_")[2])))
+                            mu_star.append(nan_function(k.split(":")[1].split("_")[0]))
+                            sigma.append(nan_function(k.split(":")[1].split("_")[1]))
+                            mu.append(nan_function(k.split(":")[1].split("_")[2]))
                 
                 #If output doesnt exist, then stop with the code
                 if len(mu_star) == 0:
@@ -6367,10 +6361,10 @@ class qvfsmod:
                             if k == "----------------------------------------------------------------------" + '\n':
                                     break
                             names_inputs.append(k.split(":")[0])
-                            s1.append(nan_function(float(k.split(":")[1].split("_")[0])))
-                            s1_conf.append(nan_function(float(k.split(":")[1].split("_")[1])))
-                            st.append(nan_function(float(k.split(":")[1].split("_")[2])))
-                            st_conf.append(nan_function(float(k.split(":")[1].split("_")[3])))
+                            s1.append(nan_function(k.split(":")[1].split("_")[0]))
+                            s1_conf.append(nan_function(k.split(":")[1].split("_")[1]))
+                            st.append(nan_function(k.split(":")[1].split("_")[2]))
+                            st_conf.append(nan_function(k.split(":")[1].split("_")[3]))
                 
                 #If output doesnt exist, then stop with the code
                 if len(s1) == 0:
@@ -6446,10 +6440,10 @@ class qvfsmod:
                             if k == "----------------------------------------------------------------------" + '\n':
                                     break
                             names_inputs.append(k.split(":")[0])
-                            s1.append(nan_function(float(k.split(":")[1].split("_")[0])))
-                            s1_conf.append(nan_function(float(k.split(":")[1].split("_")[1])))
-                            st.append(nan_function(float(k.split(":")[1].split("_")[2])))
-                            st_conf.append(nan_function(float(k.split(":")[1].split("_")[3])))
+                            s1.append(nan_function(k.split(":")[1].split("_")[0]))
+                            s1_conf.append(nan_function(k.split(":")[1].split("_")[1]))
+                            st.append(nan_function(k.split(":")[1].split("_")[2]))
+                            st_conf.append(nan_function(k.split(":")[1].split("_")[3]))
                 
                 #If output doesnt exist, then stop with the code
                 if len(s1) == 0:
@@ -6539,7 +6533,7 @@ class qvfsmod:
                     if len(lineas[i].split(","))>2:
                         try:
                             columna = lineas[i].replace("\n", "").split(",").index(output_column)
-                        except ValueError:
+                        except:
                             self.canvas_sensitivity_graph_design.figure.clear()
                             #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
                             self.canvas_sensitivity_graph_design.draw()
@@ -6589,10 +6583,15 @@ class qvfsmod:
                 handles2, labels2 = ax2.get_legend_handles_labels()
                 combined_handles = handles1 + handles2
                 combined_labels = labels1 + labels2
-
-                legend = ax1.legend(handles1 + handles2, labels1 + labels2, loc="best")
-                legend.get_frame().set_alpha(0)
                 
+                # Add legend and change color
+                legend = ax1.legend(combined_handles,combined_labels,
+                    loc="lower center",  # Centrar horizontalmente
+                    bbox_to_anchor=(0.5, 1.01),  # Posición justo arriba del gráfico
+                    ncol=2,  # Número de columnas en la leyenda
+                    frameon=False
+                )
+                legend.get_frame().set_alpha(0)
                 
                 #Change background color
                 self.canvas_sensitivity_graph_design.figure.set_facecolor('#f0f0f0')
@@ -6638,7 +6637,7 @@ class qvfsmod:
                     if "Error" in lineas[i].split(","):
                         try:
                             columna_output = lineas[i].replace("\n", "").split(",").index(" ".join(output_column.split()[2:-1]))
-                        except ValueError:
+                        except:
                             self.canvas_sensitivity_graph_design.figure.clear()
                             #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
                             self.canvas_sensitivity_graph_design.draw()
@@ -6648,7 +6647,8 @@ class qvfsmod:
                             try:#it can be the case where there is not a value
                                 value_output = float(lineas[k].split(",")[columna_output])
                                 buffer_length = float(lineas[k].split(",")[column_buffer])
-                                values.append([buffer_length,value_output])
+                                if int(lineas[k].split(",")[lineas[i].split(",").index("Error")])==0:#if there is no error
+                                    values.append([buffer_length,value_output])
                             except ValueError:
                                 pass
                         break
@@ -6721,9 +6721,9 @@ class qvfsmod:
         
         #Function to convert nans to 0
         def nan_function(value):
-            if not np.isnan(value):
-                return value
-            else:
+            try:
+                return float(value)
+            except:
                 return 0
         
         #MORRIS
@@ -6757,9 +6757,9 @@ class qvfsmod:
                             if k == "----------------------------------------------------------------------" + '\n':
                                     break
                             names_inputs.append(k.split(":")[0])
-                            mu_star.append(nan_function(float(k.split(":")[1].split("_")[0])))
-                            sigma.append(nan_function(float(k.split(":")[1].split("_")[1])))
-                            mu.append(nan_function(float(k.split(":")[1].split("_")[2])))
+                            mu_star.append(nan_function(k.split(":")[1].split("_")[0]))
+                            sigma.append(nan_function(k.split(":")[1].split("_")[1]))
+                            mu.append(nan_function(k.split(":")[1].split("_")[2]))
                 
                 if len(mu_star) == 0:
                     self.canvas_sensitivity_graph_design.figure.clear()
@@ -6873,10 +6873,10 @@ class qvfsmod:
                             if k == "----------------------------------------------------------------------" + '\n':
                                     break
                             names_inputs.append(k.split(":")[0])
-                            s1.append(nan_function(float(k.split(":")[1].split("_")[0])))
-                            s1_conf.append(nan_function(float(k.split(":")[1].split("_")[1])))
-                            st.append(nan_function(float(k.split(":")[1].split("_")[2])))
-                            st_conf.append(nan_function(float(k.split(":")[1].split("_")[3])))
+                            s1.append(nan_function(k.split(":")[1].split("_")[0]))
+                            s1_conf.append(nan_function(k.split(":")[1].split("_")[1]))
+                            st.append(nan_function(k.split(":")[1].split("_")[2]))
+                            st_conf.append(nan_function(k.split(":")[1].split("_")[3]))
                 if len(s1) == 0:
                     self.canvas_sensitivity_graph_design.figure.clear()
                     #If I clear but not .draw() then is changed but only when dialog is maximized or minimized
@@ -6949,10 +6949,10 @@ class qvfsmod:
                             if k == "----------------------------------------------------------------------" + '\n':
                                     break
                             names_inputs.append(k.split(":")[0])
-                            s1.append(nan_function(float(k.split(":")[1].split("_")[0])))
-                            s1_conf.append(nan_function(float(k.split(":")[1].split("_")[1])))
-                            st.append(nan_function(float(k.split(":")[1].split("_")[2])))
-                            st_conf.append(nan_function(float(k.split(":")[1].split("_")[3])))
+                            s1.append(nan_function(k.split(":")[1].split("_")[0]))
+                            s1_conf.append(nan_function(k.split(":")[1].split("_")[1]))
+                            st.append(nan_function(k.split(":")[1].split("_")[2]))
+                            st_conf.append(nan_function(k.split(":")[1].split("_")[3]))
                             
                 if len(s1) == 0:
                     self.canvas_sensitivity_graph_design.figure.clear()
@@ -7551,6 +7551,11 @@ class qvfsmod:
     
     def run_sensitivity_analysis_part_one(self):
         """Method to run whole sensitivity analysis"""
+        #If no parameters have been selected then stop
+        if (self.dlg_base.oat.isChecked() and self.dlg_base.table_oat.rowCount() ==0) or (not self.dlg_base.oat.isChecked() and self.dlg_base.table.rowCount()==0):
+            self.warning_message("No parameters were selected")
+            return
+        
         #Create the dictionary for the sensitivity analysis
         self.dic_data = self.create_dictionary_sensitivity_analysis()
         
@@ -7756,7 +7761,7 @@ class qvfsmod:
         
         #Append results
         if not self.dlg_base.oat.isChecked():
-            self.results_sensitivity.to_csv(path, mode='a',index=False, float_format='%.5f')
+            self.results_sensitivity.to_csv(path, mode='a',index=False, float_format='%.10f')
             
         #Add csv result to the lineEdit and update graph
         if self.dlg_base.sobol.isChecked():
@@ -7806,7 +7811,7 @@ class qvfsmod:
                         if all(x == 0 for x in np.array(self.results_sensitivity[i])):
                             self.warning_message(f"{i} column is all with 0 values. \n Please check input data, you may have chosen a small rainfall event.")
                             return
-                        si = sobol.analyze(self.problem, np.array(self.results_sensitivity[i]))
+                        si = sobol.analyze(self.problem, np.array(self.results_sensitivity[i], dtype=float))
                         for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()): 
                             f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}" + '\n')
                     f.write("----------------------------------------------------------------------" + '\n')
@@ -7822,7 +7827,7 @@ class qvfsmod:
                         if all(x == 0 for x in np.array(self.results_sensitivity[i])):
                             self.warning_message(f"{i} column is all with 0 values. \n Please check input data, you may have chosen a small rainfall event.")
                             return
-                        si = analyze_morris(self.problem,np.array(self.param_values),np.array(self.results_sensitivity[i]))
+                        si = analyze_morris(self.problem,np.array(self.param_values),np.array(self.results_sensitivity[i], dtype=float))
                         for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
                             f.write(f"{input_parameter}:{si['mu_star'][input_parameter_k]}_{si['sigma'][input_parameter_k]}_{si['mu'][input_parameter_k]}" + '\n')
                     f.write("----------------------------------------------------------------------" + '\n')
@@ -7838,7 +7843,7 @@ class qvfsmod:
                         if all(x == 0 for x in np.array(self.results_sensitivity[i])):
                             self.warning_message(f"{i} column is all with 0 values. \n Please check input data, you may have chosen a small rainfall event.")
                             return
-                        si = analyze_fast(self.problem,np.array(self.results_sensitivity[i]))
+                        si = analyze_fast(self.problem,np.array(self.results_sensitivity[i], dtype=float))
                         for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
                             f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}" + '\n')
                     f.write("----------------------------------------------------------------------" + '\n')
@@ -7849,10 +7854,10 @@ class qvfsmod:
             return
         
         #Append results
-        self.results_sensitivity.to_csv(path, mode='a',index=False, float_format='%.5f')
+        self.results_sensitivity.to_csv(path, mode='a',index=False, float_format='%.10f')
         with open(path, 'a') as f:
             f.write("----------------------------------------------------------------------" + '\n')
-        self.results_sensitivity_raw.to_csv(path, mode='a',index=False, float_format='%.5f')
+        self.results_sensitivity_raw.to_csv(path, mode='a',index=False, float_format='%.10f')
             
         #Add csv result to the lineEdit and update graph
         if self.dlg_base.sobol_design.isChecked():
@@ -7886,28 +7891,31 @@ class qvfsmod:
                     
                     
                 x_values = self.buffer_lengths_sensitivity_design
-            
-            
                 threshold = self.outputs_sensitivity_design[output]
                 
                 y_values = list(df_concat[output])
                 y_values = y_values[:len(x_values)]
+                #Quit nans and -1 (error in execution) and only do interpolation if there are at least to values
+                y_values = [x for x in y_values if pd.notna(x) and x!=-1.0]
                 
-                try:
-                    if threshold>=min(y_values) and threshold<=max(y_values):#if delivery ratio is between values, then interpolate
-                        f = interp1d(y_values, x_values)
-                        value = round(f(threshold).item(),2)
-                    #if delivery ratio is below or higher, then extrapolate
-                    elif threshold<min(y_values):
-                        slope = (x_values[-1]-x_values[-2])/(y_values[-1]-y_values[-2])
-                        value = x_values[-1] + slope*(threshold - y_values[-1])
-                    elif threshold>max(y_values):
-                        slope = (x_values[0]-x_values[1])/(y_values[0]-y_values[1])
-                        value = x_values[0] + slope*(threshold-y_values[0])
-                    if value<0:
-                        value = 0
-                except ZeroDivisionError:
-                    value = 0
+                if len(y_values)>1:
+                    try:
+                        if threshold>=min(y_values) and threshold<=max(y_values):#if delivery ratio is between values, then interpolate
+                            f = interp1d(y_values, x_values)
+                            value = round(f(threshold).item(),2)
+                        #if delivery ratio is below or higher, then extrapolate
+                        elif threshold<min(y_values):
+                            slope = (x_values[-1]-x_values[-2])/(y_values[-1]-y_values[-2])
+                            value = x_values[-1] + slope*(threshold - y_values[-1])
+                        elif threshold>max(y_values):
+                            slope = (x_values[0]-x_values[1])/(y_values[0]-y_values[1])
+                            value = x_values[0] + slope*(threshold-y_values[0])
+                        if value<0:
+                            value = 0
+                    except ZeroDivisionError:
+                        value = "Error"
+                else:
+                    value = "Error"
                     
                 
                 values.append(value)
@@ -7922,19 +7930,39 @@ class qvfsmod:
             for p in self.param_values: 
                 values.append(p[k])
             data_input_parameters[i] = values
-
-
         data_input_parameters.update(dic_save_data)
-
-
         df = pd.DataFrame(data = data_input_parameters)
+        
+        #If there have been errors in the interpolation with buffer lengths then interpolate with parameters (as in sensitivity analysis). For a sensitivity analysis we can not have no data values.
+        input_parameters = list(self.dic_data.keys())
+        inputs = df[input_parameters]
+        output_columns = [f"Buffer Length {x} {self.outputs_sensitivity_design[x]}" for x in self.outputs_sensitivity_design.keys()]
+        outputs = df[output_columns]
+        # Filtrar los datos completos (sin valores NaN en outputs)
+        for output in output_columns:
+            mask = df[output] != "Error"
+            inputs_complete = inputs[mask]
+            outputs_complete = outputs[mask]
+            if len(inputs_complete) == 0: #all rows are error
+                self.warning_message("All executions gave error.\n Please check input data.")
+                return
+            if len(inputs_complete)<len(df): #if there are less inputs without errors than original df then there are errors
+                try:
+                    #Create model of linear regression
+                    model_output = LinearRegression()
+                    #Train model with data that is not with error
+                    model_output.fit(inputs_complete, outputs_complete[output])
+                    #Predict values with error
+                    inputs_nan = inputs[~mask]
+                    pred_output = model_output.predict(inputs_nan)
+                    #If negative, then 0
+                    pred_output = [max(0, value) for value in pred_output]
+                    #Put predicted values in column
+                    df.loc[~mask, output] = pred_output
+                except ValueError: #if error in prediction then put average
+                    df.loc[~mask, output] = float(np.mean(outputs_complete[output]))
+                
         return df
-                        
-                        
-                        
-                        
-            
-            
     
     def create_df_design(self,results):
         """Method to create the dataframe of design after parallelization"""
@@ -8024,34 +8052,6 @@ class qvfsmod:
                 df_concat_2 = df_concat[df_concat["Buffer length (m)"]==v]
                 df_concat_2 = df_concat_2.iloc[[0]]
                 new_df = pd.concat([new_df,df_concat_2], ignore_index=True)
-        
-        #If there are errors then make a linear regression to add data
-        input_parameters +=  ["Buffer length (m)"] #here we include Buffer length to the inputs for the regression 
-        inputs = new_df[input_parameters]
-        output_columns = list(self.outputs_sensitivity_design.keys())
-        outputs = new_df[output_columns]
-        # Filtrar los datos completos (sin valores NaN en outputs)
-        mask = new_df['Error'] == 0
-        inputs_complete = inputs[mask]
-        outputs_complete = outputs[mask]
-        if len(inputs_complete) == 0: #all rows are error
-            self.warning_message("All executions gave error.\n Please check input data.")
-            return
-        if len(inputs_complete)<len(new_df): #if there are less inputs without errors than original df then there are errors
-            for output in output_columns:
-                try:
-                    #Create model of linear regression
-                    model_output = LinearRegression()
-                    #Train model with data that is not with error
-                    model_output.fit(inputs_complete, outputs_complete[output])
-                    #Predict values with error
-                    inputs_nan = inputs[~mask]
-                    pred_output = model_output.predict(inputs_nan)
-                    #Put predicted values in column
-                    new_df.loc[~mask, output] = pred_output
-                except ValueError: #if error in prediction then put average
-                    new_df.loc[~mask, output] = np.mean(outputs_complete[output])
-        
         return new_df
     
     def create_df_sensitivity_calibration(self,results):
@@ -8192,7 +8192,7 @@ class qvfsmod:
         except PermissionError:
             self.warning_message(f"{path} file is opened and Uncertainty Analysis data could not be saved")
             return
-        self.results_sensitivity.to_csv(path, mode='a',index=False, float_format='%.5f')
+        self.results_sensitivity.to_csv(path, mode='a',index=False, float_format='%.10f')
         
         #Add path to lineEdit and update graph
         self.dlg_base.csv_results_uncertainity.setText(self.dlg_base.file_save_uncertainity.text())
@@ -11902,7 +11902,7 @@ class qvfsmod:
             #Then add the observed and simulated data
             df = pd.DataFrame(data = {"Time":self.data_aligned.index,"Observed":self.data_aligned.iloc[:,0],"Simulated":calibration_df_progress.iloc[:,0]})
             try:
-                df.to_csv(path, mode='a',index=False, float_format='%.5f')
+                df.to_csv(path, mode='a',index=False, float_format='%.10f')
             except PermissionError:
                 self.warning_message(f"{path} file is opened and Calibration data could not be saved")
                 return
@@ -13395,7 +13395,7 @@ class qvfsmod:
 
         #Add results to a csv
         try:
-            self.df_results_design.to_csv(self.obtain_direction_vfsmod(self.dlg_base.name_design_csv.text()), index=False, float_format='%.5f')
+            self.df_results_design.to_csv(self.obtain_direction_vfsmod(self.dlg_base.name_design_csv.text()), index=False, float_format='%.10f')
         except PermissionError:
             self.warning_message(f"{self.obtain_direction_vfsmod(self.dlg_base.name_design_csv.text())} file is opened and Design Analysis data could not be saved")
             return
