@@ -41,7 +41,7 @@ from matplotlib.ticker import FuncFormatter
 import seaborn as sns
 from PyQt5.QtWidgets import QVBoxLayout,QTableWidgetItem,QProgressDialog,QLabel, QLineEdit
 
-from SALib.sample import saltelli
+from SALib.sample.sobol import sample as sample_sobol
 from SALib.analyze import sobol
 from SALib.sample.morris import sample as sample_morris 
 from SALib.analyze.morris import analyze as analyze_morris
@@ -6209,7 +6209,9 @@ class qvfsmod:
             self.canvas_sensitivity_graph.figure.clear()
         
         #Function to convert nans to 0
-        def nan_function(value):
+        def nan_function(value):    
+            if value.replace("\n","") == "nan":
+                return 0
             try:
                 return float(value)
             except:
@@ -6365,6 +6367,7 @@ class qvfsmod:
                             s1_conf.append(nan_function(k.split(":")[1].split("_")[1]))
                             st.append(nan_function(k.split(":")[1].split("_")[2]))
                             st_conf.append(nan_function(k.split(":")[1].split("_")[3]))
+                            
                 
                 #If output doesnt exist, then stop with the code
                 if len(s1) == 0:
@@ -6721,6 +6724,8 @@ class qvfsmod:
         
         #Function to convert nans to 0
         def nan_function(value):
+            if value.replace("\n","") == "nan":
+                return 0
             try:
                 return float(value)
             except:
@@ -7317,6 +7322,8 @@ class qvfsmod:
     
     def run_sensitivity_analysis_calibration_part_one(self):
         """Method to run whole sensitivity analysis for calibration"""
+        #After clicking to run disconnect it because if it is clicked twice then it can give error
+        self.dlg_calibration_sensitivity_hydrograph.accept.clicked.disconnect(self.run_sensitivity_analysis_calibration_part_one)
         #First check if a correct file has been selected
         if self.type_calibration_sensitivity == "hydrograph":
             ruta = self.obtain_direction_vfsmod(self.dlg_base.hydrograph_file.text())
@@ -7378,6 +7385,9 @@ class qvfsmod:
     
     def run_sensitivity_analysis_part_one_design(self):
         """Method to run whole sensitivity analysis"""
+        #After clicking to run disconnect it because if it is clicked twice then it can give error
+        self.dlg_base.accept_design.clicked.disconnect(self.run_sensitivity_analysis_part_one_design)
+        
         #Create the dictionary for the sensitivity analysis
         self.dic_data = self.create_dictionary_sensitivity_analysis_design()
         
@@ -7400,7 +7410,7 @@ class qvfsmod:
             if int(self.dlg_base.trajectories_design.text())<2:
                 self.warning_message("Number of samples must be 2 or higher when executing Sobol")
                 return
-            self.param_values = saltelli.sample(self.problem, int(self.dlg_base.trajectories_design.text()))
+            self.param_values = sample_sobol(self.problem, int(self.dlg_base.trajectories_design.text()))
         elif self.dlg_base.morris_design.isChecked():
             #Warnings
             if int(self.dlg_base.trajectories_design.text())<8:
@@ -7551,6 +7561,9 @@ class qvfsmod:
     
     def run_sensitivity_analysis_part_one(self):
         """Method to run whole sensitivity analysis"""
+        #After clicking to run disconnect it because if it is clicked twice then it can give error
+        self.dlg_base.accept.clicked.disconnect(self.run_sensitivity_analysis_part_one)
+        
         #If no parameters have been selected then stop
         if (self.dlg_base.oat.isChecked() and self.dlg_base.table_oat.rowCount() ==0) or (not self.dlg_base.oat.isChecked() and self.dlg_base.table.rowCount()==0):
             self.warning_message("No parameters were selected")
@@ -7579,7 +7592,7 @@ class qvfsmod:
             if int(self.dlg_base.trajectories.text())<256:
                 self.warning_message("Number of samples must be 256 or higher when executing Sobol")
                 return
-            self.param_values = saltelli.sample(self.problem, int(self.dlg_base.trajectories.text()))
+            self.param_values = sample_sobol(self.problem, int(self.dlg_base.trajectories.text()))
         elif self.dlg_base.morris.isChecked():
             #Warnings
             if int(self.dlg_base.trajectories.text())<8:
@@ -7673,6 +7686,9 @@ class qvfsmod:
         #Add file to the dialog of results and update graph
         self.dlg_sensitivity_calibration_results_hydrograph.line_file.setText(self.dlg_calibration_sensitivity_hydrograph.file_save.text())
         self.udpate_sensitivity_calibration_results()
+        
+        #Connect signal again
+        self.dlg_calibration_sensitivity_hydrograph.accept.clicked.connect(self.run_sensitivity_analysis_calibration_part_one)
         
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)
@@ -7780,6 +7796,9 @@ class qvfsmod:
             self.dlg_base.csv_results_oat.setText(self.dlg_base.file_save.text())
             self.add_inputs_oat_results()
         
+        #Connect again signal
+        self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis_part_one)
+        
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)
         self.warning_message("Sensitivity analysis completed succesfully!")
@@ -7871,6 +7890,9 @@ class qvfsmod:
             self.dlg_base.csv_results_fast_design_uncertainity.setText(self.dlg_base.file_save_design.text())
 
         self.show_sensitivity_graph_design()
+        
+        #Connect again signal
+        self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
         
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)
@@ -8109,6 +8131,8 @@ class qvfsmod:
     
     def run_uncertainity_analysis_part_one(self):
         """Method to run parallel processing of uncertainity analysis"""
+        #After clicking to run disconnect it because if it is clicked twice then it can give error
+        self.dlg_base.run_uncertainity.clicked.disconnect(self.run_uncertainity_analysis_part_one)
         #Create the dictionary for the sensitivity analysis
         self.dic_data = self.create_dictionary_uncertainity_analysis()
         #Check if all the parameters that the user has choosen are available in the project
@@ -8197,6 +8221,9 @@ class qvfsmod:
         #Add path to lineEdit and update graph
         self.dlg_base.csv_results_uncertainity.setText(self.dlg_base.file_save_uncertainity.text())
         self.show_graph_sensitivity_uncertainity()
+        
+        #Connect signal again
+        self.dlg_base.run_uncertainity.clicked.connect(self.run_uncertainity_analysis_part_one)
         
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)
@@ -13358,6 +13385,8 @@ class qvfsmod:
     
     def run_design_part_one(self):
         """Method to run the design"""
+        #After clicking to run disconnect it because if it is clicked twice then it can give error
+        self.dlg_base.design_run.clicked.disconnect(self.run_design_part_one)
         #Variable to end the execution in the design
         self.error_design = False
         #We first create all the combinations
@@ -13407,7 +13436,10 @@ class qvfsmod:
 
         #Update resutls
         self.update_design_results()
-
+        
+        #Connect signal again
+        self.dlg_base.design_run.clicked.connect(self.run_design_part_one)
+        
         #Warning message
         self.warning_message("Design completed succesfully!")
     
