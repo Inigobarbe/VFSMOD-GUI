@@ -601,7 +601,6 @@ class qvfsmod:
         self.dlg_base.browse_quality.setVisible(False)
         self.dlg_base.output_quality.setVisible(False)
         self.dlg_base.water_quality.stateChanged.connect(self.water_quality_dialog)
-        self.dlg_base.water_quality.stateChanged.connect(self.update_ikw_pesticide)
         
         #Enable second layer in infiltration - soil properties
         self.dlg_infiltration_soil.frame_5.setVisible(False)
@@ -3062,8 +3061,9 @@ class qvfsmod:
                             break
                         else:
                             outputs.append(lines[i+1])
-        #Obtain unique values
+        #Obtain unique values and order them alphabetically
         outputs = list(set(outputs))
+        outputs.sort()
             
         #Obtain the name of the output that was selected previously if there was something
         output_previously = False
@@ -3564,13 +3564,22 @@ class qvfsmod:
             #Obtain data 
             with open(ruta, "r") as archivo:
                  lines = archivo.readlines()
+            #Function to give nan if the value is not a number
+            def nan_function(value):    
+                if value.replace("\n","") == "nan":
+                    return np.nan
+                try:
+                    return float(value)
+                except:
+                    return np.nan
+            
             #When we see column error then we have the data
             for index in range(len(lines)):
                 if "Error" in lines[index].split(","):
                     columns = [x.replace('\n', '') for x in lines[index].split(",")]
                     rows = []
                     for i in range(index+1,len(lines)):
-                        rows.append([float(x) for x in lines[i].split(",")])
+                        rows.append([nan_function(x) for x in lines[i].split(",")])
 
             df = pd.DataFrame(rows, columns=columns)
             
@@ -3586,7 +3595,7 @@ class qvfsmod:
                 if isinstance(widget, QRadioButton) and widget.isChecked():
                     output_column = widget.text()
             
-            y = [float(x) for x in df[output_column]]
+            y = [float(x) for x in df[output_column] if x!=np.nan]
             
             bins = 30
             self.ax_uncertainity[0].hist(y, bins=bins, edgecolor='black')
@@ -3609,7 +3618,7 @@ class qvfsmod:
             ax2.grid(visible=False)
             
             #Box plot
-            self.ax_uncertainity[1].boxplot([float(x) for x in df[output_column]])
+            self.ax_uncertainity[1].boxplot(y)
             self.ax_uncertainity[1].set_xticks([])
             # Añadir título y etiquetas
             self.ax_uncertainity[1].set_ylabel(output_with_line_breaks)
@@ -3622,9 +3631,8 @@ class qvfsmod:
             table.setColumnCount(6)
             table.setHorizontalHeaderLabels(["25th percentile","50th percentile","75th percentile","Average","Kurtosis","Skewness"])
             #Add values
-            data = [float(x) for x in df[output_column]]
-            values = [np.percentile(data, 25),np.percentile(data, 50),np.percentile(data, 75),
-                np.mean(data),stats.kurtosis(data),stats.skew(data)]
+            values = [np.percentile(y, 25),np.percentile(y, 50),np.percentile(y, 75),
+                np.mean(y),stats.kurtosis(y),stats.skew(y)]
             for k,i in enumerate(values):
                 item = QTableWidgetItem(str(round(i,2)))
                 table.setItem(0,k,item)
@@ -7329,11 +7337,15 @@ class qvfsmod:
             ruta = self.obtain_direction_vfsmod(self.dlg_base.hydrograph_file.text())
             if not os.path.isfile(ruta) or not os.path.exists(ruta): 
                 self.warning_message("Please select a correct hydrograph")
+                #Connect signal again
+                self.dlg_calibration_sensitivity_hydrograph.accept.clicked.connect(self.run_sensitivity_analysis_calibration_part_one)
                 return 
         elif self.type_calibration_sensitivity == "sedimentograph":
             ruta = self.obtain_direction_vfsmod(self.dlg_base.sedimentograph_file.text())
             if not os.path.isfile(ruta) or not os.path.exists(ruta): 
                 self.warning_message("Please select a correct sedigraph")
+                #Connect signal again
+                self.dlg_calibration_sensitivity_hydrograph.accept.clicked.connect(self.run_sensitivity_analysis_calibration_part_one)
                 return 
             
         #Create the dictionary for the sensitivity analysis
@@ -7355,9 +7367,13 @@ class qvfsmod:
         #Warnings
         if int(self.dlg_calibration_sensitivity_hydrograph.trajectories.text())<8:
             self.warning_message("N value must be 8 or higher when executing Morris")
+            #Connect signal again
+            self.dlg_calibration_sensitivity_hydrograph.accept.clicked.connect(self.run_sensitivity_analysis_calibration_part_one)
             return
         if self.dlg_calibration_sensitivity_hydrograph.table.rowCount()<2:
             self.warning_message("Select at least 2 parameters for Morris sensitivity analysis")
+            #Connect signal again
+            self.dlg_calibration_sensitivity_hydrograph.accept.clicked.connect(self.run_sensitivity_analysis_calibration_part_one)
             return
             
         self.param_values = sample_morris(self.problem, int(self.dlg_calibration_sensitivity_hydrograph.trajectories.text()))
@@ -7399,6 +7415,8 @@ class qvfsmod:
                 self.warning_message(f"{','.join(error_parameters)} is not in your original project. \nPlease delete them here or add them to the project.")
             else:
                 self.warning_message(f"{','.join(error_parameters)} are not in your original project. \nPlease delete them here or add them to the project.")
+            #Connect again signal
+            self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
             return
         
         self.vfs_sensitivity_file = self.dlg_base.vfs_file_sensitivity_design.text()
@@ -7409,21 +7427,29 @@ class qvfsmod:
         if self.dlg_base.sobol_design.isChecked():
             if int(self.dlg_base.trajectories_design.text())<2:
                 self.warning_message("Number of samples must be 2 or higher when executing Sobol")
+                #Connect again signal
+                self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
                 return
             self.param_values = sample_sobol(self.problem, int(self.dlg_base.trajectories_design.text()))
         elif self.dlg_base.morris_design.isChecked():
             #Warnings
             if int(self.dlg_base.trajectories_design.text())<8:
                 self.warning_message("N value must be 8 or higher when executing Morris")
+                #Connect again signal
+                self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
                 return
             if self.dlg_base.table_2.rowCount()<2:
                 self.warning_message("Select at least 2 parameters for Morris sensitivity analysis")
+                #Connect again signal
+                self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
                 return
                 
             self.param_values = sample_morris(self.problem, int(self.dlg_base.trajectories_design.text()))
         elif self.dlg_base.fast_design.isChecked():
             if int(self.dlg_base.trajectories_design.text())<2:
                 self.warning_message("N value must be 2 or higher when executing FAST")
+                #Connect again signal
+                self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
                 return
             self.param_values = sample_fast(self.problem, int(self.dlg_base.trajectories_design.text()), M = 1)
         
@@ -7567,6 +7593,8 @@ class qvfsmod:
         #If no parameters have been selected then stop
         if (self.dlg_base.oat.isChecked() and self.dlg_base.table_oat.rowCount() ==0) or (not self.dlg_base.oat.isChecked() and self.dlg_base.table.rowCount()==0):
             self.warning_message("No parameters were selected")
+            #Connect again signal
+            self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis_part_one)
             return
         
         #Create the dictionary for the sensitivity analysis
@@ -7580,6 +7608,8 @@ class qvfsmod:
                 self.warning_message(f"{','.join(error_parameters)} is not in your original project. \nPlease delete them here or add them to the project.")
             else:
                 self.warning_message(f"{','.join(error_parameters)} are not in your original project. \nPlease delete them here or add them to the project.")
+            #Connect again signal
+            self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis_part_one)
             return
         
         self.vfs_sensitivity_file = self.dlg_base.vfs_file_sensitivity.text()
@@ -7591,21 +7621,29 @@ class qvfsmod:
         if self.dlg_base.sobol.isChecked():
             if int(self.dlg_base.trajectories.text())<256:
                 self.warning_message("Number of samples must be 256 or higher when executing Sobol")
+                #Connect again signal
+                self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis_part_one)
                 return
             self.param_values = sample_sobol(self.problem, int(self.dlg_base.trajectories.text()))
         elif self.dlg_base.morris.isChecked():
             #Warnings
             if int(self.dlg_base.trajectories.text())<8:
                 self.warning_message("N value must be 8 or higher when executing Morris")
+                #Connect again signal
+                self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis_part_one)
                 return
             if self.dlg_base.table.rowCount()<2:
                 self.warning_message("Select at least 2 parameters for Morris sensitivity analysis")
+                #Connect again signal
+                self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis_part_one)
                 return
                 
             self.param_values = sample_morris(self.problem, int(self.dlg_base.trajectories.text()))
         elif self.dlg_base.fast.isChecked():
             if int(self.dlg_base.trajectories.text())<256:
                 self.warning_message("N value must be 256 or higher when executing FAST")
+                #Connect again signal
+                self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis_part_one)
                 return
             self.param_values = sample_fast(self.problem, int(self.dlg_base.trajectories.text()), M = 1)
         elif self.dlg_base.oat.isChecked():
@@ -7658,6 +7696,11 @@ class qvfsmod:
         
         #Create DataFrame or results
         self.results_sensitivity = self.create_df_sensitivity_calibration(self.results)
+        if type(self.results_sensitivity) == str:
+            self.warning_message("All executions gave error.\n Please check input data.")
+            #Connect signal again
+            self.dlg_calibration_sensitivity_hydrograph.accept.clicked.connect(self.run_sensitivity_analysis_calibration_part_one)
+            return
         
         #Delete all files created for paralelization of sensitivity analysis
         self.delete_files_sensitivity_calibration()
@@ -7678,6 +7721,8 @@ class qvfsmod:
             
         except PermissionError:
             self.warning_message(f"{path} file is opened and Sensitivity Analysis data could not be saved")
+            #Connect signal again
+            self.dlg_calibration_sensitivity_hydrograph.accept.clicked.connect(self.run_sensitivity_analysis_calibration_part_one)
             return
         
         #Append results
@@ -7701,6 +7746,11 @@ class qvfsmod:
         
         #Create DataFrame or results
         self.results_sensitivity = self.create_df_sensitivity(self.results)
+        if type(self.results_sensitivity) == str:
+            self.warning_message("All executions gave error.\n Please check input data.")
+            #Connect again signal
+            self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis_part_one)
+            return
         
         #Delete all files created for paralelization of sensitivity analysis
         self.delete_files_sensitivity()
@@ -7773,6 +7823,8 @@ class qvfsmod:
                         f.write("----------------------------------------------------------------------" + '\n')
         except PermissionError:
             self.warning_message(f"{path} file is opened and Sensitivity Analysis data could not be saved")
+            #Connect again signal
+            self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis_part_one)
             return
         
         #Append results
@@ -7813,6 +7865,13 @@ class qvfsmod:
         #Obtain the data with the optimized buffer lengths
         self.results_sensitivity = self.obtain_optimized_vfs_sensitivity_design()
         
+        if type(self.results_sensitivity) == str:
+            self.warning_message("All executions gave error.\n Please check input data.")
+            #Connect again signal
+            self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
+            return
+        
+        
         #Delete all files created for paralelization of sensitivity analysis
         self.delete_files_sensitivity_design()
         
@@ -7829,6 +7888,8 @@ class qvfsmod:
                         f.write(f"{i}" + '\n')
                         if all(x == 0 for x in np.array(self.results_sensitivity[i])):
                             self.warning_message(f"{i} column is all with 0 values. \n Please check input data, you may have chosen a small rainfall event.")
+                            #Connect again signal
+                            self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
                             return
                         si = sobol.analyze(self.problem, np.array(self.results_sensitivity[i], dtype=float))
                         for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()): 
@@ -7845,6 +7906,8 @@ class qvfsmod:
                         f.write(f"{i}" + '\n')
                         if all(x == 0 for x in np.array(self.results_sensitivity[i])):
                             self.warning_message(f"{i} column is all with 0 values. \n Please check input data, you may have chosen a small rainfall event.")
+                            #Connect again signal
+                            self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
                             return
                         si = analyze_morris(self.problem,np.array(self.param_values),np.array(self.results_sensitivity[i], dtype=float))
                         for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
@@ -7861,6 +7924,8 @@ class qvfsmod:
                         f.write(f"{i}" + '\n')
                         if all(x == 0 for x in np.array(self.results_sensitivity[i])):
                             self.warning_message(f"{i} column is all with 0 values. \n Please check input data, you may have chosen a small rainfall event.")
+                            #Connect again signal
+                            self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
                             return
                         si = analyze_fast(self.problem,np.array(self.results_sensitivity[i], dtype=float))
                         for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
@@ -7870,6 +7935,8 @@ class qvfsmod:
             
         except PermissionError:
             self.warning_message(f"{path} file is opened and Sensitivity Analysis data could not be saved")
+            #Connect again signal
+            self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
             return
         
         #Append results
@@ -7966,8 +8033,7 @@ class qvfsmod:
             inputs_complete = inputs[mask]
             outputs_complete = outputs[mask]
             if len(inputs_complete) == 0: #all rows are error
-                self.warning_message("All executions gave error.\n Please check input data.")
-                return
+                return "error"
             if len(inputs_complete)<len(df): #if there are less inputs without errors than original df then there are errors
                 try:
                     #Create model of linear regression
@@ -8036,8 +8102,7 @@ class qvfsmod:
         inputs_complete = inputs[mask]
         outputs_complete = outputs[mask]
         if len(inputs_complete) == 0: #all rows are error
-            self.warning_message("All executions gave error.\n Please check input data.")
-            return
+            return "error"
         if len(inputs_complete)<len(new_df): #if there are less inputs without errors than original df then there are errors
             for output in output_columns:
                 try:
@@ -8101,8 +8166,7 @@ class qvfsmod:
         inputs_complete = inputs[mask]
         outputs_complete = outputs[mask]
         if len(inputs_complete) == 0: #all rows are error
-            self.warning_message("All executions gave error.\n Please check input data.")
-            return
+            return "error"
         if len(inputs_complete)<len(new_df): #if there are less inputs without errors than original df then there are errors
             for output in output_columns:
                 try:
@@ -8143,6 +8207,8 @@ class qvfsmod:
                 self.warning_message(f"{','.join(error_parameters)} is not in your original project. \nPlease delete them here or add them to the project.")
             else:
                 self.warning_message(f"{','.join(error_parameters)} are not in your original project. \nPlease delete them here or add them to the project.")
+            #Connect signal again
+            self.dlg_base.run_uncertainity.clicked.connect(self.run_uncertainity_analysis_part_one)
             return
             
         self.vfs_uncertainity_file = self.dlg_base.vfs_file_uncertainity.text()
@@ -8150,6 +8216,8 @@ class qvfsmod:
         #Warning
         if int(self.dlg_base.samples_uncertainity.text())<256:
             self.warning_message("N value must be higher than 256 when executing Uncertainty Analysis")
+            #Connect signal again
+            self.dlg_base.run_uncertainity.clicked.connect(self.run_uncertainity_analysis_part_one)
             return
         
         #We will use the fast sample to obtain randomized samples for each input
@@ -8215,6 +8283,8 @@ class qvfsmod:
                 f.write(string)
         except PermissionError:
             self.warning_message(f"{path} file is opened and Uncertainty Analysis data could not be saved")
+            #Connect signal again
+            self.dlg_base.run_uncertainity.clicked.connect(self.run_uncertainity_analysis_part_one)
             return
         self.results_sensitivity.to_csv(path, mode='a',index=False, float_format='%.10f')
         
@@ -13394,6 +13464,8 @@ class qvfsmod:
         
         #Error handling
         if self.error_design:
+            #Connect signal again
+            self.dlg_base.design_run.clicked.connect(self.run_design_part_one)
             return
         
         #We create the required files
@@ -13427,6 +13499,8 @@ class qvfsmod:
             self.df_results_design.to_csv(self.obtain_direction_vfsmod(self.dlg_base.name_design_csv.text()), index=False, float_format='%.10f')
         except PermissionError:
             self.warning_message(f"{self.obtain_direction_vfsmod(self.dlg_base.name_design_csv.text())} file is opened and Design Analysis data could not be saved")
+            #Connect signal again
+            self.dlg_base.design_run.clicked.connect(self.run_design_part_one)
             return
         #Close progress bar
         self.progress_metod(close = True)
@@ -14320,8 +14394,6 @@ class qvfsmod:
         if fname[0]!="":
             #Put absolute path
             self.dlg_base.line_overland.setText(os.path.normpath(fname[0]))
-            #Update ikw pesticide
-            self.update_ikw_pesticide()
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
     
@@ -14384,8 +14456,6 @@ class qvfsmod:
             self.dlg_base.line_water.setText(os.path.normpath(fname[0]))
             #Put data in dialog
             self.dlg_water_quality_show(show= False)
-            #Update ikw file
-            self.update_ikw_pesticide()
             
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()

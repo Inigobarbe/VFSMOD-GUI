@@ -1,2 +1,3 @@
-cd "C:\qvfsmod" 
-"C:\qvfsmod\executables\vfsm" sample.prj 
+cd "C:\qvfsmod\design" 
+"C:\qvfsmod\executables\vfsm" design.prj 
+Pause

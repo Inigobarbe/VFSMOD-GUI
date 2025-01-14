@@ -10,3 +10,6 @@ Mensaje: 'right' is not a valid value for loc; supported values are 'bottom', 'c
 Excepción: AttributeError
 Mensaje: 'list' object has no attribute 'set_zorder'
 
+Excepción: AttributeError
+Mensaje: 'NoneType' object has no attribute 'columns'
+
