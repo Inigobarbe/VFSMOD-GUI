@@ -2218,6 +2218,9 @@ class qvfsmod:
         self.create_iro_file()
         if self.dlg_base.water_quality.isChecked():
             self.create_iwq_file()
+        #Update pesticides in ikw file
+        self.update_ikw_pesticide()
+        
     
     
     def dlg_hydrograph_calibration_edit_show(self):
@@ -3295,7 +3298,6 @@ class qvfsmod:
                 return
             
             #Obtain input parameter
-            print(self.dictionary_radio_inputs)
             for i in self.dictionary_radio_inputs:
                 if i.isChecked():
                     input_parameter = self.dictionary_radio_inputs[i]
@@ -4149,7 +4151,12 @@ class qvfsmod:
                     #Molar weights
                     for p in range(number_pesticides):
                         pesticide = p+1
-                        self.add_values_dialog(lineas,8,p,getattr(self.dlg_degradation_data, f'pesticide_{pesticide}_molar_mass'))
+                        #Only put value if its a number
+                        try:
+                            self.add_values_dialog(lineas,8,p,getattr(self.dlg_degradation_data, f'pesticide_{pesticide}_molar_mass'))
+                            float(getattr(self.dlg_degradation_data, f'pesticide_{pesticide}_molar_mass').text())
+                        except:
+                            getattr(self.dlg_degradation_data, f'pesticide_{pesticide}_molar_mass').setText("")
                     
                     #Degradation values
                     for fila in range(number_pesticides):
@@ -6192,6 +6199,7 @@ class qvfsmod:
                 for columna in range(3):
                     if columna == 0:    
                         item = QTableWidgetItem(str(data_ordered[fila][columna]))
+                        item = QTableWidgetItem(str(data_ordered[fila][columna]))
                     else: #round values
                         item = QTableWidgetItem(str(round(float(data_ordered[fila][columna]),2)))
                     self.dlg_sensitivity_calibration_results_hydrograph.tableWidget.setItem(fila, columna, item)
@@ -6541,7 +6549,7 @@ class qvfsmod:
                         output_column = widget.text()
                 values = []
                 for i in range(2,len(lineas)):
-                    if len(lineas[i].split(","))>2:
+                    if len(lineas[i].split(","))>1 and len(lineas[i+1].split(","))>1:
                         try:
                             columna = lineas[i].replace("\n", "").split(",").index(output_column)
                         except:
@@ -7034,7 +7042,7 @@ class qvfsmod:
                         
             values = []
             for i in range(2,len(lineas)):
-                if len(lineas[i].split(","))>2:
+                if len(lineas[i].split(","))>1 and len(lineas[i+1].split(","))>1:
                     try:
                         columna = lineas[i].replace("\n", "").split(",").index(output_column)
                     except ValueError:
@@ -7412,7 +7420,7 @@ class qvfsmod:
         
         if len(error_parameters)>0:
             if len(error_parameters)==1:
-                self.warning_message(f"{','.join(error_parameters)} is not in your original project. \nPlease delete them here or add them to the project.")
+                self.warning_message(f"{','.join(error_parameters)} is not in your original project. \nPlease delete it here or add it to the project.")
             else:
                 self.warning_message(f"{','.join(error_parameters)} are not in your original project. \nPlease delete them here or add them to the project.")
             #Connect again signal
@@ -7570,9 +7578,15 @@ class qvfsmod:
                 elif lineas_iwq[1].split()[0]=="1":
                     list_parameters+=["Linear sorption coefficient (L/Kg)"]
                 
-                if lineas_iwq[3].split()[0]=="0":
+                try: #if line [3] doesnt exist or doesnt have elements then add the parameters too
+                    if lineas_iwq[3].split()[0]=="0":
+                        list_parameters+=["Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)","Dispersion length of chemical (m)","Runoff remobilized VFS residue from last event (mg/m2)"]
+                except IndexError:
                     list_parameters+=["Pesticide half-life (days)","Topsoil field capacity (m3/m3)","Total pesticide mass per unit area source field (mg/m2)","Surface mixing layer thickness (cm)","Dispersion length of chemical (m)","Runoff remobilized VFS residue from last event (mg/m2)"]
-                
+            else:
+                for i in self.dic_data.keys():
+                    if i in self.variables_water_quality:
+                        list_parameters.append(i)
             
             #Avoid repetitions
             list_parameters = list(set(list_parameters))
@@ -7605,7 +7619,7 @@ class qvfsmod:
         
         if len(error_parameters)>0:
             if len(error_parameters)==1:
-                self.warning_message(f"{','.join(error_parameters)} is not in your original project. \nPlease delete them here or add them to the project.")
+                self.warning_message(f"{','.join(error_parameters)} is not in your original project. \nPlease delete it here or add it to the project.")
             else:
                 self.warning_message(f"{','.join(error_parameters)} are not in your original project. \nPlease delete them here or add them to the project.")
             #Connect again signal
@@ -7620,7 +7634,7 @@ class qvfsmod:
         #Create samples
         if self.dlg_base.sobol.isChecked():
             if int(self.dlg_base.trajectories.text())<256:
-                self.warning_message("Number of samples must be 256 or higher when executing Sobol")
+                self.warning_message("Oversampling (M) must be higher than 256 when executing Sobol")
                 #Connect again signal
                 self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis_part_one)
                 return
@@ -7862,8 +7876,10 @@ class qvfsmod:
         #Create DataFrame or results
         self.results_sensitivity_raw = self.create_df_sensitivity_design(self.results)
         
+        
         #Obtain the data with the optimized buffer lengths
         self.results_sensitivity = self.obtain_optimized_vfs_sensitivity_design()
+        
         
         if type(self.results_sensitivity) == str:
             self.warning_message("All executions gave error.\n Please check input data.")
@@ -7969,7 +7985,6 @@ class qvfsmod:
         """Method to obtain the buffer length to analyze sensitivity"""
         #Create new df with required columns
         input_parameters = list(self.dic_data.keys())
-
         dic_save_data = {}
         for output in self.outputs_sensitivity_design.keys():
             values = []
@@ -8204,7 +8219,7 @@ class qvfsmod:
         
         if len(error_parameters)>0:
             if len(error_parameters)==1:
-                self.warning_message(f"{','.join(error_parameters)} is not in your original project. \nPlease delete them here or add them to the project.")
+                self.warning_message(f"{','.join(error_parameters)} is not in your original project. \nPlease delete it here or add it to the project.")
             else:
                 self.warning_message(f"{','.join(error_parameters)} are not in your original project. \nPlease delete them here or add them to the project.")
             #Connect signal again
@@ -9786,7 +9801,11 @@ class qvfsmod:
         if self.dlg_base.oat.isChecked():
             add_element(1,f"base:{self.dlg_base.first.text()},min:{self.dlg_base.second.text()},max:{self.dlg_base.third.text()},increment:{self.dlg_base.fourth.text()}")
             if self.dlg_base.parameter_name.text() in self.variables_water_quality:
-                add_element(2,self.dlg_base.pesticide_input_sensitivity_combo.currentText().split()[-1])
+                try:#if there are pesticides in the project then it will give error and we wont be adding the element
+                    add_element(2,self.dlg_base.pesticide_input_sensitivity_combo.currentText().split()[-1])
+                except:
+                    table.setRowCount(table.rowCount()-1)
+                    return
             else:
                 add_element(2,"Not applicable")
     
@@ -9799,7 +9818,11 @@ class qvfsmod:
                 add_element(2,f"min:{self.dlg_base.first.text()},max:{self.dlg_base.second.text()},mean:{self.dlg_base.third.text()},stdv:{self.dlg_base.fourth.text()}")
             #Add pesticide
             if self.dlg_base.parameter_name.text() in self.variables_water_quality:
-                add_element(3,self.dlg_base.pesticide_input_sensitivity_combo.currentText().split()[-1])
+                try:#if there are pesticides in the project then it will give error and we wont be adding the element
+                    add_element(3,self.dlg_base.pesticide_input_sensitivity_combo.currentText().split()[-1])
+                except:
+                    table.setRowCount(table.rowCount()-1)
+                    return
             else:
                 add_element(3,"Not applicable")
             
@@ -9846,7 +9869,11 @@ class qvfsmod:
         
         #Add pesticide
         if self.dlg_base.parameter_name_design.text() in self.variables_water_quality:
-            add_element(3,self.dlg_base.pesticide_input_design_uncertainity_combo.currentText().split()[-1])
+            try:#if there are pesticides in the project then it will give error and we wont be adding the element
+                add_element(3,self.dlg_base.pesticide_input_design_uncertainity_combo.currentText().split()[-1])
+            except:
+                table.setRowCount(table.rowCount()-1)
+                return
         else:
             add_element(3,"Not applicable")
         
@@ -9892,7 +9919,11 @@ class qvfsmod:
         
         #Add pesticide
         if self.dlg_calibration_sensitivity_hydrograph.parameter_name.text() in self.variables_water_quality:
-            add_element(3,self.dlg_calibration_sensitivity_hydrograph.pesticide_input_identifiability_combo.currentText().split()[-1])
+            try:#if there are pesticides in the project then it will give error and we wont be adding the element
+                add_element(3,self.dlg_calibration_sensitivity_hydrograph.pesticide_input_identifiability_combo.currentText().split()[-1])
+            except:
+                table.setRowCount(table.rowCount()-1)
+                return
         else:
             add_element(3,"Not applicable")
         #Update number of samples
@@ -9936,7 +9967,11 @@ class qvfsmod:
             add_element(2,f"min:{self.dlg_base.first_2.text()},max:{self.dlg_base.second_2.text()},mean:{self.dlg_base.third_2.text()},stdv:{self.dlg_base.fourth_2.text()}")
         #Add pesticide
         if self.dlg_base.parameter_name_uncertainity.text() in self.variables_water_quality:
-            add_element(3,self.dlg_base.pesticide_input_uncertainity_combo.currentText().split()[-1])
+            try:#if there are pesticides in the project then it will give error and we wont be adding the element
+                add_element(3,self.dlg_base.pesticide_input_uncertainity_combo.currentText().split()[-1])
+            except:
+                table.setRowCount(table.rowCount()-1)
+                return
         else:
             add_element(3,"Not applicable")
     
@@ -13528,16 +13563,19 @@ class qvfsmod:
             self.dlg_design_results.tableWidget.setRowCount(0)
             self.dlg_design_results.tableWidget.setColumnCount(0) 
             #Then add table
-            df = pd.read_csv(path)
-            self.dlg_design_results.tableWidget.setRowCount(len(df))
-            self.dlg_design_results.tableWidget.setColumnCount(len(df.columns))
-            self.dlg_design_results.tableWidget.setHorizontalHeaderLabels(df.columns)
-            self.columns_design_results = list(df.columns)
-            for fila in range(len(df)):
-                for columna in range(len(df.columns)):
-                    item = QTableWidgetItem(str(df.iloc[fila,columna]))
-                    self.dlg_design_results.tableWidget.setItem(fila, columna, item)
-                    item.setTextAlignment(Qt.AlignCenter)
+            try:
+                df = pd.read_csv(path)
+                self.dlg_design_results.tableWidget.setRowCount(len(df))
+                self.dlg_design_results.tableWidget.setColumnCount(len(df.columns))
+                self.dlg_design_results.tableWidget.setHorizontalHeaderLabels(df.columns)
+                self.columns_design_results = list(df.columns)
+                for fila in range(len(df)):
+                    for columna in range(len(df.columns)):
+                        item = QTableWidgetItem(str(df.iloc[fila,columna]))
+                        self.dlg_design_results.tableWidget.setItem(fila, columna, item)
+                        item.setTextAlignment(Qt.AlignCenter)
+            except:
+                self.warning_message("Please select a correct csv for the results of the design")
             
     
     def create_folder_for_design(self):
@@ -14937,9 +14975,6 @@ class qvfsmod:
                 archivo.write(f"{linea_ocho}\n")
             archivo.write(f"{linea_nueve}\n")
         
-        #Update ikw file to run pesticide module
-        self.update_ikw_pesticide()
-        
         #Close dialog
         if close:
             self.dlg_water_quality.close()
@@ -15133,26 +15168,26 @@ class qvfsmod:
         
         #File paths
         #UH
-        self.dlg_base.line_hydrograph.setText(os.path.normpath(r"inputs\.iro"))
-        self.dlg_base.line_hyetograph.setText(os.path.normpath(r"inputs\.irn"))
-        self.dlg_base.line_sedimentograph.setText(os.path.normpath(r"inputs\.isd"))
-        self.dlg_base.line_output_1.setText(os.path.normpath(r"output\.out"))
-        self.dlg_base.line_output_2.setText(os.path.normpath(r"output\.hyt"))
+        self.dlg_base.line_hydrograph.setText(os.path.normpath(fr"{os.path.normpath(os.getcwd())}\inputs\.iro"))
+        self.dlg_base.line_hyetograph.setText(os.path.normpath(fr"{os.path.normpath(os.getcwd())}\inputs\.irn"))
+        self.dlg_base.line_sedimentograph.setText(os.path.normpath(fr"{os.path.normpath(os.getcwd())}\inputs\.isd"))
+        self.dlg_base.line_output_1.setText(os.path.normpath(fr"{os.path.normpath(os.getcwd())}\output\.out"))
+        self.dlg_base.line_output_2.setText(os.path.normpath(fr"{os.path.normpath(os.getcwd())}\output\.hyt"))
         #VFSMOD
-        self.dlg_base.line_project_vfsmod.setText(os.path.normpath(".prj"))
-        self.dlg_base.line_overland.setText(os.path.normpath(r"inputs\.ikw"))
-        self.dlg_base.line_infiltration.setText(os.path.normpath(r"inputs\.iso"))
-        self.dlg_base.line_buffer.setText(os.path.normpath(r"inputs\.igr"))
-        self.dlg_base.line_incoming.setText(os.path.normpath(r"inputs\.isd"))
-        self.dlg_base.line_storm.setText(os.path.normpath(r"inputs\.irn"))
-        self.dlg_base.line_source.setText(os.path.normpath(r"inputs\.iro"))
-        self.dlg_base.line_water.setText(os.path.normpath(r"inputs\.iwq"))
-        self.dlg_base.line_sediment.setText(os.path.normpath(r"output\.og1"))
-        self.dlg_base.line_flow.setText(os.path.normpath(r"output\.og2"))
-        self.dlg_base.line_hydrograph_2.setText(os.path.normpath(r"output\.ohy"))
-        self.dlg_base.line_waterland.setText(os.path.normpath(r"output\.osm"))
-        self.dlg_base.line_overall.setText(os.path.normpath(r"output\.osp"))
-        self.dlg_base.line_quality.setText(os.path.normpath(r"output\.owq"))
+        self.dlg_base.line_project_vfsmod.setText(os.path.normpath(fr"{os.path.normpath(os.getcwd())}\.prj"))
+        self.dlg_base.line_overland.setText(os.path.normpath(fr"{os.path.normpath(os.getcwd())}\inputs\.ikw"))
+        self.dlg_base.line_infiltration.setText(os.path.normpath(fr"{os.path.normpath(os.getcwd())}\inputs\.iso"))
+        self.dlg_base.line_buffer.setText(os.path.normpath(fr"{os.path.normpath(os.getcwd())}\inputs\.igr"))
+        self.dlg_base.line_incoming.setText(os.path.normpath(fr"{os.path.normpath(os.getcwd())}\inputs\.isd"))
+        self.dlg_base.line_storm.setText(os.path.normpath(fr"{os.path.normpath(os.getcwd())}\inputs\.irn"))
+        self.dlg_base.line_source.setText(os.path.normpath(fr"{os.path.normpath(os.getcwd())}\inputs\.iro"))
+        self.dlg_base.line_water.setText(os.path.normpath(fr"{os.path.normpath(os.getcwd())}\inputs\.iwq"))
+        self.dlg_base.line_sediment.setText(os.path.normpath(fr"{os.path.normpath(os.getcwd())}\output\.og1"))
+        self.dlg_base.line_flow.setText(os.path.normpath(fr"{os.path.normpath(os.getcwd())}\output\.og2"))
+        self.dlg_base.line_hydrograph_2.setText(os.path.normpath(fr"{os.path.normpath(os.getcwd())}\output\.ohy"))
+        self.dlg_base.line_waterland.setText(os.path.normpath(fr"{os.path.normpath(os.getcwd())}\output\.osm"))
+        self.dlg_base.line_overall.setText(os.path.normpath(fr"{os.path.normpath(os.getcwd())}\output\.osp"))
+        self.dlg_base.line_quality.setText(os.path.normpath(fr"{os.path.normpath(os.getcwd())}\output\.owq"))
         
         self.dlg_base.name_files.setText("sample")
         
@@ -15619,9 +15654,6 @@ class qvfsmod:
     
     
     def show_design_graph(self):
-        #Show dialog
-        self.dlg_design_results_graph.show()
-        self.dlg_design_results_graph.raise_()
         """Method to show the results of the design"""
         if not hasattr(self, 'canvas_design_graph'):
             # Si no existe, crear el canvas y añadirlo al layout
@@ -15644,7 +15676,15 @@ class qvfsmod:
         
         #Add outputs to the combobox depending on columns of the table
         # Obtain name of columns
-        column_headers = self.columns_design_results
+        try:
+            column_headers = self.columns_design_results
+        except AttributeError:
+            self.warning_message("Please, select first a csv that contains the design data")
+            return
+        
+        #Show dialog
+        self.dlg_design_results_graph.show()
+        self.dlg_design_results_graph.raise_()
         
         #Only take outputs after "Error" column
         list_outputs = []
@@ -15752,23 +15792,35 @@ class qvfsmod:
                 mask = df["Rainfall (mm)"]==i
                 x_values = df[mask][column_x]
                 y_values = df[mask][column_y]
-                f = interp1d(y_values, x_values)
-                x_interpolado = str(round(f(value).item(),2))
+                if y_values.nunique() !=1:
+                    f = interp1d(y_values, x_values)
+                    x_interpolado = str(round(f(value).item(),2))
+                else:
+                    raise ValueError
             except ValueError:
                 if column_x == "VFS Length (m)":
-                    if value>list(y_values)[0] and column_y!="Total Infiltration in Filter":
-                        x_interpolado = str(list(x_values)[0])
-                    elif value<list(y_values)[0] and column_y=="Total Infiltration in Filter":
-                        x_interpolado = str(list(x_values)[0])
+                    if column_y!="Total Infiltration in Filter":
+                        if value>=list(y_values)[0]:
+                            x_interpolado = str(list(x_values)[0])
+                        elif value<list(y_values)[-1]:
+                            x_interpolado = f"> {max(x_values)} m"
                     else:
-                        x_interpolado = f"> {max(x_values)} m"
+                        if value>=list(y_values)[-1]:
+                            x_interpolado = f"> {max(x_values)} m"
+                        elif value<list(y_values)[0]:
+                            x_interpolado = str(list(x_values)[0])
+                            
                 elif column_x == "Vegetation Spacing (cm)":
-                    if value>list(y_values)[0] and column_y!="Total Infiltration in Filter":
-                        x_interpolado = str(list(x_values)[-1])
-                    elif value<list(y_values)[0] and column_y=="Total Infiltration in Filter":
-                        x_interpolado = str(list(x_values)[-1])
+                    if column_y!="Total Infiltration in Filter":
+                        if value>=list(y_values)[-1]:
+                            x_interpolado = str(list(x_values)[-1])
+                        elif value<list(y_values)[-1]:
+                            x_interpolado = f"< {min(x_values)} m"
                     else:
-                        x_interpolado = f"< {min(x_values)} m"
+                        if value>list(y_values)[0]:
+                            x_interpolado = f"< {min(x_values)} m"
+                        elif value<=list(y_values)[-1]:
+                            x_interpolado = str(list(x_values)[-1])
                         
             item = QTableWidgetItem(x_interpolado)
             self.dlg_design_results_graph.tableWidget.setItem(0, k, item)
@@ -16210,16 +16262,16 @@ def modify_ikw_file_design(vfs_file_design,working_directory,value_change,core):
        
         #We update the dataframe
         df_a = df.copy()
-        actual_length = max(df["Distance"])
+        actual_length = max(df_a["Distance"])
         length_to_change = value_change
         if length_to_change <= actual_length:
-            if length_to_change<min(df["Distance"]): #when distance is smaller than the first interval
-                df = df.head(1)
+            if length_to_change<min(df_a["Distance"]): #when distance is smaller than the first interval
+                df_a = df_a.head(1)
             else:
-                df = df[df["Distance"]<=length_to_change]
-                df.loc[df.index[-1], "Distance"] = length_to_change
+                df_a = df_a[df_a["Distance"]<=length_to_change]
+                df_a.loc[df_a.index[-1], "Distance"] = length_to_change
         else:
-            df_a.loc[df.index[-1], "Distance"] = length_to_change
+            df_a.loc[df_a.index[-1], "Distance"] = length_to_change
         
         
         #Add to the file information 
@@ -16515,16 +16567,16 @@ def change_buffer_length_uncertainity(value_change,core,vfs_uncertainity_file,wo
     
     #We update the dataframe
     df_a = df.copy()
-    actual_length = max(df["Distance"])
+    actual_length = max(df_a["Distance"])
     length_to_change = value_change
     if length_to_change <= actual_length:
-        if length_to_change<min(df["Distance"]): #when distance is smaller than the first interval
-            df = df.head(1)
+        if length_to_change<min(df_a["Distance"]): #when distance is smaller than the first interval
+            df_a = df_a.head(1)
         else:
-            df = df[df["Distance"]<=length_to_change]
-            df.loc[df.index[-1], "Distance"] = length_to_change
+            df_a = df_a[df_a["Distance"]<=length_to_change]
+            df_a.loc[df_a.index[-1], "Distance"] = length_to_change
     else:
-        df_a.loc[df.index[-1], "Distance"] = length_to_change
+        df_a.loc[df_a.index[-1], "Distance"] = length_to_change
     
     
     #Add to the file information 
@@ -16758,9 +16810,6 @@ def execution_sensitivity_analysis_design(number_execution,core,param_values,dic
         else:
             information_parameter = sensitivity_parameters[i]
             modify_inputs_sensitivity_design(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3],core,working_directory)
-        #Check if there is the need to execute UH
-        if information_parameter[3]=="uh":
-            execute_uh = True
            
     #Change value of buffer length
     information_parameter = sensitivity_parameters["Buffer length (m)"]
@@ -16769,19 +16818,17 @@ def execution_sensitivity_analysis_design(number_execution,core,param_values,dic
     change_buffer_length_sensitivity_design(value_change,core,vfs_sensitivity_file,working_directory)
     
     #We execute
-    #Only execute UH if there are parameters that need to be executed in UH
-    if execute_uh:
-        resultado = subprocess.run([os.path.dirname(__file__)+os.path.normpath(f"\\executables\\execution_uh_{core}.bat")],
-            capture_output=True, 
-            text=True, 
-            shell=True)
-        #Put warning
-        if not "...FINISHED..." in resultado.stdout:            
-            return "error"
-    
-    
-        #Correct hietograph file
-        #correct_irn_file(working_directory+os.path.normpath(f"\\design\\inputs\\design_{core}.irn")) 
+    resultado = subprocess.run([os.path.dirname(__file__)+os.path.normpath(f"\\executables\\execution_uh_{core}.bat")],
+        capture_output=True, 
+        text=True, 
+        shell=True)
+    #Put warning
+    if not "...FINISHED..." in resultado.stdout:            
+        return "error"
+
+
+    #Correct hietograph file
+    #correct_irn_file(working_directory+os.path.normpath(f"\\design\\inputs\\design_{core}.irn")) 
     
     #VFS
     resultado = subprocess.run([os.path.dirname(__file__)+os.path.normpath(f"\\executables\\execution_vfs_{core}.bat")],
@@ -16863,16 +16910,16 @@ def change_buffer_length_sensitivity_design(value_change,core,vfs_sensitivity_fi
     
     #We update the dataframe
     df_a = df.copy()
-    actual_length = max(df["Distance"])
+    actual_length = max(df_a["Distance"])
     length_to_change = value_change
     if length_to_change <= actual_length:
-        if length_to_change<min(df["Distance"]): #when distance is smaller than the first interval
-            df = df.head(1)
+        if length_to_change<min(df_a["Distance"]): #when distance is smaller than the first interval
+            df_a = df_a.head(1)
         else:
-            df = df[df["Distance"]<=length_to_change]
-            df.loc[df.index[-1], "Distance"] = length_to_change
+            df_a = df_a[df_a["Distance"]<=length_to_change]
+            df_a.loc[df_a.index[-1], "Distance"] = length_to_change
     else:
-        df_a.loc[df.index[-1], "Distance"] = length_to_change
+        df_a.loc[df_a.index[-1], "Distance"] = length_to_change
     
     
     #Add to the file information 
@@ -17186,16 +17233,16 @@ def change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file,work
     
     #We update the dataframe
     df_a = df.copy()
-    actual_length = max(df["Distance"])
+    actual_length = max(df_a["Distance"])
     length_to_change = value_change
     if length_to_change <= actual_length:
-        if length_to_change<min(df["Distance"]): #when distance is smaller than the first interval
-            df = df.head(1)
+        if length_to_change<min(df_a["Distance"]): #when distance is smaller than the first interval
+            df_a = df_a.head(1)
         else:
-            df = df[df["Distance"]<=length_to_change]
-            df.loc[df.index[-1], "Distance"] = length_to_change
+            df_a = df_a[df_a["Distance"]<=length_to_change]
+            df_a.loc[df_a.index[-1], "Distance"] = length_to_change
     else:
-        df_a.loc[df.index[-1], "Distance"] = length_to_change
+        df_a.loc[df_a.index[-1], "Distance"] = length_to_change
     
     
     #Add to the file information 
@@ -17555,16 +17602,16 @@ def change_buffer_length_sensitivity_calibration(value_change,core,vfs_sensitivi
     
     #We update the dataframe
     df_a = df.copy()
-    actual_length = max(df["Distance"])
+    actual_length = max(df_a["Distance"])
     length_to_change = value_change
     if length_to_change <= actual_length:
-        if length_to_change<min(df["Distance"]): #when distance is smaller than the first interval
-            df = df.head(1)
+        if length_to_change<min(df_a["Distance"]): #when distance is smaller than the first interval
+            df_a = df_a.head(1)
         else:
-            df = df[df["Distance"]<=length_to_change]
-            df.loc[df.index[-1], "Distance"] = length_to_change
+            df_a = df_a[df_a["Distance"]<=length_to_change]
+            df_a.loc[df_a.index[-1], "Distance"] = length_to_change
     else:
-        df_a.loc[df.index[-1], "Distance"] = length_to_change
+        df_a.loc[df_a.index[-1], "Distance"] = length_to_change
     
     
     #Add to the file information 
