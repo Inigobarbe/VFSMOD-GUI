@@ -25,21 +25,21 @@ File: C:\qvfsmod\output\sample.osp                    VFSMOD v4.6.0 11/2024
       0.400     = Mean Filter Mannings Roughness (input)
   
        8.65 %   = Ratio of Filter Length to Source Flow Length
-    145.524 mm  = Total Rainfall
-      4.874 m3  = Total Rainfall on Filter
-     69.127 mm  = Total Runoff from Source (mm depth over Source Area)
-    345.637 m3  = Total Runoff from Source
-     68.386 mm  = Total Runoff out from Filter (mm depth over Source+Filter)
-    344.221 m3  = Total Runoff out from Filter
-      9.261 m3  = Total Infiltration in Filter
-      0.996     = Runoff Delivery Ratio
+     22.307 mm  = Total Rainfall
+      0.747 m3  = Total Rainfall on Filter
+      4.936 mm  = Total Runoff from Source (mm depth over Source Area)
+     24.678 m3  = Total Runoff from Source
+      3.741 mm  = Total Runoff out from Filter (mm depth over Source+Filter)
+     18.829 m3  = Total Runoff out from Filter
+      6.931 m3  = Total Infiltration in Filter
+      0.763     = Runoff Delivery Ratio
   
-    8921.388 kg = Mass Sediment Input to Filter
-      25.811 g/L= Concentration Sediment in Runoff from source Area
-    8888.913 kg = Mass Sediment Output from Filter
-      25.823 g/L= Concentration Sediment in Runoff exiting the Filter
-      32.474 kg = Mass Sediment retained in Filter
-       0.996    = Sediment Delivery Ratio
+     408.143 kg = Mass Sediment Input to Filter
+      16.539 g/L= Concentration Sediment in Runoff from source Area
+      83.938 kg = Mass Sediment Output from Filter
+       4.458 g/L= Concentration Sediment in Runoff exiting the Filter
+     324.204 kg = Mass Sediment retained in Filter
+       0.206    = Sediment Delivery Ratio
   
        8.65 m   = Effective Filter Length
        0.00 m   = Wedge Distance

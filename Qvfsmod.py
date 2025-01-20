@@ -862,10 +862,10 @@ class qvfsmod:
         self.dlg_base.run_calibration_single.clicked.connect(self.run_calibration_single)
         
         #Add distributions to combobox
-        self.dlg_base.distributions.addItems(["Uniform","Logaritmic uniform","Triangular","Normal truncated"])
-        self.dlg_base.distributions_design.addItems(["Uniform","Logaritmic uniform","Triangular","Normal truncated"])
-        self.dlg_base.distributions_uncertainity.addItems(["Uniform","Logaritmic uniform","Triangular","Normal truncated"])
-        self.dlg_calibration_sensitivity_hydrograph.distributions.addItems(["Uniform","Logaritmic uniform","Triangular","Normal truncated"])
+        self.dlg_base.distributions.addItems(["Uniform","Triangular","Normal truncated"])
+        self.dlg_base.distributions_design.addItems(["Uniform","Triangular","Normal truncated"])
+        self.dlg_base.distributions_uncertainity.addItems(["Uniform","Triangular","Normal truncated"])
+        self.dlg_calibration_sensitivity_hydrograph.distributions.addItems(["Uniform","Triangular","Normal truncated"])
         
         #Change bounds in sensitivity dialog if distribution changed
         self.dlg_base.distributions.currentIndexChanged.connect(self.change_bounds_sensitivity)
@@ -3542,7 +3542,7 @@ class qvfsmod:
             with open(ruta, "r") as archivo:
                 lineas = archivo.readlines()
             #If the csv is not of a Uncertainity sensitivity analysis then give error
-            if lineas[0]!="Uncertainty analysis results" + '\n' and lineas[0]!="Morris sensitivity indexes" + '\n' and lineas[0]!="FAST sensitivity indexes" + '\n' and lineas[0]!="Sobol sensitivity indexes" + '\n':
+            if lineas[0]!="Uncertainty analysis results" + '\n' and lineas[0]!="Morris sensitivity indexes (mu star_sigma_mu)" + '\n' and lineas[0]!="FAST sensitivity indexes S1_S1 conf_ST_ST conf" + '\n' and lineas[0]!="Sobol sensitivity indexes (S1_S1 conf_ST_ST conf)" + '\n':
                 self.warning_message("Please select a csv file that contains Uncertainity analysis results")
                 return
                 
@@ -3609,9 +3609,9 @@ class qvfsmod:
             ax2 = self.ax_uncertainity[0].twinx()
             x_sorted = np.sort(y)
             # Calcular la frecuencia acumulativa
-            y = np.arange(1, len(x_sorted) + 1) / len(x_sorted)
+            acum = np.arange(1, len(x_sorted) + 1) / len(x_sorted)
             # Graficar la frecuencia acumulativa con líneas
-            ax2.plot(x_sorted, y, linestyle='-', marker='',color = "black")
+            ax2.plot(x_sorted, acum, linestyle='-', marker='',color = "black")
             ax2.set_ylabel("Cumulative Frequency")
             #Put ax2 in the front
             self.ax_uncertainity[0].set_zorder(1)
@@ -5990,10 +5990,13 @@ class qvfsmod:
                 text = fname[0]
             if information == "morris":
                 self.dlg_base.csv_results_morris_design_uncertainity.setText(os.path.normpath(text))
+                self.dlg_base.radio_morris_design.setChecked(True)
             elif information == "sobol":    
                 self.dlg_base.csv_results_sobol_design_uncertainity.setText(os.path.normpath(text))
+                self.dlg_base.radio_sobol_design.setChecked(True)
             elif information == "fast":
                 self.dlg_base.csv_results_fast_design_uncertainity.setText(os.path.normpath(text))
+                self.dlg_base.radio_fast_design.setChecked(True)
             
             #Show outputs
             self.show_sensitivity_graph_design()
@@ -6010,6 +6013,8 @@ class qvfsmod:
             else: #absolute path
                 text = fname[0]
             self.dlg_base.csv_results_2.setText(os.path.normpath(text))
+            #Set checked sobol results
+            self.dlg_base.radio_sobol.setChecked(True)
             #Update graph
             self.show_sensitivity_graph_global()
     
@@ -6024,6 +6029,8 @@ class qvfsmod:
             else: #absolute path
                 text = fname[0]
             self.dlg_base.csv_results_fast.setText(os.path.normpath(text))
+            #Set checked sobol results
+            self.dlg_base.radio_fast.setChecked(True)
             #Update graph
             self.show_sensitivity_graph_global()
     
@@ -6102,6 +6109,8 @@ class qvfsmod:
             else: #absolute path
                 text = fname[0]
             self.dlg_base.csv_results_morris.setText(os.path.normpath(text))
+            #Set checked morris results
+            self.dlg_base.radio_morris.setChecked(True)
             #Update graph
             self.show_sensitivity_graph_global()
         
@@ -6113,7 +6122,7 @@ class qvfsmod:
             with open(ruta, "r") as archivo:
                 lineas = archivo.readlines()
             #If the csv is not of a Morris sensitivity analysis then give error
-            if lineas[0]!="Morris sensitivity indexes" + '\n':
+            if lineas[0]!="Morris sensitivity indexes (mu star_sigma)" + '\n':
                 self.warning_message("Please select a csv file that contains Morris sensitivity analysis results")
                 return
             
@@ -6240,7 +6249,7 @@ class qvfsmod:
                 with open(ruta, "r") as archivo:
                     lineas = archivo.readlines()
                 #If the csv is not of a Morris sensitivity analysis then give error
-                if lineas[0]!="Morris sensitivity indexes" + '\n':
+                if lineas[0]!="Morris sensitivity indexes (mu star_sigma_mu)" + '\n':
                     self.warning_message("Please select a csv file that contains Morris sensitivity analysis results")
                     return
                 
@@ -6351,7 +6360,7 @@ class qvfsmod:
                 with open(ruta, "r") as archivo:
                     lineas = archivo.readlines()
                 #If the csv is not of a FAST sensitivity analysis then give error
-                if lineas[0]!="FAST sensitivity indexes" + '\n':
+                if lineas[0]!="FAST sensitivity indexes S1_S1 conf_ST_ST conf" + '\n':
                     self.warning_message("Please select a csv file that contains FAST sensitivity analysis results")
                     return
                 
@@ -6431,7 +6440,7 @@ class qvfsmod:
                 with open(ruta, "r") as archivo:
                     lineas = archivo.readlines()
                 #If the csv is not of a Sobol sensitivity analysis then give error
-                if lineas[0]!="Sobol sensitivity indexes" + '\n':
+                if lineas[0]!="Sobol sensitivity indexes (S1_S1 conf_ST_ST conf)" + '\n':
                     self.warning_message("Please select a csv file that contains Sobol sensitivity analysis results")
                     return
                 
@@ -6754,7 +6763,7 @@ class qvfsmod:
                 with open(ruta, "r") as archivo:
                     lineas = archivo.readlines()
                 #If the csv is not of a Morris sensitivity analysis then give error
-                if lineas[0]!="Morris sensitivity indexes" + '\n':
+                if lineas[0]!="Morris sensitivity indexes (mu star_sigma_mu)" + '\n':
                     self.warning_message("Please select a csv file that contains Morris sensitivity analysis results")
                     return
                 
@@ -6866,7 +6875,7 @@ class qvfsmod:
                 with open(ruta, "r") as archivo:
                     lineas = archivo.readlines()
                 #If the csv is not of a FAST sensitivity analysis then give error
-                if lineas[0]!="FAST sensitivity indexes" + '\n':
+                if lineas[0]!="FAST sensitivity indexes S1_S1 conf_ST_ST conf" + '\n':
                     self.warning_message("Please select a csv file that contains FAST sensitivity analysis results")
                     return
                 
@@ -6942,7 +6951,7 @@ class qvfsmod:
                 with open(ruta, "r") as archivo:
                     lineas = archivo.readlines()
                 #If the csv is not of a Sobol sensitivity analysis then give error
-                if lineas[0]!="Sobol sensitivity indexes" + '\n':
+                if lineas[0]!="Sobol sensitivity indexes (S1_S1 conf_ST_ST conf)" + '\n':
                     self.warning_message("Please select a csv file that contains Sobol sensitivity analysis results")
                     return
                 
@@ -7688,7 +7697,7 @@ class qvfsmod:
         
         #Create dataframe to save the results
         self.results_sensitivity = pd.DataFrame(columns=["Error","Total Runoff from source (mm)","Total Runoff from Source (m3)",
-            "Total Runoff out from Filter (mm)","Total Runoff out from Filter (m3)","Total Infiltration in Filter (m3)",
+            "Total Runoff out from Filter (mm depth over Source+Filter)","Total Runoff out from Filter (m3)","Total Infiltration in Filter (m3)",
             "Mass Sediment Input to Filter (kg)","Concentration Sediment in Runoff from source Area (g/L)",
             "Mass Sediment Output from Filter (kg)","Concentration Sediment in Runoff exiting the Filter (g/L)",
             "Sediment Delivery Ratio","Runoff Delivery Ratio","Water Front Depth (m)"])
@@ -7723,7 +7732,7 @@ class qvfsmod:
         try:
             with open(path, 'w') as f:
                 #Add first row
-                f.write("Morris sensitivity indexes" + '\n')
+                f.write("Morris sensitivity indexes (mu star_sigma)" + '\n')
                 #Add sensitivity indexes for each output
                 for i in self.results_sensitivity.columns[-1:]:
                     f.write("----------------------------------------------------------------------" + '\n')
@@ -7775,7 +7784,7 @@ class qvfsmod:
             if self.dlg_base.sobol.isChecked():
                 with open(path, 'w') as f:
                     #Add first row
-                    f.write("Sobol sensitivity indexes" + '\n')
+                    f.write("Sobol sensitivity indexes (S1_S1 conf_ST_ST conf)" + '\n')
                     #Add sensitivity indexes for each output
                     for i in self.results_sensitivity.columns[-self.number_outputs:]:
                         f.write("----------------------------------------------------------------------" + '\n')
@@ -7788,7 +7797,7 @@ class qvfsmod:
             elif self.dlg_base.morris.isChecked():
                 with open(path, 'w') as f:
                     #Add first row
-                    f.write("Morris sensitivity indexes" + '\n')
+                    f.write("Morris sensitivity indexes (mu star_sigma_mu)" + '\n')
                     #Add sensitivity indexes for each output
                     for i in self.results_sensitivity.columns[-self.number_outputs:]:
                         f.write("----------------------------------------------------------------------" + '\n')
@@ -7801,7 +7810,7 @@ class qvfsmod:
             elif self.dlg_base.fast.isChecked():
                 with open(path, 'w') as f:
                     #Add first row
-                    f.write("FAST sensitivity indexes" + '\n')
+                    f.write("FAST sensitivity indexes S1_S1 conf_ST_ST conf" + '\n')
                     #Add sensitivity indexes for each output
                     for i in self.results_sensitivity.columns[-self.number_outputs:]:
                         f.write("----------------------------------------------------------------------" + '\n')
@@ -7897,7 +7906,7 @@ class qvfsmod:
             if self.dlg_base.sobol_design.isChecked():
                 with open(path, 'w') as f:
                     #Add first row
-                    f.write("Sobol sensitivity indexes" + '\n')
+                    f.write("Sobol sensitivity indexes (S1_S1 conf_ST_ST conf)" + '\n')
                     #Add sensitivity indexes for each output
                     for i in self.results_sensitivity.columns[-len(self.outputs_sensitivity_design):]:
                         f.write("----------------------------------------------------------------------" + '\n')
@@ -7915,7 +7924,7 @@ class qvfsmod:
             elif self.dlg_base.morris_design.isChecked():
                 with open(path, 'w') as f:
                     #Add first row
-                    f.write("Morris sensitivity indexes" + '\n')
+                    f.write("Morris sensitivity indexes (mu star_sigma_mu)" + '\n')
                     #Add sensitivity indexes for each output
                     for i in self.results_sensitivity.columns[-len(self.outputs_sensitivity_design):]:
                         f.write("----------------------------------------------------------------------" + '\n')
@@ -7933,7 +7942,7 @@ class qvfsmod:
             elif self.dlg_base.fast_design.isChecked():
                 with open(path, 'w') as f:
                     #Add first row
-                    f.write("FAST sensitivity indexes" + '\n')
+                    f.write("FAST sensitivity indexes S1_S1 conf_ST_ST conf" + '\n')
                     #Add sensitivity indexes for each output
                     for i in self.results_sensitivity.columns[-len(self.outputs_sensitivity_design):]:
                         f.write("----------------------------------------------------------------------" + '\n')
@@ -8254,8 +8263,8 @@ class qvfsmod:
         self.move_files_uncertainity_analysis()
         
         #Create dataframe to save the results
-        self.results_sensitivity = pd.DataFrame(columns=["Error","Total Runoff from source (mm)","Total Runoff from Source (m3)",
-            "Total Runoff out from Filter (mm)","Total Runoff out from Filter (m3)","Total Infiltration in Filter (m3)",
+        self.results_sensitivity = pd.DataFrame(columns=["Error","Total Runoff from Source (mm depth over Source Area)","Total Runoff from Source (m3)",
+            "Total Runoff out from Filter (mm depth over Source+Filter)","Total Runoff out from Filter (m3)","Total Infiltration in Filter (m3)",
             "Mass Sediment Input to Filter (kg)","Concentration Sediment in Runoff from source Area (g/L)",
             "Mass Sediment Output from Filter (kg)","Concentration Sediment in Runoff exiting the Filter (g/L)",
             "Sediment Delivery Ratio","Runoff Delivery Ratio","Water Front Depth (m)"])
@@ -9158,10 +9167,6 @@ class qvfsmod:
                 distribution = "unif"
                 texto = str(self.dlg_base.table_uncertainity.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-            elif str(self.dlg_base.table_uncertainity.item(row, 1).text()) == "Logaritmic uniform":
-                distribution = "logunif"
-                texto = str(self.dlg_base.table_uncertainity.item(row, 2).text())
-                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
             elif str(self.dlg_base.table_uncertainity.item(row, 1).text()) == "Triangular":
                 distribution = "triang"
                 texto = str(self.dlg_base.table_uncertainity.item(row, 2).text())
@@ -9217,10 +9222,6 @@ class qvfsmod:
                     distribution = "unif"
                     texto = str(self.dlg_base.table.item(row, 2).text())
                     parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-                elif str(self.dlg_base.table.item(row, 1).text()) == "Logaritmic uniform":
-                    distribution = "logunif"
-                    texto = str(self.dlg_base.table.item(row, 2).text())
-                    parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
                 elif str(self.dlg_base.table.item(row, 1).text()) == "Triangular":
                     distribution = "triang"
                     texto = str(self.dlg_base.table.item(row, 2).text())
@@ -9254,10 +9255,6 @@ class qvfsmod:
         def distribution_parameters_fun(row):
             if str(self.dlg_base.table_2.item(row, 1).text()) == "Uniform":
                 distribution = "unif"
-                texto = str(self.dlg_base.table_2.item(row, 2).text())
-                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-            elif str(self.dlg_base.table_2.item(row, 1).text()) == "Logaritmic uniform":
-                distribution = "logunif"
                 texto = str(self.dlg_base.table_2.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
             elif str(self.dlg_base.table_2.item(row, 1).text()) == "Triangular":
@@ -9315,10 +9312,6 @@ class qvfsmod:
         def distribution_parameters_fun(row):
             if str(self.dlg_calibration_sensitivity_hydrograph.table.item(row, 1).text()) == "Uniform":
                 distribution = "unif"
-                texto = str(self.dlg_calibration_sensitivity_hydrograph.table.item(row, 2).text())
-                parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-            elif str(self.dlg_calibration_sensitivity_hydrograph.table.item(row, 1).text()) == "Logaritmic uniform":
-                distribution = "logunif"
                 texto = str(self.dlg_calibration_sensitivity_hydrograph.table.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
             elif str(self.dlg_calibration_sensitivity_hydrograph.table.item(row, 1).text()) == "Triangular":
@@ -9397,9 +9390,6 @@ class qvfsmod:
                 #Primero se borra
                 delete_elements()
                 
-            elif distribution=="Logaritmic uniform":
-                #Primero se borra
-                delete_elements()
      
             elif distribution=="Triangular":
                 #Primero se borra
@@ -9468,9 +9458,6 @@ class qvfsmod:
             #Primero se borra
             delete_elements()
             
-        elif distribution=="Logaritmic uniform":
-            #Primero se borra
-            delete_elements()
  
         elif distribution=="Triangular":
             #Primero se borra
@@ -9538,9 +9525,6 @@ class qvfsmod:
             #Primero se borra
             delete_elements()
             
-        elif distribution=="Logaritmic uniform":
-            #Primero se borra
-            delete_elements()
  
         elif distribution=="Triangular":
             #Primero se borra
@@ -9608,9 +9592,6 @@ class qvfsmod:
             #Primero se borra
             delete_elements()
             
-        elif distribution=="Logaritmic uniform":
-            #Primero se borra
-            delete_elements()
  
         elif distribution=="Triangular":
             #Primero se borra
@@ -9658,8 +9639,6 @@ class qvfsmod:
         else:
             if distribution=="Uniform":
                 change_lines("Minimum","Maximum")
-            if distribution=="Logaritmic uniform":
-                change_lines("Minimum","Maximum")
             if distribution=="Triangular":
                 change_lines("Minimum","Maximum","Peak")
             if distribution=="Normal truncated":
@@ -9675,8 +9654,6 @@ class qvfsmod:
         distribution = [self.dlg_base.distributions_design.itemText(i) for i in range(self.dlg_base.distributions_design.count())][self.dlg_base.distributions_design.currentIndex()]
         if distribution=="Uniform":
             change_lines("Minimum","Maximum")
-        if distribution=="Logaritmic uniform":
-            change_lines("Minimum","Maximum")
         if distribution=="Triangular":
             change_lines("Minimum","Maximum","Peak")
         if distribution=="Normal truncated":
@@ -9691,8 +9668,6 @@ class qvfsmod:
         distribution = [self.dlg_base.distributions_uncertainity.itemText(i) for i in range(self.dlg_base.distributions_uncertainity.count())][self.dlg_base.distributions_uncertainity.currentIndex()]
         if distribution=="Uniform":
             change_lines("Minimum","Maximum")
-        if distribution=="Logaritmic uniform":
-            change_lines("Minimum","Maximum")
         if distribution=="Triangular":
             change_lines("Minimum","Maximum","Peak")
         if distribution=="Normal truncated":
@@ -9706,8 +9681,6 @@ class qvfsmod:
 
         distribution = [self.dlg_calibration_sensitivity_hydrograph.distributions.itemText(i) for i in range(self.dlg_calibration_sensitivity_hydrograph.distributions.count())][self.dlg_calibration_sensitivity_hydrograph.distributions.currentIndex()]
         if distribution=="Uniform":
-            change_lines("Minimum","Maximum")
-        if distribution=="Logaritmic uniform":
             change_lines("Minimum","Maximum")
         if distribution=="Triangular":
             change_lines("Minimum","Maximum","Peak")
@@ -9810,7 +9783,7 @@ class qvfsmod:
                 add_element(2,"Not applicable")
     
         elif not self.dlg_base.oat.isChecked():
-            if distribution=="Uniform" or distribution=="Logaritmic uniform":
+            if distribution=="Uniform":
                 add_element(2,f"min:{self.dlg_base.first.text()},max:{self.dlg_base.second.text()}")
             elif distribution == "Triangular":
                 add_element(2,f"min:{self.dlg_base.first.text()},max:{self.dlg_base.second.text()},peak:{self.dlg_base.third.text()}")
@@ -9860,7 +9833,7 @@ class qvfsmod:
         distribution = [self.dlg_base.distributions_design.itemText(i) for i in range(self.dlg_base.distributions_design.count())][self.dlg_base.distributions_design.currentIndex()]
         add_element(1,distribution)
         #Add distribution parameters
-        if distribution=="Uniform" or distribution=="Logaritmic uniform":
+        if distribution=="Uniform":
             add_element(2,f"min:{self.dlg_base.first_design.text()},max:{self.dlg_base.second_design.text()}")
         elif distribution == "Triangular":
             add_element(2,f"min:{self.dlg_base.first_design.text()},max:{self.dlg_base.second_design.text()},peak:{self.dlg_base.third_design.text()}")
@@ -9910,7 +9883,7 @@ class qvfsmod:
         distribution = [self.dlg_calibration_sensitivity_hydrograph.distributions.itemText(i) for i in range(self.dlg_calibration_sensitivity_hydrograph.distributions.count())][self.dlg_calibration_sensitivity_hydrograph.distributions.currentIndex()]
         add_element(1,distribution)
         #Add distribution parameters
-        if distribution=="Uniform" or distribution=="Logaritmic uniform":
+        if distribution=="Uniform":
             add_element(2,f"min:{self.dlg_calibration_sensitivity_hydrograph.first.text()},max:{self.dlg_calibration_sensitivity_hydrograph.second.text()}")
         elif distribution == "Triangular":
             add_element(2,f"min:{self.dlg_calibration_sensitivity_hydrograph.first.text()},max:{self.dlg_calibration_sensitivity_hydrograph.second.text()},peak:{self.dlg_calibration_sensitivity_hydrograph.third.text()}")
@@ -9959,7 +9932,7 @@ class qvfsmod:
         #Add distribution
         distribution = [self.dlg_base.distributions_uncertainity.itemText(i) for i in range(self.dlg_base.distributions_uncertainity.count())][self.dlg_base.distributions_uncertainity.currentIndex()]
         add_element(1,distribution)
-        if distribution=="Uniform" or distribution=="Logaritmic uniform":
+        if distribution=="Uniform":
             add_element(2,f"min:{self.dlg_base.first_2.text()},max:{self.dlg_base.second_2.text()}")
         elif distribution == "Triangular":
             add_element(2,f"min:{self.dlg_base.first_2.text()},max:{self.dlg_base.second_2.text()},peak:{self.dlg_base.third_2.text()}")
@@ -13513,8 +13486,8 @@ class qvfsmod:
         #Obtain number of pesticides 
         self.number_pesticides = self.obtain_number_pestidides(self.obtain_direction_vfsmod(self.dlg_base.design_vfs_file.text()))
         #We add the information of the loops to the files and we execute the file
-        self.df_results_design = pd.DataFrame(columns=["Total Runoff from source (mm)","Total Runoff from Source (m3)",
-            "Total Runoff out from Filter (mm)","Total Runoff out from Filter (m3)","Total Infiltration in Filter",
+        self.df_results_design = pd.DataFrame(columns=["Total Runoff from Source (mm depth over Source Area)","Total Runoff from Source (m3)",
+            "Total Runoff out from Filter (mm depth over Source+Filter)","Total Runoff out from Filter (m3)","Total Infiltration in Filter",
             "Mass Sediment Input to Filter","Concentration Sediment in Runoff from source Area",
             "Mass Sediment Output from Filter","Concentration Sediment in Runoff exiting the Filter",
             "Sediment Delivery Ratio","Runoff Delivery Ratio"])
@@ -16329,8 +16302,8 @@ def save_outputs_design(working_directory,error,length_checked,spacing_checked,n
     """Function to save outputs in the design process"""
     #Obtain the values
     if error:
-        df_conc = pd.DataFrame(data = {"Error":[1],"Total Runoff from source (mm)":[np.nan],
-            "Total Runoff from Source (m3)":[np.nan],"Total Runoff out from Filter (mm)":[np.nan],
+        df_conc = pd.DataFrame(data = {"Error":[1],"Total Runoff from Source (mm depth over Source Area)":[np.nan],
+            "Total Runoff from Source (m3)":[np.nan],"Total Runoff out from Filter (mm depth over Source+Filter)":[np.nan],
             "Total Runoff out from Filter (m3)":[np.nan],"Total Infiltration in Filter":[np.nan],
             "Mass Sediment Input to Filter":[np.nan],"Concentration Sediment in Runoff from source Area":[np.nan],
             "Mass Sediment Output from Filter":[np.nan],"Concentration Sediment in Runoff exiting the Filter":[np.nan],
@@ -16383,8 +16356,8 @@ def save_outputs_design(working_directory,error,length_checked,spacing_checked,n
         rdr = obtain_result(" Runoff Delivery Ratio\n")
         
         #Dataframe to concatenate results
-        df_conc = pd.DataFrame(data = {"Error":[0],"Total Runoff from source (mm)":[runoff_from_source_mm],
-            "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm)":[runoff_out_filter_mm],
+        df_conc = pd.DataFrame(data = {"Error":[0],"Total Runoff from Source (mm depth over Source Area)":[runoff_from_source_mm],
+            "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm depth over Source+Filter)":[runoff_out_filter_mm],
             "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter":[infiltration_filter],
             "Mass Sediment Input to Filter":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area":[concentration_sediment_source],
             "Mass Sediment Output from Filter":[sediment_out_filter],"Concentration Sediment in Runoff exiting the Filter":[concentration_sediment_filter],
@@ -16661,8 +16634,8 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
     #Obtain the values
     if error:
         #Dataframe to concatenate to the uncertainity results
-        df_conc = pd.DataFrame(data = {"Error":[1],"Total Runoff from source (mm)":[-1],
-            "Total Runoff from Source (m3)":[-1],"Total Runoff out from Filter (mm)":[-1],
+        df_conc = pd.DataFrame(data = {"Error":[1],"Total Runoff from Source (mm depth over Source Area)":[-1],
+            "Total Runoff from Source (m3)":[-1],"Total Runoff out from Filter (mm depth over Source+Filter)":[-1],
             "Total Runoff out from Filter (m3)":[-1],"Total Infiltration in Filter (m3)":[-1],
             "Mass Sediment Input to Filter (kg)":[-1],"Concentration Sediment in Runoff from source Area (g/L)":[-1],
             "Mass Sediment Output from Filter (kg)":[-1],"Concentration Sediment in Runoff exiting the Filter (g/L)":[-1],
@@ -16713,8 +16686,8 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
         water_front_depth =float(lineas_ohy[-1].split()[-2])
         
         #Dataframe to concatenate results
-        df_conc = pd.DataFrame(data = {"Error":[0],"Total Runoff from source (mm)":[runoff_from_source_mm],
-            "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm)":[runoff_out_filter_mm],
+        df_conc = pd.DataFrame(data = {"Error":[0],"Total Runoff from Source (mm depth over Source Area)":[runoff_from_source_mm],
+            "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm depth over Source+Filter)":[runoff_out_filter_mm],
             "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter (m3)":[infiltration_filter],
             "Mass Sediment Input to Filter (kg)":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area (g/L)":[concentration_sediment_source],
             "Mass Sediment Output from Filter (kg)":[sediment_out_filter],"Concentration Sediment in Runoff exiting the Filter (g/L)":[concentration_sediment_filter],
@@ -17359,8 +17332,8 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
     #Obtain the values
     if error:
         #Dataframe to concatenate to the sensitivity results
-        df_conc = pd.DataFrame(data = {"Error":[1],"Total Runoff from source (mm)":[-1.0],
-            "Total Runoff from Source (m3)":[-1.0],"Total Runoff out from Filter (mm)":[-1.0],
+        df_conc = pd.DataFrame(data = {"Error":[1],"Total Runoff from Source (mm depth over Source Area)":[-1.0],
+            "Total Runoff from Source (m3)":[-1.0],"Total Runoff out from Filter (mm depth over Source+Filter)":[-1.0],
             "Total Runoff out from Filter (m3)":[-1.0],"Total Infiltration in Filter (m3)":[-1.0],
             "Mass Sediment Input to Filter (kg)":[-1.0],"Concentration Sediment in Runoff from source Area (g/L)":[-1.0],
             "Mass Sediment Output from Filter (kg)":[-1.0],"Concentration Sediment in Runoff exiting the Filter (g/L)":[-1.0],
@@ -17418,8 +17391,8 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
 
         
         #Dataframe to concatenate results
-        df_conc = pd.DataFrame(data = {"Error":[0],"Total Runoff from source (mm)":[runoff_from_source_mm],
-            "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm)":[runoff_out_filter_mm],
+        df_conc = pd.DataFrame(data = {"Error":[0],"Total Runoff from Source (mm depth over Source Area)":[runoff_from_source_mm],
+            "Total Runoff from Source (m3)":[runoff_from_source_m3],"Total Runoff out from Filter (mm depth over Source+Filter)":[runoff_out_filter_mm],
             "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter (m3)":[infiltration_filter],
             "Mass Sediment Input to Filter (kg)":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area (g/L)":[concentration_sediment_source],
             "Mass Sediment Output from Filter (kg)":[sediment_out_filter],"Concentration Sediment in Runoff exiting the Filter (g/L)":[concentration_sediment_filter],

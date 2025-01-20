@@ -3035,7 +3035,7 @@ default 5 min</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_13">
            <property name="geometry">
             <rect>
-             <x>-353</x>
+             <x>0</x>
              <y>0</y>
              <width>1324</width>
              <height>743</height>
@@ -5401,7 +5401,7 @@ analysis</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_8">
            <property name="geometry">
             <rect>
-             <x>-176</x>
+             <x>0</x>
              <y>0</y>
              <width>923</width>
              <height>583</height>
@@ -6248,7 +6248,7 @@ Solution Parameters</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1000</width>
+             <width>1013</width>
              <height>553</height>
             </rect>
            </property>
@@ -6547,14 +6547,14 @@ Solution Parameters</string>
                   <item row="3" column="0">
                    <widget class="QRadioButton" name="runoff_filter_mm_2">
                     <property name="text">
-                     <string>Total Runoff out from Filter (mm)</string>
+                     <string>Total Runoff out from Filter (mm depth over Source+Filter)</string>
                     </property>
                    </widget>
                   </item>
                   <item row="1" column="0">
                    <widget class="QRadioButton" name="runoff_source_mm_2">
                     <property name="text">
-                     <string>Total Runoff from source (mm)</string>
+                     <string>Total Runoff from Source (mm depth over Source Area)</string>
                     </property>
                    </widget>
                   </item>
@@ -6636,10 +6636,10 @@ Solution Parameters</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_3">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>-413</x>
              <y>0</y>
-             <width>1164</width>
-             <height>453</height>
+             <width>1177</width>
+             <height>481</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_40">
@@ -6755,7 +6755,7 @@ Solution Parameters</string>
                   <item>
                    <widget class="QRadioButton" name="runoff_source_mm_3">
                     <property name="text">
-                     <string>Total Runoff from source (mm)</string>
+                     <string>Total Runoff from Source (mm depth over Source Area)</string>
                     </property>
                    </widget>
                   </item>
@@ -6769,7 +6769,7 @@ Solution Parameters</string>
                   <item>
                    <widget class="QRadioButton" name="runoff_filter_mm_3">
                     <property name="text">
-                     <string>Total Runoff out from Filter (mm)</string>
+                     <string>Total Runoff out from Filter (mm depth over Source+Filter)</string>
                     </property>
                    </widget>
                   </item>
@@ -7043,7 +7043,7 @@ Solution Parameters</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>204</width>
+                       <width>231</width>
                        <height>474</height>
                       </rect>
                      </property>
@@ -7349,7 +7349,7 @@ Solution Parameters</string>
                        <x>0</x>
                        <y>0</y>
                        <width>290</width>
-                       <height>28</height>
+                       <height>173</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_86">
@@ -7630,10 +7630,10 @@ Solution Parameters</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_16">
            <property name="geometry">
             <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>1068</width>
-             <height>609</height>
+             <x>-334</x>
+             <y>-128</y>
+             <width>1081</width>
+             <height>624</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_96">
@@ -7665,7 +7665,7 @@ Solution Parameters</string>
                   <item>
                    <widget class="QRadioButton" name="runoff_source_mm_4">
                     <property name="text">
-                     <string>Total Runoff from source (mm)</string>
+                     <string>Total Runoff from Source (mm depth over Source Area)</string>
                     </property>
                    </widget>
                   </item>
@@ -7679,7 +7679,7 @@ Solution Parameters</string>
                   <item>
                    <widget class="QRadioButton" name="runoff_filter_mm_4">
                     <property name="text">
-                     <string>Total Runoff out from Filter (mm)</string>
+                     <string>Total Runoff out from Filter (mm depth over Source+Filter)</string>
                     </property>
                    </widget>
                   </item>
@@ -7784,7 +7784,33 @@ Solution Parameters</string>
                    </widget>
                   </item>
                   <item row="1" column="0">
-                   <widget class="QTableWidget" name="tableWidget"/>
+                   <widget class="QTableWidget" name="tableWidget">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>80</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>800</width>
+                      <height>80</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <spacer name="verticalSpacer_28">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
                   </item>
                  </layout>
                 </widget>
@@ -7813,37 +7839,11 @@ Solution Parameters</string>
                <item row="2" column="0">
                 <layout class="QHBoxLayout" name="horizontalLayout_138">
                  <item>
-                  <spacer name="horizontalSpacer_31">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item>
                   <widget class="QPushButton" name="print_graph_uncertainity">
                    <property name="text">
                     <string>Print Plot</string>
                    </property>
                   </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_30">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
                  </item>
                 </layout>
                </item>

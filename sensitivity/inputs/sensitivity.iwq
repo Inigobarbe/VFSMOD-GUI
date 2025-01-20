@@ -3,10 +3,10 @@
 40			; %Clay content in field soil
 1 IDG
 3 27.995 0.26 6.097 2 0.05 0.58 20 6 0.05 0.5 22 5 0.05 0.55 ; ndgday dgHalf FC dgPin dgML dgLD dgmres0 (repeat {dgHalf,dgPIN,dgLD,dgmres0}_j for j species)
-9.5 8.6 6.3 (dgT(i),i=1,ndgday) (Celsius)
+9.5 8.6 6 (dgT(i),i=1,ndgday) (Celsius)
 0.265 0.264 0.265 (dgTheta(i),i=1,ndgday (-)
 1                                       ; IMOB
-; Mj molar                             ; Mj molar mass of compounds (g/mol)
+100 100 150                             ; Mj molar mass of compounds (g/mol)
 -1 0 0                             ; fij molar formation fraction matrix {jxj}
 0 -1 0 
 0 0 -1 
