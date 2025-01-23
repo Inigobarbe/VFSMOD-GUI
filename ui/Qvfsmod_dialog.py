@@ -36,3 +36,4 @@ class qvfsmodMainWindow(QtWidgets.QMainWindow, FORM_CLASS):
         super(qvfsmodMainWindow, self).__init__(parent)
         # Configurar la interfaz de usuario a través de FORM_CLASS
         self.setupUi(self)
+        self.menuBar().setNativeMenuBar(False)

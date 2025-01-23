@@ -185,8 +185,6 @@ Properties (slope/roughness)</string>
             <font>
              <family>Georgia</family>
              <pointsize>-1</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
             </font>
            </property>
            <property name="text">
@@ -396,8 +394,6 @@ Element [KPG=1 (recommended) or 0]</string>
          <font>
           <family>Georgia</family>
           <pointsize>-1</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
          </font>
         </property>
         <property name="text">
@@ -418,7 +414,11 @@ Element [KPG=1 (recommended) or 0]</string>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="simulation_title"/>
+      <widget class="QLineEdit" name="simulation_title">
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

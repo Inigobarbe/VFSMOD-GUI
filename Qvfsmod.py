@@ -7993,6 +7993,11 @@ class qvfsmod:
     def obtain_optimized_vfs_sensitivity_design(self):
         """Method to obtain the buffer length to analyze sensitivity"""
         #Create new df with required columns
+        print(self.dic_data)
+        print(self.outputs_sensitivity_design)
+        print(self.param_values)
+        print(self.buffer_lengths_sensitivity_design)
+        self.results_sensitivity_raw.to_csv(r"C:\qvfsmod\borrar.csv",index=False, float_format='%.10f')
         input_parameters = list(self.dic_data.keys())
         dic_save_data = {}
         for output in self.outputs_sensitivity_design.keys():
@@ -8009,7 +8014,9 @@ class qvfsmod:
                 y_values = list(df_concat[output])
                 y_values = y_values[:len(x_values)]
                 #Quit nans and -1 (error in execution) and only do interpolation if there are at least to values
-                y_values = [x for x in y_values if pd.notna(x) and x!=-1.0]
+                values_together = [(x_values[x],y_values[x]) for x in range(len(x_values))]
+                x_values = [x[0] for x in values_together if pd.notna(x[1]) and x[1]!=-1.0]
+                y_values = [x[1] for x in values_together if pd.notna(x[1]) and x[1]!=-1.0]
                 
                 if len(y_values)>1:
                     try:
@@ -14602,15 +14609,28 @@ class qvfsmod:
         
     def update_bat_uh(self):
         """Metod to update bat for the execution of UH"""
-        f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
-        linea_uno = "cd {}".format(f'"{os.path.dirname(os.path.normpath(self.obtain_direction_vfsmod(self.dlg_base.uh_file.text())))}"')
-        linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/uh")}" {os.path.normpath(os.path.basename(self.dlg_base.uh_file.text()))}'
-        linea_tres = "Pause"
-        f.write("{} \n".format(linea_uno))
-        f.write("{} \n".format(linea_dos))
-        #f.write("{} \n".format(linea_tres))
-        f.close()
-    
+        
+        #In windows
+        if sys.platform.startswith("win"):
+            f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.bat"),"w+")
+            linea_uno = "cd {}".format(f'"{os.path.dirname(os.path.normpath(self.obtain_direction_vfsmod(self.dlg_base.uh_file.text())))}"')
+            linea_dos = f'"{os.path.normpath(self.plugin_directory+"/executables/uh")}" {os.path.normpath(os.path.basename(self.dlg_base.uh_file.text()))}'
+            linea_tres = "Pause"
+            f.write("{} \n".format(linea_uno))
+            f.write("{} \n".format(linea_dos))
+            #f.write("{} \n".format(linea_tres))
+            f.close()
+        
+        #In mac
+        elif sys.platform.startswith("darwin"):
+            f = open(os.path.normpath(self.plugin_directory+"\\executables\\execution.sh"),"w+")
+            linea_uno = "cd {}".format(f'#!/bin/bash\n')
+            linea_dos = "cd {}".format(f'"{os.path.dirname(os.path.normpath(self.obtain_direction_vfsmod(self.dlg_base.uh_file.text())))}"')
+            linea_tres = f'"{os.path.normpath(self.plugin_directory+"/executables/uh")}" {os.path.normpath(os.path.basename(self.dlg_base.uh_file.text()))}'
+            f.write("{} \n".format(linea_uno))
+            f.write("{} \n".format(linea_dos))
+            f.write("{} \n".format(linea_tres))
+            f.close()
     
     def obtain_direction_vfsmod(self,direction):
         """Method to obtain the absolute path direction. The difference with the other is that

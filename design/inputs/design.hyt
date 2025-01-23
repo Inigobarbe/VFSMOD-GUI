@@ -1,61 +1,64 @@
 File: C:\qvfsmod\output\sample.hyt                     UH v3.0.8, 09/2023
 
- SCS  3.0-MIN HYETOGRAPH (25 of  124 steps printed)
+ SCS  1.6-MIN HYETOGRAPH (25 of  233 steps printed)
 
   No.   Time(hr)   Rainfall(mm) Rain30(mm) Eff.rain(mm)
-    1      0.24         1.58      0.00      0.00
-    2      0.54         3.62      3.62      0.00
-    3      0.83         5.85      4.27      0.00
-    4      1.12         8.33      4.71      0.00
-    5      1.41        11.11      5.26      0.00
-    6      1.71        14.32      5.99      0.00
-    7      2.00        18.13      7.02      0.00
-    8      2.29        22.91      8.59      0.01
-    9      2.59        29.56     11.43      0.52
-   10      2.88        42.10     19.19      3.20
-   11      3.17       111.03     81.48     40.22
-   12      3.46       121.76     79.66     47.87
-   13      3.76       127.98     16.95     52.45
-   14      4.05       132.56     10.80     55.88
-   15      4.34       136.25      8.27     58.68
-   16      4.63       139.38      6.82     61.08
-   17      4.93       142.10      5.85     63.18
-   18      5.22       144.53      5.16     65.07
-   19      5.51       146.73      4.63     66.78
-   20      5.80       148.74      4.21     68.36
-   25      6.00       150.00      3.98     69.35
+    1      0.23         1.00      0.00      0.00
+    2      0.49         2.20      0.00      0.00
+    3      0.75         3.49      2.60      0.00
+    4      1.01         4.89      2.82      0.00
+    5      1.27         6.44      3.09      0.02
+    6      1.53         8.18      3.44      0.21
+    7      1.78        10.17      3.89      0.62
+    8      2.04        12.51      4.51      1.34
+    9      2.30        15.39      5.43      2.50
+   10      2.56        19.24      6.99      4.42
+   11      2.82        25.60     10.54      8.27
+   12      3.08        69.32     50.53     44.12
+   13      3.34        78.70     53.98     52.70
+   14      3.59        83.23     16.09     56.89
+   15      3.85        86.42      8.31     59.86
+   16      4.11        88.95      6.09     62.22
+   17      4.37        91.06      4.92     64.20
+   18      4.63        92.89      4.17     65.92
+   19      4.89        94.51      3.65     67.44
+   20      5.15        95.97      3.25     68.82
+   21      5.41        97.30      2.95     70.08
+   22      5.66        98.53      2.70     71.24
+   23      5.92        99.67      2.50     72.32
+   25      6.00       100.00      2.45     72.63
 
-    Computed Total Rain =     150.0 mm
-    Actual Total Rain    =     150.0 mm
-    Total Rain Excess    =      69.4 mm
-    raimax30             =      83.0 mm
-    I30                  =     166.0 mm/h
-    Time to ponding      =      2.23 h
-    Rainfall excess time =      3.77 h
+    Computed Total Rain =     100.0 mm
+    Actual Total Rain    =     100.0 mm
+    Total Rain Excess    =      72.6 mm
+    raimax30             =      54.3 mm
+    I30                  =     108.6 mm/h
+    Time to ponding      =      1.14 h
+    Rainfall excess time =      4.86 h
 
 
  RAINFALL ENERGY FACTOR R FOR EROSION CALCULATIONS
 
   a) Foster et al. (1977)
-    E=    8248.949 ft-tonf/acre =    55.268 MJ/ha
-    Volume Runoff=  785.3380 mm; qpeak =  157.7203 mm/h
-    Factors in Rm: Rstorm=  917.5566; Rrunoff= 4243.1252
-    Rm (Foster)= 1943.8721 N/h
+    E=    8447.713 ft-tonf/acre =    56.600 MJ/ha
+    Volume Runoff=  705.5161 mm; qpeak =  259.3777 mm/h
+    Factors in Rm: Rstorm=  614.6207; Rrunoff= 4499.3645
+    Rm (Foster)= 1882.0880 N/h
 
   b) Williams (1975)
     Watershed area=     0.500 ha
-    Volume runoff= 3926.6901 m3; qpeak=    0.2191 m3/s
-    Rw (Williams)=  791.8416 N/h
+    Volume runoff= 3527.5806 m3; qpeak=    0.3602 m3/s
+    Rw (Williams)=  985.2710 N/h
 
   c) GLEAMS/ daily CREAMS
-    Rain  =150.00 mm
-    R_GLM =    114.97 From GLEAMS - Wischmeier
-    R_GLM =  195.6740 N/h,  Converted to Metric
+    Rain  =100.00 mm
+    R_GLM =     62.33 From GLEAMS - Wischmeier
+    R_GLM =  106.0805 N/h,  Converted to Metric
 
   d) Cooley (1980) - Design Storm 
     a1=   17.9000 b1=    0.4134
-    Rain=   150.000 mm   D=     6.000 hr
-    Rst =   389.797 ft-tonf/acre =   663.434 N/ha
+    Rain=   100.000 mm   D=     6.000 hr
+    Rst =   162.895 ft-tonf/acre =   277.246 N/ha
 
 
  ERODIBILITY K AND PARTICLE SIZE SELECTION
@@ -85,7 +88,7 @@ File: C:\qvfsmod\output\sample.hyt                     UH v3.0.8, 09/2023
     21  Coarse sand            90.    5.   0.00827    0.0325   -0.050   200.0    0.009
 
   For the selected soil type: Clay                
-     K=     0.037 kg-h/N-m^2   Eng. K=     0.282  % Org Matter=   1.0
+     K=     0.900 kg-h/N-m^2   Eng. K=     6.855  % Org Matter=   1.0
      dp (d50)=       23.00 um
 
 
@@ -101,14 +104,14 @@ File: C:\qvfsmod\output\sample.hyt                     UH v3.0.8, 09/2023
   Method                Soil Loss A          Sediment   R-Factor  K-Factor  L-Factor S-Factor C-Factor P-Factor
                     kg/m^2    EngUnits t/ac  Conc g/l   N/ha      kg-N/N-m^2
 --------------------------------------------------------------------------------------------------------------
- Rm (Foster)         25.58        114.10         32.57     1943.87    0.037    1.447    0.246    1.000    1.000
- Rw (Williams)       10.42         46.48         13.27      791.84
- Rm (GLEAMS)          2.57         11.49          3.28      195.67
- Rst (Cooley)         8.73         38.94         11.12      663.43
+ Rm (Foster)        602.85       2689.25        854.48     1882.09    0.900    1.447    0.246    1.000    1.000
+ Rw (Williams)      315.59       1407.82        447.32      985.27
+ Rm (GLEAMS)         33.98        151.57         48.16      106.08
+ Rst (Cooley)        88.80        396.15        125.87      277.25
 --------------------------------------------------------------------------------------------------------------
                     kg/m^2    EngUnits t/ac  Conc g/l   N/ha      0.01ton.ac.h/(ac.ft-ton.in)
- PRZM (MUSLE)        10.40         46.40         13.25                0.282
- PRZM (MUSS)         16.08         71.72         20.47                0.282
+ PRZM (MUSLE)       315.10       1405.64        446.63                6.855
+ PRZM (MUSS)        504.44       2250.25        714.99                6.855
 
 ======================================================================
  Method selected for VFSMOD .isd file:  PRZM (MUSS)         
