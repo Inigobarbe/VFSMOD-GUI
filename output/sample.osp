@@ -1,19 +1,19 @@
-File: C:\qvfsmod\output\sample.osp                    VFSMOD v4.6.0 11/2024
+File: output\sample.osp                               VFSMOD v4.6.0 11/2024
  
  Files for this simulation
-   File #=  1 code:ikw=C:\qvfsmod\inputs\sample.ikw                                               
-   File #=  2 code:irn=C:\qvfsmod\inputs\sample.irn                                               
-   File #=  3 code:iro=C:\qvfsmod\inputs\sample.iro                                               
-   File #=  4 code:iso=C:\qvfsmod\inputs\sample.iso                                               
-   File #=  5 code:osm=C:\qvfsmod\output\sample.osm                                               
-   File #=  6 code:ohy=C:\qvfsmod\output\sample.ohy                                               
-   File #=  7 code:igr=C:\qvfsmod\inputs\sample.igr                                               
-   File #=  8 code:og1=C:\qvfsmod\output\sample.og1                                               
-   File #=  9 code:og2=C:\qvfsmod\output\sample.og2                                               
-   File #= 10 code:osp=C:\qvfsmod\output\sample.osp                                               
-   File #= 11 code:isd=C:\qvfsmod\inputs\sample.isd                                               
-   File #= 12 code:iwq=C:\qvfsmod\inputs\sample.iwq                                               
-   File #= 13 code:owq=C:\qvfsmod\output\sample.owq                                               
+   File #=  1 code:ikw=inputs\sample.ikw                                                          
+   File #=  2 code:irn=inputs\sample.irn                                                          
+   File #=  3 code:iro=inputs\sample.iro                                                          
+   File #=  4 code:iso=inputs\sample.iso                                                          
+   File #=  5 code:osm=output\sample.osm                                                          
+   File #=  6 code:ohy=output\sample.ohy                                                          
+   File #=  7 code:igr=inputs\sample.igr                                                          
+   File #=  8 code:og1=output\sample.og1                                                          
+   File #=  9 code:og2=output\sample.og2                                                          
+   File #= 10 code:osp=output\sample.osp                                                          
+   File #= 11 code:isd=inputs\sample.isd                                                          
+   File #= 12 code:iwq=inputs\sample.iwq                                                          
+   File #= 13 code:owq=output\sample.owq                                                          
   
        Summary of Buffer Performance Indicators:
   

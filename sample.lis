@@ -1,6 +1,6 @@
-inp=C:\qvfsmod\inputs\sample.inp  
-iro=C:\qvfsmod\inputs\sample.iro  
-irn=C:\qvfsmod\inputs\sample.irn  
-isd=C:\qvfsmod\inputs\sample.isd  
-out=C:\qvfsmod\output\sample.out  
-hyt=C:\qvfsmod\output\sample.hyt  
+inp=inputs\sample.inp  
+iro=inputs\sample.iro  
+irn=inputs\sample.irn  
+isd=inputs\sample.isd  
+out=output\sample.out  
+hyt=output\sample.hyt  

@@ -411,7 +411,7 @@ QTableCornerButton::section {
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>573</width>
+             <width>588</width>
              <height>944</height>
             </rect>
            </property>
@@ -2977,7 +2977,7 @@ default 5 min</string>
                <item row="1" column="1">
                 <widget class="QLineEdit" name="name_design_csv">
                  <property name="text">
-                  <string>design\output\design_results.csv</string>
+                  <string/>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignCenter</set>
@@ -3035,7 +3035,7 @@ default 5 min</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_13">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>-173</x>
              <y>0</y>
              <width>1324</width>
              <height>743</height>
@@ -3484,7 +3484,7 @@ Solution Parameters</string>
                     </size>
                    </property>
                    <property name="text">
-                    <string>design\\output\\sensitivity_design_morris.csv</string>
+                    <string/>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
@@ -5401,7 +5401,7 @@ analysis</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_8">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>-176</x>
              <y>0</y>
              <width>923</width>
              <height>583</height>
@@ -5575,7 +5575,7 @@ analysis</string>
                     </size>
                    </property>
                    <property name="text">
-                    <string>sensitivity\\output\\sensitivity_morris.csv</string>
+                    <string/>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
@@ -6636,7 +6636,7 @@ Solution Parameters</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_3">
            <property name="geometry">
             <rect>
-             <x>-413</x>
+             <x>0</x>
              <y>0</y>
              <width>1177</width>
              <height>481</height>
@@ -6923,7 +6923,7 @@ Solution Parameters</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_10">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>-176</x>
              <y>0</y>
              <width>923</width>
              <height>619</height>
@@ -7430,7 +7430,7 @@ Solution Parameters</string>
                  <item>
                   <widget class="QLineEdit" name="file_save_uncertainity">
                    <property name="text">
-                    <string>uncertainity\\output\\uncertainity.csv</string>
+                    <string/>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
@@ -7630,8 +7630,8 @@ Solution Parameters</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_16">
            <property name="geometry">
             <rect>
-             <x>-334</x>
-             <y>-128</y>
+             <x>0</x>
+             <y>0</y>
              <width>1081</width>
              <height>624</height>
             </rect>
