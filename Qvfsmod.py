@@ -1344,7 +1344,8 @@ class qvfsmod:
 
             #Calculate probability for geometrical distribution after we calculated the expected length
             p = 1/b
-            
+            #if pequal or same as 1 then there is not distribution
+            if p>=1: p = 0.9
             
             #Do the bootstrapping
             number_resamplings = 2000
@@ -1478,7 +1479,11 @@ class qvfsmod:
         getattr(self,canvas).draw()
         
         #Save figure
-        self.dlg_fiteval_hydrograph.print_graph.clicked.connect(lambda _, b= [self.dlg_fiteval_hydrograph,getattr(self,canvas)]:self.figure_settings(b))
+        if type_calibration == "hydrograph":
+            self.dlg_fiteval_hydrograph.print_graph.clicked.connect(lambda _, b= [self.dlg_fiteval_hydrograph,getattr(self,canvas)]:self.figure_settings(b))
+        elif type_calibration == "sedimentograph": 
+            self.dlg_fiteval_sedimentograph.print_graph.clicked.connect(lambda _, b= [self.dlg_fiteval_sedimentograph,getattr(self,canvas)]:self.figure_settings(b))
+        
             
     
     def update_values_bootstrapping_hydrograph(self,type_calibration):
@@ -1940,6 +1945,7 @@ class qvfsmod:
         
         #Create .lis file
         self.create_lis_file()
+        
     
     def dlg_calibration_sensitivity_hydrograph_show(self,args):  
         """Method to add parameters of the calibration to sensitivity analysis"""
@@ -2974,7 +2980,7 @@ class qvfsmod:
         """Method to update the buffer segment table when buffer length is changed"""
         try:
             #We obtain information of ikw file
-            ikw = self.obtain_direction_vfsmod(self.dlg_base.line_overland.text())
+            ikw = self.obtain_direction_prj(self.dlg_base.line_overland.text())
             if os.path.exists(ikw):
                 with open(ikw, "r") as archivo:
                     lineas = archivo.readlines()
@@ -3017,8 +3023,41 @@ class qvfsmod:
     
     def set_working_directory(self):
         """Method to set the directory of the project"""
+        #Change the path of projects. If the file is in the working directory then relative path. If not absolute path
+        def path_function(lineEdit):
+            try:
+                if not os.path.isabs(lineEdit.text()): #relative path
+                    ruta =  os.path.normpath(os.path.join(self.working_directory, lineEdit.text()))
+                else: #absolute path
+                    ruta =  os.path.normpath(lineEdit.text())
+                new_working_directory = os.path.normpath(self.dlg_base.working_directory_vfsmod.text())
+                if os.path.commonpath([ruta, os.path.normpath(new_working_directory)]) == os.path.normpath(new_working_directory):
+                    text = os.path.relpath(ruta, new_working_directory)
+                else: #absolute path
+                    text = ruta
+                lineEdit.setText(text)
+            except:
+                pass
+            
+        path_function(self.dlg_base.uh_file)
+        
+        
+        path_function(self.dlg_base.line_project_vfsmod)
+        path_function(self.dlg_base.design_uh_file)
+        path_function(self.dlg_base.design_vfs_file)
+        path_function(self.dlg_base.uh_file_sensitivity_design)
+        path_function(self.dlg_base.vfs_file_sensitivity_design)
+        path_function(self.dlg_base.vfs_project)
+        path_function(self.dlg_base.vfs_file)
+        path_function(self.dlg_base.single_values_line)
+        path_function(self.dlg_base.uh_file_sensitivity)
+        path_function(self.dlg_base.vfs_file_sensitivity)
+        path_function(self.dlg_base.uh_file_uncertainity)
+        path_function(self.dlg_base.vfs_file_uncertainity)
+        
+        #Change working directory
         self.working_directory = os.path.normpath(self.dlg_base.working_directory_vfsmod.text())
-    
+        
     def change_rows_water_quality(self):
         """Method to add/delete rows from the water quality dialog"""
         try:
@@ -3791,11 +3830,20 @@ class qvfsmod:
                     lineas = file.readlines() 
                 for i in lineas:
                     if i[:3] in list(dictionary.keys()):
-                        ikw = i.split("=")[-1]
-                        if os.path.isabs(ikw): #relative path
-                            ikw = os.path.relpath(ikw,os.path.dirname(path))
-                        ikw = str(Path(os.path.normpath(ikw.rstrip()).replace("\\","/"))) #take out the line jumps and spaces at the end
+                        
+                        
+                        ikw = i.split("=")[-1].rstrip()
+                        if not os.path.isabs(ikw): #relative path
+                            ruta =  os.path.normpath(os.path.join(os.path.dirname(path), ikw))
+                        else: #absolute path
+                            ruta =  os.path.normpath(ikw)
+                        if os.path.commonpath([ruta, os.path.dirname(path)]) == os.path.dirname(path):
+                            text = os.path.relpath(ruta,os.path.dirname(path))
+                        else: #absolute path
+                            text = ruta
+                        ikw = str(Path(os.path.normpath(text.rstrip()).replace("\\","/"))) #take out the line jumps and spaces at the end
                         dictionary[i[:3]].setText(ikw)
+                        
                     if i[:3] == "iwq":
                         water_quality = True
                         
@@ -3819,17 +3867,24 @@ class qvfsmod:
                     lineas = file.readlines() 
                 for i in lineas:
                     if i[:3] in list(dictionary.keys()):
-                        ikw = i.split("=")[-1]
-                        if os.path.isabs(ikw): #relative path
-                            ikw = os.path.relpath(ikw,os.path.dirname(path))
-                        ikw = str(Path(os.path.normpath(ikw.rstrip()).replace("\\","/"))) #take out the line jumps and spaces at the end
+                        ikw = i.split("=")[-1].rstrip()
+                        if not os.path.isabs(ikw): #relative path
+                            ruta =  os.path.normpath(os.path.join(os.path.dirname(path), ikw))
+                        else: #absolute path
+                            ruta =  os.path.normpath(ikw)
+                        if os.path.commonpath([ruta, os.path.dirname(path)]) == os.path.dirname(path):
+                            text = os.path.relpath(ruta,os.path.dirname(path))
+                        else: #absolute path
+                            text = ruta
+                        ikw = str(Path(os.path.normpath(text.rstrip()).replace("\\","/"))) #take out the line jumps and spaces at the end
                         dictionary[i[:3]].setText(ikw)
             except:
                 pass
     
     def add_values_inp_dialog(self):
         """Method to add values of the inp to the dialog"""
-        path = self.obtain_direction_vfsmod(self.dlg_base.uh_input.text())
+        path = self.obtain_direction_lis(self.dlg_base.uh_input.text())
+        print("second",path)
         #Disconnect storm type
         self.dlg_base.storm_type.currentIndexChanged.disconnect(self.user_defined_storm_type)
         if os.path.exists(path) and os.path.isfile(path):  
@@ -3911,7 +3966,7 @@ class qvfsmod:
     
     def dlg_overland_flow_show(self):
         """Method to add values of the ikw to the dialog"""
-        path = self.obtain_direction_vfsmod(self.dlg_base.line_overland.text())
+        path = self.obtain_direction_prj(self.dlg_base.line_overland.text())
         if os.path.exists(path) and os.path.isfile(path):
             try:
                 with open(path, 'r') as file:
@@ -3963,7 +4018,7 @@ class qvfsmod:
     
     def dlg_infiltration_soil_show(self):
         """Method to add values of the iso to the dialog"""
-        path = self.obtain_direction_vfsmod(self.dlg_base.line_infiltration.text())
+        path = self.obtain_direction_prj(self.dlg_base.line_infiltration.text())
         #Show dialog
         self.dlg_infiltration_soil.show()
         self.dlg_infiltration_soil.raise_()
@@ -4030,7 +4085,7 @@ class qvfsmod:
     
     def dlg_buffer_properties_show(self):
         """Method to add values of the igr to the dialog"""
-        path = self.obtain_direction_vfsmod(self.dlg_base.line_buffer.text())
+        path = self.obtain_direction_prj(self.dlg_base.line_buffer.text())
         if os.path.exists(path) and os.path.isfile(path):
             try:
                 with open(path, 'r') as file:
@@ -4056,7 +4111,7 @@ class qvfsmod:
     
     def dlg_incoming_sediment_show(self):
         """Method to add values of the isd to the dialog"""
-        path = self.obtain_direction_vfsmod(self.dlg_base.line_incoming.text())
+        path = self.obtain_direction_prj(self.dlg_base.line_incoming.text())
         if os.path.exists(path) and os.path.isfile(path):
             try:
                 with open(path, 'r') as file:
@@ -4083,7 +4138,7 @@ class qvfsmod:
     
     def dlg_water_quality_show(self,show=True):
         """Method to add values of thw iwq file to dialog"""
-        path = self.obtain_direction_vfsmod(self.dlg_base.line_water.text())
+        path = self.obtain_direction_prj(self.dlg_base.line_water.text())
         if os.path.exists(path) and os.path.isfile(path):
             try: #if igr line does not exist among others
                 with open(path, 'r') as file:
@@ -4219,7 +4274,7 @@ class qvfsmod:
     def show_og1_results(self):
         """Method to show og1 results"""
         #Add text
-        path = self.obtain_direction_vfsmod(self.dlg_base.line_sediment.text())
+        path = self.obtain_direction_prj(self.dlg_base.line_sediment.text())
         with open(path, 'r') as file:
             lineas = file.readlines()
         contenido = ""
@@ -4239,7 +4294,7 @@ class qvfsmod:
     def show_og2_results(self):
         """Method to show og2 results"""
         #Add text
-        path = self.obtain_direction_vfsmod(self.dlg_base.line_flow.text())
+        path = self.obtain_direction_prj(self.dlg_base.line_flow.text())
         with open(path, 'r') as file:
             lineas = file.readlines()
         contenido = ""
@@ -4257,7 +4312,7 @@ class qvfsmod:
     def show_ohy_results(self):
         """Method to show ohy results"""
         #Add text
-        path = self.obtain_direction_vfsmod(self.dlg_base.line_hydrograph_2.text())
+        path = self.obtain_direction_prj(self.dlg_base.line_hydrograph_2.text())
         with open(path, 'r') as file:
             lineas = file.readlines()
         contenido = ""
@@ -4276,7 +4331,7 @@ class qvfsmod:
     def show_osm_results(self):
         """Method to show osm results"""
         #Add text
-        path = self.obtain_direction_vfsmod(self.dlg_base.line_waterland.text())
+        path = self.obtain_direction_prj(self.dlg_base.line_waterland.text())
         with open(path, 'r') as file:
             lineas = file.readlines()
         contenido = ""
@@ -4295,7 +4350,7 @@ class qvfsmod:
     def show_owq_results(self):
         """Method to show owq results"""
         #Add text
-        path = self.obtain_direction_vfsmod(self.dlg_base.line_quality.text())
+        path = self.obtain_direction_prj(self.dlg_base.line_quality.text())
         with open(path, 'r') as file:
             lineas = file.readlines()
         contenido = ""
@@ -4334,7 +4389,7 @@ class qvfsmod:
             
            
         #Obtain results
-        ruta = self.obtain_direction_vfsmod(self.dlg_base.line_quality.text())
+        ruta = self.obtain_direction_prj(self.dlg_base.line_quality.text())
         if os.path.exists(ruta):
             #Obtain values
             with open(ruta, "r") as archivo:
@@ -4381,7 +4436,7 @@ class qvfsmod:
         #Obtain data
         number_pesticide = int(pesticide.split()[-1])
         
-        ruta = self.obtain_direction_vfsmod(self.dlg_base.line_quality.text())
+        ruta = self.obtain_direction_prj(self.dlg_base.line_quality.text())
         #Obtain values
         with open(ruta, "r") as archivo:
             lineas_owq = archivo.readlines()
@@ -4495,7 +4550,7 @@ class qvfsmod:
             
            
         #Obtain results
-        ruta = self.obtain_direction_vfsmod(self.dlg_base.line_quality.text())
+        ruta = self.obtain_direction_prj(self.dlg_base.line_quality.text())
         if os.path.exists(ruta):
             #Obtain values
             with open(ruta, "r") as archivo:
@@ -4540,7 +4595,7 @@ class qvfsmod:
         #Obtain data
         number_pesticide = int(pesticide.split()[-1])
         
-        ruta = self.obtain_direction_vfsmod(self.dlg_base.line_quality.text())
+        ruta = self.obtain_direction_prj(self.dlg_base.line_quality.text())
         #Obtain values
         with open(ruta, "r") as archivo:
             lineas_owq = archivo.readlines()
@@ -4788,7 +4843,7 @@ class qvfsmod:
         
         
         #Obtain number of pesticides
-        ruta = self.obtain_direction_vfsmod(self.dlg_base.line_quality.text())
+        ruta = self.obtain_direction_prj(self.dlg_base.line_quality.text())
         if os.path.exists(ruta):
             #Obtain values
             with open(ruta, "r") as archivo:
@@ -4948,7 +5003,7 @@ class qvfsmod:
     def show_ohy_graphs(self):
         """Method to show ohy graph results"""
         #Obtain results
-        ruta = self.obtain_direction_vfsmod(self.dlg_base.line_hydrograph_2.text())
+        ruta = self.obtain_direction_prj(self.dlg_base.line_hydrograph_2.text())
         with open(ruta, "r") as archivo:
             lineas = archivo.readlines()
         
@@ -5240,7 +5295,7 @@ class qvfsmod:
     def show_runoff_results(self):
         """Method to show the dialog with runoff graph"""
         #Obtain results
-        ruta = self.obtain_direction_vfsmod(self.dlg_base.line_overall.text())
+        ruta = self.obtain_direction_prj(self.dlg_base.line_overall.text())
         with open(ruta, "r") as archivo:
             lineas = archivo.readlines()
         #Function to obtain specific results form .osp file
@@ -5337,7 +5392,7 @@ class qvfsmod:
     def show_sediment_results(self):
         """Method to show the dialog with runoff graph"""
         #Obtain results
-        ruta = self.obtain_direction_vfsmod(self.dlg_base.line_overall.text())
+        ruta = self.obtain_direction_prj(self.dlg_base.line_overall.text())
         with open(ruta, "r") as archivo:
             lineas = archivo.readlines()
         #Function to obtain specific results form .osp file
@@ -5431,7 +5486,7 @@ class qvfsmod:
     def show_osp_results(self):
         """Method to show the osp results after the VFS execution"""
         #Obtain data
-        filepath = self.obtain_direction_vfsmod(self.dlg_base.line_overall.text())
+        filepath = self.obtain_direction_prj(self.dlg_base.line_overall.text())
         with open(filepath, 'r') as file:
             lineas = file.readlines()
         
@@ -5810,7 +5865,7 @@ class qvfsmod:
     def show_sedimentograph_results(self):
         """Method to show sedimentograph results after UH execution"""
         #Add text
-        path = self.obtain_direction_vfsmod(self.dlg_base.line_sedimentograph.text())
+        path = self.obtain_direction_lis(self.dlg_base.line_sedimentograph.text())
         with open(path, 'r') as file:
             lineas = file.readlines()
         contenido = ""
@@ -5825,10 +5880,42 @@ class qvfsmod:
         self.dlg_sedimentograph_output.show()
         self.dlg_sedimentograph_output.raise_()
     
+    def obtain_direction_lis(self,direction):
+        """Method to obtain the absolute path direction respect to lis file"""
+        #Obtain directory of .lis file
+        path = self.dlg_base.uh_file.text()
+        working_directory = os.path.normpath(self.dlg_base.working_directory_vfsmod.text())
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(working_directory, path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        carpeta = os.path.dirname(ruta)
+        
+        if not os.path.isabs(direction): #relative path
+            return os.path.normpath(os.path.join(carpeta, direction))
+        else: #absolute path
+            return os.path.normpath(direction)
+        
+    def obtain_direction_prj(self,direction):
+        """Method to obtain the absolute path direction respect to prj file"""
+        #Obtain directory of .prj file
+        path = self.dlg_base.line_project_vfsmod.text()
+        working_directory = os.path.normpath(self.dlg_base.working_directory_vfsmod.text())
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(working_directory, path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        carpeta = os.path.dirname(ruta)
+        
+        if not os.path.isabs(direction): #relative path
+            return os.path.normpath(os.path.join(carpeta, direction))
+        else: #absolute path
+            return os.path.normpath(direction)
+    
     def dlg_iro_results_show(self):
         """Method to show iro results after UH execution"""
         #Add text
-        path = self.obtain_direction_vfsmod(self.dlg_base.line_hydrograph.text())
+        path = self.obtain_direction_lis(self.dlg_base.line_hydrograph.text())
         with open(path, 'r') as file:
             lineas = file.readlines()
         contenido = ""
@@ -5846,7 +5933,7 @@ class qvfsmod:
     def dlg_irn_results_show(self):
         """Method to show irn results after UH execution"""
         #Add text
-        path = self.obtain_direction_vfsmod(self.dlg_base.line_hyetograph.text())
+        path = self.obtain_direction_lis(self.dlg_base.line_hyetograph.text())
         with open(path, 'r') as file:
             lineas = file.readlines()
         contenido = ""
@@ -5864,7 +5951,7 @@ class qvfsmod:
     def show_output_1_results(self):
         """Method to show sedimentograph results after UH execution"""
         #Add text
-        path = self.obtain_direction_vfsmod(self.dlg_base.line_output_1.text())
+        path = self.obtain_direction_lis(self.dlg_base.line_output_1.text())
         with open(path, 'r') as file:
             lineas = file.readlines()
         contenido = ""
@@ -5882,7 +5969,7 @@ class qvfsmod:
     def show_output_2_results(self):
         """Method to show sedimentograph results after UH execution"""
         #Add text
-        path = self.obtain_direction_vfsmod(self.dlg_base.line_output_2.text())
+        path = self.obtain_direction_lis(self.dlg_base.line_output_2.text())
         with open(path, 'r') as file:
             lineas = file.readlines()
         contenido = ""
@@ -8146,10 +8233,33 @@ class qvfsmod:
                     #Predict values with error
                     inputs_nan = inputs[~mask]
                     pred_output = model_output.predict(inputs_nan)
+                    #If negative, then 0
+                    pred_output = [max(0, value) for value in pred_output]
                     #Put predicted values in column
                     new_df.loc[~mask, output] = pred_output
                 except ValueError: #if error in prediction then put average
                     new_df.loc[~mask, output] = np.mean(outputs_complete[output])
+        
+        #If there are nans values and but not errors also they have to be changed
+        mask = new_df.notna().all(axis=1)
+        inputs_complete = inputs[mask]
+        outputs_complete = outputs[mask]
+        for output in output_columns:
+            try:
+                #Create model of linear regression
+                model_output = LinearRegression()
+                #Train model with data that is not with error
+                model_output.fit(inputs_complete, outputs_complete[output])
+                #Predict values with error
+                inputs_nan = inputs[~mask]
+                pred_output = model_output.predict(inputs_nan)
+                #If negative, then 0
+                pred_output = [max(0, value) for value in pred_output]
+                #Put predicted values in column
+                new_df.loc[~mask, output] = pred_output
+            except ValueError: #if error in prediction then put average
+                new_df.loc[~mask, output] = np.mean(outputs_complete[output])
+        
         
         return new_df
     
@@ -8210,6 +8320,8 @@ class qvfsmod:
                     #Predict values with error
                     inputs_nan = inputs[~mask]
                     pred_output = model_output.predict(inputs_nan)
+                    #If negative, then 0
+                    pred_output = [max(0, value) for value in pred_output]
                     #Put predicted values in column
                     new_df.loc[~mask, output] = pred_output
                 except ValueError: #if error in prediction then put average
@@ -8645,7 +8757,7 @@ class qvfsmod:
                 shutil.copyfile(str(Path(carpeta_bat+"/execution.sh")), str(Path(carpeta_bat+"/"+f"execution_uh_{core}.sh")))
                 with open(str(Path(self.plugin_directory+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
-                    linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/design/"))}"')
+                    linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/sensitivity/"))}"')
                     linea_tres = f'"{str(Path(self.plugin_directory+"/executables/uh"))}" sensitivity_{core}.lis'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
@@ -8655,7 +8767,7 @@ class qvfsmod:
                 shutil.copyfile(str(Path(carpeta_bat+"/execution.sh")), str(Path(carpeta_bat+"/"+f"execution_vfs_{core}.sh")))
                 with open(str(Path(self.plugin_directory+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
-                    linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/design/"))}"')
+                    linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/sensitivity/"))}"')
                     linea_tres = f'"{str(Path(self.plugin_directory+"/executables/vfsm"))}" sensitivity_{core}.prj'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
@@ -8946,7 +9058,7 @@ class qvfsmod:
                 shutil.copyfile(str(Path(carpeta_bat+"/execution.sh")), str(Path(carpeta_bat+"/"+f"execution_uh_{core}.sh")))
                 with open(str(Path(self.plugin_directory+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
-                    linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/design/"))}"')
+                    linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/"))}"')
                     linea_tres = f'"{str(Path(self.plugin_directory+"/executables/uh"))}" inverse_{core}.lis'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
@@ -8956,7 +9068,7 @@ class qvfsmod:
                 shutil.copyfile(str(Path(carpeta_bat+"/execution.sh")), str(Path(carpeta_bat+"/"+f"execution_vfs_{core}.sh")))
                 with open(str(Path(self.plugin_directory+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
-                    linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/design/"))}"')
+                    linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/"))}"')
                     linea_tres = f'"{str(Path(self.plugin_directory+"/executables/vfsm"))}" inverse_{core}.prj'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
@@ -9158,7 +9270,7 @@ class qvfsmod:
                 shutil.copyfile(str(Path(carpeta_bat+"/execution.sh")), str(Path(carpeta_bat+"/"+f"execution_uh_{core}.sh")))
                 with open(str(Path(self.plugin_directory+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
-                    linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/design/"))}"')
+                    linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/uncertainty/"))}"')
                     linea_tres = f'"{str(Path(self.plugin_directory+"/executables/uh"))}" uncertainty_{core}.lis'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
@@ -9168,7 +9280,7 @@ class qvfsmod:
                 shutil.copyfile(str(Path(carpeta_bat+"/execution.sh")), str(Path(carpeta_bat+"/"+f"execution_vfs_{core}.sh")))
                 with open(str(Path(self.plugin_directory+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
-                    linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/design/"))}"')
+                    linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/uncertainty/"))}"')
                     linea_tres = f'"{str(Path(self.plugin_directory+"/executables/vfsm"))}" uncertainty_{core}.prj'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
@@ -9177,121 +9289,40 @@ class qvfsmod:
             
     
     def create_folder_sensitivity_analysis(self):
-        """Method to create the folder needed to sensitivity analysis"""
-        def create_folder(name_folder): #function to create a folder
-            parent_dir = self.dlg_base.working_directory_vfsmod.text()
-            path_file = os.path.join(parent_dir, name_folder)
-            mode = 0o666
-            try:
-                os.mkdir(path_file, mode)
-            except:
-                pass
-            
+        """Method to create the folder needed to sensitivity analysis"""            
         if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+"/sensitivity"))):
-            create_folder("sensitivity")
+            os.mkdir(os.path.join(self.working_directory, "sensitivity"))
         if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+"/sensitivity/inputs"))):
-            create_folder(str(Path("sensitivity/inputs")))
+            os.mkdir(os.path.join(self.working_directory, "sensitivity","inputs"))
         if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+"/sensitivity/output"))):
-            create_folder(str(Path("sensitivity/output")))
+            os.mkdir(os.path.join(self.working_directory, "sensitivity","output"))
         
     def create_folder_sensitivity_analysis_design(self):
         """Method to create the folder needed to sensitivity analysis for design"""
-        def create_folder(name_folder): #function to create a folder
-            parent_dir = self.dlg_base.working_directory_vfsmod.text()
-            path_file = os.path.join(parent_dir, name_folder)
-            mode = 0o666
-            try:
-                os.mkdir(path_file, mode)
-            except:
-                pass
-            
         if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+"/design"))):
-            create_folder("design")
+            os.mkdir(os.path.join(self.working_directory, "design"))
         if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+"/design/inputs"))):
-            create_folder(str(Path("design/inputs")))
+            os.mkdir(os.path.join(self.working_directory, "design","inputs"))
         if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+"/design/output"))):
-            create_folder(str(Path("design/output")))
+            os.mkdir(os.path.join(self.working_directory, "design","output"))
     
     def create_folder_sensitivity_analysis_calibration(self):
         """Method to create the folder needed to sensitivity analysis for calibration"""
-        def create_folder(name_folder): #function to create a folder
-            parent_dir = self.dlg_base.working_directory_vfsmod.text()
-            path_file = os.path.join(parent_dir, name_folder)
-            mode = 0o666
-            try:
-                os.mkdir(path_file, mode)
-            except:
-                pass
-            
         if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse"))):
-            create_folder("inverse")
+            os.mkdir(os.path.join(self.working_directory, "inverse"))
         if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/inputs"))):
-            create_folder(str(Path("inverse/inputs")))
+            os.mkdir(os.path.join(self.working_directory, "inverse","inputs"))
         if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/output"))):
-            create_folder(str(Path("inverse/output")))
+            os.mkdir(os.path.join(self.working_directory, "inverse","output"))
     
     def create_folder_uncertainity_analysis(self):
         """Method to create the folder needed to uncertainty analysis"""
-        def create_folder(name_folder): #function to create a folder
-            parent_dir = self.dlg_base.working_directory_vfsmod.text()
-            path_file = os.path.join(parent_dir, name_folder)
-            mode = 0o666
-            try:
-                os.mkdir(path_file, mode)
-            except:
-                pass
-            
         if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+r"/uncertainty"))):
-            create_folder("uncertainty")
+            os.mkdir(os.path.join(self.working_directory, "uncertainty"))
         if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+r"/uncertainty/inputs"))):
-            create_folder(str(Path("uncertainty/inputs")))
+            os.mkdir(os.path.join(self.working_directory, "uncertainty","inputs"))
         if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+r"/uncertainty/output"))):
-            create_folder(str(Path("uncertainty/output")))
-    
-    
-    def update_bat_uh_sensitivity(self):
-        """Method to update the bat for execution of UH for sensitivity analysis"""
-        f = open(str(Path(self.plugin_directory+"/executables/execution.bat")),"w+")
-        linea_uno = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/sensitivity/"))}"')
-        linea_dos = f'"{str(Path(self.plugin_directory+"/executables/uh"))}" sensitivity.lis'
-        linea_tres = "Pause"
-        f.write("{} \n".format(linea_uno))
-        f.write("{} \n".format(linea_dos))
-        #f.write("{} \n".format(linea_tres))
-        f.close()
-    
-    def update_bat_uh_uncertainity(self):
-        """Method to update the bat for execution of UH for uncertainty analysis"""
-        f = open(str(Path(self.plugin_directory+"/executables/execution.bat")),"w+")
-        linea_uno = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/uncertainty/"))}"')
-        linea_dos = f'"{str(Path(self.plugin_directory+"/executables/uh"))}" uncertainty.lis'
-        linea_tres = "Pause"
-        f.write("{} \n".format(linea_uno))
-        f.write("{} \n".format(linea_dos))
-        #f.write("{} \n".format(linea_tres))
-        f.close()
-    
-    def update_bat_vfs_sensitivity(self):
-        """Method to update the bat for execution of VFS for sensitivity analysis"""
-        f = open(str(Path(self.plugin_directory+"/executables/execution.bat")),"w+")
-        linea_uno = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/sensitivity/"))}"')
-        linea_dos = f'"{str(Path(self.plugin_directory+"/executables/vfsm"))}" sensitivity.prj'
-        linea_tres = "Pause"
-        f.write("{} \n".format(linea_uno))
-        f.write("{} \n".format(linea_dos))
-        #f.write("{} \n".format(linea_tres))
-        f.close()
-        
-    def update_bat_vfs_uncertainity(self):
-        """Method to update the bat for execution of VFS for uncertainty analysis"""
-        f = open(str(Path(self.plugin_directory+"/executables/execution.bat")),"w+")
-        linea_uno = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/uncertainty/"))}"')
-        linea_dos = f'"{str(Path(self.plugin_directory+"/executables/vfsm"))}" uncertainty.prj'
-        linea_tres = "Pause"
-        f.write("{} \n".format(linea_uno))
-        f.write("{} \n".format(linea_dos))
-        #f.write("{} \n".format(linea_tres))
-        f.close()
+            os.mkdir(os.path.join(self.working_directory, "uncertainty","output"))
     
     
     def create_dictionary_uncertainity_analysis(self):
@@ -11222,10 +11253,29 @@ class qvfsmod:
         #Update bat for calibration
         self.update_bat_calibration()
         #Execute
-        resultado = subprocess.run([str(Path(self.plugin_directory+"/executables/execution.bat"))],
-            capture_output=True, 
-            text=True, 
-            shell=True)
+        #In windows
+        if sys.platform.startswith("win"):
+            resultado = subprocess.run([str(Path(self.plugin_directory+"/executables/execution.bat"))],
+                capture_output=True, 
+                text=True, 
+                shell=True)
+        #In mac
+        elif sys.platform.startswith("darwin"):
+            script_path = Path(self.plugin_directory) / "executables" / "execution.sh"
+            uh_path = Path(self.plugin_directory) / "executables" / "vfsm"
+
+            # Unquarantine the 'uh' file (to allow it to be executed)
+            try:
+                subprocess.run(["xattr", "-d", "com.apple.quarantine", str(uh_path)], check=True)
+            except subprocess.CalledProcessError:
+                pass
+
+            # Give execution permissions to the script and the executable
+            subprocess.run(["chmod", "755", str(script_path)], check=True)
+            subprocess.run(["chmod", "755", str(uh_path)], check=True)
+            # Execute sh file
+            resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
+        
         #Save warning
         self.calibration_warning = resultado.stderr
         #Put warning
@@ -11356,10 +11406,29 @@ class qvfsmod:
         #Update bat for calibration
         self.update_bat_calibration()
         #Execute
-        resultado = subprocess.run([str(Path(self.plugin_directory+"/executables/execution.bat"))],
-            capture_output=True, 
-            text=True, 
-            shell=True)
+        #In windows
+        if sys.platform.startswith("win"):
+            resultado = subprocess.run([str(Path(self.plugin_directory+"/executables/execution.bat"))],
+                capture_output=True, 
+                text=True, 
+                shell=True)
+        #In mac
+        elif sys.platform.startswith("darwin"):
+            script_path = Path(self.plugin_directory) / "executables" / "execution.sh"
+            uh_path = Path(self.plugin_directory) / "executables" / "vfsm"
+
+            # Unquarantine the 'uh' file (to allow it to be executed)
+            try:
+                subprocess.run(["xattr", "-d", "com.apple.quarantine", str(uh_path)], check=True)
+            except subprocess.CalledProcessError:
+                pass
+
+            # Give execution permissions to the script and the executable
+            subprocess.run(["chmod", "755", str(script_path)], check=True)
+            subprocess.run(["chmod", "755", str(uh_path)], check=True)
+            # Execute sh file
+            resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
+        
         #Save warning
         self.calibration_warning = resultado.stderr
         #Put warning
@@ -11601,10 +11670,29 @@ class qvfsmod:
         #Update bat for calibration
         self.update_bat_calibration()
         #Execute
-        resultado = subprocess.run([str(Path(self.plugin_directory+"/executables/execution.bat"))],
-            capture_output=True, 
-            text=True, 
-            shell=True)
+        #In windows
+        if sys.platform.startswith("win"):
+            resultado = subprocess.run([str(Path(self.plugin_directory+"/executables/execution.bat"))],
+                capture_output=True, 
+                text=True, 
+                shell=True)
+        #In mac
+        elif sys.platform.startswith("darwin"):
+            script_path = Path(self.plugin_directory) / "executables" / "execution.sh"
+            uh_path = Path(self.plugin_directory) / "executables" / "vfsm"
+
+            # Unquarantine the 'uh' file (to allow it to be executed)
+            try:
+                subprocess.run(["xattr", "-d", "com.apple.quarantine", str(uh_path)], check=True)
+            except subprocess.CalledProcessError:
+                pass
+
+            # Give execution permissions to the script and the executable
+            subprocess.run(["chmod", "755", str(script_path)], check=True)
+            subprocess.run(["chmod", "755", str(uh_path)], check=True)
+            # Execute sh file
+            resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
+            
         #Save warning
         self.calibration_warning = resultado.stderr
         #Put warning
@@ -12511,14 +12599,26 @@ class qvfsmod:
             
     def update_bat_calibration(self):
         """Method to update the bat of the hydrograph"""
-        f = open(str(Path(self.plugin_directory+"/executables/execution.bat")),"w+")
-        linea_uno = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/"))}"')
-        linea_dos = f'"{str(Path(self.plugin_directory+"/executables/vfsm"))}" inverse.prj'
-        linea_tres = "Pause"
-        f.write("{} \n".format(linea_uno))
-        f.write("{} \n".format(linea_dos))
-        #f.write("{} \n".format(linea_tres))
-        f.close()
+        #In windows
+        if sys.platform.startswith("win"):
+            f = open(str(Path(self.plugin_directory+"/executables/execution.bat")),"w+")
+            linea_uno = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/"))}"')
+            linea_dos = f'"{str(Path(self.plugin_directory+"/executables/vfsm"))}" inverse.prj'
+            linea_tres = "Pause"
+            f.write("{} \n".format(linea_uno))
+            f.write("{} \n".format(linea_dos))
+            #f.write("{} \n".format(linea_tres))
+            f.close()
+        #In mac
+        elif sys.platform.startswith("darwin"):
+            with open(str(Path(self.plugin_directory+"/executables/execution.sh")), "w", newline="\n") as f:
+                linea_uno = "#!/bin/bash\n"
+                linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/"))}"')
+                linea_tres = f'"{str(Path(self.plugin_directory+"/executables/vfsm"))}" inverse.prj'
+                f.write("{} \n".format(linea_uno))
+                f.write("{} \n".format(linea_dos))
+                f.write("{} \n".format(linea_tres))
+                f.close()
     
     def move_files_calibration_hydrograph(self):
         """Method to move files to the corresponding folders for calibration"""
@@ -13321,21 +13421,12 @@ class qvfsmod:
     
     def create_folder_calibration(self):
         """Method to create the folder needed to calibration"""
-        def create_folder(name_folder): #function to create a folder
-            parent_dir = self.dlg_base.working_directory_vfsmod.text()
-            path_file = os.path.join(parent_dir, name_folder)
-            mode = 0o666
-            try:
-                os.mkdir(path_file, mode)
-            except:
-                pass
-            
         if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+r"/inverse"))):
-            create_folder("inverse")
+            os.mkdir(os.path.join(self.working_directory, "inverse"))
         if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+r"/inverse/inputs"))):
-            create_folder(str(Path(r"inverse/inputs")))
+            os.mkdir(os.path.join(self.working_directory, "inverse","inputs"))
         if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+r"/inverse/output"))):
-            create_folder(str(Path(r"inverse/output")))
+            os.mkdir(os.path.join(self.working_directory, "inverse","output"))
     
     def draw_calibration_hydrology(self):
         """Method to draw the dialog in calibration of hydrology"""
@@ -13481,6 +13572,10 @@ class qvfsmod:
         
     def run_vfsmod(self):
         """Method to run VFSMOD"""
+        #If working directory doesnt exist then error
+        if not os.path.exists(self.working_directory):
+            self.warning_message(f"{self.working_directory} folder does not exist. Please select a correct working directory.")
+            return
         #Variable to end execution
         self.end_execution = False
         
@@ -13538,6 +13633,9 @@ class qvfsmod:
                 self.warning_message(str(resultado.stdout), courier = True)
         else:
             self.warning_message("VFS executed succesfully!")
+        
+        #If prj project is not in working directory then move it
+        self.prj_project_save_working_directory()
         
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
@@ -13707,21 +13805,12 @@ class qvfsmod:
     
     def create_folder_for_design(self):
         """Method to create folders for the design if they don't exist"""
-        def create_folder(name_folder): #function to create a folder
-            parent_dir = self.dlg_base.working_directory_vfsmod.text()
-            path_file = os.path.join(parent_dir, name_folder)
-            mode = 0o666
-            try:
-                os.mkdir(path_file, mode)
-            except:
-                pass
-            
         if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+r"/design"))):
-            create_folder("design")
+            os.mkdir(os.path.join(self.working_directory, "design"))
         if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+r"/design/inputs"))):
-            create_folder(str(Path(r"design/inputs")))
+            os.mkdir(os.path.join(self.working_directory, "design","inputs"))
         if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+r"/design/output"))):
-            create_folder(str(Path(r"design/output")))
+            os.mkdir(os.path.join(self.working_directory, "design","output"))
         
     def create_combinations_design(self):
         """Method to create the combinations for the design"""
@@ -13906,7 +13995,6 @@ class qvfsmod:
     def add_storm_duration_to_design(self):
         """Method to add the storm duration to the design"""
         ruta = self.obtain_direction_vfsmod(self.dlg_base.design_uh_file.text())
-        print(ruta)
         if os.path.exists(ruta) and os.path.isfile(ruta):
             #First we open .lis
             with open(ruta, "r") as archivo:
@@ -13996,17 +14084,7 @@ class qvfsmod:
         add_text(self.dlg_base.vfs_file_sensitivity_design,"vfs")
     
     def folder_creation_vfsmod(self):
-        """Method to create folders if they not exist for the output"""
-        #Function to create a folder
-        def create_folder(name_folder): #function to create a folder
-            parent_dir = self.dlg_base.working_directory_vfsmod.text()
-            path_file = os.path.join(parent_dir, name_folder)
-            mode = 0o666
-            try:
-                os.mkdir(path_file, mode)
-            except:
-                pass
-        
+        """Method to create folders if they not exist for the output"""        
         #Creation of folders
         lineEdits = [self.dlg_base.line_project_vfsmod,self.dlg_base.line_overland,self.dlg_base.line_infiltration,
             self.dlg_base.line_buffer,self.dlg_base.line_incoming,self.dlg_base.line_storm,self.dlg_base.line_source,
@@ -14015,8 +14093,8 @@ class qvfsmod:
                 
         for i in lineEdits:
             directory = os.path.dirname(i.text())
-            if not os.path.exists(directory):
-                create_folder(directory)
+            if not os.path.exists(os.path.join(self.working_directory, directory)):
+                os.mkdir(os.path.join(self.working_directory, directory))
         
     
     
@@ -14030,8 +14108,8 @@ class qvfsmod:
             lines.append(self.dlg_base.line_water)
             
         for i in lines:
-            if not os.path.exists(self.obtain_direction_vfsmod(i.text())):
-                self.warning_message(f"Check input data\n{self.obtain_direction_vfsmod(i.text())} does not exist and is required to run VFSMOD.")
+            if not os.path.exists(self.obtain_direction_prj(i.text())):
+                self.warning_message(f"Check input data\n{self.obtain_direction_prj(i.text())} does not exist and is required to run VFSMOD.")
                 self.end_execution = True
                 return 
     
@@ -14100,7 +14178,7 @@ class qvfsmod:
         #Disconnect update of graph to avoid all the updates
         self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.disconnect(self.update_vfsmod_hyetograph_graph)
         #Obtain information
-        direccion = self.obtain_direction_vfsmod(self.dlg_base.line_storm.text())
+        direccion = self.obtain_direction_prj(self.dlg_base.line_storm.text())
         #Eliminate first all the rows and lineEdits so that we dont get the information of another file
         self.dlg_vfsmod_hyetograph.tableWidget.setRowCount(0)
         self.dlg_vfsmod_hyetograph.maximum_rainfall.setText("")
@@ -14144,7 +14222,7 @@ class qvfsmod:
         #Avoid the updating of graph that many times
         self.dlg_vfsmod_hydrograph.tableWidget.itemChanged.disconnect(self.update_vfsmod_hydrograph_graph)
         #Obtain information
-        direccion = self.obtain_direction_vfsmod(self.dlg_base.line_source.text())
+        direccion = self.obtain_direction_prj(self.dlg_base.line_source.text())
         #Eliminate first all the rows and lineEdits so that we dont get the information of another file
         self.dlg_vfsmod_hydrograph.tableWidget.setRowCount(0)
         self.dlg_vfsmod_hydrograph.width.setText("")
@@ -14506,7 +14584,14 @@ class qvfsmod:
             
     def select_inp(self):
         """Method to select the .inp file among the local files"""
-        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        #Obtain directory of .lis file
+        path = self.dlg_base.uh_file.text()
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        working_directory = os.path.dirname(ruta)
+        
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select UH Input File", str(Path(working_directory + "/inputs")), "INP files (*.inp)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -14519,7 +14604,14 @@ class qvfsmod:
 
     def select_iro(self):
         """Method to select the .iro file among the local files"""
-        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        #Obtain directory of .lis file
+        path = self.dlg_base.uh_file.text()
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        working_directory = os.path.dirname(ruta)
+                            
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Hydrograph File", str(Path(working_directory + "/inputs")), "IRO files (*.iro)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -14533,7 +14625,14 @@ class qvfsmod:
     
     def select_irn(self):
         """Method to select the .irn file among the local files"""
-        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        #Obtain directory of .lis file
+        path = self.dlg_base.uh_file.text()
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        working_directory = os.path.dirname(ruta)
+        
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Hyetograph File", str(Path(working_directory + "/inputs")), "IRN files (*.irn)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -14547,7 +14646,14 @@ class qvfsmod:
                 
     def select_isd(self):
         """Method to select the .isd file among the local files"""
-        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        #Obtain directory of .lis file
+        path = self.dlg_base.uh_file.text()
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        working_directory = os.path.dirname(ruta)
+        
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Incoming Sedimentograph File", str(Path(working_directory + "/inputs")), "ISD files (*.isd)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -14561,7 +14667,14 @@ class qvfsmod:
                 
     def select_out(self):
         """Method to select the .out file among the local files"""
-        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        #Obtain directory of .lis file
+        path = self.dlg_base.uh_file.text()
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        working_directory = os.path.dirname(ruta)
+        
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Output Information Part 1 File", str(Path(working_directory + "/inputs")), "OUT files (*.out)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -14575,7 +14688,14 @@ class qvfsmod:
                 
     def select_hyt(self):
         """Method to select the .hyt file among the local files"""
-        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        #Obtain directory of .lis file
+        path = self.dlg_base.uh_file.text()
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        working_directory = os.path.dirname(ruta)
+        
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Output Information Part 2 File", str(Path(working_directory + "/inputs")), "HYT files (*.hyt)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -14604,7 +14724,14 @@ class qvfsmod:
             
     def select_ikw(self):
         """Method to select the .ikw file among the local files"""
-        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        #Obtain directory of .prj file
+        path = self.dlg_base.line_project_vfsmod.text()
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        working_directory = os.path.dirname(ruta)
+        
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Overland Flow Inputs File", str(Path(working_directory + "/inputs")), "IKW files (*.ikw)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -14618,7 +14745,14 @@ class qvfsmod:
     
     def select_iso(self):
         """Method to select the .iso file among the local files"""
-        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        #Obtain directory of .prj file
+        path = self.dlg_base.line_project_vfsmod.text()
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        working_directory = os.path.dirname(ruta)
+        
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Infiltration - Soil Properties File", str(Path(working_directory + "/inputs")), "ISO files (*.iso)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -14632,7 +14766,14 @@ class qvfsmod:
     
     def select_igr(self):
         """Method to select the .igr file among the local files"""
-        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        #Obtain directory of .prj file
+        path = self.dlg_base.line_project_vfsmod.text()
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        working_directory = os.path.dirname(ruta)
+        
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Buffer Vegetation Properties File", str(Path(working_directory + "/inputs")), "IGR files (*.igr)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -14646,7 +14787,14 @@ class qvfsmod:
     
     def select_isd_vfsmod(self):
         """Method to select the .isd file among the local files for vfsmod"""
-        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        #Obtain directory of .prj file
+        path = self.dlg_base.line_project_vfsmod.text()
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        working_directory = os.path.dirname(ruta)
+        
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Incoming Sediment Characteristics File", str(Path(working_directory + "/inputs")), "ISD files (*.isd)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -14660,7 +14808,14 @@ class qvfsmod:
     
     def select_irn_vfsmod(self):
         """Method to select the .irn file among the local files for vfsmod"""
-        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        #Obtain directory of .prj file
+        path = self.dlg_base.line_project_vfsmod.text()
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        working_directory = os.path.dirname(ruta)
+        
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Storm Hyetograph File", str(Path(working_directory + "/inputs")), "IRN files (*.irn)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -14674,7 +14829,14 @@ class qvfsmod:
     
     def select_iro_vfsmod(self):
         """Method to select the .iro file among the local files for vfsmod"""
-        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        #Obtain directory of .prj file
+        path = self.dlg_base.line_project_vfsmod.text()
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        working_directory = os.path.dirname(ruta)
+        
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Source Area Storm Runoff File", str(Path(working_directory + "/inputs")), "IRO files (*.iro)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -14688,7 +14850,14 @@ class qvfsmod:
     
     def select_iwq(self):
         """Method to select the .iwq file among the local files for vfsmod"""
-        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        #Obtain directory of .prj file
+        path = self.dlg_base.line_project_vfsmod.text()
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        working_directory = os.path.dirname(ruta)
+        
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Water Quality Properties File", str(Path(working_directory + "/inputs")), "IWQ files (*.iwq)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -14705,7 +14874,14 @@ class qvfsmod:
     
     def select_og1(self):
         """Method to select the .og1 file among the local files for vfsmod"""
-        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        #Obtain directory of .prj file
+        path = self.dlg_base.line_project_vfsmod.text()
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        working_directory = os.path.dirname(ruta)
+        
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Sediment Transport File", str(Path(working_directory + "/output")), "OG1 files (*.og1)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -14719,7 +14895,14 @@ class qvfsmod:
     
     def select_og2(self):
         """Method to select the .og2 file among the local files for vfsmod"""
-        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        #Obtain directory of .prj file
+        path = self.dlg_base.line_project_vfsmod.text()
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        working_directory = os.path.dirname(ruta)
+        
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Flow throug FVS File", str(Path(working_directory + "/output")), "OG2 files (*.og2)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -14733,7 +14916,14 @@ class qvfsmod:
         
     def select_ohy(self):
         """Method to select the .ohy file among the local files for vfsmod"""
-        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        #Obtain directory of .prj file
+        path = self.dlg_base.line_project_vfsmod.text()
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        working_directory = os.path.dirname(ruta)
+        
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Detailed Hydrograph File", str(Path(working_directory + "/output")), "OHY files (*.ohy)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -14747,7 +14937,14 @@ class qvfsmod:
     
     def select_osm(self):
         """Method to select the .osm file among the local files for vfsmod"""
-        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        #Obtain directory of .prj file
+        path = self.dlg_base.line_project_vfsmod.text()
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        working_directory = os.path.dirname(ruta)
+        
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Water and Sediment Balances File", str(Path(working_directory + "/output")), "OSM files (*.osm)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -14761,7 +14958,14 @@ class qvfsmod:
     
     def select_osp(self):
         """Method to select the .osp file among the local files for vfsmod"""
-        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        #Obtain directory of .prj file
+        path = self.dlg_base.line_project_vfsmod.text()
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        working_directory = os.path.dirname(ruta)
+        
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Overall Summary File", str(Path(working_directory + "/output")), "OSP files (*.osp)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -14775,7 +14979,14 @@ class qvfsmod:
 
     def select_owq(self):
         """Method to select the .owq file among the local files for vfsmod"""
-        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        #Obtain directory of .prj file
+        path = self.dlg_base.line_project_vfsmod.text()
+        if not os.path.isabs(path): #relative path
+            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+        else: #absolute path
+            ruta =  os.path.normpath(path)
+        working_directory = os.path.dirname(ruta)
+        
         fname = QFileDialog.getOpenFileName(self.dlg_base, "Select Water Quality Summary File", str(Path(working_directory + "/output")), "OWQ files (*.owq)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
@@ -14790,6 +15001,11 @@ class qvfsmod:
     
     def uh_execution(self):
         """Method for executing the UH module"""
+        #If working directory doesnt exist then error
+        if not os.path.exists(self.working_directory):
+            self.warning_message(f"{self.working_directory} folder does not exist. Please select a correct working directory.")
+            return
+            
         
         #Save inputs from the dialog
         self.project_file = self.dlg_base.working_directory_vfsmod.text()
@@ -14843,8 +15059,98 @@ class qvfsmod:
             self.warning_message("UH executed succesfully!")
             
         
+        #If lis project is not in working directory then save it there
+        self.lis_project_save_working_directory()
+        
         #Check if UH outputs exist
         self.check_uh_output_exist()
+    
+    def lis_project_save_working_directory(self):
+        """Method to save lis project to the directory if it is not in the working directory"""
+        lis_file = self.obtain_direction_vfsmod(self.dlg_base.uh_file.text())
+        if not os.path.abspath(lis_file).startswith(os.path.abspath(self.working_directory)):
+            #Create folders
+            try:
+                os.mkdir(os.path.join(self.working_directory, "inputs"))
+            except:
+                pass
+            try:
+                os.mkdir(os.path.join(self.working_directory, "output"))
+            except:
+                pass
+            
+            #Move lis file
+            shutil.copyfile(lis_file, Path(self.working_directory)/os.path.basename(lis_file))
+            #Move rest
+            shutil.copyfile(self.obtain_direction_lis(self.dlg_base.uh_input.text()), Path(self.working_directory)/"inputs"/f"{Path(lis_file).stem}.inp")
+            shutil.copyfile(self.obtain_direction_lis(self.dlg_base.line_hydrograph.text()), Path(self.working_directory)/"inputs"/f"{Path(lis_file).stem}.iro")
+            shutil.copyfile(self.obtain_direction_lis(self.dlg_base.line_hyetograph.text()), Path(self.working_directory)/"inputs"/f"{Path(lis_file).stem}.irn")
+            shutil.copyfile(self.obtain_direction_lis(self.dlg_base.line_sedimentograph.text()), Path(self.working_directory)/"inputs"/f"{Path(lis_file).stem}.isd")
+            shutil.copyfile(self.obtain_direction_lis(self.dlg_base.line_output_1.text()), Path(self.working_directory)/"output"/f"{Path(lis_file).stem}.out")
+            shutil.copyfile(self.obtain_direction_lis(self.dlg_base.line_output_2.text()), Path(self.working_directory)/"output"/f"{Path(lis_file).stem}.hyt")
+            
+            #Change lis path to relative
+            self.dlg_base.uh_file.setText(f"{Path(lis_file).stem}.lis")
+            
+            #As we have ordered the inputs and outputs put the corresponding names to lineEdits
+            self.dlg_base.line_hydrograph.setText(str(Path(f"inputs/{Path(lis_file).stem}.iro")))
+            self.dlg_base.line_hyetograph.setText(str(Path(f"inputs/{Path(lis_file).stem}.irn")))
+            self.dlg_base.line_sedimentograph.setText(str(Path(f"inputs/{Path(lis_file).stem}.isd")))
+            self.dlg_base.line_output_1.setText(str(Path(f"output/{Path(lis_file).stem}.out")))
+            self.dlg_base.line_output_2.setText(str(Path(f"output/{Path(lis_file).stem}.hyt")))
+            
+    
+    
+    def prj_project_save_working_directory(self):
+        """Method to save prj project to the directory if it is not in the working directory"""
+        prj_file = self.obtain_direction_vfsmod(self.dlg_base.line_project_vfsmod.text())
+        if not os.path.abspath(prj_file).startswith(os.path.abspath(self.working_directory)):
+            #Create folders
+            try:
+                os.mkdir(os.path.join(self.working_directory, "inputs"))
+            except:
+                pass
+            try:
+                os.mkdir(os.path.join(self.working_directory, "output"))
+            except:
+                pass
+            
+            #Move prj file
+            shutil.copyfile(prj_file, Path(self.working_directory)/os.path.basename(prj_file))
+            #Move rest
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_overland.text()), Path(self.working_directory)/"inputs"/f"{Path(prj_file).stem}.ikw")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_infiltration.text()), Path(self.working_directory)/"inputs"/f"{Path(prj_file).stem}.iso")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_buffer.text()), Path(self.working_directory)/"inputs"/f"{Path(prj_file).stem}.igr")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_incoming.text()), Path(self.working_directory)/"inputs"/f"{Path(prj_file).stem}.isd")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_storm.text()), Path(self.working_directory)/"inputs"/f"{Path(prj_file).stem}.irn")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_source.text()), Path(self.working_directory)/"inputs"/f"{Path(prj_file).stem}.iro")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_water.text()), Path(self.working_directory)/"inputs"/f"{Path(prj_file).stem}.iwq")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_sediment.text()), Path(self.working_directory)/"output"/f"{Path(prj_file).stem}.og1")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_flow.text()), Path(self.working_directory)/"output"/f"{Path(prj_file).stem}.og2")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_hydrograph_2.text()), Path(self.working_directory)/"output"/f"{Path(prj_file).stem}.ohy")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_waterland.text()), Path(self.working_directory)/"output"/f"{Path(prj_file).stem}.osm")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_overall.text()), Path(self.working_directory)/"output"/f"{Path(prj_file).stem}.osp")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_quality.text()), Path(self.working_directory)/"output"/f"{Path(prj_file).stem}.owq")
+            
+            #Change prj path to relative
+            self.dlg_base.line_project_vfsmod.setText(f"{Path(prj_file).stem}.prj")
+            
+            #As we have ordered the inputs and outputs put the corresponding names to lineEdits
+            self.dlg_base.line_overland.setText(str(Path(f"inputs/{Path(prj_file).stem}.ikw")))
+            self.dlg_base.line_infiltration.setText(str(Path(f"inputs/{Path(prj_file).stem}.iso")))
+            self.dlg_base.line_buffer.setText(str(Path(f"inputs/{Path(prj_file).stem}.igr")))
+            self.dlg_base.line_incoming.setText(str(Path(f"inputs/{Path(prj_file).stem}.isd")))
+            self.dlg_base.line_storm.setText(str(Path(f"inputs/{Path(prj_file).stem}.irn")))
+            self.dlg_base.line_source.setText(str(Path(f"inputs/{Path(prj_file).stem}.iro")))
+            self.dlg_base.line_water.setText(str(Path(f"inputs/{Path(prj_file).stem}.iwq")))
+            self.dlg_base.line_sediment.setText(str(Path(f"output/{Path(prj_file).stem}.og1")))
+            self.dlg_base.line_flow.setText(str(Path(f"output/{Path(prj_file).stem}.og2")))
+            self.dlg_base.line_hydrograph_2.setText(str(Path(f"output/{Path(prj_file).stem}.ohy")))
+            self.dlg_base.line_waterland.setText(str(Path(f"output/{Path(prj_file).stem}.osm")))
+            self.dlg_base.line_overall.setText(str(Path(f"output/{Path(prj_file).stem}.osp")))
+            self.dlg_base.line_quality.setText(str(Path(f"output/{Path(prj_file).stem}.owq")))
+    
+    
     
     def warning_message(self,message, courier = False):
         """Method to put a warning message"""
@@ -14966,7 +15272,7 @@ class qvfsmod:
             "Cumulated":[table.item(row, 1).text() for row in range(rows)]})
         
         #Create file
-        inp_file = self.obtain_direction_vfsmod(self.dlg_base.uh_input.text())
+        inp_file = self.obtain_direction_lis(self.dlg_base.uh_input.text())
         with open(inp_file, 'w') as archivo:
             linea_uno = f" {rainfall_amount}  {curve_number}  {area}  {storm_type}  {storm_duration}  {length}  {slope} {timestep} 'P,CN,A,storm type,D,L,Y (,dincr)"
             linea_dos = "                                           'Note: Storm type I,IA,II,III (j=1,4)"
@@ -15010,7 +15316,7 @@ class qvfsmod:
         if self.dlg_base.water_quality.isChecked(): water_quality = int(self.dlg_water_quality.number_pesticides.text())
         else: water_quality = 0
         
-        ikw_file =self.obtain_direction_vfsmod(self.dlg_base.line_overland.text())
+        ikw_file =self.obtain_direction_prj(self.dlg_base.line_overland.text())
         #If directory doesn't exist then create it
         directory = os.path.dirname(ikw_file)
         if not os.path.exists(directory):
@@ -15066,7 +15372,7 @@ class qvfsmod:
             initial_content = (initial_content*depth_one+initial_content_2*depth_two)/(depth_one+depth_two)
         
         #We create the file
-        iso_file =self.obtain_direction_vfsmod(self.dlg_base.line_infiltration.text())
+        iso_file =self.obtain_direction_prj(self.dlg_base.line_infiltration.text())
         #If directory doesn't exist then create it
         directory = os.path.dirname(iso_file)
         if not os.path.exists(directory):
@@ -15123,7 +15429,7 @@ class qvfsmod:
         roughness_bare = float(self.dlg_buffer_properties.roughness_bare.text())
         feedback = float(self.dlg_buffer_properties.feedback.text())
         #We create the file
-        igr_file =self.obtain_direction_vfsmod(self.dlg_base.line_buffer.text())
+        igr_file =self.obtain_direction_prj(self.dlg_base.line_buffer.text())
         #If directory doesn't exist then create it
         directory = os.path.dirname(igr_file)
         if not os.path.exists(directory):
@@ -15168,7 +15474,7 @@ class qvfsmod:
         number_pesticides = int(self.dlg_water_quality.number_pesticides.text())
         
         #Create file
-        iwq_file =self.obtain_direction_vfsmod(self.dlg_base.line_water.text())
+        iwq_file =self.obtain_direction_prj(self.dlg_base.line_water.text())
         #If directory doesn't exist then create it
         directory = os.path.dirname(iwq_file)
         if not os.path.exists(directory):
@@ -15246,7 +15552,7 @@ class qvfsmod:
     
     def update_ikw_pesticide(self):
         """Method to update ikw when ikw file created"""
-        ikw_file =self.obtain_direction_vfsmod(self.dlg_base.line_overland.text())
+        ikw_file =self.obtain_direction_prj(self.dlg_base.line_overland.text())
         if os.path.exists(ikw_file):
             #See if pesticide option is selected
             if self.dlg_base.water_quality.isChecked():execute_pesticide = int(self.dlg_water_quality.number_pesticides.text())
@@ -15275,7 +15581,7 @@ class qvfsmod:
         portion = float(self.dlg_incoming_sediment.line_portion.text())
         density = float(self.dlg_incoming_sediment.line_sediment.text())
         #Create file
-        isd_file =self.obtain_direction_vfsmod(self.dlg_base.line_incoming.text())
+        isd_file =self.obtain_direction_prj(self.dlg_base.line_incoming.text())
         #If directory doesn't exist then create it
         directory = os.path.dirname(isd_file)
         if not os.path.exists(directory):
@@ -15301,7 +15607,7 @@ class qvfsmod:
         #We calculate de number of intervals. If the first value is 0 then we dont take it
         number_steps = rows
         #Create file
-        irn_file =self.obtain_direction_vfsmod(self.dlg_base.line_storm.text())
+        irn_file =self.obtain_direction_prj(self.dlg_base.line_storm.text())
         #If directory doesn't exist then create it
         directory = os.path.dirname(irn_file)
         if not os.path.exists(directory):
@@ -15333,7 +15639,7 @@ class qvfsmod:
         hydrograph = pd.DataFrame(data = {"Time":[table.item(row, 0).text() for row in range(rows)],
             "Discharge":[table.item(row, 1).text() for row in range(rows)]})
         #Create file
-        iro_file =self.obtain_direction_vfsmod(self.dlg_base.line_source.text())
+        iro_file =self.obtain_direction_prj(self.dlg_base.line_source.text())
         #If directory doesn't exist then create it
         directory = os.path.dirname(iro_file)
         if not os.path.exists(directory):
@@ -15354,22 +15660,13 @@ class qvfsmod:
             
     def create_folders_in_directory(self):
         """Metod to create the required folders in the working directory"""
-        #Function to create a folder
-        def create_folder(name_folder): #function to create a folder
-            parent_dir = self.project_file
-            path_file = os.path.join(parent_dir, name_folder)
-            mode = 0o666
-            try:
-                os.mkdir(path_file, mode)
-            except:
-                pass
         #First we save in a list all the folders that they exist
         lineEdits = [self.dlg_base.uh_file,self.dlg_base.uh_input,self.dlg_base.line_hydrograph,
             self.dlg_base.line_hyetograph,self.dlg_base.line_sedimentograph,self.dlg_base.line_output_1,self.dlg_base.line_output_2]
         for i in lineEdits:
             directory = os.path.dirname(i.text())
-            if not os.path.exists(directory):
-                create_folder(directory)
+            if not os.path.exists(os.path.join(self.working_directory, directory)):
+                os.mkdir(os.path.join(self.working_directory, directory))
             
     def update_file_names(self):
         """Method to update file names when the name of the files is changed"""
@@ -15706,7 +16003,7 @@ class qvfsmod:
         buttons_dic = {self.dlg_base.line_hydrograph:self.dlg_base.output_hydrograph,self.dlg_base.line_hyetograph:self.dlg_base.output_hyetograph,self.dlg_base.line_sedimentograph:self.dlg_base.output_sedimentograph,
             self.dlg_base.line_output_1:self.dlg_base.output_output1,self.dlg_base.line_output_2:self.dlg_base.output_output2}
         for i in buttons_dic.keys():
-            if os.path.exists(self.obtain_direction_vfsmod(i.text())) and i.text()!="":
+            if os.path.exists(self.obtain_direction_lis(i.text())) and i.text()!="":
                 buttons_dic[i].setStyleSheet("""
                 QPushButton {
                     background-color: #4CAF50;  /* Verde */
@@ -15750,7 +16047,7 @@ class qvfsmod:
             self.dlg_base.line_hydrograph_2:self.dlg_base.output_hydrograph_2,self.dlg_base.line_waterland:self.dlg_base.output_waterland,self.dlg_base.line_overall:self.dlg_base.output_overall,
             self.dlg_base.line_quality:self.dlg_base.output_quality}
         for i in buttons_dic.keys():
-            if os.path.exists(self.obtain_direction_vfsmod(i.text())) and i.text()!="":
+            if os.path.exists(self.obtain_direction_prj(i.text())) and i.text()!="":
                 buttons_dic[i].setStyleSheet("""
                 QPushButton {
                     background-color: #4CAF50;  /* Verde */
@@ -16115,7 +16412,7 @@ class qvfsmod:
         #First we clear the frame that is going to contain the graph
         self.dlg_output_hydrograph = output_hydrograph()
         #We obtain the information of the .iro file
-        with open(self.obtain_direction_vfsmod(self.dlg_base.line_hydrograph.text()), "r") as archivo:
+        with open(self.obtain_direction_lis(self.dlg_base.line_hydrograph.text()), "r") as archivo:
             lineas = archivo.readlines()
         columna_1 = []
         columna_2 = []
@@ -16263,7 +16560,7 @@ class qvfsmod:
         self.dlg_output_hyetograph = hyetograph()
         self.add_functions_outputs_hyetograph()
         #We obtain the information of the .iro file
-        with open(self.obtain_direction_vfsmod(self.dlg_base.line_hyetograph.text()), "r") as archivo:
+        with open(self.obtain_direction_lis(self.dlg_base.line_hyetograph.text()), "r") as archivo:
             lineas = archivo.readlines()
         columna_1 = []
         columna_2 = []
@@ -16763,8 +17060,8 @@ def execution_uncertainity_analysis(number_execution,core,param_values,dic_data,
         #Change inputs
         value_change = param_values[number_execution][k]
         #If buffer length, roughness or slope is selected then change in another way
+        information_parameter = sensitivity_parameters[i]
         if i == "Buffer length (m)":
-            information_parameter = sensitivity_parameters[i]
             modify_inputs_uncertainity(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3],core,working_directory)
             change_buffer_length_uncertainity(value_change,core,vfs_uncertainity_file,working_directory)
         elif i == "Filter Manning n (RNA s/m^1/3)":
@@ -16772,7 +17069,6 @@ def execution_uncertainity_analysis(number_execution,core,param_values,dic_data,
         elif i == "Average Filter Slope":
             change_filter_manning_uncertainity(value_change,2,core,working_directory)
         else:
-            information_parameter = sensitivity_parameters[i]
             modify_inputs_uncertainity(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3],core,working_directory)
         #Check if there is the need to execute UH
         if information_parameter[3]=="uh":
@@ -16818,9 +17114,9 @@ def execution_uncertainity_analysis(number_execution,core,param_values,dic_data,
     #In windows
     if sys.platform.startswith("win"):
         resultado = subprocess.run([str(Path(os.path.dirname(__file__)+f"/executables/execution_vfs_{core}.bat"))],
-                capture_output=True, 
-                text=True, 
-                shell=True)
+            capture_output=True, 
+            text=True, 
+            shell=True)
     
     #In mac
     elif sys.platform.startswith("darwin"):
@@ -17203,9 +17499,9 @@ def execution_sensitivity_analysis_design(number_execution,core,param_values,dic
     #In windows
     if sys.platform.startswith("win"):
         resultado = subprocess.run([str(Path(os.path.dirname(__file__)+f"/executables/execution_vfs_{core}.bat"))],
-                capture_output=True, 
-                text=True, 
-                shell=True)
+            capture_output=True, 
+            text=True, 
+            shell=True)
     
     #In mac
     elif sys.platform.startswith("darwin"):
@@ -17511,8 +17807,8 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
         #Change inputs
         value_change = param_values[number_execution][k]
         #If buffer length, rougheness or slope is selected then change in another way
+        information_parameter = sensitivity_parameters[i]
         if i == "Buffer length (m)":
-            information_parameter = sensitivity_parameters[i]
             modify_inputs_sensitivity(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3],core,working_directory)
             change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file,working_directory)
         elif i == "Filter Manning n (RNA s/m^1/3)":
@@ -17520,7 +17816,6 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
         elif i == "Average Filter Slope":
             change_filter_manning_sensitivity(value_change,2,core,working_directory)
         else:
-            information_parameter = sensitivity_parameters[i]
             modify_inputs_sensitivity(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3],core,working_directory)
         #Check if there is the need to execute UH
         if information_parameter[3]=="uh":
@@ -17567,9 +17862,9 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
     #In windows
     if sys.platform.startswith("win"):
         resultado = subprocess.run([str(Path(os.path.dirname(__file__)+f"/executables/execution_vfs_{core}.bat"))],
-                capture_output=True, 
-                text=True, 
-                shell=True)
+            capture_output=True, 
+            text=True, 
+            shell=True)
     
     #In mac
     elif sys.platform.startswith("darwin"):
@@ -17914,16 +18209,16 @@ def wrapper_sensitivity_paralelization_calibration(args):
 
 def sensitivity_paralelization_calibration(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file,water_quality,hidrograma,type_calibration,number_pesticide):
     '''Function to run in paralell sensitivity analysis'''
-    #try: #if there is an error execution then return a dataframe with error
-    execution = execution_sensitivity_analysis_calibration(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file)
-    #Save results
-    if execution == "error":
+    try: #if there is an error execution then return a dataframe with error
+        execution = execution_sensitivity_analysis_calibration(number_execution,core,param_values,dic_data,sensitivity_parameters,working_directory,vfs_sensitivity_file)
+        #Save results
+        if execution == "error":
+            return save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality ,hidrograma,type_calibration,number_pesticide,error = True)
+            
+        else:
+            return save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality ,hidrograma,type_calibration,number_pesticide,error = False)
+    except:
         return save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality ,hidrograma,type_calibration,number_pesticide,error = True)
-        
-    else:
-        return save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality ,hidrograma,type_calibration,number_pesticide,error = False)
-    r'''except:
-        return save_results_sensitivity_analysis_calibration(number_execution,core,working_directory,dic_data,param_values,water_quality ,hidrograma,type_calibration,number_pesticide,error = True)'''
    
     
 
@@ -17935,8 +18230,8 @@ def execution_sensitivity_analysis_calibration(number_execution,core,param_value
         #Change inputs
         value_change = param_values[number_execution][k]
         #If buffer length, rougheness or slope is selected then change in another way
+        information_parameter = sensitivity_parameters[i]
         if i == "Buffer length (m)":
-            information_parameter = sensitivity_parameters[i]
             modify_inputs_sensitivity_calibration(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3],core,working_directory)
             change_buffer_length_sensitivity_calibration(value_change,core,vfs_sensitivity_file,working_directory)
         elif i == "Filter Manning n (RNA s/m^1/3)":
@@ -17944,7 +18239,6 @@ def execution_sensitivity_analysis_calibration(number_execution,core,param_value
         elif i == "Average Filter Slope":
             change_filter_manning_sensitivity_calibration(value_change,2,core,working_directory)
         else:
-            information_parameter = sensitivity_parameters[i]
             modify_inputs_sensitivity_calibration(information_parameter[0],information_parameter[1],information_parameter[2],value_change,information_parameter[3],core,working_directory)
         #Check if there is the need to execute UH
         if information_parameter[3]=="uh":
@@ -17956,9 +18250,9 @@ def execution_sensitivity_analysis_calibration(number_execution,core,param_value
     #In windows
     if sys.platform.startswith("win"):
         resultado = subprocess.run([str(Path(os.path.dirname(__file__)+f"/executables/execution_vfs_{core}.bat"))],
-                capture_output=True, 
-                text=True, 
-                shell=True)
+            capture_output=True, 
+            text=True, 
+            shell=True)
     
     #In mac
     elif sys.platform.startswith("darwin"):
@@ -18519,10 +18813,10 @@ class SensitivityAnalysisThreadCalibration(QThread):
         
             # Captura y maneja las excepciones
             for i, async_result in enumerate(async_results):
-                #try:
-                async_result.get()  # Esto lanzará la excepción si ocurrió alguna
-                r'''except Exception as e:
-                    print(f"Error en proceso {i}: {e}")'''
+                try:
+                    async_result.get()  # Esto lanzará la excepción si ocurrió alguna
+                except Exception as e:
+                    print(f"Error en proceso {i}: {e}")
         
 
     def callback(self, execution_num,result):  # Cambiado para recibir solo execution_num
