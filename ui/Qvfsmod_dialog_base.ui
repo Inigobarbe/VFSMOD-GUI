@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>804</width>
     <height>599</height>
    </rect>
   </property>
@@ -193,6 +193,12 @@ QTableCornerButton::section {
         </item>
         <item row="1" column="0" colspan="2">
          <widget class="QScrollArea" name="scrollArea">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>150</height>
+           </size>
+          </property>
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -213,7 +219,7 @@ QTableCornerButton::section {
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>764</width>
+             <width>768</width>
              <height>150</height>
             </rect>
            </property>
@@ -393,7 +399,7 @@ QTableCornerButton::section {
          <widget class="QScrollArea" name="scrollArea_4">
           <property name="minimumSize">
            <size>
-            <width>590</width>
+            <width>610</width>
             <height>0</height>
            </size>
           </property>
@@ -410,8 +416,8 @@ QTableCornerButton::section {
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>573</width>
+             <y>-446</y>
+             <width>593</width>
              <height>944</height>
             </rect>
            </property>
@@ -548,6 +554,12 @@ example 1%</string>
                  </item>
                  <item>
                   <widget class="QComboBox" name="soil_type">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>21</height>
+                    </size>
+                   </property>
                    <property name="maximumSize">
                     <size>
                      <width>130</width>
@@ -816,8 +828,8 @@ typical 0.01-0.07</string>
                   <widget class="QLabel" name="label_16">
                    <property name="minimumSize">
                     <size>
-                     <width>275</width>
-                     <height>0</height>
+                     <width>280</width>
+                     <height>24</height>
                     </size>
                    </property>
                    <property name="text">
@@ -827,6 +839,12 @@ typical 0.01-0.07</string>
                  </item>
                  <item>
                   <widget class="QLineEdit" name="line_hydrograph">
+                   <property name="minimumSize">
+                    <size>
+                     <width>139</width>
+                     <height>21</height>
+                    </size>
+                   </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
                    </property>
@@ -834,6 +852,12 @@ typical 0.01-0.07</string>
                  </item>
                  <item>
                   <widget class="QPushButton" name="browse_hydrograph">
+                   <property name="minimumSize">
+                    <size>
+                     <width>52</width>
+                     <height>25</height>
+                    </size>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -845,6 +869,12 @@ typical 0.01-0.07</string>
                  </item>
                  <item>
                   <widget class="QPushButton" name="output_hydrograph">
+                   <property name="minimumSize">
+                    <size>
+                     <width>49</width>
+                     <height>25</height>
+                    </size>
+                   </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
                     background-color: #808080;
@@ -875,8 +905,8 @@ typical 0.01-0.07</string>
                   <widget class="QLabel" name="label_35">
                    <property name="minimumSize">
                     <size>
-                     <width>275</width>
-                     <height>0</height>
+                     <width>280</width>
+                     <height>24</height>
                     </size>
                    </property>
                    <property name="text">
@@ -886,6 +916,12 @@ typical 0.01-0.07</string>
                  </item>
                  <item>
                   <widget class="QLineEdit" name="line_hyetograph">
+                   <property name="minimumSize">
+                    <size>
+                     <width>139</width>
+                     <height>21</height>
+                    </size>
+                   </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
                    </property>
@@ -893,6 +929,12 @@ typical 0.01-0.07</string>
                  </item>
                  <item>
                   <widget class="QPushButton" name="browse_hyetograph">
+                   <property name="minimumSize">
+                    <size>
+                     <width>52</width>
+                     <height>25</height>
+                    </size>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -904,6 +946,12 @@ typical 0.01-0.07</string>
                  </item>
                  <item>
                   <widget class="QPushButton" name="output_hyetograph">
+                   <property name="minimumSize">
+                    <size>
+                     <width>49</width>
+                     <height>25</height>
+                    </size>
+                   </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
                     background-color: #808080;
@@ -934,8 +982,8 @@ typical 0.01-0.07</string>
                   <widget class="QLabel" name="label_36">
                    <property name="minimumSize">
                     <size>
-                     <width>275</width>
-                     <height>0</height>
+                     <width>280</width>
+                     <height>24</height>
                     </size>
                    </property>
                    <property name="font">
@@ -951,6 +999,12 @@ typical 0.01-0.07</string>
                  </item>
                  <item>
                   <widget class="QLineEdit" name="line_sedimentograph">
+                   <property name="minimumSize">
+                    <size>
+                     <width>139</width>
+                     <height>21</height>
+                    </size>
+                   </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
                    </property>
@@ -958,6 +1012,12 @@ typical 0.01-0.07</string>
                  </item>
                  <item>
                   <widget class="QPushButton" name="browse_sedimentograph">
+                   <property name="minimumSize">
+                    <size>
+                     <width>52</width>
+                     <height>25</height>
+                    </size>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -969,6 +1029,12 @@ typical 0.01-0.07</string>
                  </item>
                  <item>
                   <widget class="QPushButton" name="output_sedimentograph">
+                   <property name="minimumSize">
+                    <size>
+                     <width>49</width>
+                     <height>25</height>
+                    </size>
+                   </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
                     background-color: #808080;
@@ -999,8 +1065,8 @@ typical 0.01-0.07</string>
                   <widget class="QLabel" name="label_37">
                    <property name="minimumSize">
                     <size>
-                     <width>275</width>
-                     <height>0</height>
+                     <width>280</width>
+                     <height>24</height>
                     </size>
                    </property>
                    <property name="text">
@@ -1010,6 +1076,12 @@ typical 0.01-0.07</string>
                  </item>
                  <item>
                   <widget class="QLineEdit" name="line_output_1">
+                   <property name="minimumSize">
+                    <size>
+                     <width>139</width>
+                     <height>21</height>
+                    </size>
+                   </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
                    </property>
@@ -1017,6 +1089,12 @@ typical 0.01-0.07</string>
                  </item>
                  <item>
                   <widget class="QPushButton" name="browse_output1">
+                   <property name="minimumSize">
+                    <size>
+                     <width>52</width>
+                     <height>25</height>
+                    </size>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -1028,6 +1106,12 @@ typical 0.01-0.07</string>
                  </item>
                  <item>
                   <widget class="QPushButton" name="output_output1">
+                   <property name="minimumSize">
+                    <size>
+                     <width>49</width>
+                     <height>25</height>
+                    </size>
+                   </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
                     background-color: #808080;
@@ -1058,8 +1142,8 @@ typical 0.01-0.07</string>
                   <widget class="QLabel" name="label_38">
                    <property name="minimumSize">
                     <size>
-                     <width>275</width>
-                     <height>0</height>
+                     <width>280</width>
+                     <height>24</height>
                     </size>
                    </property>
                    <property name="text">
@@ -1069,6 +1153,12 @@ typical 0.01-0.07</string>
                  </item>
                  <item>
                   <widget class="QLineEdit" name="line_output_2">
+                   <property name="minimumSize">
+                    <size>
+                     <width>139</width>
+                     <height>21</height>
+                    </size>
+                   </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
                    </property>
@@ -1076,6 +1166,12 @@ typical 0.01-0.07</string>
                  </item>
                  <item>
                   <widget class="QPushButton" name="browse_output2">
+                   <property name="minimumSize">
+                    <size>
+                     <width>52</width>
+                     <height>25</height>
+                    </size>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -1087,6 +1183,12 @@ typical 0.01-0.07</string>
                  </item>
                  <item>
                   <widget class="QPushButton" name="output_output2">
+                   <property name="minimumSize">
+                    <size>
+                     <width>49</width>
+                     <height>25</height>
+                    </size>
+                   </property>
                    <property name="styleSheet">
                     <string notr="true">QPushButton {
                     background-color: #808080;
@@ -1219,6 +1321,12 @@ typical 0.01-0.07</string>
                  </item>
                  <item>
                   <widget class="QComboBox" name="storm_type">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>21</height>
+                    </size>
+                   </property>
                    <property name="maximumSize">
                     <size>
                      <width>54</width>
@@ -1293,7 +1401,7 @@ default 5 min</string>
                  <property name="minimumSize">
                   <size>
                    <width>200</width>
-                   <height>0</height>
+                   <height>21</height>
                   </size>
                  </property>
                 </widget>
@@ -1378,7 +1486,7 @@ default 5 min</string>
          <widget class="QScrollArea" name="scrollArea_5">
           <property name="minimumSize">
            <size>
-            <width>590</width>
+            <width>610</width>
             <height>0</height>
            </size>
           </property>
@@ -1395,8 +1503,8 @@ default 5 min</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>573</width>
+             <y>-230</y>
+             <width>593</width>
              <height>728</height>
             </rect>
            </property>
@@ -3035,8 +3143,8 @@ default 5 min</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_13">
            <property name="geometry">
             <rect>
-             <x>0</x>
-             <y>0</y>
+             <x>-577</x>
+             <y>-262</y>
              <width>1324</width>
              <height>743</height>
             </rect>
@@ -3663,6 +3771,12 @@ Solution Parameters</string>
                           <layout class="QGridLayout" name="gridLayout_53">
                            <item row="2" column="1">
                             <widget class="QLineEdit" name="lower_sensitivity_design">
+                             <property name="minimumSize">
+                              <size>
+                               <width>70</width>
+                               <height>0</height>
+                              </size>
+                             </property>
                              <property name="alignment">
                               <set>Qt::AlignCenter</set>
                              </property>
@@ -3670,6 +3784,12 @@ Solution Parameters</string>
                            </item>
                            <item row="2" column="2">
                             <widget class="QLineEdit" name="upper_sensitivity_design">
+                             <property name="minimumSize">
+                              <size>
+                               <width>70</width>
+                               <height>0</height>
+                              </size>
+                             </property>
                              <property name="alignment">
                               <set>Qt::AlignCenter</set>
                              </property>
@@ -3677,6 +3797,12 @@ Solution Parameters</string>
                            </item>
                            <item row="2" column="3">
                             <widget class="QLineEdit" name="increment_sensitivity_design">
+                             <property name="minimumSize">
+                              <size>
+                               <width>70</width>
+                               <height>0</height>
+                              </size>
+                             </property>
                              <property name="alignment">
                               <set>Qt::AlignCenter</set>
                              </property>
@@ -3841,6 +3967,12 @@ Solution Parameters</string>
                           </item>
                           <item>
                            <widget class="QLineEdit" name="trajectories_design">
+                            <property name="minimumSize">
+                             <size>
+                              <width>46</width>
+                              <height>21</height>
+                             </size>
+                            </property>
                             <property name="alignment">
                              <set>Qt::AlignCenter</set>
                             </property>
@@ -3865,6 +3997,12 @@ Solution Parameters</string>
                           </item>
                           <item>
                            <widget class="QLineEdit" name="samples_design">
+                            <property name="minimumSize">
+                             <size>
+                              <width>46</width>
+                              <height>21</height>
+                             </size>
+                            </property>
                             <property name="alignment">
                              <set>Qt::AlignCenter</set>
                             </property>
@@ -3996,17 +4134,6 @@ Solution Parameters</string>
                     </layout>
                    </widget>
                   </item>
-                  <item row="0" column="2">
-                   <widget class="QFrame" name="frame_36">
-                    <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
-                    </property>
-                    <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
-                    </property>
-                    <layout class="QGridLayout" name="gridLayout_56"/>
-                   </widget>
-                  </item>
                  </layout>
                 </widget>
                </item>
@@ -4078,8 +4205,8 @@ Solution Parameters</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>747</width>
+             <y>-299</y>
+             <width>774</width>
              <height>941</height>
             </rect>
            </property>
@@ -4542,6 +4669,12 @@ analysis</string>
                          <property name="enabled">
                           <bool>false</bool>
                          </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>30</width>
+                           <height>0</height>
+                          </size>
+                         </property>
                          <property name="styleSheet">
                           <string notr="true">background-color: #d9d9d9;</string>
                          </property>
@@ -4590,6 +4723,12 @@ for calibration</string>
                         <widget class="QLineEdit" name="line_total_discharge">
                          <property name="enabled">
                           <bool>false</bool>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>30</width>
+                           <height>0</height>
+                          </size>
                          </property>
                          <property name="styleSheet">
                           <string notr="true">background-color: #d9d9d9;</string>
@@ -4647,6 +4786,12 @@ for calibration</string>
                          <property name="enabled">
                           <bool>false</bool>
                          </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>30</width>
+                           <height>0</height>
+                          </size>
+                         </property>
                          <property name="styleSheet">
                           <string notr="true">background-color: #d9d9d9;</string>
                          </property>
@@ -4687,6 +4832,12 @@ for calibration</string>
                         <widget class="QLineEdit" name="line_total_sediment">
                          <property name="enabled">
                           <bool>false</bool>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>30</width>
+                           <height>0</height>
+                          </size>
                          </property>
                          <property name="styleSheet">
                           <string notr="true">background-color: #d9d9d9;</string>
@@ -4752,6 +4903,12 @@ for calibration</string>
                          <property name="enabled">
                           <bool>false</bool>
                          </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>30</width>
+                           <height>0</height>
+                          </size>
+                         </property>
                          <property name="styleSheet">
                           <string notr="true">background-color: #d9d9d9;</string>
                          </property>
@@ -4791,6 +4948,12 @@ for calibration</string>
                          <property name="enabled">
                           <bool>false</bool>
                          </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>30</width>
+                           <height>0</height>
+                          </size>
+                         </property>
                          <property name="styleSheet">
                           <string notr="true">background-color: #d9d9d9;</string>
                          </property>
@@ -4821,6 +4984,12 @@ for calibration</string>
                         <widget class="QLineEdit" name="line_pesticide_solid">
                          <property name="enabled">
                           <bool>false</bool>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>30</width>
+                           <height>0</height>
+                          </size>
                          </property>
                          <property name="styleSheet">
                           <string notr="true">background-color: #d9d9d9;</string>
@@ -4872,6 +5041,12 @@ for calibration</string>
                         <widget class="QLineEdit" name="line_filtered_pesticide">
                          <property name="enabled">
                           <bool>false</bool>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>30</width>
+                           <height>0</height>
+                          </size>
                          </property>
                          <property name="styleSheet">
                           <string notr="true">background-color: #d9d9d9;</string>
@@ -5401,7 +5576,7 @@ analysis</string>
           <widget class="QWidget" name="scrollAreaWidgetContents_8">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>-176</x>
              <y>0</y>
              <width>923</width>
              <height>583</height>
@@ -5830,7 +6005,14 @@ Solution Parameters</string>
                         </widget>
                        </item>
                        <item row="1" column="1">
-                        <widget class="QComboBox" name="distributions"/>
+                        <widget class="QComboBox" name="distributions">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>21</height>
+                          </size>
+                         </property>
+                        </widget>
                        </item>
                        <item row="3" column="1">
                         <widget class="QLineEdit" name="second">
@@ -7257,7 +7439,14 @@ Solution Parameters</string>
                         </widget>
                        </item>
                        <item row="1" column="1">
-                        <widget class="QComboBox" name="distributions_uncertainity"/>
+                        <widget class="QComboBox" name="distributions_uncertainity">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>21</height>
+                          </size>
+                         </property>
+                        </widget>
                        </item>
                        <item row="3" column="0">
                         <widget class="QLabel" name="label_139">
@@ -7897,7 +8086,7 @@ Solution Parameters</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>764</width>
+             <width>768</width>
              <height>498</height>
             </rect>
            </property>
@@ -8018,7 +8207,7 @@ Solution Parameters</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>804</width>
      <height>21</height>
     </rect>
    </property>

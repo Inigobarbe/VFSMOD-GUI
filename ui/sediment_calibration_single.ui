@@ -133,8 +133,8 @@ QTableCornerButton::section {
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>914</width>
-        <height>481</height>
+        <width>897</width>
+        <height>487</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_71">
@@ -154,6 +154,107 @@ QTableCornerButton::section {
           <enum>QFrame::Raised</enum>
          </property>
          <layout class="QGridLayout" name="gridLayout_70">
+          <item row="9" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_111">
+            <item>
+             <widget class="QLabel" name="label_111">
+              <property name="minimumSize">
+               <size>
+                <width>281</width>
+                <height>35</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Sediment particle class, diameter d50 
+(DP,cm)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="new_class">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="min_class">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="max_class">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_109">
+            <item>
+             <widget class="QWidget" name="widget_5" native="true">
+              <property name="minimumSize">
+               <size>
+                <width>270</width>
+                <height>0</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_107">
+              <property name="minimumSize">
+               <size>
+                <width>90</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>New Value</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_108">
+              <property name="minimumSize">
+               <size>
+                <width>70</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Min</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_109">
+              <property name="minimumSize">
+               <size>
+                <width>54</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Max</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
           <item row="7" column="0" colspan="2">
            <layout class="QHBoxLayout" name="horizontalLayout_110">
             <item>
@@ -264,107 +365,6 @@ QTableCornerButton::section {
             </item>
             <item>
              <widget class="QLineEdit" name="max_height">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="9" column="0" colspan="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_111">
-            <item>
-             <widget class="QLabel" name="label_111">
-              <property name="minimumSize">
-               <size>
-                <width>281</width>
-                <height>35</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Sediment particle class, diameter d50 
-(DP,cm)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="new_class">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="min_class">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="max_class">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="1" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout_109">
-            <item>
-             <widget class="QWidget" name="widget_5" native="true">
-              <property name="minimumSize">
-               <size>
-                <width>270</width>
-                <height>0</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_107">
-              <property name="minimumSize">
-               <size>
-                <width>90</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>New Value</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_108">
-              <property name="minimumSize">
-               <size>
-                <width>70</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Min</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_109">
-              <property name="minimumSize">
-               <size>
-                <width>54</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Max</string>
-              </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
               </property>
@@ -566,6 +566,19 @@ QTableCornerButton::section {
              </widget>
             </item>
            </layout>
+          </item>
+          <item row="11" column="0">
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
