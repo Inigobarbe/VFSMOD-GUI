@@ -138,8 +138,11 @@ sys.excepthook = global_exception_handler
 #Obtain the base path for the resources for the executable
 if getattr(sys, 'frozen', False):
     base_path = sys._MEIPASS
+    #Bundle is happens in mac
+    bundle = True
 else:
     base_path = os.path.abspath(".")
+    bundle = False
     
 
 class qvfsmod:
@@ -1141,7 +1144,7 @@ class qvfsmod:
     
     def open_license(self):
         """Method to open the license"""
-        ruta = str(Path(os.getcwd() + "/documentation/license.txt"))
+        ruta = os.path.join(base_path,"/documentation/license.txt")
         if sys.platform.startswith("win"):#Windows
             os.startfile(ruta)
         elif sys.platform.startswith("darwin"): #macOS
@@ -15898,7 +15901,11 @@ class qvfsmod:
     
     def default_values(self):
         """Method to set default values for input values"""
-        self.dlg_base.working_directory_vfsmod.setText(os.path.normpath(os.getcwd()))
+        if bundle:
+            self.dlg_base.working_directory_vfsmod.setText(os.path.abspath(os.path.join(base_path,"..","..","..")))
+        else:
+            self.dlg_base.working_directory_vfsmod.setText(base_path)
+            
         self.dlg_base.uh_file.setText(os.path.normpath(".lis"))
         self.dlg_base.uh_input.setText(str(Path(r"inputs/.inp")))
         self.dlg_base.file_save_design.setText(str(Path("design/output/sensitivity_design_morris.csv")))
@@ -16354,7 +16361,7 @@ class qvfsmod:
         
         #About image
         #Initial page
-        image = QImage("images/about.png")
+        image = QImage(os.path.join(base_path,"images/about.png"))
         scaled_image = image.scaled(540, 405, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         pixmap = QPixmap.fromImage(scaled_image)
         self.dlg_base.label_115.setPixmap(pixmap)
@@ -16373,9 +16380,9 @@ class qvfsmod:
             Version 1.0.0<br>
             Contact for Questions or Problems: carpena@ufl.edu<br>
             This work is licensed under <b>CC BY-ND 4.0</b>
-                <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src="images/cc.svg" alt="">
-                <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src="images/by.svg" alt="">
-                <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src="images/nd.svg" alt="">
+                <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src=os.path.join(base_path"images/cc.svg") alt="">
+                <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src=os.path.join(base_path"images/by.svg") alt="">
+                <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src=os.path.join(base_path"images/nd.svg") alt="">
 
             <br>
             Copyright 2024
