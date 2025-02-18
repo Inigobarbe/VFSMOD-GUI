@@ -1,0 +1,3 @@
+Excepción: ValueError
+Mensaje: could not convert string to float: 'l'
+
