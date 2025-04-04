@@ -12,8 +12,6 @@ File: output\sample.osp                               VFSMOD v4.6.0 11/2024
    File #=  9 code:og2=output\sample.og2                                                          
    File #= 10 code:osp=output\sample.osp                                                          
    File #= 11 code:isd=inputs\sample.isd                                                          
-   File #= 12 code:iwq=inputs\sample.iwq                                                          
-   File #= 13 code:owq=output\sample.owq                                                          
   
        Summary of Buffer Performance Indicators:
   

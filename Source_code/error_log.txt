@@ -1,3 +1,101 @@
 Excepción: ValueError
 Mensaje: could not convert string to float: 'l'
 
+Excepción: AttributeError
+Mensaje: PathCollection.set() got an unexpected keyword argument 'xerr'
+
+Excepción: AttributeError
+Mensaje: PathCollection.set() got an unexpected keyword argument 'xerr'
+
+Excepción: NameError
+Mensaje: name 'nan_function' is not defined
+
+Excepción: NameError
+Mensaje: name 'nan_function' is not defined
+
+Excepción: NameError
+Mensaje: name 'mu_star_conf' is not defined
+
+Excepción: AttributeError
+Mensaje: 'qvfsmod' object has no attribute 'setWindowIcon'
+
+Excepción: AttributeError
+Mensaje: 'qvfsmod' object has no attribute 'setWindowIcon'
+
+Excepción: FileNotFoundError
+Mensaje: [WinError 2] El sistema no puede encontrar el archivo especificado: 'C:/documentation/license.txt'
+
+Excepción: FileNotFoundError
+Mensaje: [WinError 2] El sistema no puede encontrar el archivo especificado: 'C:/documentation/license.txt'
+
+Excepción: FileNotFoundError
+Mensaje: [WinError 2] El sistema no puede encontrar el archivo especificado: 'C:/documentation/license.txt'
+
+Excepción: FileNotFoundError
+Mensaje: [WinError 2] El sistema no puede encontrar el archivo especificado: 'C:/documentation/license.txt'
+
+Excepción: FileNotFoundError
+Mensaje: [WinError 2] El sistema no puede encontrar el archivo especificado: 'C:/documentation/license.txt'
+
+Excepción: FileNotFoundError
+Mensaje: [WinError 2] El sistema no puede encontrar el archivo especificado: 'C:/documentation/license.txt'
+
+Excepción: AxisError
+Mensaje: axis -1 is out of bounds for array of dimension 0
+
+Excepción: AxisError
+Mensaje: axis -1 is out of bounds for array of dimension 0
+
+Excepción: NameError
+Mensaje: name 'ax' is not defined
+
+Excepción: ValueError
+Mensaje: Can't mix absolute and relative paths
+
+Excepción: ValueError
+Mensaje: Can't mix absolute and relative paths
+
+Excepción: ValueError
+Mensaje: Can't mix absolute and relative paths
+
+Excepción: NameError
+Mensaje: name 'relative_path' is not defined
+
+Excepción: UFuncTypeError
+Mensaje: Cannot cast ufunc 'lstsq_n' input 1 from dtype('O') to dtype('float64') with casting rule 'same_kind'
+
+Excepción: ValueError
+Mensaje: could not convert string to float: ''
+
+Excepción: KeyError
+Mensaje: 'Buffer Length PDR 2 0.9'
+
+Excepción: UFuncTypeError
+Mensaje: Cannot cast ufunc 'lstsq_m' input 1 from dtype('O') to dtype('float64') with casting rule 'same_kind'
+
+Excepción: UFuncTypeError
+Mensaje: Cannot cast ufunc 'lstsq_m' input 1 from dtype('O') to dtype('float64') with casting rule 'same_kind'
+
+Excepción: AttributeError
+Mensaje: 'list' object has no attribute 'to_csv'
+
+Excepción: NameError
+Mensaje: name 'results' is not defined
+
+Excepción: UFuncTypeError
+Mensaje: Cannot cast ufunc 'lstsq_m' input 1 from dtype('O') to dtype('float64') with casting rule 'same_kind'
+
+Excepción: ValueError
+Mensaje: dtype of [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0] array must be 'float', float32 or float64
+
+Excepción: UFuncTypeError
+Mensaje: Cannot cast ufunc 'lstsq_m' input 1 from dtype('O') to dtype('float64') with casting rule 'same_kind'
+
+Excepción: ValueError
+Mensaje: autodetected range of [nan, nan] is not finite
+
+Excepción: AttributeError
+Mensaje: 'qvfsmod' object has no attribute 'pesticide'
+

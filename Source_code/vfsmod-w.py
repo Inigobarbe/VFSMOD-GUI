@@ -138,14 +138,11 @@ sys.excepthook = global_exception_handler
 #Obtain the base path for the resources for the executable
 if getattr(sys, 'frozen', False):
     base_path = sys._MEIPASS
-    #Bundle is happens in mac
-    bundle = True
 else:
     base_path = os.path.abspath(".")
-    bundle = False
     
 
-class qvfsmod:
+class qvfsmod():
     """QGIS Plugin Implementation."""
 
     def __init__(self):
@@ -157,7 +154,6 @@ class qvfsmod:
         :type iface: QgsInterface
         """
 
-
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
@@ -167,6 +163,7 @@ class qvfsmod:
         
         #Initializce GUI
         self.initGui()
+        
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -186,6 +183,7 @@ class qvfsmod:
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
+        
         #Instantiate dialogs
         self.dlg_base = qvfsmodMainWindow()
         self.dlg_user_storm = user_defined_storm_dialog()
@@ -240,6 +238,66 @@ class qvfsmod:
         self.dlg_owq_graph_evolution = owq_graph_evolution()
         self.dlg_ohy_graphs = ohy_graphs()
         self.dlg_figure_settings = figure_settings()
+        
+        #Add icons to the dialogs
+        if sys.platform.startswith("win"):#Windows
+            icon_path = os.path.join(os.getcwd(),"icon.ico")
+        elif sys.platform.startswith("darwin") or sys.platform.startswith("linux"): #macOS
+            icon_path = os.path.join(os.path.join(base_path,"..","..",".."),"icon.ico")
+        
+        self.dlg_base.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_user_storm.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_overland_flow.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_buffer_segment.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_infiltration_soil.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_soil_curves.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_buffer_properties.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_water_quality.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_incoming_sediment.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_vfsmod_hyetograph.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_vfsmod_hydrograph.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_warning_message.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_warning_message_calibration.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_design_results.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_design_results_graph.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_calibration_advanced_settings_hydrograph.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_calibration_advanced_settings_sedimentograph.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_calibration_advanced_settings_single.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_sedimentograph_output.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_user_output_1.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_user_output_2.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_osp_results.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_runoff_graph.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_sediment_graph.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_owq_results.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_osm_results.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_ohy_results.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_og2_results.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_og1_results.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_iro_results.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_irn_results.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_owq_graph.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_owq_graph_balance.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_calibration_progress.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_calibration_results_sedimentograph.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_calibration_results_hydrograph.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_sediment_calibration.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_hydrograph_calibration.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_discharge_calibration_single.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_sediment_calibration_single.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_pesticide_calibration.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_calibration_results_single.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_hydrograph_calibration_edit.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_sedimentograph_calibration_edit.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_calibration_sensitivity_hydrograph.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_sensitivity_calibration_results_hydrograph.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_fiteval_hydrograph.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_fiteval_sedimentograph.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_degradation_data.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_owq_graph_reduction.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_owq_graph_evolution.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_ohy_graphs.setWindowIcon(QtGui.QIcon(icon_path))
+        self.dlg_figure_settings.setWindowIcon(QtGui.QIcon(icon_path))
         
         
         #Ohy results
@@ -550,9 +608,16 @@ class qvfsmod:
         
         #Put the option to select pesticides in sensitivity analysis
         self.dlg_base.parameter_name_design.textChanged.connect(lambda _, b= "design_uncertainity":self.add_pesticides_dialog_sensitivity_inputs(b))
+        self.dlg_base.vfs_file_sensitivity_design.textChanged.connect(lambda _, b= "design_uncertainity":self.add_pesticides_dialog_sensitivity_inputs(b))
+        
         self.dlg_calibration_sensitivity_hydrograph.parameter_name.textChanged.connect(lambda _, b= "identifiability":self.add_pesticides_dialog_sensitivity_inputs(b))
+        self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.textChanged.connect(lambda _, b= "identifiability":self.add_pesticides_dialog_sensitivity_inputs(b))
+        
         self.dlg_base.parameter_name.textChanged.connect(lambda _, b= "sensitivity_analysis":self.add_pesticides_dialog_sensitivity_inputs(b))
+        self.dlg_base.vfs_file_sensitivity.textChanged.connect(lambda _, b= "sensitivity_analysis":self.add_pesticides_dialog_sensitivity_inputs(b))
+        
         self.dlg_base.parameter_name_uncertainity.textChanged.connect(lambda _, b= "uncertainty":self.add_pesticides_dialog_sensitivity_inputs(b))
+        self.dlg_base.vfs_file_uncertainity.textChanged.connect(lambda _, b= "uncertainty":self.add_pesticides_dialog_sensitivity_inputs(b))
         
         #If text of the outputs is changed then check if the output exist for UH
         lineEdits = [self.dlg_base.uh_file,self.dlg_base.uh_input,self.dlg_base.line_hydrograph,
@@ -1144,12 +1209,14 @@ class qvfsmod:
     
     def open_license(self):
         """Method to open the license"""
-        ruta = os.path.join(base_path,"/documentation/license.txt")
         if sys.platform.startswith("win"):#Windows
+            ruta = os.path.join(os.getcwd(),str(Path("documentation/license.txt")))
             os.startfile(ruta)
         elif sys.platform.startswith("darwin"): #macOS
+            ruta = os.path.join(os.path.abspath(os.path.join(base_path,"..","..","..")),str(Path("documentation/license.txt")))
             subprocess.run(["open", ruta])
         elif sys.platform.startswith("linux"): #linux
+            ruta = os.path.join(os.path.abspath(os.path.join(base_path,"..","..","..")),str(Path("documentation/license.txt")))
             subprocess.run(["xdg-open", ruta])
             
     
@@ -2095,7 +2162,7 @@ class qvfsmod:
             self.type_calibration_sensitivity = "single"
             inputs = []
             #Hydrograph inputs
-            if self.dlg_base.check_total_discharge.isChecked() or self.dlg_base.check_filtered_discharge.isChecked():
+            if self.dlg_base.check_total_discharge.isChecked() or self.dlg_base.check_filtered_discharge.isChecked() or self.dlg_base.check_total_sediment.isChecked() or self.dlg_base.check_filtered_sediment.isChecked() or self.dlg_base.check_filtered_pesticide.isChecked() or self.dlg_base.check_pesticide_out.isChecked() or self.dlg_base.check_pesticide_solid.isChecked() or self.dlg_base.check_pesticide_liquid.isChecked():
                 #First add the ones that area always
                 inputs += ["Vertical Saturated K","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked","Width of the Strip (m)","Buffer length (m)","Filter Manning n (RNA s/m^1/3)","Average Filter Slope"]
                 #Then add the others
@@ -2169,7 +2236,7 @@ class qvfsmod:
                             inputs.append("Initial Water Content")
             
             #Sedimentograph inputs
-            if self.dlg_base.check_total_sediment.isChecked() or self.dlg_base.check_filtered_sediment.isChecked():
+            if self.dlg_base.check_total_sediment.isChecked() or self.dlg_base.check_filtered_sediment.isChecked() or self.dlg_base.check_filtered_pesticide.isChecked() or self.dlg_base.check_pesticide_out.isChecked() or self.dlg_base.check_pesticide_solid.isChecked() or self.dlg_base.check_pesticide_liquid.isChecked():
                 inputs += ["Spacing for grass stems (cm)","Roughness-Grass Mannings n VN","Height of grass (cm)","Roughness-Bare surface Mannings n (Vn2)",
                     "Portion of Particles from incoming sediment with diameter >0.0037 cm","Incoming flow sediment concentration (g/cm^3)",
                     "Porosity of deposited sediment as a fraction","Sediment particle size diameter d50 (cm)","Sediment particle density (g/cm^3)"]
@@ -3068,6 +3135,12 @@ class qvfsmod:
         path_function(self.dlg_base.uh_file_uncertainity)
         path_function(self.dlg_base.vfs_file_uncertainity)
         
+        #Add pesticides to combobox
+        self.add_pesticides_dialog_sensitivity_inputs("design_uncertainity")
+        self.add_pesticides_dialog_sensitivity_inputs("identifiability")
+        self.add_pesticides_dialog_sensitivity_inputs("sensitivity_analysis")
+        self.add_pesticides_dialog_sensitivity_inputs("uncertainty")
+        
         #Change working directory
         self.working_directory = os.path.normpath(self.dlg_base.working_directory_vfsmod.text())
         
@@ -3595,127 +3668,134 @@ class qvfsmod:
     
     def update_graph_uncertainity(self):
         """Mehtod to update uncertainity graph"""
-        #Warning messages
-        ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_uncertainity.text())
-        if os.path.exists(ruta):
-            with open(ruta, "r") as archivo:
-                lineas = archivo.readlines()
-            #If the csv is not of a Uncertainity sensitivity analysis then give error
-            if lineas[0]!="Uncertainty analysis results" + '\n' and lineas[0]!="Morris sensitivity indexes (mu star_sigma_mu)" + '\n' and lineas[0]!="FAST sensitivity indexes S1_S1 conf_ST_ST conf" + '\n' and lineas[0]!="Sobol sensitivity indexes (S1_S1 conf_ST_ST conf)" + '\n':
-                self.warning_message("Please select a csv file that contains Uncertainity analysis results")
-                return
+        try:
+            #Warning messages
+            ruta = self.obtain_direction_vfsmod(self.dlg_base.csv_results_uncertainity.text())
+            if os.path.exists(ruta):
+                with open(ruta, "r") as archivo:
+                    lineas = archivo.readlines()
+                #If the csv is not of a Uncertainity sensitivity analysis then give error
+                if lineas[0]!="Uncertainty analysis results" + '\n' and lineas[0]!="Morris sensitivity indexes (mu star_sigma_mu_mu star confidence)" + '\n' and lineas[0]!="FAST sensitivity indexes S1_S1 conf_ST_ST conf" + '\n' and lineas[0]!="Sobol sensitivity indexes (S1_S1 conf_ST_ST conf)" + '\n':
+                    self.warning_message("Please select a csv file that contains Uncertainity analysis results")
+                    return
+                    
+                #Clear graph before drawing
+                #Create and clear axis before drawing
+                if not hasattr(self, 'canvas_uncertainity_graph'):
+                    # Si no existe, crear el canvas y añadirlo al layout
+                    self.canvas_uncertainity_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
+                    
+                    # Asignar un layout al QFrame si no tiene uno
+                    layout = QVBoxLayout(self.dlg_base.frame_68)
+                    self.dlg_base.frame_68.setLayout(layout)
+                    
+                    # Añadir el canvas al layout
+                    layout.addWidget(self.canvas_uncertainity_graph)
+                else:
+                    # Si ya existe, simplemente limpiar el canvas
+                    self.canvas_uncertainity_graph.figure.clear()
+                self.ax_uncertainity = self.canvas_uncertainity_graph.figure.subplots(1,2)
                 
-            #Clear graph before drawing
-            #Create and clear axis before drawing
-            if not hasattr(self, 'canvas_uncertainity_graph'):
-                # Si no existe, crear el canvas y añadirlo al layout
-                self.canvas_uncertainity_graph = FigureCanvas(plt.Figure(figsize=(15, 6)))
+                #Obtain data 
+                with open(ruta, "r") as archivo:
+                     lines = archivo.readlines()
+                #Function to give nan if the value is not a number
+                def nan_function(value):    
+                    if value.replace("\n","") == "nan":
+                        return np.nan
+                    try:
+                        return float(value)
+                    except:
+                        return np.nan
                 
-                # Asignar un layout al QFrame si no tiene uno
-                layout = QVBoxLayout(self.dlg_base.frame_68)
-                self.dlg_base.frame_68.setLayout(layout)
-                
-                # Añadir el canvas al layout
-                layout.addWidget(self.canvas_uncertainity_graph)
-            else:
-                # Si ya existe, simplemente limpiar el canvas
-                self.canvas_uncertainity_graph.figure.clear()
-            self.ax_uncertainity = self.canvas_uncertainity_graph.figure.subplots(1,2)
-            
-            #Obtain data 
-            with open(ruta, "r") as archivo:
-                 lines = archivo.readlines()
-            #Function to give nan if the value is not a number
-            def nan_function(value):    
-                if value.replace("\n","") == "nan":
-                    return np.nan
-                try:
-                    return float(value)
-                except:
-                    return np.nan
-            
-            #When we see column error then we have the data
-            for index in range(len(lines)):
-                if "Error" in lines[index].split(","):
-                    columns = [x.replace('\n', '') for x in lines[index].split(",")]
-                    rows = []
-                    for i in range(index+1,len(lines)):
-                        rows.append([nan_function(x) for x in lines[i].split(",")])
+                #When we see column error then we have the data
+                for index in range(len(lines)):
+                    if "Error" in lines[index].split(","):
+                        columns = [x.replace('\n', '') for x in lines[index].split(",")]
+                        rows = []
+                        for i in range(index+1,len(lines)):
+                            rows.append([nan_function(x) for x in lines[i].split(",")])
 
-            df = pd.DataFrame(rows, columns=columns)
-            
-            #Delete rows with error
-            df = df[df.Error==0]
-            
-            #Get output
-            for i in range(self.dlg_base.frame_69.layout().count()):
-                item = self.dlg_base.frame_69.layout().itemAt(i)
-                widget = item.widget()
+                df = pd.DataFrame(rows, columns=columns)
                 
-                #Checks if the widget is a QCheckBox and if it is selected.
-                if isinstance(widget, QRadioButton) and widget.isChecked():
-                    output_column = widget.text()
-            
-            y = [float(x) for x in df[output_column] if x!=np.nan]
-            
-            bins = 30
-            self.ax_uncertainity[0].hist(y, bins=bins, edgecolor='black')
-            #Labels
-            output_with_line_breaks = "\n".join(textwrap.wrap(output_column, width=37, break_long_words=False))
-            self.ax_uncertainity[0].set_xlabel(output_with_line_breaks)
-            self.ax_uncertainity[0].set_ylabel("Frequency")
-            
-            ax2 = self.ax_uncertainity[0].twinx()
-            x_sorted = np.sort(y)
-            # Calcular la frecuencia acumulativa
-            acum = np.arange(1, len(x_sorted) + 1) / len(x_sorted)
-            # Graficar la frecuencia acumulativa con líneas
-            ax2.plot(x_sorted, acum, linestyle='-', marker='',color = "black")
-            ax2.set_ylabel("Cumulative Frequency")
-            #Put ax2 in the front
-            self.ax_uncertainity[0].set_zorder(1)
-            ax2.set_zorder(2)
-            #Delete grid
-            ax2.grid(visible=False)
-            
-            #Box plot
-            self.ax_uncertainity[1].boxplot(y)
-            self.ax_uncertainity[1].set_xticks([])
-            # Añadir título y etiquetas
-            self.ax_uncertainity[1].set_ylabel(output_with_line_breaks)
-            #Title to graph
-            self.canvas_uncertainity_graph.figure.suptitle(f"Uncertainty of {output_column}", fontsize = 10)
-            
-            #Add table
-            table = self.dlg_base.tableWidget
-            table.setRowCount(1)
-            table.setColumnCount(6)
-            table.setHorizontalHeaderLabels(["25th percentile","50th percentile","75th percentile","Average","Kurtosis","Skewness"])
-            #Add values
-            values = [np.percentile(y, 25),np.percentile(y, 50),np.percentile(y, 75),
-                np.mean(y),stats.kurtosis(y),stats.skew(y)]
-            for k,i in enumerate(values):
-                item = QTableWidgetItem(str(round(i,2)))
-                table.setItem(0,k,item)
-                item.setTextAlignment(Qt.AlignCenter)
-            #Change columns widths
-            for col in range(table.columnCount()):
-                table.setColumnWidth(col, 120)
-            #Change row name
-            header_item = QTableWidgetItem("Values")
-            table.setVerticalHeaderItem(0, header_item)
-            #Change background color
-            self.canvas_uncertainity_graph.figure.set_facecolor('#f0f0f0')
-            self.ax_uncertainity[0].set_facecolor('#f0f0f0')
-            self.ax_uncertainity[1].set_facecolor('#f0f0f0')
-            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-            self.canvas_uncertainity_graph.figure.subplots_adjust(wspace=0.7) #spacing beteween two graphs
-            self.canvas_uncertainity_graph.figure.subplots_adjust(left=0.1, bottom=0.2)
-            #Draw canvas
+                #Delete rows with error
+                df = df[df.Error==0]
+                
+                #Get output
+                for i in range(self.dlg_base.frame_69.layout().count()):
+                    item = self.dlg_base.frame_69.layout().itemAt(i)
+                    widget = item.widget()
+                    
+                    #Checks if the widget is a QCheckBox and if it is selected.
+                    if isinstance(widget, QRadioButton) and widget.isChecked():
+                        output_column = widget.text()
+                
+                y = [float(x) for x in df[output_column] if x!=np.nan]
+                
+                bins = 30
+                self.ax_uncertainity[0].hist(y, bins=bins, edgecolor='black')
+                #Labels
+                output_with_line_breaks = "\n".join(textwrap.wrap(output_column, width=37, break_long_words=False))
+                self.ax_uncertainity[0].set_xlabel(output_with_line_breaks)
+                self.ax_uncertainity[0].set_ylabel("Frequency")
+                
+                ax2 = self.ax_uncertainity[0].twinx()
+                x_sorted = np.sort(y)
+                # Calcular la frecuencia acumulativa
+                acum = np.arange(1, len(x_sorted) + 1) / len(x_sorted)
+                # Graficar la frecuencia acumulativa con líneas
+                ax2.plot(x_sorted, acum, linestyle='-', marker='',color = "black")
+                ax2.set_ylabel("Cumulative Frequency")
+                #Put ax2 in the front
+                self.ax_uncertainity[0].set_zorder(1)
+                ax2.set_zorder(2)
+                #Delete grid
+                ax2.grid(visible=False)
+                
+                #Box plot
+                self.ax_uncertainity[1].boxplot(y)
+                self.ax_uncertainity[1].set_xticks([])
+                # Añadir título y etiquetas
+                self.ax_uncertainity[1].set_ylabel(output_with_line_breaks)
+                #Title to graph
+                self.canvas_uncertainity_graph.figure.suptitle(f"Uncertainty of {output_column}", fontsize = 10)
+                
+                #Add table
+                table = self.dlg_base.tableWidget
+                table.setRowCount(1)
+                table.setColumnCount(6)
+                table.setHorizontalHeaderLabels(["25th percentile","50th percentile","75th percentile","Average","Kurtosis","Skewness"])
+                #Add values
+                values = [np.percentile(y, 25),np.percentile(y, 50),np.percentile(y, 75),
+                    np.mean(y),stats.kurtosis(y),stats.skew(y)]
+                for k,i in enumerate(values):
+                    item = QTableWidgetItem(str(round(i,2)))
+                    table.setItem(0,k,item)
+                    item.setTextAlignment(Qt.AlignCenter)
+                #Change columns widths
+                for col in range(table.columnCount()):
+                    table.setColumnWidth(col, 120)
+                #Change row name
+                header_item = QTableWidgetItem("Values")
+                table.setVerticalHeaderItem(0, header_item)
+                #Change background color
+                self.canvas_uncertainity_graph.figure.set_facecolor('#f0f0f0')
+                self.ax_uncertainity[0].set_facecolor('#f0f0f0')
+                self.ax_uncertainity[1].set_facecolor('#f0f0f0')
+                # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+                self.canvas_uncertainity_graph.figure.subplots_adjust(wspace=0.7) #spacing beteween two graphs
+                self.canvas_uncertainity_graph.figure.subplots_adjust(left=0.1, bottom=0.2)
+                #Draw canvas
+                self.canvas_uncertainity_graph.draw()
+                
+                #Save figure
+                self.dlg_base.print_graph_uncertainity.clicked.connect(lambda _, b= [self.dlg_base,self.canvas_uncertainity_graph]:self.figure_settings(b))
+        except:
+            # Clear canvas
+            self.canvas_uncertainity_graph.figure.clear()
+            self.ax_uncertainity[0].clear()
+            self.ax_uncertainity[1].clear()
             self.canvas_uncertainity_graph.draw()
-            
-            #Save figure
-            self.dlg_base.print_graph_uncertainity.clicked.connect(lambda _, b= [self.dlg_base,self.canvas_uncertainity_graph]:self.figure_settings(b))
     
     def add_base_value_dialog_oat(self):
         """Method to add the base value to the dialog of sensitivity when using OAT"""
@@ -3742,6 +3822,7 @@ class qvfsmod:
                     if not os.path.isabs(path_input): #relative path
                         path_input = os.path.join(os.path.dirname(path), path_input)
                     path_input = path_input.rstrip() #take out the line jumps
+                    path_input = str(Path(path_input.replace("\\","/")))#put slashes correctly depending on operating system
                     
                     
                     if os.path.exists(path_input):  
@@ -4706,265 +4787,273 @@ class qvfsmod:
             
     def update_owq_graph_balance(self,pesticide):
         """Method to update graph balance of pesticide data"""
-        #Obtain data
-        number_pesticide = int(pesticide.split()[-1])
-        
-        ruta = self.obtain_direction_prj(self.dlg_base.line_quality.text())
-        #Obtain values
-        with open(ruta, "r") as archivo:
-            lineas_owq = archivo.readlines()
-                
-        #Function to obtain infomation of owq file
-        def obtain_result_owq(string,number_pesticide):
-            condition = False
-            for i in lineas_owq:
-                if i == f" Normalized values by source area:\n":
-                    condition = True
-                if i.split("=")[-1].rstrip()==string and condition:
-                    if string != " Source Area (input)":
+        try:
+            #Obtain data
+            number_pesticide = int(pesticide.split()[-1])
+            
+            ruta = self.obtain_direction_prj(self.dlg_base.line_quality.text())
+            #Obtain values
+            with open(ruta, "r") as archivo:
+                lineas_owq = archivo.readlines()
+                    
+            #Function to obtain infomation of owq file
+            def obtain_result_owq(string,number_pesticide):
+                condition = False
+                for i in lineas_owq:
+                    if i == f" Normalized values by source area:\n":
+                        condition = True
+                    if i.split("=")[-1].rstrip()==string and condition:
+                        if string != " Source Area (input)":
+                            return float(i.split("=")[0].split()[int(number_pesticide)-1])
+                        else:
+                            return float(i.split("=")[0].split()[0])
+
+            def obtain_result_owq_2(string,number_pesticide):
+                condition = False
+                contador = 0
+                for i in lineas_owq:
+                    if i == " Huang & van Genuchten (1995) CDE analytical solution\n":
+                        contador += 1
+                    if contador == int(number_pesticide):
+                        condition = True
+                    if i.split("=")[0]==string and condition:
+                        return float(i.split("=")[1].split()[0])
+                        
+            def obtain_result_owq_3(string,number_pesticide):
+                condition = False
+                length_string = len(string)
+                for i in lineas_owq:
+                    if i == f" Normalized values by source area:\n":
+                        condition = True
+                    
+                    if i.split("=")[-1][:length_string]==string and condition:
                         return float(i.split("=")[0].split()[int(number_pesticide)-1])
-                    else:
-                        return float(i.split("=")[0].split()[0])
+                        
+                        
+            #Obtain inputs
+            source_area = obtain_result_owq(" Source Area (input)",number_pesticide)
+            pesticide_input = obtain_result_owq(" Pesticide input (mi)",number_pesticide)
+            pesticide_output = obtain_result_owq(" Pesticide output (mo)",number_pesticide)
+            output_liquid = obtain_result_owq(" Pesticide outflow in liquid phase (mod)",number_pesticide)
+            output_solid = obtain_result_owq(" Pesticide outflow in solid phase (mop)",number_pesticide)
+            trapped_in_vfs = obtain_result_owq(" Pesticide trapped in VFS (mf)",number_pesticide)
+            trapped_in_sediment = obtain_result_owq(" Pesticide trapped with sediment (mfsed)",number_pesticide)
+            trapped_in_mixing_layer = obtain_result_owq(" Pesticide trapped in mixing layer (mfml)",number_pesticide)
+            sorbed_mixing_layer_last_event = obtain_result_owq(" Pesticide sorbed in mixing layer from last event (mfml0)",number_pesticide)
 
-        def obtain_result_owq_2(string,number_pesticide):
-            condition = False
-            contador = 0
-            for i in lineas_owq:
-                if i == " Huang & van Genuchten (1995) CDE analytical solution\n":
-                    contador += 1
-                if contador == int(number_pesticide):
-                    condition = True
-                if i.split("=")[0]==string and condition:
-                    return float(i.split("=")[1].split()[0])
-                    
-        def obtain_result_owq_3(string,number_pesticide):
-            condition = False
-            length_string = len(string)
-            for i in lineas_owq:
-                if i == f" Normalized values by source area:\n":
-                    condition = True
+            soil_profile = obtain_result_owq_2("        Soil profile total mass (mfF mg)",number_pesticide)/source_area
+            soil_profile_dissolved = obtain_result_owq_2("   Soil profile dissolved mass (mfFd mg)",number_pesticide)/source_area
+            soil_profile_sorbed = obtain_result_owq_2("      Soil profile sorbed mass (mfFp mg)",number_pesticide)/source_area
+            mixing_layer_dissolved = obtain_result_owq_2("  Mixing layer dissolved mass (mfmld mg)",number_pesticide)/source_area
+            mixing_layer_sorbed = obtain_result_owq_2("     Mixing layer sorbed mass (mfmlp mg)",number_pesticide)/source_area
+            
+            total_residue_after_degradation = obtain_result_owq_3(" Total surface residue after degradation",number_pesticide)
+            dissolved_surface_residue_after_degradation = obtain_result_owq_3(" Dissolved surface residue after degradation",number_pesticide)
+            sorbed_surface_residue_after_degradation = obtain_result_owq_3(" Sorbed surface residue after degradation",number_pesticide)
+            
+            
+            #Create graph
+            #Add layout
+            #If canvas exist then clear. If not then create it. 
+            if not hasattr(self, 'canvas_owq_graph_balance'):
+                # Si no existe, crear el canvas y añadirlo al layout
+                self.canvas_owq_graph_balance = FigureCanvas(plt.Figure(figsize=(15, 6)))
                 
-                if i.split("=")[-1][:length_string]==string and condition:
-                    return float(i.split("=")[0].split()[int(number_pesticide)-1])
-                    
-                    
-        #Obtain inputs
-        source_area = obtain_result_owq(" Source Area (input)",number_pesticide)
-        pesticide_input = obtain_result_owq(" Pesticide input (mi)",number_pesticide)
-        pesticide_output = obtain_result_owq(" Pesticide output (mo)",number_pesticide)
-        output_liquid = obtain_result_owq(" Pesticide outflow in liquid phase (mod)",number_pesticide)
-        output_solid = obtain_result_owq(" Pesticide outflow in solid phase (mop)",number_pesticide)
-        trapped_in_vfs = obtain_result_owq(" Pesticide trapped in VFS (mf)",number_pesticide)
-        trapped_in_sediment = obtain_result_owq(" Pesticide trapped with sediment (mfsed)",number_pesticide)
-        trapped_in_mixing_layer = obtain_result_owq(" Pesticide trapped in mixing layer (mfml)",number_pesticide)
-        sorbed_mixing_layer_last_event = obtain_result_owq(" Pesticide sorbed in mixing layer from last event (mfml0)",number_pesticide)
-
-        soil_profile = obtain_result_owq_2("        Soil profile total mass (mfF mg)",number_pesticide)/source_area
-        soil_profile_dissolved = obtain_result_owq_2("   Soil profile dissolved mass (mfFd mg)",number_pesticide)/source_area
-        soil_profile_sorbed = obtain_result_owq_2("      Soil profile sorbed mass (mfFp mg)",number_pesticide)/source_area
-        mixing_layer_dissolved = obtain_result_owq_2("  Mixing layer dissolved mass (mfmld mg)",number_pesticide)/source_area
-        mixing_layer_sorbed = obtain_result_owq_2("     Mixing layer sorbed mass (mfmlp mg)",number_pesticide)/source_area
+                # Asignar un layout al QFrame si no tiene uno
+                layout = QVBoxLayout(self.dlg_owq_graph_balance.frame)
+                self.dlg_owq_graph_balance.frame.setLayout(layout)
+                
+                # Añadir el canvas al layout
+                layout.addWidget(self.canvas_owq_graph_balance)
+                
+            else:
+                # Si ya existe, simplemente limpiar el canvas
+                self.canvas_owq_graph_balance.figure.clear()
         
-        total_residue_after_degradation = obtain_result_owq_3(" Total surface residue after degradation",number_pesticide)
-        dissolved_surface_residue_after_degradation = obtain_result_owq_3(" Dissolved surface residue after degradation",number_pesticide)
-        sorbed_surface_residue_after_degradation = obtain_result_owq_3(" Sorbed surface residue after degradation",number_pesticide)
+            self.ax_owq_graph_balance= self.canvas_owq_graph_balance.figure.subplots(1,2)
         
-        
-        #Create graph
-        #Add layout
-        #If canvas exist then clear. If not then create it. 
-        if not hasattr(self, 'canvas_owq_graph_balance'):
-            # Si no existe, crear el canvas y añadirlo al layout
-            self.canvas_owq_graph_balance = FigureCanvas(plt.Figure(figsize=(15, 6)))
+            # Clear canvas
+            self.ax_owq_graph_balance[0].clear()
+            self.ax_owq_graph_balance[1].clear()
             
-            # Asignar un layout al QFrame si no tiene uno
-            layout = QVBoxLayout(self.dlg_owq_graph_balance.frame)
-            self.dlg_owq_graph_balance.frame.setLayout(layout)
             
-            # Añadir el canvas al layout
-            layout.addWidget(self.canvas_owq_graph_balance)
+            sizes_today = [output_solid, output_liquid, soil_profile_sorbed-mixing_layer_sorbed, 
+                soil_profile_dissolved-mixing_layer_dissolved,sorbed_mixing_layer_last_event, trapped_in_sediment,mixing_layer_sorbed, mixing_layer_dissolved]  # Proporciones
             
-        else:
-            # Si ya existe, simplemente limpiar el canvas
-            self.canvas_owq_graph_balance.figure.clear()
-    
-        self.ax_owq_graph_balance= self.canvas_owq_graph_balance.figure.subplots(1,2)
-    
-        # Clear canvas
-        self.ax_owq_graph_balance[0].clear()
-        self.ax_owq_graph_balance[1].clear()
-        
-        
-        sizes_today = [output_solid, output_liquid, soil_profile_sorbed-mixing_layer_sorbed, 
-            soil_profile_dissolved-mixing_layer_dissolved,sorbed_mixing_layer_last_event, trapped_in_sediment,mixing_layer_sorbed, mixing_layer_dissolved]  # Proporciones
-        
-        #Labels with percentage
-        labels_today = [
-            f'Outflow sorbed ({round(100*output_solid/sum(sizes_today),2)}%)', f'Outflow dissolved ({round(100*output_liquid/sum(sizes_today),2)}%)',
-            f'Leached sorbed ({round(100*(soil_profile_sorbed-mixing_layer_sorbed)/sum(sizes_today),2)}%)', f'Leached dissolved ({round(100*(soil_profile_dissolved-mixing_layer_dissolved)/sum(sizes_today),2)}%)',
-            f'Sorbed in mixing layer from last event ({round(100*sorbed_mixing_layer_last_event/sum(sizes_today),2)}%)',
-            f'Trapped with sediment ({round(100*trapped_in_sediment/sum(sizes_today),2)}%)',
-            f'Mixing layer sorbed ({round(100*mixing_layer_sorbed/sum(sizes_today),2)}%)', f'Mixing layer dissolved ({round(100*mixing_layer_dissolved/sum(sizes_today),2)}%)'
+            #Labels with percentage
+            labels_today = [
+                f'Outflow sorbed ({round(100*output_solid/sum(sizes_today),2)}%)', f'Outflow dissolved ({round(100*output_liquid/sum(sizes_today),2)}%)',
+                f'Leached sorbed ({round(100*(soil_profile_sorbed-mixing_layer_sorbed)/sum(sizes_today),2)}%)', f'Leached dissolved ({round(100*(soil_profile_dissolved-mixing_layer_dissolved)/sum(sizes_today),2)}%)',
+                f'Sorbed in mixing layer from last event ({round(100*sorbed_mixing_layer_last_event/sum(sizes_today),2)}%)',
+                f'Trapped with sediment ({round(100*trapped_in_sediment/sum(sizes_today),2)}%)',
+                f'Mixing layer sorbed ({round(100*mixing_layer_sorbed/sum(sizes_today),2)}%)', f'Mixing layer dissolved ({round(100*mixing_layer_dissolved/sum(sizes_today),2)}%)'
+                ]
+                
+            
+            colors = [
+                '#1f77b4',  # Outflow solid (azul claro)
+                '#66b3ff',  # Outflow liquid (azul más claro)
+                '#2ca02c',  # Infiltrated sorbed (verde claro)
+                '#145a32',  # Infiltrated dissolved (verde más oscuro)
+                "#a569bd",  # Sorbed in mixing layer from last event
+                '#e74c3c',   # Trapped with sediment (rojo)
+                '#ff7f0e',  # Mixing layer sorbed (naranja)
+                '#d35400',  # Mixing layer dissolved (naranja más oscuro)
             ]
             
-        
-        colors = [
-            '#1f77b4',  # Outflow solid (azul claro)
-            '#66b3ff',  # Outflow liquid (azul más claro)
-            '#2ca02c',  # Infiltrated sorbed (verde claro)
-            '#145a32',  # Infiltrated dissolved (verde más oscuro)
-            "#a569bd",  # Sorbed in mixing layer from last event
-            '#e74c3c',   # Trapped with sediment (rojo)
-            '#ff7f0e',  # Mixing layer sorbed (naranja)
-            '#d35400',  # Mixing layer dissolved (naranja más oscuro)
-        ]
-        
-        threshold = sum(sizes_today)*0.05  # Umbral para los valores pequeños
+            threshold = sum(sizes_today)*0.05  # Umbral para los valores pequeños
 
-        # Crear el gráfico de pastel
-        wedges, texts =self.ax_owq_graph_balance[0].pie(
-            sizes_today,
-            colors=colors,
-            autopct=None,
-            startangle=140,
-            wedgeprops={'edgecolor': 'black'},
-            pctdistance=0.85,  # Para valores absolutos dentro del pie
-            labeldistance=None  # Elimina las etiquetas fuera del pie
-        )
+            # Crear el gráfico de pastel
+            wedges, texts =self.ax_owq_graph_balance[0].pie(
+                sizes_today,
+                colors=colors,
+                autopct=None,
+                startangle=140,
+                wedgeprops={'edgecolor': 'black'},
+                pctdistance=0.85,  # Para valores absolutos dentro del pie
+                labeldistance=None  # Elimina las etiquetas fuera del pie
+            )
 
-        # Recorrer cada segmento del gráfico de pastel
-        for i, p in enumerate(self.ax_owq_graph_balance[0].patches):
-            # Cálculo del ángulo central del arco
-            ang = (p.theta2 - p.theta1) / 2. + p.theta1
-            x = 0.6 * np.cos(np.deg2rad(ang))  # Coordenada x dentro del segmento
-            y = 0.6 * np.sin(np.deg2rad(ang))  # Coordenada y dentro del segmento
-            horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
-            #Only put data if is above threshold
-            if sizes_today[i] > threshold:
-                # Si el valor es mayor o igual al umbral, poner la etiqueta dentro del pie
-                self.ax_owq_graph_balance[0].annotate(
-                    f'{round(sizes_today[i], 2)} mg/m\u00b2',
-                    xy=(x, y),
-                    horizontalalignment='center',  # Centrar dentro del segmento
-                    verticalalignment='center',fontsize = 10, fontweight = "bold"
-                )
-        
-        
-        #Legend
-        handles = [mpatches.Patch(color=colors[i], label=labels_today[i]) for i in range(len(labels_today))]
-        
-        handles_first, labels_first = handles[:4], labels_today[:4]
-        handles_second, labels_second = handles[4:], labels_today[4:]
-        
-        self.ax_owq_graph_balance[0].legend_ = None  
+            # Recorrer cada segmento del gráfico de pastel
+            for i, p in enumerate(self.ax_owq_graph_balance[0].patches):
+                # Cálculo del ángulo central del arco
+                ang = (p.theta2 - p.theta1) / 2. + p.theta1
+                x = 0.6 * np.cos(np.deg2rad(ang))  # Coordenada x dentro del segmento
+                y = 0.6 * np.sin(np.deg2rad(ang))  # Coordenada y dentro del segmento
+                horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
+                #Only put data if is above threshold
+                if sizes_today[i] > threshold:
+                    # Si el valor es mayor o igual al umbral, poner la etiqueta dentro del pie
+                    self.ax_owq_graph_balance[0].annotate(
+                        f'{round(sizes_today[i], 2)} mg/m\u00b2',
+                        xy=(x, y),
+                        horizontalalignment='center',  # Centrar dentro del segmento
+                        verticalalignment='center',fontsize = 10, fontweight = "bold"
+                    )
+            
+            
+            #Legend
+            handles = [mpatches.Patch(color=colors[i], label=labels_today[i]) for i in range(len(labels_today))]
+            
+            handles_first, labels_first = handles[:4], labels_today[:4]
+            handles_second, labels_second = handles[4:], labels_today[4:]
+            
+            self.ax_owq_graph_balance[0].legend_ = None  
 
-        # Crear la primera leyenda (5 elementos)
-        legend1 = self.ax_owq_graph_balance[0].legend(
-            handles_first, labels_first,
-            loc='lower center',
-            bbox_to_anchor=(-0.2, -0.37),  # Ajusta posición
-            fontsize='small',
-            ncol=1,  # Una columna para mostrar 5 filas
-            frameon=False,
-            title  = "Residues not to be degraded"
-        )
+            # Crear la primera leyenda (5 elementos)
+            legend1 = self.ax_owq_graph_balance[0].legend(
+                handles_first, labels_first,
+                loc='lower center',
+                bbox_to_anchor=(-0.2, -0.37),  # Ajusta posición
+                fontsize='small',
+                ncol=1,  # Una columna para mostrar 5 filas
+                frameon=False,
+                title  = "Residues not to be degraded"
+            )
 
-        # Agregar la primera leyenda antes de la segunda
-        self.ax_owq_graph_balance[0].add_artist(legend1)
+            # Agregar la primera leyenda antes de la segunda
+            self.ax_owq_graph_balance[0].add_artist(legend1)
 
-        # Crear la segunda leyenda (2 elementos)
-        legend2 = self.ax_owq_graph_balance[0].legend(
-            handles_second, labels_second,
-            loc='lower center',
-            bbox_to_anchor=(0.95, -0.37),  # Ajusta posición más a la derecha
-            fontsize='small',
-            ncol=1,  # Una columna para mostrar 2 filas
-            frameon=False,
-            title = "Residues to be degraded"
-        )
+            # Crear la segunda leyenda (2 elementos)
+            legend2 = self.ax_owq_graph_balance[0].legend(
+                handles_second, labels_second,
+                loc='lower center',
+                bbox_to_anchor=(0.95, -0.37),  # Ajusta posición más a la derecha
+                fontsize='small',
+                ncol=1,  # Una columna para mostrar 2 filas
+                frameon=False,
+                title = "Residues to be degraded"
+            )
 
-        
-        
-        #Title
-        self.ax_owq_graph_balance[0].set_title("Pesticides mass distribution after event")
-        
-        
-        sizes_tomorrow = [dissolved_surface_residue_after_degradation, sorbed_surface_residue_after_degradation]  # Proporciones diferentes
+            
+            
+            #Title
+            self.ax_owq_graph_balance[0].set_title("Pesticides mass distribution after event")
+            
+            
+            sizes_tomorrow = [dissolved_surface_residue_after_degradation, sorbed_surface_residue_after_degradation]  # Proporciones diferentes
 
-        #Labels with percetage
-        labels_tomorrow = [
-            f'Dissolved surface residue \nafter degradation ({round(100*dissolved_surface_residue_after_degradation/sum(sizes_tomorrow),2)}%)', 
-            f'Sorbed surface residue \nafter degradation ({round(100*sorbed_surface_residue_after_degradation/sum(sizes_tomorrow),2)}%)'
-        ]
-        
-        #Colors
-        colors_tomorrow = [
-            '#c2f0f0',  # Dissolved surface residue
-            '#ffb3b3'   # Sorbed surface residue
-        ]
-        
-        #Create pie
-        self.ax_owq_graph_balance[1].pie(
-            sizes_tomorrow,
-            colors=colors_tomorrow,
-            autopct=None,
-            startangle=140,
-            wedgeprops={'edgecolor': 'black'},
-            pctdistance=0.85,  # Para valores absolutos dentro del pie
-            labeldistance=None  # Elimina las etiquetas fuera del pie
-        )
-        
-        threshold = sum(sizes_tomorrow)*0.05  # Umbral para los valores pequeños
-        # Recorrer cada segmento del gráfico de pastel
-        for i, p in enumerate(self.ax_owq_graph_balance[1].patches):
-            # Cálculo del ángulo central del arco
-            ang = (p.theta2 - p.theta1) / 2. + p.theta1
-            x = 0.5 * np.cos(np.deg2rad(ang))  # Coordenada x dentro del segmento
-            y = 0.5 * np.sin(np.deg2rad(ang))  # Coordenada y dentro del segmento
-            horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
+            #Labels with percetage
+            labels_tomorrow = [
+                f'Dissolved surface residue \nafter degradation ({round(100*dissolved_surface_residue_after_degradation/sum(sizes_tomorrow),2)}%)', 
+                f'Sorbed surface residue \nafter degradation ({round(100*sorbed_surface_residue_after_degradation/sum(sizes_tomorrow),2)}%)'
+            ]
+            
+            #Colors
+            colors_tomorrow = [
+                '#c2f0f0',  # Dissolved surface residue
+                '#ffb3b3'   # Sorbed surface residue
+            ]
+            
+            #Create pie
+            self.ax_owq_graph_balance[1].pie(
+                sizes_tomorrow,
+                colors=colors_tomorrow,
+                autopct=None,
+                startangle=140,
+                wedgeprops={'edgecolor': 'black'},
+                pctdistance=0.85,  # Para valores absolutos dentro del pie
+                labeldistance=None  # Elimina las etiquetas fuera del pie
+            )
+            
+            threshold = sum(sizes_tomorrow)*0.05  # Umbral para los valores pequeños
+            # Recorrer cada segmento del gráfico de pastel
+            for i, p in enumerate(self.ax_owq_graph_balance[1].patches):
+                # Cálculo del ángulo central del arco
+                ang = (p.theta2 - p.theta1) / 2. + p.theta1
+                x = 0.5 * np.cos(np.deg2rad(ang))  # Coordenada x dentro del segmento
+                y = 0.5 * np.sin(np.deg2rad(ang))  # Coordenada y dentro del segmento
+                horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
 
-            #Only put data if is above threshold
-            if sizes_tomorrow[i] > threshold:
-                # Si el valor es mayor o igual al umbral, poner la etiqueta dentro del pie
-                self.ax_owq_graph_balance[1].annotate(
-                    f'{round(sizes_tomorrow[i], 2)} mg/m\u00b2',
-                    xy=(x, y),
-                    horizontalalignment='center',  # Centrar dentro del segmento
-                    verticalalignment='center',fontsize = 10, fontweight = "bold"
-                )
+                #Only put data if is above threshold
+                if sizes_tomorrow[i] > threshold:
+                    # Si el valor es mayor o igual al umbral, poner la etiqueta dentro del pie
+                    self.ax_owq_graph_balance[1].annotate(
+                        f'{round(sizes_tomorrow[i], 2)} mg/m\u00b2',
+                        xy=(x, y),
+                        horizontalalignment='center',  # Centrar dentro del segmento
+                        verticalalignment='center',fontsize = 10, fontweight = "bold"
+                    )
 
-        #Legend
-        handles_tomorrow = [mpatches.Patch(color=colors_tomorrow[i], label=labels_tomorrow[i], edgecolor="none") for i in range(len(labels_tomorrow))]
-        
-        self.ax_owq_graph_balance[1].legend(
-             handles_tomorrow,labels_tomorrow,
-            loc='lower center',
-            bbox_to_anchor=(0.6, -0.32),
-            fontsize='small',
-            ncol=1,  # Dos columnas en la leyenda
-            frameon=False,  # Fondo transparente y sin borde
-            title = "Degraded residues"
-        )
-        
-        #Título
-        self.ax_owq_graph_balance[1].set_title("Pesticides mass distribution after degradation")
-        
-        
+            #Legend
+            handles_tomorrow = [mpatches.Patch(color=colors_tomorrow[i], label=labels_tomorrow[i], edgecolor="none") for i in range(len(labels_tomorrow))]
+            
+            self.ax_owq_graph_balance[1].legend(
+                 handles_tomorrow,labels_tomorrow,
+                loc='lower center',
+                bbox_to_anchor=(0.6, -0.32),
+                fontsize='small',
+                ncol=1,  # Dos columnas en la leyenda
+                frameon=False,  # Fondo transparente y sin borde
+                title = "Degraded residues"
+            )
+            
+            #Título
+            self.ax_owq_graph_balance[1].set_title("Pesticides mass distribution after degradation")
+            
+            
 
-        # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
-        self.canvas_owq_graph_balance.figure.subplots_adjust(left=0.2, bottom=0.2)
-        #Change background color
-        self.canvas_owq_graph_balance.figure.set_facecolor('#f0f0f0')
-        self.ax_owq_graph_balance[0].set_facecolor('#f0f0f0')
-        self.ax_owq_graph_balance[1].set_facecolor('#f0f0f0')
-        #Adjust distance between piecharts
-        self.canvas_owq_graph_balance.figure.subplots_adjust(wspace=0.5)
-        # Redraw the canvas
-        self.canvas_owq_graph_balance.draw()
+            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+            self.canvas_owq_graph_balance.figure.subplots_adjust(left=0.2, bottom=0.2)
+            #Change background color
+            self.canvas_owq_graph_balance.figure.set_facecolor('#f0f0f0')
+            self.ax_owq_graph_balance[0].set_facecolor('#f0f0f0')
+            self.ax_owq_graph_balance[1].set_facecolor('#f0f0f0')
+            #Adjust distance between piecharts
+            self.canvas_owq_graph_balance.figure.subplots_adjust(wspace=0.5)
+            # Redraw the canvas
+            self.canvas_owq_graph_balance.draw()
+            
+            #Save figure
+            self.dlg_owq_graph_balance.print_graph.clicked.connect(lambda _, b= [self.dlg_owq_graph_balance,self.canvas_owq_graph_balance]:self.figure_settings(b))
         
-        #Save figure
-        self.dlg_owq_graph_balance.print_graph.clicked.connect(lambda _, b= [self.dlg_owq_graph_balance,self.canvas_owq_graph_balance]:self.figure_settings(b))
-    
+        except:
+            # Clear canvas
+            self.canvas_owq_graph_balance.figure.clear()
+            self.ax_owq_graph_balance[0].clear()
+            self.ax_owq_graph_balance[1].clear()
+            self.canvas_owq_graph_balance.draw()
+        
         
     def show_owq_graph(self):
         """Method to show the dialog with water quality graph"""
@@ -5043,6 +5132,7 @@ class qvfsmod:
             #Show dialog
             self.dlg_owq_graph.show()
             self.dlg_owq_graph.raise_()
+            
 
     def update_owq_graph(self,pesticide):
         """Method to update the dialog with water quality graph"""
@@ -6366,7 +6456,7 @@ class qvfsmod:
             with open(ruta, "r") as archivo:
                 lineas = archivo.readlines()
             #If the csv is not of a Morris sensitivity analysis then give error
-            if lineas[0]!="Morris sensitivity indexes (mu star_sigma)" + '\n':
+            if lineas[0]!="Morris sensitivity indexes (mu star_sigma_mu_mu star confidence)" + '\n':
                 self.warning_message("Please select a csv file that contains Morris sensitivity analysis results")
                 return
             
@@ -6388,27 +6478,64 @@ class qvfsmod:
             #Obtain output
             output_column = "Goodnes of fit"
             
+            def nan_function(value):    
+                if value.replace("\n","") == "nan":
+                    return 0
+                try:
+                    return float(value)
+                except:
+                    return 0
+                
             names_inputs = []
             mu_star = []
             sigma = []
+            mu = []
+            mu_star_conf = []
             for i in range(len(lineas)):
                 if lineas[i] == output_column+ '\n':
                     for k in lineas[i+1:]:
                         if k == "----------------------------------------------------------------------" + '\n':
                                 break
                         names_inputs.append(k.split(":")[0])
-                        mu_star.append(float(k.split(":")[1].split("_")[0]))
-                        sigma.append(float(k.split(":")[1].split("_")[1]))
+                        mu_star.append(nan_function(k.split(":")[1].split("_")[0]))
+                        sigma.append(nan_function(k.split(":")[1].split("_")[1])) 
+                        mu.append(nan_function(k.split(":")[1].split("_")[2]))
+                        mu_star_conf.append(nan_function(k.split(":")[1].split("_")[3]))
                         
             # Graficar los puntos con color granate y agregar etiquetas
-            for i, (x, y) in enumerate(zip(mu_star, sigma)):
+            add_label_monotonic = True # add label only once
+            add_label_non_monotonic = True # add label only once
+            for i, (x, y,conf) in enumerate(zip(mu_star, sigma,mu_star_conf)):
                 if np.isnan(x):x = 0
                 if np.isnan(y):y = 0
-                self.ax_calibration_sensitivity.scatter(x, y, marker="o", color="maroon")
-                self.ax_calibration_sensitivity.annotate("\n".join(textwrap.wrap(names_inputs[i], width=20, break_long_words=False)), (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
-                    fontweight='bold',fontsize = 10)
+                #If the difference between mu and mu star is higher than 5%, then is non-monotonic
+                if abs(mu_star[i]) == 0 and abs(mu_star[i]) == 0:
+                    difference = 0
+                elif abs(mu_star[i]) != 0 and abs(mu_star[i]) == 0:
+                    difference = 1
+                else:
+                    difference = (abs(mu_star[i])-abs(mu[i]))/abs(mu_star[i])
+                if difference>0.05:
+                    if add_label_non_monotonic: # add label only once
+                        self.ax_calibration_sensitivity.errorbar(x, y, xerr = conf,color="blue",ecolor='black', marker="*", label="Non-Monotonic", capsize=5)
+                        add_label_non_monotonic = False
+                    else:
+                        self.ax_calibration_sensitivity.errorbar(x, y, xerr = conf, color="blue",ecolor='black', marker="*", capsize=5)
+                    self.ax_calibration_sensitivity.annotate("\n".join(textwrap.wrap(names_inputs[i], width=20, break_long_words=False)), (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
+                        fontweight='bold',fontsize = 10)
+                else:
+                    if add_label_monotonic: # add label only once
+                        self.ax_calibration_sensitivity.errorbar(x, y,xerr = conf, marker="o", color="maroon",ecolor='black',label="Monotonic", capsize=5)
+                        add_label_monotonic = False
+                    else:
+                        self.ax_calibration_sensitivity.errorbar(x, y, xerr = conf,marker="o", color="maroon",ecolor='black', capsize=5)
+                        
+                    self.ax_calibration_sensitivity.annotate("\n".join(textwrap.wrap(names_inputs[i], width=20, break_long_words=False)), (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
+                        fontweight='bold',fontsize = 10)
+                            
+                            
             #Linea 1:1
-            line_plot = list(range(-1,int(max(list(mu_star)+list(sigma))*1.2)+2))
+            line_plot = list(range(-1,int(max([mu_star[x]+mu_star_conf[x] for x in range(len(mu_star))]+list(sigma))*1.1)+2))
             self.ax_calibration_sensitivity.plot(line_plot, line_plot, color="red",linestyle="--")
             
             #Threshold line
@@ -6419,13 +6546,22 @@ class qvfsmod:
                 threshold = 0
             
             if max(list(mu_star)+list(sigma))>0:
-                self.ax_calibration_sensitivity.set_xlim(0,max(list(mu_star)+list(sigma))*1.2)
-                self.ax_calibration_sensitivity.set_ylim(0,max(list(mu_star)+list(sigma))*1.2)
+                self.ax_calibration_sensitivity.set_xlim(0,max([mu_star[x]+mu_star_conf[x] for x in range(len(mu_star))]+list(sigma))*1.1)
+                self.ax_calibration_sensitivity.set_ylim(0,max([mu_star[x]+mu_star_conf[x] for x in range(len(mu_star))]+list(sigma))*1.1)
             else:
                 self.ax_calibration_sensitivity.set_xlim(0,1)
                 self.ax_calibration_sensitivity.set_ylim(0,1)
                     
-                    
+            
+            #Add legend
+            legend = self.ax_calibration_sensitivity.legend(
+                loc="lower center",  # Centrar horizontalmente
+                bbox_to_anchor=(0.9, 1.01),  # Posición justo arriba del gráfico
+                ncol=1,  # Número de columnas en la leyenda
+                frameon=False
+            )
+            legend.get_frame().set_alpha(0)
+            
             #Labels
             self.ax_calibration_sensitivity.set_xlabel(r"Mean of Elementary Effects ($\mu_{i}^{*}$)")
             self.ax_calibration_sensitivity.set_ylabel("Standard Deviation \nof Elementary Effects ($\sigma_{i}$)")
@@ -6493,7 +6629,7 @@ class qvfsmod:
                 with open(ruta, "r") as archivo:
                     lineas = archivo.readlines()
                 #If the csv is not of a Morris sensitivity analysis then give error
-                if lineas[0]!="Morris sensitivity indexes (mu star_sigma_mu)" + '\n':
+                if lineas[0]!="Morris sensitivity indexes (mu star_sigma_mu_mu star confidence)" + '\n':
                     self.warning_message("Please select a csv file that contains Morris sensitivity analysis results")
                     return
                 
@@ -6510,6 +6646,7 @@ class qvfsmod:
                 mu_star = []
                 sigma = []
                 mu = []
+                mu_star_conf = []
                 for i in range(len(lineas)):
                     if lineas[i] == output_column+ '\n':
                         for k in lineas[i+1:]:
@@ -6519,6 +6656,7 @@ class qvfsmod:
                             mu_star.append(nan_function(k.split(":")[1].split("_")[0]))
                             sigma.append(nan_function(k.split(":")[1].split("_")[1]))
                             mu.append(nan_function(k.split(":")[1].split("_")[2]))
+                            mu_star_conf.append(nan_function(k.split(":")[1].split("_")[3]))
                 
                 #If output doesnt exist, then stop with the code
                 if len(mu_star) == 0:
@@ -6531,7 +6669,7 @@ class qvfsmod:
                 # Graficar los puntos con color granate y agregar etiquetas
                 add_label_monotonic = True # add label only once
                 add_label_non_monotonic = True # add label only once
-                for i, (x, y) in enumerate(zip(mu_star, sigma)):
+                for i, (x, y,conf) in enumerate(zip(mu_star, sigma,mu_star_conf)):
                     if np.isnan(x):x = 0
                     if np.isnan(y):y = 0
                     #If the difference between mu and mu star is higher than 5%, then is non-monotonic
@@ -6543,29 +6681,29 @@ class qvfsmod:
                         difference = (abs(mu_star[i])-abs(mu[i]))/abs(mu_star[i])
                     if difference>0.05:
                         if add_label_non_monotonic: # add label only once
-                            self.ax.scatter(x, y, color="blue", marker="*", label="Non-Monotonic")
+                            self.ax.errorbar(x, y, xerr = conf,color="blue",ecolor='black', marker="*", label="Non-Monotonic", capsize=5)
                             add_label_non_monotonic = False
                         else:
-                            self.ax.scatter(x, y, color="blue", marker="*")
+                            self.ax.errorbar(x, y, xerr = conf, color="blue",ecolor='black', marker="*", capsize=5)
                         self.ax.annotate("\n".join(textwrap.wrap(names_inputs[i], width=20, break_long_words=False)), (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
                             fontweight='bold',fontsize = 10)
                     else:
                         if add_label_monotonic: # add label only once
-                            self.ax.scatter(x, y, marker="o", color="maroon",label="Monotonic")
+                            self.ax.errorbar(x, y,xerr = conf, marker="o", color="maroon",ecolor='black',label="Monotonic", capsize=5)
                             add_label_monotonic = False
                         else:
-                            self.ax.scatter(x, y, marker="o", color="maroon")
+                            self.ax.errorbar(x, y, xerr = conf,marker="o", color="maroon",ecolor='black', capsize=5)
                             
                         self.ax.annotate("\n".join(textwrap.wrap(names_inputs[i], width=20, break_long_words=False)), (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
                             fontweight='bold',fontsize = 10)
                         
                 #Linea 1:1
-                line_plot = list(range(-1,int(max(list(mu_star)+list(sigma))*1.2)+2))
+                line_plot = list(range(-1,int(max([mu_star[x]+mu_star_conf[x] for x in range(len(mu_star))]+list(sigma))*1.1)+2))
                 self.ax.plot(line_plot, line_plot, color="red",linestyle="--")
                 
                 if max(list(mu_star)+list(sigma))>0:
-                    self.ax.set_xlim(0,max(list(mu_star)+list(sigma))*1.2)
-                    self.ax.set_ylim(0,max(list(mu_star)+list(sigma))*1.2)
+                    self.ax.set_xlim(0,max([mu_star[x]+mu_star_conf[x] for x in range(len(mu_star))]+list(sigma))*1.1)
+                    self.ax.set_ylim(0,max([mu_star[x]+mu_star_conf[x] for x in range(len(mu_star))]+list(sigma))*1.1)
                 else:
                     self.ax.set_xlim(0,1)
                     self.ax.set_ylim(0,1)
@@ -6934,28 +7072,67 @@ class qvfsmod:
                 minimum_values = []
                 maximum_values = []
                 median_values = []
+                percentile_2_5_values = []
+                percentile_97_5_values = []
                 for i in buffer_lengths:
                     minimum_values.append(min([x[1] for x in values if x[0]==i]))
                     maximum_values.append(max([x[1] for x in values if x[0]==i]))
                     median_values.append(stats.scoreatpercentile([x[1] for x in values if x[0]==i],50))
+                    percentile_2_5_values.append(stats.scoreatpercentile([x[1] for x in values if x[0]==i],2.5))
+                    percentile_97_5_values.append(stats.scoreatpercentile([x[1] for x in values if x[0]==i],97.5))
                 
                 #Add lines
-                #Minimum values
-                ax1.plot(buffer_lengths, minimum_values, linewidth=1.5, marker='o', color="steelblue",
-                         markersize=5, linestyle="--", label="Minimum")
-                ax1.plot(buffer_lengths, maximum_values, linewidth=1.5, marker='o', color="firebrick",
-                         markersize=5, linestyle="--", label="Maximum")
+                #Confidence interval
+                ax1.plot(buffer_lengths, percentile_2_5_values, linewidth=0.5, marker='o', color="lightgrey",
+                         markersize=1)
+                ax1.plot(buffer_lengths, percentile_97_5_values, linewidth=0.5, marker='o', color="lightgrey",
+                         markersize=1)
+                # Sombreado del intervalo de confianza
+                ax1.fill_between(buffer_lengths, percentile_2_5_values, percentile_97_5_values, 
+                                 color="lightgrey", alpha=0.5, label="95% CI")
 
                 # Línea central: Mediana
                 ax1.plot(buffer_lengths, median_values, linewidth=2.5, marker='s', color="black",
                          markersize=7, linestyle="-", label="Median")
-                 
-                #Vertical line
+                
+                #Horizontal line and confidence interval
+                ax1.axhline(y=float(output_column.split()[-1]), color='red', linestyle='--', linewidth=1.5)
+                percentile_2_5 = stats.scoreatpercentile(self.values_design_uncertainty_graph,2.5)
+                percentile_97_5 = stats.scoreatpercentile(self.values_design_uncertainty_graph,97.5)
                 try:
-                    ax1.axvline(x=float(self.dlg_base.buffer_length_sensitivity_design.text()), color='red', linestyle='--', linewidth=1.5)
+                    ax1.axvline(x=percentile_2_5, color='#4682B4', linestyle='--', linewidth=1.5)
                 except:
                     pass
-                    
+                try:
+                    ax1.axvline(x=percentile_97_5, color='#4682B4', linestyle='--', linewidth=1.5)
+                except:
+                    pass
+                
+                #Vertical line
+                value_length = float(self.dlg_base.buffer_length_sensitivity_design.text())
+                try:
+                    ax1.axvline(x=value_length, color='red', linestyle='--', linewidth=1.5,alpha = 0.5)
+                except:
+                    pass
+                
+                #Arrow for the confidence interval and text
+                ax1.annotate(
+                    '',
+                    xy=(percentile_2_5,  (ax1.get_ylim()[1]-ax1.get_ylim()[0])*0.1+ax1.get_ylim()[0]),           
+                    xytext=(percentile_97_5, (ax1.get_ylim()[1]-ax1.get_ylim()[0])*0.1+ax1.get_ylim()[0]), 
+                    arrowprops=dict(
+                        arrowstyle='<->',
+                        color='#4682B4',
+                        linewidth=2
+                    )
+                )
+                ax1.text((percentile_2_5+percentile_97_5)/2, (ax1.get_ylim()[1]-ax1.get_ylim()[0])*0.17+ax1.get_ylim()[0], 
+                    '95% Confidence interval', fontsize=12, color='#4682B4', fontweight='bold', ha="center")
+                ax1.text(percentile_2_5+(max(buffer_lengths)-min(buffer_lengths))*0.01, (ax1.get_ylim()[1]-ax1.get_ylim()[0])*0.12+ax1.get_ylim()[0], 
+                    str(round(percentile_2_5,2)), fontsize=12, color='#4682B4', fontweight='bold')
+                ax1.text(percentile_97_5-(max(buffer_lengths)-min(buffer_lengths))*0.01, (ax1.get_ylim()[1]-ax1.get_ylim()[0])*0.12+ax1.get_ylim()[0], 
+                    str(round(percentile_97_5,2)), fontsize=12, color='#4682B4', fontweight='bold',ha ="right")
+                
                 #Labels
                 ax1.set_xlabel("Buffer lengths (m)")
                 if output_column.split()[2] == "RDR":
@@ -6970,6 +7147,27 @@ class qvfsmod:
                     
                 #X ticks
                 ax1.tick_params(axis = "both",colors = "black",labelsize = 9)
+                
+                #If a xtick is near the obtained value then, delete it
+                distance_ticks = buffer_lengths[1] - buffer_lengths[0]
+                x_ticks = np.sort(buffer_lengths)
+                
+                delete_ticks = []
+                for tick in x_ticks:
+                    if abs(tick-value_length)<distance_ticks*0.1:
+                        delete_ticks.append(tick)
+                x_ticks = [x for x in x_ticks if x not in delete_ticks]
+                x_ticks = np.sort(x_ticks +[value_length])
+                
+                ax1.set_xticks(x_ticks)
+                
+                #Color the selected buffer length
+                for label in ax1.get_xticklabels():
+                    if float(label.get_text()) == value_length:
+                        label.set_color('red')
+                        label.set_fontweight('bold')
+                        label.set_fontsize(14)
+                
                 # Add legend
                 legend = ax1.legend(
                     loc="best",
@@ -7007,7 +7205,7 @@ class qvfsmod:
                 with open(ruta, "r") as archivo:
                     lineas = archivo.readlines()
                 #If the csv is not of a Morris sensitivity analysis then give error
-                if lineas[0]!="Morris sensitivity indexes (mu star_sigma_mu)" + '\n':
+                if lineas[0]!="Morris sensitivity indexes (mu star_sigma_mu_mu star confidence)" + '\n':
                     self.warning_message("Please select a csv file that contains Morris sensitivity analysis results")
                     return
                 
@@ -7025,6 +7223,7 @@ class qvfsmod:
                 mu_star = []
                 sigma = []
                 mu = []
+                mu_star_conf = []
                 for i in range(len(lineas)):
                     if lineas[i] == output_column+ '\n':
                         for k in lineas[i+1:]:
@@ -7034,6 +7233,7 @@ class qvfsmod:
                             mu_star.append(nan_function(k.split(":")[1].split("_")[0]))
                             sigma.append(nan_function(k.split(":")[1].split("_")[1]))
                             mu.append(nan_function(k.split(":")[1].split("_")[2]))
+                            mu_star_conf.append(nan_function(k.split(":")[1].split("_")[3]))
                 
                 if len(mu_star) == 0:
                     self.canvas_sensitivity_graph_design.figure.clear()
@@ -7044,8 +7244,7 @@ class qvfsmod:
                 # Graficar los puntos con color granate y agregar etiquetas
                 add_label_monotonic = True # add label only once
                 add_label_non_monotonic = True # add label only once
-                
-                for i, (x, y) in enumerate(zip(mu_star, sigma)):
+                for i, (x, y,conf) in enumerate(zip(mu_star, sigma,mu_star_conf)):
                     if np.isnan(x):x = 0
                     if np.isnan(y):y = 0
                     #If the difference between mu and mu star is higher than 5%, then is non-monotonic
@@ -7057,31 +7256,33 @@ class qvfsmod:
                         difference = (abs(mu_star[i])-abs(mu[i]))/abs(mu_star[i])
                     if difference>0.05:
                         if add_label_non_monotonic: # add label only once
-                            self.ax_design.scatter(x, y, color="blue", marker="*", label="Non-Monotonic")
+                            self.ax_design.errorbar(x, y, xerr = conf,color="blue",ecolor='black', marker="*", label="Non-Monotonic", capsize=5)
                             add_label_non_monotonic = False
                         else:
-                            self.ax_design.scatter(x, y, color="blue", marker="*")
+                            self.ax_design.errorbar(x, y, xerr = conf, color="blue",ecolor='black', marker="*", capsize=5)
                         self.ax_design.annotate("\n".join(textwrap.wrap(names_inputs[i], width=20, break_long_words=False)), (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
                             fontweight='bold',fontsize = 10)
                     else:
                         if add_label_monotonic: # add label only once
-                            self.ax_design.scatter(x, y, marker="o", color="maroon",label="Monotonic")
+                            self.ax_design.errorbar(x, y,xerr = conf, marker="o", color="maroon",ecolor='black',label="Monotonic", capsize=5)
                             add_label_monotonic = False
                         else:
-                            self.ax_design.scatter(x, y, marker="o", color="maroon")
+                            self.ax_design.errorbar(x, y, xerr = conf,marker="o", color="maroon",ecolor='black', capsize=5)
                             
                         self.ax_design.annotate("\n".join(textwrap.wrap(names_inputs[i], width=20, break_long_words=False)), (x, y), textcoords="offset points", xytext=(10,10), ha='center', 
                             fontweight='bold',fontsize = 10)
                         
+                   
+                        
                 #Linea 1:1
-                line_plot = list(range(-1,int(max(list(mu_star)+list(sigma))*1.2)+2))
+                line_plot = list(range(-1,int(max([mu_star[x]+mu_star_conf[x] for x in range(len(mu_star))]+list(sigma))*1.1)+2))
                 self.ax_design.plot(line_plot, line_plot, color="red",linestyle="--")
                 
                 
                 
                 if max(list(mu_star)+list(sigma))>0:
-                    self.ax_design.set_xlim(0,max(list(mu_star)+list(sigma))*1.2)
-                    self.ax_design.set_ylim(0,max(list(mu_star)+list(sigma))*1.2)
+                    self.ax_design.set_xlim(0,max([mu_star[x]+mu_star_conf[x] for x in range(len(mu_star))]+list(sigma))*1.1)
+                    self.ax_design.set_ylim(0,max([mu_star[x]+mu_star_conf[x] for x in range(len(mu_star))]+list(sigma))*1.1)
                 else:
                     self.ax_design.set_xlim(0,1)
                     self.ax_design.set_ylim(0,1)
@@ -7320,9 +7521,9 @@ class qvfsmod:
     def udpate_buffer_length_cumulative(self):
         """Method to obtain the buffer length according to a confidence level"""
         try:
-            values = self.obtain_values_sensitivity_design()
+            self.values_design_uncertainty_graph = self.obtain_values_sensitivity_design()
             #Obtain value
-            value = stats.scoreatpercentile(values,float(self.dlg_base.cumulative_probability_sensitivity_design.text()))
+            value = stats.scoreatpercentile(self.values_design_uncertainty_graph,float(self.dlg_base.cumulative_probability_sensitivity_design.text()))
             #Disconnect function
             self.dlg_base.buffer_length_sensitivity_design.textChanged.disconnect(self.udpate_cumulative_buffer_length)
             self.dlg_base.buffer_length_sensitivity_design.setText(str(round(value,2)))
@@ -7661,6 +7862,8 @@ class qvfsmod:
                     break
         else:
             self.pesticide = np.nan
+        if not hasattr(self, 'pesticide'):
+            self.pesticide = np.nan
         
         #Method were the paralelization is achieved
         self.start_analysis_sensitivity_calibration()
@@ -7678,6 +7881,13 @@ class qvfsmod:
             self.warning_message("Error:"+str(e))
             #Connect again signal
             self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
+            return
+        
+        #if rainfall is not a number then return
+        try:
+            float(self.dlg_base.sensitivity_design_rainfall.text())
+        except:
+            self.warning_message("Please select a correct Rainfall")
             return
         
         #Check if all the parameters that the user has choosen are available in the project
@@ -7698,8 +7908,8 @@ class qvfsmod:
         self.problem = {'num_vars': len(self.dic_data),'names': list(self.dic_data.keys()),'bounds': [x[1] for x in self.dic_data.values()],"dists":[x[0] for x in self.dic_data.values()]}
         #Create samples
         if self.dlg_base.sobol_design.isChecked():
-            if int(self.dlg_base.trajectories_design.text())<2:
-                self.warning_message("Number of samples must be 2 or higher when executing Sobol")
+            if int(self.dlg_base.trajectories_design.text())<256:
+                self.warning_message("Number of samples must be 256 or higher when executing Sobol")
                 #Connect again signal
                 self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
                 return
@@ -7719,8 +7929,8 @@ class qvfsmod:
                 
             self.param_values = sample_morris(self.problem, int(self.dlg_base.trajectories_design.text()))
         elif self.dlg_base.fast_design.isChecked():
-            if int(self.dlg_base.trajectories_design.text())<2:
-                self.warning_message("N value must be 2 or higher when executing FAST")
+            if int(self.dlg_base.trajectories_design.text())<256:
+                self.warning_message("N value must be 256 or higher when executing FAST")
                 #Connect again signal
                 self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
                 return
@@ -7739,19 +7949,31 @@ class qvfsmod:
         
         #Add columns where data is going to be saved
         self.outputs_sensitivity_design = {}
-        if self.dlg_base.sensitivity_design_runoff_check.isChecked():
-            self.results_sensitivity.insert(len(self.results_sensitivity.columns),"RDR",None)
-            self.outputs_sensitivity_design["RDR"] = float(self.dlg_base.sensitivity_design_runoff_line.text())
-        if self.dlg_base.sensitivity_design_sediment_check.isChecked():
-            self.results_sensitivity.insert(len(self.results_sensitivity.columns),"SDR",None)
-            self.outputs_sensitivity_design["SDR"] = float(self.dlg_base.sensitivity_design_sediment_line.text())
-        for i in self.sensitivity_design_pesticides_present:
-            if getattr(self.dlg_base, f"sensitivity_design_pesticide_check_{i}").isChecked():
-                self.results_sensitivity.insert(len(self.results_sensitivity.columns),f"PDR {i}",None)
-                self.outputs_sensitivity_design[f"PDR {i}"] = float(getattr(self.dlg_base, f"sensitivity_design_pesticide_line_{i}").text())
-            
+        try:
+            if self.dlg_base.sensitivity_design_runoff_check.isChecked():
+                self.results_sensitivity.insert(len(self.results_sensitivity.columns),"RDR",None)
+                self.outputs_sensitivity_design["RDR"] = float(self.dlg_base.sensitivity_design_runoff_line.text())
+            if self.dlg_base.sensitivity_design_sediment_check.isChecked():
+                self.results_sensitivity.insert(len(self.results_sensitivity.columns),"SDR",None)
+                self.outputs_sensitivity_design["SDR"] = float(self.dlg_base.sensitivity_design_sediment_line.text())
+            for i in self.sensitivity_design_pesticides_present:
+                if getattr(self.dlg_base, f"sensitivity_design_pesticide_check_{i}").isChecked():
+                    self.results_sensitivity.insert(len(self.results_sensitivity.columns),f"PDR {i}",None)
+                    self.outputs_sensitivity_design[f"PDR {i}"] = float(getattr(self.dlg_base, f"sensitivity_design_pesticide_line_{i}").text())
+        except:
+            self.warning_message("Please select correct delivery ratios")
+            #Connect again signal
+            self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
+            return
         
         self.number_outputs = len(self.results_sensitivity.columns)-1
+        
+        #put error if no outputs have been selected
+        if self.number_outputs ==0:
+            self.warning_message("Please select at least one desired delivery ratio")
+            #Connect again signal
+            self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
+            return
         #Add vfs length column
         self.results_sensitivity.insert(0,"Buffer length (m)",None)
         
@@ -7964,7 +8186,7 @@ class qvfsmod:
             "Total Runoff out from Filter (mm depth over Source+Filter)","Total Runoff out from Filter (m3)","Total Infiltration in Filter (m3)",
             "Mass Sediment Input to Filter (kg)","Concentration Sediment in Runoff from source Area (g/L)",
             "Mass Sediment Output from Filter (kg)","Concentration Sediment in Runoff exiting the Filter (g/L)",
-            "Sediment Delivery Ratio","Runoff Delivery Ratio","Water Front Depth (m)"])
+            "Sediment Delivery Ratio","Runoff Delivery Ratio","Wetting Front Depth (m)"])
         
         
         #Add the parameters names 
@@ -7985,7 +8207,11 @@ class qvfsmod:
         #Create DataFrame or results
         self.results_sensitivity = self.create_df_sensitivity_calibration(self.results)
         if type(self.results_sensitivity) == str:
-            self.warning_message("All executions gave error.\n Please check input data.")
+            #obtain the error of an execution to show it to the user
+            error_in_execution = self.obtain_error_for_execution()
+            #Warning message
+            if error_in_execution == None: error_in_execution = "Some of the outputs could not be obtained.\nCheck in single runs if they can be obtained."
+            self.warning_message(f"All executions gave error.\n Please check input data.\nThe error may be due to the following:\n{error_in_execution}",courier = True)
             #Connect signal again
             self.dlg_calibration_sensitivity_hydrograph.accept.clicked.connect(self.run_sensitivity_analysis_calibration_part_one)
             return
@@ -7997,14 +8223,14 @@ class qvfsmod:
         try:
             with open(path, 'w') as f:
                 #Add first row
-                f.write("Morris sensitivity indexes (mu star_sigma)" + '\n')
+                f.write("Morris sensitivity indexes (mu star_sigma_mu_mu star confidence)" + '\n')
                 #Add sensitivity indexes for each output
                 for i in self.results_sensitivity.columns[-1:]:
                     f.write("----------------------------------------------------------------------" + '\n')
                     f.write(f"{i}" + '\n')
                     si = analyze_morris(self.problem,np.array(self.param_values),np.array(self.results_sensitivity[i]))
                     for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
-                        f.write(f"{input_parameter}:{si['mu_star'][input_parameter_k]}_{si['sigma'][input_parameter_k]}" + '\n')
+                        f.write(f"{input_parameter}:{si['mu_star'][input_parameter_k]}_{si['sigma'][input_parameter_k]}_{si['mu'][input_parameter_k]}_{si['mu_star_conf'][input_parameter_k]}" + '\n')
                 f.write("----------------------------------------------------------------------" + '\n')
             
         except PermissionError:
@@ -8027,18 +8253,91 @@ class qvfsmod:
         self.progress_metod(close = True)
         self.warning_message("Identifiability analysis completed succesfully!")
     
+    def obtain_error_for_execution(self):
+        """Method to show one of the errors of an execution that has been paralellized if all executions gave error"""
+        try:
+            execute_uh = False
+            for k,i in enumerate(self.dic_data.keys()):
+                if self.sensitivity_parameters[i][3]=="uh":
+                    execute_uh = True            
+            if execute_uh:
+                #In windows
+                if sys.platform.startswith("win"):
+                    resultado = subprocess.run([str(Path(os.path.dirname(__file__)+f"/executables/execution_uh_0.bat"))],
+                        capture_output=True, 
+                        text=True, 
+                        shell=True)
+                
+                #In mac
+                elif sys.platform.startswith("darwin"):
+                    script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_uh_0.sh"
+                    uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "uh"
+
+                    # Unquarantine the 'uh' file (to allow it to be executed)
+                    try:
+                        subprocess.run(["xattr", "-d", "com.apple.quarantine", str(uh_path)], check=True)
+                    except subprocess.CalledProcessError:
+                        pass
+
+                    # Execute sh file
+                    resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
+                
+                #Put warning
+                if not "...FINISHED..." in resultado.stdout:
+                    return resultado.stderr
+            
+            #VFS
+            #In windows
+            if sys.platform.startswith("win"):
+                resultado = subprocess.run([str(Path(os.path.dirname(__file__)+f"/executables/execution_vfs_0.bat"))],
+                    capture_output=True, 
+                    text=True, 
+                    shell=True)
+            
+            #In mac
+            elif sys.platform.startswith("darwin"):
+                script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_vfs_0.sh"
+                uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
+
+                # Unquarantine the 'vfs' file (to allow it to be executed)
+                try:
+                    subprocess.run(["xattr", "-d", "com.apple.quarantine", str(uh_path)], check=True)
+                except subprocess.CalledProcessError:
+                    pass
+
+                # Execute sh file
+                resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
+            
+            #Put warning
+            if not "...FINISHED..." in resultado.stdout:            
+                return resultado.stdout
+                    
+        except Exception as e:
+            return str(e)
     
     def run_sensitivity_analysis_part_two(self):
         """Second part of sensitivity analysis for calibration to analyze the results. I have splitted sensitivity running
         in two because we use Thread method and we need to stop till the thread finishes, if not we get an error"""
         #Create DataFrame or results
-        self.results_sensitivity = self.create_df_sensitivity(self.results)
+        self.results_sensitivity,error_columns = self.create_df_sensitivity(self.results)
         
-        if type(self.results_sensitivity) == str:
-            self.warning_message("All executions gave error.\n Please check input data.")
+        show_warning = True
+        #If all output columns gave erorr then all executions gave error
+        if error_columns == "error":
+            #obtain the error of an execution to show it to the user
+            error_in_execution = self.obtain_error_for_execution()
+            self.warning_message(f"All executions gave error.\n Please check input data.\nThe error may be due to the following:\n{error_in_execution}",courier = True)
             #Connect again signal
             self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis_part_one)
             return
+        
+        elif len(error_columns)>0:
+            contenido = "The next output values could not be calculated:\n"
+            for c in error_columns:
+                contenido += f"{c}\n"
+            #Warning message
+            self.warning_message(contenido)
+            show_warning = False
         
         #Delete all files created for paralelization of sensitivity analysis
         self.delete_files_sensitivity()
@@ -8051,7 +8350,7 @@ class qvfsmod:
                     #Add first row
                     f.write("Sobol sensitivity indexes (S1_S1 conf_ST_ST conf)" + '\n')
                     #Add sensitivity indexes for each output
-                    for i in self.results_sensitivity.columns[-self.number_outputs:]:
+                    for i in self.results_sensitivity.columns[len(self.dic_data)+1:]:
                         f.write("----------------------------------------------------------------------" + '\n')
                         f.write(f"{i}" + '\n')
                         si = sobol.analyze(self.problem, np.array(self.results_sensitivity[i]))
@@ -8062,14 +8361,14 @@ class qvfsmod:
             elif self.dlg_base.morris.isChecked():
                 with open(path, 'w') as f:
                     #Add first row
-                    f.write("Morris sensitivity indexes (mu star_sigma_mu)" + '\n')
+                    f.write("Morris sensitivity indexes (mu star_sigma_mu_mu star confidence)" + '\n')
                     #Add sensitivity indexes for each output
-                    for i in self.results_sensitivity.columns[-self.number_outputs:]:
+                    for i in self.results_sensitivity.columns[len(self.dic_data)+1:]:
                         f.write("----------------------------------------------------------------------" + '\n')
                         f.write(f"{i}" + '\n')
                         si = analyze_morris(self.problem,np.array(self.param_values),np.array(self.results_sensitivity[i]))
                         for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
-                            f.write(f"{input_parameter}:{si['mu_star'][input_parameter_k]}_{si['sigma'][input_parameter_k]}_{si['mu'][input_parameter_k]}" + '\n')
+                            f.write(f"{input_parameter}:{si['mu_star'][input_parameter_k]}_{si['sigma'][input_parameter_k]}_{si['mu'][input_parameter_k]}_{si['mu_star_conf'][input_parameter_k]}" + '\n')
                     f.write("----------------------------------------------------------------------" + '\n')
             
             elif self.dlg_base.fast.isChecked():
@@ -8077,7 +8376,7 @@ class qvfsmod:
                     #Add first row
                     f.write("FAST sensitivity indexes S1_S1 conf_ST_ST conf" + '\n')
                     #Add sensitivity indexes for each output
-                    for i in self.results_sensitivity.columns[-self.number_outputs:]:
+                    for i in self.results_sensitivity.columns[len(self.dic_data)+1:]:
                         f.write("----------------------------------------------------------------------" + '\n')
                         f.write(f"{i}" + '\n')
                         si = analyze_fast(self.problem,np.array(self.results_sensitivity[i]))
@@ -8141,7 +8440,8 @@ class qvfsmod:
         
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)
-        self.warning_message("Sensitivity analysis completed succesfully!")
+        if show_warning:
+            self.warning_message("Sensitivity analysis completed succesfully!")
     
     
     def run_sensitivity_analysis_part_two_design(self):
@@ -8152,14 +8452,34 @@ class qvfsmod:
         
         
         #Obtain the data with the optimized buffer lengths
-        self.results_sensitivity = self.obtain_optimized_vfs_sensitivity_design()
+        self.results_sensitivity,error_columns = self.obtain_optimized_vfs_sensitivity_design()
         
-        
-        if type(self.results_sensitivity) == str:
-            self.warning_message("All executions gave error.\n Please check input data.")
+        show_warning = True
+        #If all output columns gave erorr then all executions gave error
+        if len(error_columns) == len(self.outputs_sensitivity_design):
+            #obtain the error of an execution to show it to the user
+            error_in_execution = self.obtain_error_for_execution()
+            #Warning message
+            if error_in_execution == None: error_in_execution = "Some of the outputs could not be obtained.\nCheck in single runs if they can be obtained."
+            self.warning_message(f"All executions gave error.\n Please check input data.\nThe error may be due to the following:\n{error_in_execution}",courier = True)
             #Connect again signal
             self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
             return
+        
+        #If not all output columns gave erorr then the calculation of some columns gave error
+        elif len(error_columns)<len(self.outputs_sensitivity_design):
+            contenido = "The next output values could not be calculated:\n"
+            for c in error_columns:
+                if c.split()[2] == "RDR":
+                    contenido += f"Runoff Delivery Ratio, threshold {c.split()[-1]}\n"
+                elif c.split()[2] == "SDR":
+                    contenido += f"Sediment Delivery Ratio, threshold {c.split()[-1]}\n"
+                elif c.split()[2] == "PDR":
+                    contenido += f"Pesticide {c.split()[-2]} Delivery Ratio, threshold {c.split()[-1]}\n"
+            #Warning message
+            self.warning_message(contenido)
+            show_warning = False
+            
         
         
         #Delete all files created for paralelization of sensitivity analysis
@@ -8173,7 +8493,7 @@ class qvfsmod:
                     #Add first row
                     f.write("Sobol sensitivity indexes (S1_S1 conf_ST_ST conf)" + '\n')
                     #Add sensitivity indexes for each output
-                    for i in self.results_sensitivity.columns[-len(self.outputs_sensitivity_design):]:
+                    for i in self.results_sensitivity.columns[len(self.dic_data):]:
                         f.write("----------------------------------------------------------------------" + '\n')
                         f.write(f"{i}" + '\n')
                         if all(x == 0 for x in np.array(self.results_sensitivity[i])):
@@ -8189,9 +8509,9 @@ class qvfsmod:
             elif self.dlg_base.morris_design.isChecked():
                 with open(path, 'w') as f:
                     #Add first row
-                    f.write("Morris sensitivity indexes (mu star_sigma_mu)" + '\n')
+                    f.write("Morris sensitivity indexes (mu star_sigma_mu_mu star confidence)" + '\n')
                     #Add sensitivity indexes for each output
-                    for i in self.results_sensitivity.columns[-len(self.outputs_sensitivity_design):]:
+                    for i in self.results_sensitivity.columns[len(self.dic_data):]:
                         f.write("----------------------------------------------------------------------" + '\n')
                         f.write(f"{i}" + '\n')
                         if all(x == 0 for x in np.array(self.results_sensitivity[i])):
@@ -8201,7 +8521,7 @@ class qvfsmod:
                             return
                         si = analyze_morris(self.problem,np.array(self.param_values),np.array(self.results_sensitivity[i], dtype=float))
                         for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
-                            f.write(f"{input_parameter}:{si['mu_star'][input_parameter_k]}_{si['sigma'][input_parameter_k]}_{si['mu'][input_parameter_k]}" + '\n')
+                            f.write(f"{input_parameter}:{si['mu_star'][input_parameter_k]}_{si['sigma'][input_parameter_k]}_{si['mu'][input_parameter_k]}_{si['mu_star_conf'][input_parameter_k]}" + '\n')
                     f.write("----------------------------------------------------------------------" + '\n')
             
             elif self.dlg_base.fast_design.isChecked():
@@ -8209,7 +8529,7 @@ class qvfsmod:
                     #Add first row
                     f.write("FAST sensitivity indexes S1_S1 conf_ST_ST conf" + '\n')
                     #Add sensitivity indexes for each output
-                    for i in self.results_sensitivity.columns[-len(self.outputs_sensitivity_design):]:
+                    for i in self.results_sensitivity.columns[len(self.dic_data):]:
                         f.write("----------------------------------------------------------------------" + '\n')
                         f.write(f"{i}" + '\n')
                         if all(x == 0 for x in np.array(self.results_sensitivity[i])):
@@ -8253,7 +8573,8 @@ class qvfsmod:
         
         #Close progress bar and warning message of ending
         self.progress_metod(close = True)
-        self.warning_message("Design with uncertainty completed succesfully!")
+        if show_warning:
+            self.warning_message("Design with uncertainty completed succesfully!")
     
     def obtain_optimized_vfs_sensitivity_design(self):
         """Method to obtain the buffer length to analyze sensitivity"""
@@ -8323,8 +8644,6 @@ class qvfsmod:
             mask = df[output] != "Error"
             inputs_complete = inputs[mask]
             outputs_complete = outputs[mask]
-            if len(inputs_complete) == 0: #all rows are error
-                return "error"
             if len(inputs_complete)<len(df): #if there are less inputs without errors than original df then there are errors
                 try:
                     #Create model of linear regression
@@ -8338,12 +8657,19 @@ class qvfsmod:
                     X_test_design = np.hstack([np.ones((X_test.shape[0], 1)), X_test])
                     pred_output = X_test_design @ coef
                     pred_output = np.maximum(pred_output, 0)
-                    new_df.loc[~mask, output] = pred_output
+                    df.loc[~mask, output] = pred_output
                     
-                except ValueError: #if error in prediction then put average
+                except: #if error in prediction then put average
                     df.loc[~mask, output] = float(np.mean(outputs_complete[output]))
-                
-        return df
+        
+        #See if there is an output column with all nans
+        error_columns = []
+        for c in df.columns:
+            if df[c].isna().all():  
+                error_columns.append(c)
+                df.drop(c,axis = 1,inplace = True)
+        
+        return df,error_columns
     
     def create_df_design(self,results):
         """Method to create the dataframe of design after parallelization"""
@@ -8394,7 +8720,7 @@ class qvfsmod:
         inputs_complete = inputs[mask]
         outputs_complete = outputs[mask]
         if len(inputs_complete) == 0: #all rows are error
-            return "error"
+            return "error","error"
         if len(inputs_complete)<len(new_df): #if there are less inputs without errors than original df then there are errors
             for output in output_columns:
                 try:
@@ -8410,31 +8736,38 @@ class qvfsmod:
                     pred_output = X_test_design @ coef
                     pred_output = np.maximum(pred_output, 0)
                     new_df.loc[~mask, output] = pred_output
-                except ValueError: #if error in prediction then put average
+                except: #if error in prediction then put average
                     new_df.loc[~mask, output] = np.mean(outputs_complete[output])
         #If there are nans values and but not errors also they have to be changed
-        mask = new_df.notna().all(axis=1)
-        inputs_complete = inputs[mask]
-        outputs_complete = outputs[mask]
         for output in output_columns:
-            try:
-                #Create model of linear regression
-                #Train
-                X_train = inputs_complete.to_numpy()
-                y_train = outputs_complete[output].to_numpy()
-                X_train_design = np.hstack([np.ones((X_train.shape[0], 1)), X_train])
-                coef, residuals, rank, s = np.linalg.lstsq(X_train_design, y_train, rcond=None)
-                #Predict
-                X_test = inputs[~mask].to_numpy()
-                X_test_design = np.hstack([np.ones((X_test.shape[0], 1)), X_test])
-                pred_output = X_test_design @ coef
-                pred_output = np.maximum(pred_output, 0)
-                new_df.loc[~mask, output] = pred_output
-                
-            except ValueError: #if error in prediction then put average
-                new_df.loc[~mask, output] = np.mean(outputs_complete[output])
+            mask = df[output].notna()
+            inputs_complete = inputs[mask]
+            outputs_complete = outputs[mask]
+            if len(inputs_complete)<len(df): #if there are less inputs without errors than original df then there are errors
+                try:
+                    #Create model of linear regression
+                    #Train
+                    X_train = inputs_complete.to_numpy()
+                    y_train = outputs_complete[output].to_numpy()
+                    X_train_design = np.hstack([np.ones((X_train.shape[0], 1)), X_train])
+                    coef, residuals, rank, s = np.linalg.lstsq(X_train_design, y_train, rcond=None)
+                    #Predict
+                    X_test = inputs[~mask].to_numpy()
+                    X_test_design = np.hstack([np.ones((X_test.shape[0], 1)), X_test])
+                    pred_output = X_test_design @ coef
+                    pred_output = np.maximum(pred_output, 0)
+                    new_df.loc[~mask, output] = pred_output
+                        
+                except: #if error in prediction then put average
+                    new_df.loc[~mask, output] = np.mean(outputs_complete[output])
+        #See if there is an output column with all nans
+        error_columns = []
+        for c in new_df.columns:
+            if new_df[c].isna().all():  
+                error_columns.append(c)
+                new_df.drop(c,axis = 1,inplace = True)
         
-        return new_df
+        return new_df,error_columns
     
     def create_df_sensitivity_design(self,results):
         """Method to create the dataframe of sensitivity after parallelization for design"""
@@ -8569,7 +8902,7 @@ class qvfsmod:
             "Total Runoff out from Filter (mm depth over Source+Filter)","Total Runoff out from Filter (m3)","Total Infiltration in Filter (m3)",
             "Mass Sediment Input to Filter (kg)","Concentration Sediment in Runoff from source Area (g/L)",
             "Mass Sediment Output from Filter (kg)","Concentration Sediment in Runoff exiting the Filter (g/L)",
-            "Sediment Delivery Ratio","Runoff Delivery Ratio","Water Front Depth (m)"])
+            "Sediment Delivery Ratio","Runoff Delivery Ratio","Wetting Front Depth (m)"])
         
         
         number_outputs = len(self.results_sensitivity.columns)-1
@@ -8590,6 +8923,15 @@ class qvfsmod:
         in two because we use Thread method and we need to stop till the thread finishes, if not we get an error"""
         #Create DataFrame or results
         self.results_sensitivity = self.create_df_uncertainity(self.results)
+        
+        #If all executions gave error then put warning
+        if len(self.results_sensitivity[self.results_sensitivity["Error"]==1]) == len(self.results_sensitivity):
+            #obtain the error of an execution to show it to the user
+            error_in_execution = self.obtain_error_for_execution()
+            self.warning_message(f"All executions gave error.\n Please check input data.\nThe error may be due to the following:\n{error_in_execution}",courier = True)
+            #Connect signal again
+            self.dlg_base.run_uncertainity.clicked.connect(self.run_uncertainity_analysis_part_one)
+            return
         
         #Delete all files created for paralelization of sensitivity analysis
         self.delete_files_uncertainity()
@@ -8774,21 +9116,21 @@ class qvfsmod:
             #In mac
             elif sys.platform.startswith("darwin"):
                 #Execution UH
-                shutil.copyfile(str(Path(carpeta_bat+"/execution.sh")), str(Path(carpeta_bat+"/"+f"execution_uh_{core}.sh")))
-                with open(str(Path(self.plugin_directory+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w"+"/executables/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_uh_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/design/"))}"')
-                    linea_tres = f'"{str(Path(self.plugin_directory+"/executables/uh"))}" design_{core}.lis'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/uh"))}" design_{core}.lis'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
                     f.close()
                 #Execution VFS
-                shutil.copyfile(str(Path(carpeta_bat+"/execution.sh")), str(Path(carpeta_bat+"/"+f"execution_vfs_{core}.sh")))
-                with open(str(Path(self.plugin_directory+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w/executables"+"/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_vfs_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/design/"))}"')
-                    linea_tres = f'"{str(Path(self.plugin_directory+"/executables/vfsm"))}" design_{core}.prj'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/vfsm"))}" design_{core}.prj'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
@@ -8935,21 +9277,21 @@ class qvfsmod:
             #In mac
             elif sys.platform.startswith("darwin"):
                 #Execution UH
-                shutil.copyfile(str(Path(carpeta_bat+"/execution.sh")), str(Path(carpeta_bat+"/"+f"execution_uh_{core}.sh")))
-                with open(str(Path(self.plugin_directory+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w/executables"+"/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_uh_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/sensitivity/"))}"')
-                    linea_tres = f'"{str(Path(self.plugin_directory+"/executables/uh"))}" sensitivity_{core}.lis'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/uh"))}" sensitivity_{core}.lis'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
                     f.close()
                 #Execution VFS
-                shutil.copyfile(str(Path(carpeta_bat+"/execution.sh")), str(Path(carpeta_bat+"/"+f"execution_vfs_{core}.sh")))
-                with open(str(Path(self.plugin_directory+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w/executables"+"/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_vfs_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/sensitivity/"))}"')
-                    linea_tres = f'"{str(Path(self.plugin_directory+"/executables/vfsm"))}" sensitivity_{core}.prj'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/vfsm"))}" sensitivity_{core}.prj'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
@@ -8967,7 +9309,6 @@ class qvfsmod:
         for i in lineas:
             if i[:3]=="iwq":
                 self.water_quality = True
-            
         #Create file
         with open(prj_file, 'w') as archivo:
             archivo.write(f"ikw={str(Path('inputs/design.ikw'))}  \n") 
@@ -9111,21 +9452,21 @@ class qvfsmod:
             #In mac
             elif sys.platform.startswith("darwin"):
                 #Execution UH
-                shutil.copyfile(str(Path(carpeta_bat+"/execution.sh")), str(Path(carpeta_bat+"/"+f"execution_uh_{core}.sh")))
-                with open(str(Path(self.plugin_directory+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w/executables"+"/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_uh_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/design/"))}"')
-                    linea_tres = f'"{str(Path(self.plugin_directory+"/executables/uh"))}" design_{core}.lis'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/uh"))}" design_{core}.lis'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
                     f.close()
                 #Execution VFS
-                shutil.copyfile(str(Path(carpeta_bat+"/execution.sh")), str(Path(carpeta_bat+"/"+f"execution_vfs_{core}.sh")))
-                with open(str(Path(self.plugin_directory+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w/executables"+"/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_vfs_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/design/"))}"')
-                    linea_tres = f'"{str(Path(self.plugin_directory+"/executables/vfsm"))}" design_{core}.prj'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/vfsm"))}" design_{core}.prj'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
@@ -9236,21 +9577,21 @@ class qvfsmod:
             #In mac
             elif sys.platform.startswith("darwin"):
                 #Execution UH
-                shutil.copyfile(str(Path(carpeta_bat+"/execution.sh")), str(Path(carpeta_bat+"/"+f"execution_uh_{core}.sh")))
-                with open(str(Path(self.plugin_directory+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w/executables"+"/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_uh_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/"))}"')
-                    linea_tres = f'"{str(Path(self.plugin_directory+"/executables/uh"))}" inverse_{core}.lis'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/uh"))}" inverse_{core}.lis'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
                     f.close()
                 #Execution VFS
-                shutil.copyfile(str(Path(carpeta_bat+"/execution.sh")), str(Path(carpeta_bat+"/"+f"execution_vfs_{core}.sh")))
-                with open(str(Path(self.plugin_directory+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w"+"/executables/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_vfs_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/"))}"')
-                    linea_tres = f'"{str(Path(self.plugin_directory+"/executables/vfsm"))}" inverse_{core}.prj'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/vfsm"))}" inverse_{core}.prj'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
@@ -9448,21 +9789,21 @@ class qvfsmod:
             #In mac
             elif sys.platform.startswith("darwin"):
                 #Execution UH
-                shutil.copyfile(str(Path(carpeta_bat+"/execution.sh")), str(Path(carpeta_bat+"/"+f"execution_uh_{core}.sh")))
-                with open(str(Path(self.plugin_directory+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w"+"/executables/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_uh_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/uncertainty/"))}"')
-                    linea_tres = f'"{str(Path(self.plugin_directory+"/executables/uh"))}" uncertainty_{core}.lis'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/uh"))}" uncertainty_{core}.lis'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
                     f.close()
                 #Execution VFS
-                shutil.copyfile(str(Path(carpeta_bat+"/execution.sh")), str(Path(carpeta_bat+"/"+f"execution_vfs_{core}.sh")))
-                with open(str(Path(self.plugin_directory+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w"+"/executables/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_vfs_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/uncertainty/"))}"')
-                    linea_tres = f'"{str(Path(self.plugin_directory+"/executables/vfsm"))}" uncertainty_{core}.prj'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/vfsm"))}" uncertainty_{core}.prj'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
@@ -10789,6 +11130,7 @@ class qvfsmod:
                 self.dlg_base.verticalLayout_21.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                 boton.setSizePolicy(politica_tamaño)
+                print(nombre)
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
 
     def add_parameter_name_sensitivity(self,name):
@@ -11442,8 +11784,8 @@ class qvfsmod:
                 shell=True)
         #In mac
         elif sys.platform.startswith("darwin"):
-            script_path = Path(self.plugin_directory) / "executables" / "execution.sh"
-            uh_path = Path(self.plugin_directory) / "executables" / "vfsm"
+            script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "execution.sh"
+            uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
 
             # Unquarantine the 'uh' file (to allow it to be executed)
             try:
@@ -11452,8 +11794,8 @@ class qvfsmod:
                 pass
 
             # Give execution permissions to the script and the executable
-            subprocess.run(["chmod", "755", str(script_path)], check=True)
-            subprocess.run(["chmod", "755", str(uh_path)], check=True)
+            #subprocess.run(["chmod", "755", str(script_path)], check=True)
+            #subprocess.run(["chmod", "755", str(uh_path)], check=True)
             # Execute sh file
             resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
         
@@ -11595,8 +11937,8 @@ class qvfsmod:
                 shell=True)
         #In mac
         elif sys.platform.startswith("darwin"):
-            script_path = Path(self.plugin_directory) / "executables" / "execution.sh"
-            uh_path = Path(self.plugin_directory) / "executables" / "vfsm"
+            script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "execution.sh"
+            uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
 
             # Unquarantine the 'uh' file (to allow it to be executed)
             try:
@@ -11605,8 +11947,8 @@ class qvfsmod:
                 pass
 
             # Give execution permissions to the script and the executable
-            subprocess.run(["chmod", "755", str(script_path)], check=True)
-            subprocess.run(["chmod", "755", str(uh_path)], check=True)
+            #subprocess.run(["chmod", "755", str(script_path)], check=True)
+            #subprocess.run(["chmod", "755", str(uh_path)], check=True)
             # Execute sh file
             resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
         
@@ -11859,8 +12201,8 @@ class qvfsmod:
                 shell=True)
         #In mac
         elif sys.platform.startswith("darwin"):
-            script_path = Path(self.plugin_directory) / "executables" / "execution.sh"
-            uh_path = Path(self.plugin_directory) / "executables" / "vfsm"
+            script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "execution.sh"
+            uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
 
             # Unquarantine the 'uh' file (to allow it to be executed)
             try:
@@ -11869,8 +12211,8 @@ class qvfsmod:
                 pass
 
             # Give execution permissions to the script and the executable
-            subprocess.run(["chmod", "755", str(script_path)], check=True)
-            subprocess.run(["chmod", "755", str(uh_path)], check=True)
+            #subprocess.run(["chmod", "755", str(script_path)], check=True)
+            #subprocess.run(["chmod", "755", str(uh_path)], check=True)
             # Execute sh file
             resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
             
@@ -12790,10 +13132,10 @@ class qvfsmod:
             f.close()
         #In mac
         elif sys.platform.startswith("darwin"):
-            with open(str(Path(self.plugin_directory+"/executables/execution.sh")), "w", newline="\n") as f:
+            with open(str(Path("/Library/Application Support/vfsmod-w"+"/executables/execution.sh")), "w", newline="\n") as f:
                 linea_uno = "#!/bin/bash\n"
                 linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/"))}"')
-                linea_tres = f'"{str(Path(self.plugin_directory+"/executables/vfsm"))}" inverse.prj'
+                linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/vfsm"))}" inverse.prj'
                 f.write("{} \n".format(linea_uno))
                 f.write("{} \n".format(linea_dos))
                 f.write("{} \n".format(linea_tres))
@@ -13484,9 +13826,6 @@ class qvfsmod:
         lineas[2] = modify_number_in_string(lineas[2],0,value_change)
         
         #Then we update the segments
-        number_segments = int(lineas[3])
-        length = list(map(float, lineas[2].split()))[0]
-        new_interval = length/number_segments
         
         #Data frame, but we take it from the original, not from the last execution
         #We import dataframe of segments from the original file
@@ -13500,34 +13839,40 @@ class qvfsmod:
         with open(ikw_original, "r") as archivo:
             lineas_ikw_original = archivo.readlines()
         
-        #Data frame    
+        #Data frame 
+        number_segments = int(lineas_ikw_original[3])
+        length = list(map(float, lineas_ikw_original[2].split()))[0]
+        new_interval = length/number_segments        
         df = pd.DataFrame(data = {"Distance":[list(map(float, lineas_ikw_original[x].split()))[0] for x in range(4,4+number_segments)],
                              "Manning":[list(map(float, lineas_ikw_original[x].split()))[1] for x in range(4,4+number_segments)],
                              "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
         
         
-        actual_length = max(df["Distance"])
-        length_to_change = float(value_change)
-        if length_to_change <= actual_length:
-            if length_to_change<min(df["Distance"]): #when distance is smaller than the first interval
-                df = df.head(1)
+        df_a = df.copy()
+        actual_length = max(df_a["Distance"])
+        length_to_change = value_change
+        if length_to_change < actual_length:
+            if length_to_change<min(df_a["Distance"]): #when distance is smaller than the first interval
+                df_a = df_a.head(1)
+                df_a["Distance"].iloc[0] =length_to_change
             else:
-                df = df[df["Distance"]<=length_to_change]
-                df.loc[df.index[-1], "Distance"] = length_to_change
+                
+                df_a = df_a.loc[:len(df_a[df_a["Distance"]<=length_to_change]),:]
+                df_a.loc[df_a.index[-1], "Distance"] = length_to_change
         else:
-            df.loc[df.index[-1], "Distance"] = length_to_change
+            df_a.loc[df_a.index[-1], "Distance"] = length_to_change
         
         
         #Add to the file information 
-        lineas[3] = modify_number_in_string(lineas[3],0,len(df)) #change number of segments
+        lineas[3] = modify_number_in_string(lineas[3],0,len(df_a)) #change number of segments
     
         #Add to the file information
         contenido = ""
         for i in lineas[:4]:    
             contenido+=f"{i}"
-        for i in range(len(df)):
-            contenido +=f" {df.iloc[i,0]}   {df.iloc[i,1]}   {df.iloc[i,2]}\n"
-        for i in lineas_ikw_original[-8:]:    
+        for i in range(len(df_a)):
+            contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
+        for i in lineas_ikw_original[4+number_segments:]:       
             contenido+=f"{i}"
         with open(ikw, 'w') as archivo:
             archivo.write(contenido)
@@ -13550,9 +13895,6 @@ class qvfsmod:
         lineas[2] = modify_number_in_string(lineas[2],0,value_change)
         
         #Then we update the segments
-        number_segments = int(lineas[3])
-        length = list(map(float, lineas[2].split()))[0]
-        new_interval = length/number_segments
         
         #Data frame, but we take it from the original, not from the last execution
         #We import dataframe of segments from the original file
@@ -13566,34 +13908,40 @@ class qvfsmod:
         with open(ikw_original, "r") as archivo:
             lineas_ikw_original = archivo.readlines()
         
-        #Data frame    
+        #Data frame  
+        number_segments = int(lineas_ikw_original[3])
+        length = list(map(float, lineas_ikw_original[2].split()))[0]
+        new_interval = length/number_segments        
         df = pd.DataFrame(data = {"Distance":[list(map(float, lineas_ikw_original[x].split()))[0] for x in range(4,4+number_segments)],
                              "Manning":[list(map(float, lineas_ikw_original[x].split()))[1] for x in range(4,4+number_segments)],
                              "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
         
         
-        actual_length = max(df["Distance"])
-        length_to_change = float(value_change)
-        if length_to_change <= actual_length:
-            if length_to_change<min(df["Distance"]): #when distance is smaller than the first interval
-                df = df.head(1)
+        df_a = df.copy()
+        actual_length = max(df_a["Distance"])
+        length_to_change = value_change
+        if length_to_change < actual_length:
+            if length_to_change<min(df_a["Distance"]): #when distance is smaller than the first interval
+                df_a = df_a.head(1)
+                df_a["Distance"].iloc[0] =length_to_change
             else:
-                df = df[df["Distance"]<=length_to_change]
-                df.loc[df.index[-1], "Distance"] = length_to_change
+                
+                df_a = df_a.loc[:len(df_a[df_a["Distance"]<=length_to_change]),:]
+                df_a.loc[df_a.index[-1], "Distance"] = length_to_change
         else:
-            df.loc[df.index[-1], "Distance"] = length_to_change
+            df_a.loc[df_a.index[-1], "Distance"] = length_to_change
         
         
         #Add to the file information 
-        lineas[3] = modify_number_in_string(lineas[3],0,len(df)) #change number of segments
+        lineas[3] = modify_number_in_string(lineas[3],0,len(df_a)) #change number of segments
     
         #Add to the file information
         contenido = ""
         for i in lineas[:4]:    
             contenido+=f"{i}"
-        for i in range(len(df)):
-            contenido +=f" {df.iloc[i,0]}   {df.iloc[i,1]}   {df.iloc[i,2]}\n"
-        for i in lineas_ikw_original[-8:]:    
+        for i in range(len(df_a)):
+            contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
+        for i in lineas_ikw_original[4+number_segments:]:       
             contenido+=f"{i}"
         with open(ikw, 'w') as archivo:
             archivo.write(contenido)
@@ -13788,8 +14136,8 @@ class qvfsmod:
                 shell=True)
         #In mac
         elif sys.platform.startswith("darwin"):
-            script_path = Path(self.plugin_directory) / "executables" / "execution.sh"
-            uh_path = Path(self.plugin_directory) / "executables" / "vfsm"
+            script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "execution.sh"
+            uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
 
             # Unquarantine the 'vfsm' file (to allow it to be executed)
             try:
@@ -13798,8 +14146,8 @@ class qvfsmod:
                 pass
 
             # Give execution permissions to the script and the executable
-            subprocess.run(["chmod", "755", str(script_path)], check=True)
-            subprocess.run(["chmod", "755", str(uh_path)], check=True)
+            #subprocess.run(["chmod", "755", str(script_path)], check=True)
+            #subprocess.run(["chmod", "755", str(uh_path)], check=True)
 
             # Execute sh file
             resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
@@ -14071,9 +14419,6 @@ class qvfsmod:
             lineas[2] = modify_number_in_string(lineas[2],0,value_change)
             
             #Then we update the segments
-            number_segments = int(lineas[3])
-            length = list(map(float, lineas[2].split()))[0]
-            new_interval = length/number_segments
 
             #Data frame, but we take it from the original, not from the last execution
             #We import dataframe of segments from the original file
@@ -14085,30 +14430,36 @@ class qvfsmod:
             ikw = ikw.rstrip()
             with open(ikw, "r") as archivo:
                 lineas_ikw_original = archivo.readlines()
-                
+            
+            number_segments = int(lineas_ikw_original[3])
+            length = list(map(float, lineas_ikw_original[2].split()))[0]
+            new_interval = length/number_segments
             df = pd.DataFrame(data = {"Distance":[list(map(float, lineas_ikw_original[x].split()))[0] for x in range(4,4+number_segments)],
                                  "Manning":[list(map(float, lineas_ikw_original[x].split()))[1] for x in range(4,4+number_segments)],
                                  "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
             
-            actual_length = max(df["Distance"])
-            length_to_change = float(value_change)
-            if length_to_change <= actual_length:
-                if length_to_change<min(df["Distance"]): #when distance is smaller than the first interval
-                    df = df.head(1)
+            df_a = df.copy()
+            actual_length = max(df_a["Distance"])
+            length_to_change = value_change
+            if length_to_change < actual_length:
+                if length_to_change<min(df_a["Distance"]): #when distance is smaller than the first interval
+                    df_a = df_a.head(1)
+                    df_a["Distance"].iloc[0] =length_to_change
                 else:
-                    df = df[df["Distance"]<=length_to_change]
-                    df.loc[df.index[-1], "Distance"] = length_to_change
+                    
+                    df_a = df_a.loc[:len(df_a[df_a["Distance"]<=length_to_change]),:]
+                    df_a.loc[df_a.index[-1], "Distance"] = length_to_change
             else:
-                df.loc[df.index[-1], "Distance"] = length_to_change
+                df_a.loc[df_a.index[-1], "Distance"] = length_to_change
             
             #Add to the file information
-            lineas[3] = modify_number_in_string(lineas[3],0,len(df)) #change number of segments
+            lineas[3] = modify_number_in_string(lineas[3],0,len(df_a)) #change number of segments
             contenido = ""
             for i in lineas[:4]:    
                 contenido+=f"{i}"
-            for i in range(len(df)):
-                contenido +=f" {df.iloc[i,0]}   {df.iloc[i,1]}   {df.iloc[i,2]}\n"
-            for i in lineas_ikw_original[-8:]:    
+            for i in range(len(df_a)):
+                contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
+            for i in lineas_ikw_original[4+number_segments:]:       
                 contenido+=f"{i}"
             with open(str(Path(self.dlg_base.working_directory_vfsmod.text()+"/design/inputs/design.ikw")), 'w') as archivo:
                 archivo.write(contenido)
@@ -14183,6 +14534,7 @@ class qvfsmod:
             if not os.path.isabs(inp): #relative path
                 inp = os.path.join(os.path.dirname(ruta), inp)
             inp = inp.rstrip() #take out the line jumps
+            inp = str(Path(inp.replace("\\","/")))#put slashes correctly depending on operating system
             if os.path.exists(inp) and os.path.isfile(inp):
                 with open(inp, "r") as archivo:
                     lineas = archivo.readlines()
@@ -14214,6 +14566,8 @@ class qvfsmod:
                 igr = os.path.join(os.path.dirname(ruta), igr)
             ikw = ikw.rstrip() #take out the line jumps
             igr = igr.rstrip() #take out the line jumps
+            ikw = str(Path(ikw.replace("\\","/")))#put slashes correctly depending on operating system
+            igr = str(Path(igr.replace("\\","/")))#put slashes correctly depending on operating system
             if os.path.exists(ikw) and os.path.isfile(ikw):
                 with open(ikw, "r") as archivo:
                     lineas = archivo.readlines()
@@ -14308,10 +14662,10 @@ class qvfsmod:
         
         #In mac
         elif sys.platform.startswith("darwin"):
-            with open(str(Path(self.plugin_directory+"/executables/execution.sh")), "w", newline="\n") as f:
+            with open(str(Path("/Library/Application Support/vfsmod-w"+"/executables/execution.sh")), "w", newline="\n") as f:
                 linea_uno = "#!/bin/bash\n"
                 linea_dos = "cd {}".format(f'"{os.path.dirname(os.path.normpath(self.obtain_direction_vfsmod(self.dlg_base.line_project_vfsmod.text())))}"')
-                linea_tres = f'"{str(Path(self.plugin_directory+"/executables/vfsm"))}" {os.path.normpath(os.path.basename(self.dlg_base.line_project_vfsmod.text()))}'
+                linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/vfsm"))}" {os.path.normpath(os.path.basename(self.dlg_base.line_project_vfsmod.text()))}'
                 f.write("{} \n".format(linea_uno))
                 f.write("{} \n".format(linea_dos))
                 f.write("{} \n".format(linea_tres))
@@ -14757,9 +15111,28 @@ class qvfsmod:
             else: #absolute path
                 text = fname[0]
             self.dlg_base.uh_file.setText(os.path.normpath(text))
-                
+            
+            #Update inp file path
+            with open(fname[0], "r") as archivo:
+                lineas = archivo.readlines()
+            for i in lineas:
+                if i[:3]=="inp":
+                    path_input = i.split("=")[-1]
+            #If path is relative then put it absolute
+            if not Path(path_input).is_absolute():
+                path_input = Path(os.path.normpath(working_directory)) / Path(path_input)
+            
+            if os.path.commonpath([os.path.normpath(path_input), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
+                text = os.path.relpath(path_input, working_directory)
+            else: #absolute path
+                text = path_input
+            path_input = text.rstrip() #take out the line jumps
+            path_input = str(Path(path_input.replace("\\","/")))#put slashes correctly depending on operating system
+            self.dlg_base.uh_input.setText(path_input)
+                    
             #Update filepaths
             self.add_values_uh_outputs_dialog()
+            self.add_values_inp_dialog() #put values of inp in dialog
             
     def select_inp(self):
         """Method to select the .inp file among the local files"""
@@ -14779,6 +15152,7 @@ class qvfsmod:
             else: #absolute path
                 text = fname[0]
             self.dlg_base.uh_input.setText(os.path.normpath(text))
+            self.add_values_inp_dialog() #put values of inp in dialog
 
 
     def select_iro(self):
@@ -15212,8 +15586,8 @@ class qvfsmod:
             
         #In mac
         elif sys.platform.startswith("darwin"):
-            script_path = Path(self.plugin_directory) / "executables" / "execution.sh"
-            uh_path = Path(self.plugin_directory) / "executables" / "uh"
+            script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "execution.sh"
+            uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "uh"
 
             # Unquarantine the 'uh' file (to allow it to be executed)
             try:
@@ -15222,8 +15596,8 @@ class qvfsmod:
                 pass
 
             # Give execution permissions to the script and the executable
-            subprocess.run(["chmod", "755", str(script_path)], check=True)
-            subprocess.run(["chmod", "755", str(uh_path)], check=True)
+            #subprocess.run(["chmod", "755", str(script_path)], check=True)
+            #subprocess.run(["chmod", "755", str(uh_path)], check=True)
 
             # Execute sh file
             resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
@@ -15377,10 +15751,10 @@ class qvfsmod:
         
         #In mac
         elif sys.platform.startswith("darwin"):
-            with open(str(Path(self.plugin_directory+"/executables/execution.sh")), "w", newline="\n") as f:
+            with open(str(Path("/Library/Application Support/vfsmod-w"+"/executables/execution.sh")), "w", newline="\n") as f:
                 linea_uno = "#!/bin/bash\n"
                 linea_dos = "cd {}".format(f'"{os.path.dirname(os.path.normpath(self.obtain_direction_vfsmod(self.dlg_base.uh_file.text())))}"')
-                linea_tres = f'"{str(Path(self.plugin_directory+"/executables/uh"))}" {os.path.normpath(os.path.basename(self.dlg_base.uh_file.text()))}'
+                linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/uh"))}" {os.path.normpath(os.path.basename(self.dlg_base.uh_file.text()))}'
                 f.write("{} \n".format(linea_uno))
                 f.write("{} \n".format(linea_dos))
                 f.write("{} \n".format(linea_tres))
@@ -15391,6 +15765,7 @@ class qvfsmod:
         """Method to obtain the absolute path direction. The difference with the other is that
         here is respect to the working directory of vfsmod"""
         carpeta = self.dlg_base.working_directory_vfsmod.text()
+        direction = str(Path(direction.replace("\\","/")))
         if not os.path.isabs(direction): #relative path
             return os.path.normpath(os.path.join(carpeta, direction))
         else: #absolute path
@@ -15901,10 +16276,11 @@ class qvfsmod:
     
     def default_values(self):
         """Method to set default values for input values"""
-        if bundle:
-            self.dlg_base.working_directory_vfsmod.setText(os.path.abspath(os.path.join(base_path,"..","..","..")))
-        else:
-            self.dlg_base.working_directory_vfsmod.setText(base_path)
+        if sys.platform.startswith("darwin"):
+            self.dlg_base.working_directory_vfsmod.setText("/Library/Application Support/vfsmod-w")
+        elif sys.platform.startswith("win"):
+            self.dlg_base.working_directory_vfsmod.setText(os.getcwd())
+    
             
         self.dlg_base.uh_file.setText(os.path.normpath(".lis"))
         self.dlg_base.uh_input.setText(str(Path(r"inputs/.inp")))
@@ -16370,26 +16746,49 @@ class qvfsmod:
         self.dlg_base.label_113.setPixmap(pixmap)
         self.dlg_base.label_113.setAlignment(Qt.AlignCenter)
         #Add license text
-        html_text = """
-            Grafical User Interface for VFSMOD and UH<br>
-            <b>Model developers</b>: <br>
-            - Rafael Muñoz-Carpena, University of Florida<br>
-            - John E. Parsons, North Carolina State University<br>
-            <b>GUI developer</b>: <br>
-            - Iñigo Barberena Ruiz, Public University of Navarre<br>
-            Version 1.0.0<br>
-            Contact for Questions or Problems: carpena@ufl.edu<br>
-            This work is licensed under <b>CC BY-ND 4.0</b>
-                <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src=os.path.join(base_path"images/cc.svg") alt="">
-                <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src=os.path.join(base_path"images/by.svg") alt="">
-                <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src=os.path.join(base_path"images/nd.svg") alt="">
+        if sys.platform.startswith("win"):#Windows
+            html_text = """
+                Graphical User Interface for VFSMOD and UH<br>
+                <b>Model developers</b>: <br>
+                - Rafael Muñoz-Carpena, University of Florida<br>
+                - John E. Parsons, North Carolina State University<br>
+                <b>GUI developer</b>: <br>
+                - Iñigo Barberena Ruiz, Public University of Navarre<br>
+                Version 1.0.0<br>
+                Contact for Questions or Problems: carpena@ufl.edu<br>
+                This work is licensed under <b>CC BY-ND 4.0</b>
+                    <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src="images/cc.svg" alt="">
+                    <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src="images/by.svg" alt="">
+                    <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src="images/nd.svg" alt="">
 
-            <br>
-            Copyright 2024
-        """
+                <br>
+                Copyright 2024
+                Version 1.0.0
+            """
+        elif sys.platform.startswith("darwin") or sys.platform.startswith("linux"): #macOS
+            html_text = f"""
+                Graphical User Interface for VFSMOD and UH<br>
+                <b>Model developers</b>: <br>
+                - Rafael Muñoz-Carpena, University of Florida<br>
+                - John E. Parsons, North Carolina State University<br>
+                <b>GUI developer</b>: <br>
+                - Iñigo Barberena Ruiz, Public University of Navarre<br>
+                Version 1.0.0<br>
+                Contact for Questions or Problems: carpena@ufl.edu<br>
+                This work is licensed under <b>CC BY-ND 4.0</b>
+                    <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src="/Library/Application Support/vfsmod-w/images/cc.svg" alt="">
+                    <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src="/Library/Application Support/vfsmod-w/images/by.svg" alt="">
+                    <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src="/Library/Application Support/vfsmod-w/images/nd.svg" alt="">
+                
+                <br>
+                Copyright 2024
+                Version 1.0.0
+            """
+        
         
         self.dlg_base.label_160.setText(html_text)
         self.dlg_base.label_161.setText(html_text)
+        self.dlg_base.label_162.setText("Please select any of the menu options")
         
         self.dlg_base.label_160.setStyleSheet("""
             font-family: 'MS Shell Dlg 2';  /* Cambia la fuente */
@@ -16916,8 +17315,8 @@ def design_paralelization(number_execution,core,combinations_design,working_dire
     
     #In mac
     elif sys.platform.startswith("darwin"):
-        script_path = Path(os.path.dirname(__file__)) / "executables" / f"execution_uh_{core}.sh"
-        uh_path = Path(os.path.dirname(__file__)) / "executables" / "uh"
+        script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_uh_{core}.sh"
+        uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "uh"
 
         # Unquarantine the 'uh' file (to allow it to be executed)
         try:
@@ -16926,8 +17325,8 @@ def design_paralelization(number_execution,core,combinations_design,working_dire
             pass
 
         # Give execution permissions to the script and the executable
-        subprocess.run(["chmod", "755", str(script_path)], check=True)
-        subprocess.run(["chmod", "755", str(uh_path)], check=True)
+        #subprocess.run(["chmod", "755", str(script_path)], check=True)
+        #subprocess.run(["chmod", "755", str(uh_path)], check=True)
 
         # Execute sh file
         resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
@@ -16949,8 +17348,8 @@ def design_paralelization(number_execution,core,combinations_design,working_dire
     
     #In mac
     elif sys.platform.startswith("darwin"):
-        script_path = Path(os.path.dirname(__file__)) / "executables" / f"execution_vfs_{core}.sh"
-        uh_path = Path(os.path.dirname(__file__)) / "executables" / "vfsm"
+        script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_vfs_{core}.sh"
+        uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
 
         # Unquarantine the 'vfs' file (to allow it to be executed)
         try:
@@ -16959,8 +17358,8 @@ def design_paralelization(number_execution,core,combinations_design,working_dire
             pass
 
         # Give execution permissions to the script and the executable
-        subprocess.run(["chmod", "755", str(script_path)], check=True)
-        subprocess.run(["chmod", "755", str(uh_path)], check=True)
+        #subprocess.run(["chmod", "755", str(script_path)], check=True)
+        #subprocess.run(["chmod", "755", str(uh_path)], check=True)
 
         # Execute sh file
         resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
@@ -17027,9 +17426,6 @@ def modify_ikw_file_design(vfs_file_design,working_directory,value_change,core):
         lineas[2] = modify_number_in_string(lineas[2],0,value_change)
         
         #Then we update the segments
-        number_segments = int(lineas[3])
-        length = list(map(float, lineas[2].split()))[0]
-        new_interval = length/number_segments
 
         #Data frame, but we take it from the original, not from the last execution
         #We import dataframe of segments from the original file
@@ -17041,7 +17437,10 @@ def modify_ikw_file_design(vfs_file_design,working_directory,value_change,core):
         ikw = ikw.rstrip()
         with open(ikw, "r") as archivo:
             lineas_ikw_original = archivo.readlines()
-            
+        
+        number_segments = int(lineas_ikw_original[3])
+        length = list(map(float, lineas_ikw_original[2].split()))[0]
+        new_interval = length/number_segments
         df = pd.DataFrame(data = {"Distance":[list(map(float, lineas_ikw_original[x].split()))[0] for x in range(4,4+number_segments)],
                              "Manning":[list(map(float, lineas_ikw_original[x].split()))[1] for x in range(4,4+number_segments)],
                              "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
@@ -17053,11 +17452,13 @@ def modify_ikw_file_design(vfs_file_design,working_directory,value_change,core):
         df_a = df.copy()
         actual_length = max(df_a["Distance"])
         length_to_change = value_change
-        if length_to_change <= actual_length:
+        if length_to_change < actual_length:
             if length_to_change<min(df_a["Distance"]): #when distance is smaller than the first interval
                 df_a = df_a.head(1)
+                df_a["Distance"].iloc[0] =length_to_change
             else:
-                df_a = df_a[df_a["Distance"]<=length_to_change]
+                
+                df_a = df_a.loc[:len(df_a[df_a["Distance"]<=length_to_change]),:]
                 df_a.loc[df_a.index[-1], "Distance"] = length_to_change
         else:
             df_a.loc[df_a.index[-1], "Distance"] = length_to_change
@@ -17107,7 +17508,7 @@ def modify_ikw_file_design(vfs_file_design,working_directory,value_change,core):
             contenido+=f"{i}"
         for i in range(len(df_a)):
             contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
-        for i in lineas_ikw_original[-8:]:    
+        for i in lineas_ikw_original[4+number_segments:]:       
             contenido+=f"{i}"
 
         with open(str(Path(working_directory+f"/design/inputs/design_{core}.ikw")), 'w') as archivo:
@@ -17270,8 +17671,8 @@ def execution_uncertainity_analysis(number_execution,core,param_values,dic_data,
         
         #In mac
         elif sys.platform.startswith("darwin"):
-            script_path = Path(os.path.dirname(__file__)) / "executables" / f"execution_uh_{core}.sh"
-            uh_path = Path(os.path.dirname(__file__)) / "executables" / "uh"
+            script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_uh_{core}.sh"
+            uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "uh"
 
             # Unquarantine the 'uh' file (to allow it to be executed)
             try:
@@ -17280,8 +17681,8 @@ def execution_uncertainity_analysis(number_execution,core,param_values,dic_data,
                 pass
 
             # Give execution permissions to the script and the executable
-            subprocess.run(["chmod", "755", str(script_path)], check=True)
-            subprocess.run(["chmod", "755", str(uh_path)], check=True)
+            #subprocess.run(["chmod", "755", str(script_path)], check=True)
+            #subprocess.run(["chmod", "755", str(uh_path)], check=True)
 
             # Execute sh file
             resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
@@ -17304,8 +17705,8 @@ def execution_uncertainity_analysis(number_execution,core,param_values,dic_data,
     
     #In mac
     elif sys.platform.startswith("darwin"):
-        script_path = Path(os.path.dirname(__file__)) / "executables" / f"execution_vfs_{core}.sh"
-        uh_path = Path(os.path.dirname(__file__)) / "executables" / "vfsm"
+        script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_vfs_{core}.sh"
+        uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
 
         # Unquarantine the 'vfs' file (to allow it to be executed)
         try:
@@ -17314,8 +17715,8 @@ def execution_uncertainity_analysis(number_execution,core,param_values,dic_data,
             pass
 
         # Give execution permissions to the script and the executable
-        subprocess.run(["chmod", "755", str(script_path)], check=True)
-        subprocess.run(["chmod", "755", str(uh_path)], check=True)
+        #subprocess.run(["chmod", "755", str(script_path)], check=True)
+        #subprocess.run(["chmod", "755", str(uh_path)], check=True)
 
         # Execute sh file
         resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
@@ -17374,9 +17775,6 @@ def change_buffer_length_uncertainity(value_change,core,vfs_uncertainity_file,wo
     lineas[2] = modify_number_in_string(lineas[2],0,value_change)
     
     #Then we update the segments
-    number_segments = int(lineas[3])
-    length = list(map(float, lineas[2].split()))[0]
-    new_interval = length/number_segments
 
     #Data frame, but we take it from the original, not from the last execution
     #We import dataframe of segments from the original file
@@ -17388,7 +17786,10 @@ def change_buffer_length_uncertainity(value_change,core,vfs_uncertainity_file,wo
     ikw = ikw.rstrip()
     with open(ikw, "r") as archivo:
         lineas_ikw_original = archivo.readlines()
-        
+    
+    number_segments = int(lineas_ikw_original[3])
+    length = list(map(float, lineas_ikw_original[2].split()))[0]
+    new_interval = length/number_segments
     df = pd.DataFrame(data = {"Distance":[list(map(float, lineas_ikw_original[x].split()))[0] for x in range(4,4+number_segments)],
                          "Manning":[list(map(float, lineas_ikw_original[x].split()))[1] for x in range(4,4+number_segments)],
                          "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
@@ -17397,11 +17798,13 @@ def change_buffer_length_uncertainity(value_change,core,vfs_uncertainity_file,wo
     df_a = df.copy()
     actual_length = max(df_a["Distance"])
     length_to_change = value_change
-    if length_to_change <= actual_length:
+    if length_to_change < actual_length:
         if length_to_change<min(df_a["Distance"]): #when distance is smaller than the first interval
             df_a = df_a.head(1)
+            df_a["Distance"].iloc[0] =length_to_change
         else:
-            df_a = df_a[df_a["Distance"]<=length_to_change]
+            
+            df_a = df_a.loc[:len(df_a[df_a["Distance"]<=length_to_change]),:]
             df_a.loc[df_a.index[-1], "Distance"] = length_to_change
     else:
         df_a.loc[df_a.index[-1], "Distance"] = length_to_change
@@ -17455,7 +17858,7 @@ def change_buffer_length_uncertainity(value_change,core,vfs_uncertainity_file,wo
         contenido+=f"{i}"
     for i in range(len(df_a)):
         contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
-    for i in lineas_ikw_original[-8:]:    
+    for i in lineas_ikw_original[4+number_segments:]:       
         contenido+=f"{i}"
     with open(str(Path(working_directory+f"/uncertainty/inputs/uncertainty_{core}.ikw")), 'w') as archivo:
         archivo.write(contenido)
@@ -17494,7 +17897,7 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
             "Total Runoff out from Filter (m3)":[-1],"Total Infiltration in Filter (m3)":[-1],
             "Mass Sediment Input to Filter (kg)":[-1],"Concentration Sediment in Runoff from source Area (g/L)":[-1],
             "Mass Sediment Output from Filter (kg)":[-1],"Concentration Sediment in Runoff exiting the Filter (g/L)":[-1],
-            "Sediment Delivery Ratio":[-1],"Runoff Delivery Ratio":[-1],"Water Front Depth (m)":[-1]})
+            "Sediment Delivery Ratio":[-1],"Runoff Delivery Ratio":[-1],"Wetting Front Depth (m)":[-1]})
         #Add water quality parameters if present
         if water_quality:
             for p in range(number_pesticides):
@@ -17546,7 +17949,7 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
             "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter (m3)":[infiltration_filter],
             "Mass Sediment Input to Filter (kg)":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area (g/L)":[concentration_sediment_source],
             "Mass Sediment Output from Filter (kg)":[sediment_out_filter],"Concentration Sediment in Runoff exiting the Filter (g/L)":[concentration_sediment_filter],
-            "Sediment Delivery Ratio":[sdr],"Runoff Delivery Ratio":[rdr],"Water Front Depth (m)":[water_front_depth]})
+            "Sediment Delivery Ratio":[sdr],"Runoff Delivery Ratio":[rdr],"Wetting Front Depth (m)":[water_front_depth]})
         #Add water quality parameters if present
         if water_quality:
             #Obtain results water quality
@@ -17621,7 +18024,7 @@ def sensitivity_paralelization_design(number_execution,core,param_values,dic_dat
             return save_results_sensitivity_analysis_design(number_execution,core,working_directory,dic_data,param_values,water_quality ,buffer_lengths,rows_execute,outputs_to_save,error = False)
     except:
         return save_results_sensitivity_analysis_design(number_execution,core,working_directory,dic_data,param_values,water_quality ,buffer_lengths,rows_execute,outputs_to_save,error = True)
-       
+     
     
     
 
@@ -17658,8 +18061,8 @@ def execution_sensitivity_analysis_design(number_execution,core,param_values,dic
     
     #In mac
     elif sys.platform.startswith("darwin"):
-        script_path = Path(os.path.dirname(__file__)) / "executables" / f"execution_uh_{core}.sh"
-        uh_path = Path(os.path.dirname(__file__)) / "executables" / "uh"
+        script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_uh_{core}.sh"
+        uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "uh"
 
         # Unquarantine the 'uh' file (to allow it to be executed)
         try:
@@ -17668,8 +18071,8 @@ def execution_sensitivity_analysis_design(number_execution,core,param_values,dic
             pass
 
         # Give execution permissions to the script and the executable
-        subprocess.run(["chmod", "755", str(script_path)], check=True)
-        subprocess.run(["chmod", "755", str(uh_path)], check=True)
+        #subprocess.run(["chmod", "755", str(script_path)], check=True)
+        #subprocess.run(["chmod", "755", str(uh_path)], check=True)
 
         # Execute sh file
         resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
@@ -17692,8 +18095,8 @@ def execution_sensitivity_analysis_design(number_execution,core,param_values,dic
     
     #In mac
     elif sys.platform.startswith("darwin"):
-        script_path = Path(os.path.dirname(__file__)) / "executables" / f"execution_vfs_{core}.sh"
-        uh_path = Path(os.path.dirname(__file__)) / "executables" / "vfsm"
+        script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_vfs_{core}.sh"
+        uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
 
         # Unquarantine the 'vfs' file (to allow it to be executed)
         try:
@@ -17702,8 +18105,8 @@ def execution_sensitivity_analysis_design(number_execution,core,param_values,dic
             pass
 
         # Give execution permissions to the script and the executable
-        subprocess.run(["chmod", "755", str(script_path)], check=True)
-        subprocess.run(["chmod", "755", str(uh_path)], check=True)
+        #subprocess.run(["chmod", "755", str(script_path)], check=True)
+        #subprocess.run(["chmod", "755", str(uh_path)], check=True)
 
         # Execute sh file
         resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
@@ -17761,9 +18164,6 @@ def change_buffer_length_sensitivity_design(value_change,core,vfs_sensitivity_fi
     lineas[2] = modify_number_in_string(lineas[2],0,value_change)
     
     #Then we update the segments
-    number_segments = int(lineas[3])
-    length = list(map(float, lineas[2].split()))[0]
-    new_interval = length/number_segments
 
     #Data frame, but we take it from the original, not from the last execution
     #We import dataframe of segments from the original file
@@ -17775,7 +18175,11 @@ def change_buffer_length_sensitivity_design(value_change,core,vfs_sensitivity_fi
     ikw = ikw.rstrip()
     with open(ikw, "r") as archivo:
         lineas_ikw_original = archivo.readlines()
-        
+    
+    number_segments = int(lineas_ikw_original[3])
+    length = list(map(float, lineas_ikw_original[2].split()))[0]
+    new_interval = length/number_segments
+
     df = pd.DataFrame(data = {"Distance":[list(map(float, lineas_ikw_original[x].split()))[0] for x in range(4,4+number_segments)],
                          "Manning":[list(map(float, lineas_ikw_original[x].split()))[1] for x in range(4,4+number_segments)],
                          "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
@@ -17784,11 +18188,13 @@ def change_buffer_length_sensitivity_design(value_change,core,vfs_sensitivity_fi
     df_a = df.copy()
     actual_length = max(df_a["Distance"])
     length_to_change = value_change
-    if length_to_change <= actual_length:
+    if length_to_change < actual_length:
         if length_to_change<min(df_a["Distance"]): #when distance is smaller than the first interval
             df_a = df_a.head(1)
+            df_a["Distance"].iloc[0] =length_to_change
         else:
-            df_a = df_a[df_a["Distance"]<=length_to_change]
+            
+            df_a = df_a.loc[:len(df_a[df_a["Distance"]<=length_to_change]),:]
             df_a.loc[df_a.index[-1], "Distance"] = length_to_change
     else:
         df_a.loc[df_a.index[-1], "Distance"] = length_to_change
@@ -17842,7 +18248,7 @@ def change_buffer_length_sensitivity_design(value_change,core,vfs_sensitivity_fi
         contenido+=f"{i}"
     for i in range(len(df_a)):
         contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
-    for i in lineas_ikw_original[-8:]:    
+    for i in lineas_ikw_original[4+number_segments:]:       
         contenido+=f"{i}"
     with open(str(Path(working_directory+f"/design/inputs/design_{core}.ikw")), 'w') as archivo:
         archivo.write(contenido)
@@ -18019,8 +18425,8 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
         
         #In mac
         elif sys.platform.startswith("darwin"):
-            script_path = Path(os.path.dirname(__file__)) / "executables" / f"execution_uh_{core}.sh"
-            uh_path = Path(os.path.dirname(__file__)) / "executables" / "uh"
+            script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_uh_{core}.sh"
+            uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "uh"
 
             # Unquarantine the 'uh' file (to allow it to be executed)
             try:
@@ -18029,8 +18435,8 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
                 pass
 
             # Give execution permissions to the script and the executable
-            subprocess.run(["chmod", "755", str(script_path)], check=True)
-            subprocess.run(["chmod", "755", str(uh_path)], check=True)
+            #subprocess.run(["chmod", "755", str(script_path)], check=True)
+            #subprocess.run(["chmod", "755", str(uh_path)], check=True)
 
             # Execute sh file
             resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
@@ -18053,8 +18459,8 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
     
     #In mac
     elif sys.platform.startswith("darwin"):
-        script_path = Path(os.path.dirname(__file__)) / "executables" / f"execution_vfs_{core}.sh"
-        uh_path = Path(os.path.dirname(__file__)) / "executables" / "vfsm"
+        script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_vfs_{core}.sh"
+        uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
 
         # Unquarantine the 'vfs' file (to allow it to be executed)
         try:
@@ -18063,8 +18469,8 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
             pass
 
         # Give execution permissions to the script and the executable
-        subprocess.run(["chmod", "755", str(script_path)], check=True)
-        subprocess.run(["chmod", "755", str(uh_path)], check=True)
+        #subprocess.run(["chmod", "755", str(script_path)], check=True)
+        #subprocess.run(["chmod", "755", str(uh_path)], check=True)
 
         # Execute sh file
         resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
@@ -18122,9 +18528,6 @@ def change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file,work
     lineas[2] = modify_number_in_string(lineas[2],0,value_change)
     
     #Then we update the segments
-    number_segments = int(lineas[3])
-    length = list(map(float, lineas[2].split()))[0]
-    new_interval = length/number_segments
 
     #Data frame, but we take it from the original, not from the last execution
     #We import dataframe of segments from the original file
@@ -18136,7 +18539,10 @@ def change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file,work
     ikw = ikw.rstrip()
     with open(ikw, "r") as archivo:
         lineas_ikw_original = archivo.readlines()
-        
+    
+    number_segments = int(lineas_ikw_original[3])
+    length = list(map(float, lineas_ikw_original[2].split()))[0]
+    new_interval = length/number_segments
     df = pd.DataFrame(data = {"Distance":[list(map(float, lineas_ikw_original[x].split()))[0] for x in range(4,4+number_segments)],
                          "Manning":[list(map(float, lineas_ikw_original[x].split()))[1] for x in range(4,4+number_segments)],
                          "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
@@ -18145,11 +18551,13 @@ def change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file,work
     df_a = df.copy()
     actual_length = max(df_a["Distance"])
     length_to_change = value_change
-    if length_to_change <= actual_length:
+    if length_to_change < actual_length:
         if length_to_change<min(df_a["Distance"]): #when distance is smaller than the first interval
             df_a = df_a.head(1)
+            df_a["Distance"].iloc[0] =length_to_change
         else:
-            df_a = df_a[df_a["Distance"]<=length_to_change]
+            
+            df_a = df_a.loc[:len(df_a[df_a["Distance"]<=length_to_change]),:]
             df_a.loc[df_a.index[-1], "Distance"] = length_to_change
     else:
         df_a.loc[df_a.index[-1], "Distance"] = length_to_change
@@ -18203,7 +18611,7 @@ def change_buffer_length_sensitivity(value_change,core,vfs_sensitivity_file,work
         contenido+=f"{i}"
     for i in range(len(df_a)):
         contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
-    for i in lineas_ikw_original[-8:]:    
+    for i in lineas_ikw_original[4+number_segments:]:       
         contenido+=f"{i}"
     with open(str(Path(working_directory+f"/sensitivity/inputs/sensitivity_{core}.ikw")), 'w') as archivo:
         archivo.write(contenido)
@@ -18274,7 +18682,7 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
             "Total Runoff out from Filter (m3)":[-1.0],"Total Infiltration in Filter (m3)":[-1.0],
             "Mass Sediment Input to Filter (kg)":[-1.0],"Concentration Sediment in Runoff from source Area (g/L)":[-1.0],
             "Mass Sediment Output from Filter (kg)":[-1.0],"Concentration Sediment in Runoff exiting the Filter (g/L)":[-1.0],
-            "Sediment Delivery Ratio":[-1.0],"Runoff Delivery Ratio":[-1.0],"Water Front Depth (m)":[-1.0]})
+            "Sediment Delivery Ratio":[-1.0],"Runoff Delivery Ratio":[-1.0],"Wetting Front Depth (m)":[-1.0]})
         #Add water quality parameters if present
         if water_quality:
             #Iterate through all the pesticides
@@ -18333,7 +18741,7 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
             "Total Runoff out from Filter (m3)":[runoff_out_filter_m3],"Total Infiltration in Filter (m3)":[infiltration_filter],
             "Mass Sediment Input to Filter (kg)":[mass_sediment_input_filter],"Concentration Sediment in Runoff from source Area (g/L)":[concentration_sediment_source],
             "Mass Sediment Output from Filter (kg)":[sediment_out_filter],"Concentration Sediment in Runoff exiting the Filter (g/L)":[concentration_sediment_filter],
-            "Sediment Delivery Ratio":[sdr],"Runoff Delivery Ratio":[rdr],"Water Front Depth (m)":[water_front_depth]})
+            "Sediment Delivery Ratio":[sdr],"Runoff Delivery Ratio":[rdr],"Wetting Front Depth (m)":[water_front_depth]})
         #Add water quality parameters if present
         if water_quality:
             #Obtain results water quality
@@ -18442,8 +18850,8 @@ def execution_sensitivity_analysis_calibration(number_execution,core,param_value
     
     #In mac
     elif sys.platform.startswith("darwin"):
-        script_path = Path(os.path.dirname(__file__)) / "executables" / f"execution_vfs_{core}.sh"
-        uh_path = Path(os.path.dirname(__file__)) / "executables" / "vfsm"
+        script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_vfs_{core}.sh"
+        uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
 
         # Unquarantine the 'vfs' file (to allow it to be executed)
         try:
@@ -18452,8 +18860,8 @@ def execution_sensitivity_analysis_calibration(number_execution,core,param_value
             pass
 
         # Give execution permissions to the script and the executable
-        subprocess.run(["chmod", "755", str(script_path)], check=True)
-        subprocess.run(["chmod", "755", str(uh_path)], check=True)
+        #subprocess.run(["chmod", "755", str(script_path)], check=True)
+        #subprocess.run(["chmod", "755", str(uh_path)], check=True)
 
         # Execute sh file
         resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
@@ -18511,9 +18919,6 @@ def change_buffer_length_sensitivity_calibration(value_change,core,vfs_sensitivi
     lineas[2] = modify_number_in_string(lineas[2],0,value_change)
     
     #Then we update the segments
-    number_segments = int(lineas[3])
-    length = list(map(float, lineas[2].split()))[0]
-    new_interval = length/number_segments
 
     #Data frame, but we take it from the original, not from the last execution
     #We import dataframe of segments from the original file
@@ -18525,7 +18930,11 @@ def change_buffer_length_sensitivity_calibration(value_change,core,vfs_sensitivi
     ikw = ikw.rstrip()
     with open(ikw, "r") as archivo:
         lineas_ikw_original = archivo.readlines()
-        
+    
+    number_segments = int(lineas_ikw_original[3])
+    length = list(map(float, lineas_ikw_original[2].split()))[0]
+    new_interval = length/number_segments
+
     df = pd.DataFrame(data = {"Distance":[list(map(float, lineas_ikw_original[x].split()))[0] for x in range(4,4+number_segments)],
                          "Manning":[list(map(float, lineas_ikw_original[x].split()))[1] for x in range(4,4+number_segments)],
                          "Slope":[list(map(float, lineas_ikw_original[x].split()))[2] for x in range(4,4+number_segments)]})
@@ -18534,11 +18943,13 @@ def change_buffer_length_sensitivity_calibration(value_change,core,vfs_sensitivi
     df_a = df.copy()
     actual_length = max(df_a["Distance"])
     length_to_change = value_change
-    if length_to_change <= actual_length:
+    if length_to_change < actual_length:
         if length_to_change<min(df_a["Distance"]): #when distance is smaller than the first interval
             df_a = df_a.head(1)
+            df_a["Distance"].iloc[0] =length_to_change
         else:
-            df_a = df_a[df_a["Distance"]<=length_to_change]
+            
+            df_a = df_a.loc[:len(df_a[df_a["Distance"]<=length_to_change]),:]
             df_a.loc[df_a.index[-1], "Distance"] = length_to_change
     else:
         df_a.loc[df_a.index[-1], "Distance"] = length_to_change
@@ -18592,7 +19003,7 @@ def change_buffer_length_sensitivity_calibration(value_change,core,vfs_sensitivi
         contenido+=f"{i}"
     for i in range(len(df_a)):
         contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
-    for i in lineas_ikw_original[-8:]:    
+    for i in lineas_ikw_original[4+number_segments:]:       
         contenido+=f"{i}"
     with open(str(Path(working_directory+f"/inverse/inputs/inverse_{core}.ikw")), 'w') as archivo:
         archivo.write(contenido)
@@ -18909,7 +19320,7 @@ class DesignAnalysisThread(QThread):
             for i, async_result in enumerate(async_results):
                 try:
                     async_result.get()  # Esto lanzará la excepción si ocurrió alguna
-                except Exception as e:
+                except Exception as e:                        
                     print(f"Error en proceso {i}: {e}")
             
         
@@ -19048,6 +19459,8 @@ if __name__ == "__main__":
     if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
         PyQt5.QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
     app = QtWidgets.QApplication(sys.argv)
+    
+    
     
     dialog = qvfsmod()
     dialog.run()

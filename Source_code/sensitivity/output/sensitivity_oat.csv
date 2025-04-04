@@ -1,0 +1,12 @@
+OAT sensitivity results
+Studied parameters:Pesticide half-life (days)
+----------------------------------------------------------------------
+Pesticide half-life (days) results
+Pesticide half-life (days),Error,Total Runoff from Source (mm depth over Source Area),Total Runoff from Source (m3),Total Runoff out from Filter (mm depth over Source+Filter),Total Runoff out from Filter (m3),Total Infiltration in Filter (m3),Mass Sediment Input to Filter (kg),Concentration Sediment in Runoff from source Area (g/L),Mass Sediment Output from Filter (kg),Concentration Sediment in Runoff exiting the Filter (g/L),Sediment Delivery Ratio,Runoff Delivery Ratio,Wetting Front Depth (m),Pesticide Delivery Ratio Pesticide 1,Leachate depth (m) Pesticide 1,Leachate depth (m) Pesticide 2,Leachate depth (m) Pesticide 3,Leachate depth (m) Pesticide 4,Leachate depth (m) Pesticide 5,Leachate depth (m) Pesticide 6
+30.0,0,32.834,164.172,31.885,160.491,8.529,2784.056,16.958,2149.93,13.396,0.772,0.978,1.369,0.9234180000000001,0.18,0.0,0.0,0.0,0.0,0.0
+20.0,0,32.834,164.172,31.885,160.491,8.529,2784.056,16.958,2149.93,13.396,0.772,0.978,1.369,0.9234180000000001,0.18,0.0,0.0,0.0,0.0,0.0
+25.0,0,32.834,164.172,31.885,160.491,8.529,2784.056,16.958,2149.93,13.396,0.772,0.978,1.369,0.9234180000000001,0.18,0.0,0.0,0.0,0.0,0.0
+30.0,0,32.834,164.172,31.885,160.491,8.529,2784.056,16.958,2149.93,13.396,0.772,0.978,1.369,0.9234180000000001,0.18,0.0,0.0,0.0,0.0,0.0
+35.0,0,32.834,164.172,31.885,160.491,8.529,2784.056,16.958,2149.93,13.396,0.772,0.978,1.369,0.9234180000000001,0.18,0.0,0.0,0.0,0.0,0.0
+40.0,0,32.834,164.172,31.885,160.491,8.529,2784.056,16.958,2149.93,13.396,0.772,0.978,1.369,0.9234180000000001,0.18,0.0,0.0,0.0,0.0,0.0
+----------------------------------------------------------------------
