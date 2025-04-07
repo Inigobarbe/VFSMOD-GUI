@@ -8331,7 +8331,7 @@ class qvfsmod():
             self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis_part_one)
             return
         
-        elif len(error_columns)>0:
+        elif len(error_columns)>0 and len(error_columns)!=0:
             contenido = "The next output values could not be calculated:\n"
             for c in error_columns:
                 contenido += f"{c}\n"
@@ -8453,7 +8453,6 @@ class qvfsmod():
         
         #Obtain the data with the optimized buffer lengths
         self.results_sensitivity,error_columns = self.obtain_optimized_vfs_sensitivity_design()
-        
         show_warning = True
         #If all output columns gave erorr then all executions gave error
         if len(error_columns) == len(self.outputs_sensitivity_design):
@@ -8466,8 +8465,8 @@ class qvfsmod():
             self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
             return
         
-        #If not all output columns gave erorr then the calculation of some columns gave error
-        elif len(error_columns)<len(self.outputs_sensitivity_design):
+        #If not all output columns gave error then the calculation of some columns gave error
+        elif len(error_columns)<len(self.outputs_sensitivity_design) and len(error_columns)!=0:
             contenido = "The next output values could not be calculated:\n"
             for c in error_columns:
                 if c.split()[2] == "RDR":
@@ -9873,7 +9872,7 @@ class qvfsmod():
             name = self.dlg_base.table_uncertainity.item(i, 0).text()
             #Obtain name of distribution and parameters
             dis,param = distribution_parameters_fun(i)
-            if self.dlg_base.table_uncertainity.item(i, 3).text()== "Not applicable" or self.dlg_base.table_uncertainity.item(i, 3).text()=="1":
+            if self.dlg_base.table_uncertainity.item(i, 3).text()== "Not applicable":
                 dic_data[name] = [dis,param]
             else:
                 dic_data[name+f" Pesticide {self.dlg_base.table_uncertainity.item(i, 3).text()}"] = [dis,param]
@@ -9898,7 +9897,7 @@ class qvfsmod():
                     value += increment
                     if value>maximum:
                         break
-                if self.dlg_base.table_oat.item(i, 2).text()== "Not applicable" or self.dlg_base.table_oat.item(i, 2).text()=="1":
+                if self.dlg_base.table_oat.item(i, 2).text()== "Not applicable":
                     dic_data[name] = values
                 else:
                     dic_data[name+f" Pesticide {self.dlg_base.table_oat.item(i, 2).text()}"] = values
@@ -9928,7 +9927,7 @@ class qvfsmod():
                 name = self.dlg_base.table.item(i, 0).text()
                 #Obtain name of distribution and parameters
                 dis,param = distribution_parameters_fun(i)
-                if self.dlg_base.table.item(i, 3).text()== "Not applicable" or self.dlg_base.table.item(i, 3).text()=="1":
+                if self.dlg_base.table.item(i, 3).text()== "Not applicable":
                     dic_data[name] = [dis,param]
                 else:
                     dic_data[name+f" Pesticide {self.dlg_base.table.item(i, 3).text()}"] = [dis,param]
@@ -9963,7 +9962,7 @@ class qvfsmod():
             name = self.dlg_base.table_2.item(i, 0).text()
             #Obtain name of distribution and parameters
             dis,param = distribution_parameters_fun(i)
-            if self.dlg_base.table_2.item(i, 3).text()== "Not applicable" or self.dlg_base.table_2.item(i, 3).text()=="1":
+            if self.dlg_base.table_2.item(i, 3).text()== "Not applicable":
                 dic_data[name] = [dis,param]
             else:
                 dic_data[name+f" Pesticide {self.dlg_base.table_2.item(i, 3).text()}"] = [dis,param]
@@ -10020,7 +10019,7 @@ class qvfsmod():
             name = self.dlg_calibration_sensitivity_hydrograph.table.item(i, 0).text()
             #Obtain name of distribution and parameters
             dis,param = distribution_parameters_fun(i)
-            if self.dlg_calibration_sensitivity_hydrograph.table.item(i, 3).text()== "Not applicable" or self.dlg_calibration_sensitivity_hydrograph.table.item(i, 3).text()=="1":
+            if self.dlg_calibration_sensitivity_hydrograph.table.item(i, 3).text()== "Not applicable":
                 dic_data[name] = [dis,param]
             else:
                 dic_data[name+f" Pesticide {self.dlg_calibration_sensitivity_hydrograph.table.item(i, 3).text()}"] = [dis,param]
@@ -12230,112 +12229,114 @@ class qvfsmod():
     
     def obtain_values_calibration_single(self):
         """Method to calculate the objective function in single value calibration"""
-        #Create variable to add objective function
-        objective_function = []
-        #Function to obtain results from osp
-        ruta = str(Path(self.working_directory+f"/inverse/output/inverse.osp"))
-        with open(ruta, "r") as archivo:
-            lineas = archivo.readlines()
-        def obtain_result_osp(string):
-            for i in lineas:
-                if i.split("=")[-1]==string:
-                    for k in i.split("=")[0].split(" "):
-                        try:
-                            output = float(k)
-                            break
-                        except:
-                            pass
-            return output
-        
-        #Same for owq
-        if self.water_quality:
-            ruta = str(Path(self.working_directory+f"/inverse/output/inverse.owq"))
-            try:
-                with open(ruta, "r") as archivo:
-                    lineas_owq = archivo.readlines()
-            except FileNotFoundError:
-                return 1e20
+        try:#if there is any error then return errror number
+            #Create variable to add objective function
+            objective_function = []
+            #Function to obtain results from osp
+            ruta = str(Path(self.working_directory+f"/inverse/output/inverse.osp"))
+            with open(ruta, "r") as archivo:
+                lineas = archivo.readlines()
+            def obtain_result_osp(string):
+                for i in lineas:
+                    if i.split("=")[-1]==string:
+                        for k in i.split("=")[0].split(" "):
+                            try:
+                                output = float(k)
+                                break
+                            except:
+                                pass
+                return output
+            
+            #Same for owq
+            if self.water_quality:
+                ruta = str(Path(self.working_directory+f"/inverse/output/inverse.owq"))
+                try:
+                    with open(ruta, "r") as archivo:
+                        lineas_owq = archivo.readlines()
+                except FileNotFoundError:
+                    return 1e20
+                    
+                def obtain_result_owq(string,number_pesticide):
+                    condition = False
+                    for i in lineas_owq:
+                        if i == f" Normalized values by source area:\n":
+                            condition = True
+                        if i.split("=")[-1].rstrip()==string and condition:
+                            if string != " Source Area (input)":
+                                return float(i.split("=")[0].split()[int(number_pesticide)-1])
+                            else:
+                                return float(i.split("=")[0].split()[0])
+                                    
+                #Obtain the pesticide to save results
+                for i in self.dictionary_radio_inputs_pesticides_single_calibration:
+                    if i.isChecked():
+                        pesticide = self.dictionary_radio_inputs_pesticides_single_calibration[i].split()[-1]
+                        break
                 
-            def obtain_result_owq(string,number_pesticide):
-                condition = False
-                for i in lineas_owq:
-                    if i == f" Normalized values by source area:\n":
-                        condition = True
-                    if i.split("=")[-1].rstrip()==string and condition:
-                        if string != " Source Area (input)":
-                            return float(i.split("=")[0].split()[int(number_pesticide)-1])
-                        else:
-                            return float(i.split("=")[0].split()[0])
-                                
-            #Obtain the pesticide to save results
-            for i in self.dictionary_radio_inputs_pesticides_single_calibration:
-                if i.isChecked():
-                    pesticide = self.dictionary_radio_inputs_pesticides_single_calibration[i].split()[-1]
-                    break
+                
+            self.calibration_single_results = {}
+            #Obtain results
+            if "Total discharge" in self.output_calibrate_single.keys():
+                total_discharge = obtain_result_osp(" Total Runoff out from Filter\n")
+                normalized = (total_discharge - float(self.dlg_base.line_total_discharge.text()))/float(self.dlg_base.line_total_discharge.text())
+                objective_function.append(normalized)
+                self.calibration_single_results["Total discharge"] = total_discharge
+                
+            if "Filtered discharge" in self.output_calibrate_single.keys():
+                runoff_delivery = obtain_result_osp(" Runoff Delivery Ratio\n")
+                filtered_discharge = 1 -runoff_delivery
+                normalized = (filtered_discharge - float(self.dlg_base.line_filtered_discharge.text()))/float(self.dlg_base.line_filtered_discharge.text())
+                objective_function.append(normalized)
+                self.calibration_single_results["Filtered discharge"] = filtered_discharge
             
+            if "Total sediment" in self.output_calibrate_single.keys():
+                total_sediment = obtain_result_osp(" Mass Sediment Output from Filter\n")
+                normalized = (total_sediment - float(self.dlg_base.line_total_sediment.text()))/float(self.dlg_base.line_total_sediment.text())
+                objective_function.append(normalized)
+                self.calibration_single_results["Total sediment"] = total_sediment
             
-        self.calibration_single_results = {}
-        #Obtain results
-        if "Total discharge" in self.output_calibrate_single.keys():
-            total_discharge = obtain_result_osp(" Total Runoff out from Filter\n")
-            normalized = (total_discharge - float(self.dlg_base.line_total_discharge.text()))/float(self.dlg_base.line_total_discharge.text())
-            objective_function.append(normalized)
-            self.calibration_single_results["Total discharge"] = total_discharge
+            if "Filtered sediment" in self.output_calibrate_single.keys():
+                sediment_delivery = obtain_result_osp(" Sediment Delivery Ratio\n")
+                filtered_sediment = 1 -sediment_delivery
+                normalized = (filtered_sediment - float(self.dlg_base.line_filtered_sediment.text()))/float(self.dlg_base.line_filtered_sediment.text())
+                objective_function.append(normalized)
+                self.calibration_single_results["Filtered sediment"] = filtered_sediment
             
-        if "Filtered discharge" in self.output_calibrate_single.keys():
-            runoff_delivery = obtain_result_osp(" Runoff Delivery Ratio\n")
-            filtered_discharge = 1 -runoff_delivery
-            normalized = (filtered_discharge - float(self.dlg_base.line_filtered_discharge.text()))/float(self.dlg_base.line_filtered_discharge.text())
-            objective_function.append(normalized)
-            self.calibration_single_results["Filtered discharge"] = filtered_discharge
-        
-        if "Total sediment" in self.output_calibrate_single.keys():
-            total_sediment = obtain_result_osp(" Mass Sediment Output from Filter\n")
-            normalized = (total_sediment - float(self.dlg_base.line_total_sediment.text()))/float(self.dlg_base.line_total_sediment.text())
-            objective_function.append(normalized)
-            self.calibration_single_results["Total sediment"] = total_sediment
-        
-        if "Filtered sediment" in self.output_calibrate_single.keys():
-            sediment_delivery = obtain_result_osp(" Sediment Delivery Ratio\n")
-            filtered_sediment = 1 -sediment_delivery
-            normalized = (filtered_sediment - float(self.dlg_base.line_filtered_sediment.text()))/float(self.dlg_base.line_filtered_sediment.text())
-            objective_function.append(normalized)
-            self.calibration_single_results["Filtered sediment"] = filtered_sediment
-        
-        if "Filtered pesticide" in self.output_calibrate_single.keys():
-            pesticide_input = obtain_result_owq(" Pesticide input (mi)",pesticide)
-            pesticide_output = obtain_result_owq(" Pesticide output (mo)",pesticide)
-            filtered_pesticide = (pesticide_input-pesticide_output)/(pesticide_input)
-            normalized = (filtered_pesticide - float(self.dlg_base.line_filtered_pesticide.text()))/float(self.dlg_base.line_filtered_pesticide.text())
-            objective_function.append(normalized)
-            self.calibration_single_results["Filtered pesticide"] = filtered_pesticide
+            if "Filtered pesticide" in self.output_calibrate_single.keys():
+                pesticide_input = obtain_result_owq(" Pesticide input (mi)",pesticide)
+                pesticide_output = obtain_result_owq(" Pesticide output (mo)",pesticide)
+                filtered_pesticide = (pesticide_input-pesticide_output)/(pesticide_input)
+                normalized = (filtered_pesticide - float(self.dlg_base.line_filtered_pesticide.text()))/float(self.dlg_base.line_filtered_pesticide.text())
+                objective_function.append(normalized)
+                self.calibration_single_results["Filtered pesticide"] = filtered_pesticide
+                
+            if "Pesticide out the filter" in self.output_calibrate_single.keys():
+                pesticide_output = obtain_result_owq(" Pesticide output (mo)",pesticide)
+                normalized = (pesticide_output - float(self.dlg_base.line_pesticide_out.text()))/float(self.dlg_base.line_pesticide_out.text())
+                objective_function.append(normalized)
+                self.calibration_single_results["Pesticide out the filter"] = pesticide_output
             
-        if "Pesticide out the filter" in self.output_calibrate_single.keys():
-            pesticide_output = obtain_result_owq(" Pesticide output (mo)",pesticide)
-            normalized = (pesticide_output - float(self.dlg_base.line_pesticide_out.text()))/float(self.dlg_base.line_pesticide_out.text())
-            objective_function.append(normalized)
-            self.calibration_single_results["Pesticide out the filter"] = pesticide_output
-        
-        if "Pesticide outflow in solid phase" in self.output_calibrate_single.keys():
-            pesticide_solid = obtain_result_owq(" Pesticide outflow in solid phase (mop)",pesticide)
-            normalized = (pesticide_solid - float(self.dlg_base.line_pesticide_solid.text()))/float(self.dlg_base.line_pesticide_solid.text())
-            objective_function.append(normalized)
-            self.calibration_single_results["Pesticide outflow in solid phase"] = pesticide_solid
-        
-        if "Pesticide outflow in liquid phase" in self.output_calibrate_single.keys():
-            pesticide_liquid = obtain_result_owq(" Pesticide outflow in liquid phase (mod)",pesticide)
-            normalized = (pesticide_liquid - float(self.dlg_base.line_pesticide_liquid.text()))/float(self.dlg_base.line_pesticide_liquid.text())
-            objective_function.append(normalized)
-            self.calibration_single_results["Pesticide outflow in liquid phase"] = pesticide_liquid
-        
-        #Calculate objective function
-        value = 0
-        for i in objective_function:
-            value += i**2
-        value = (value**0.5)/len(objective_function)
-        
-        return value
-        
+            if "Pesticide outflow in solid phase" in self.output_calibrate_single.keys():
+                pesticide_solid = obtain_result_owq(" Pesticide outflow in solid phase (mop)",pesticide)
+                normalized = (pesticide_solid - float(self.dlg_base.line_pesticide_solid.text()))/float(self.dlg_base.line_pesticide_solid.text())
+                objective_function.append(normalized)
+                self.calibration_single_results["Pesticide outflow in solid phase"] = pesticide_solid
+            
+            if "Pesticide outflow in liquid phase" in self.output_calibrate_single.keys():
+                pesticide_liquid = obtain_result_owq(" Pesticide outflow in liquid phase (mod)",pesticide)
+                normalized = (pesticide_liquid - float(self.dlg_base.line_pesticide_liquid.text()))/float(self.dlg_base.line_pesticide_liquid.text())
+                objective_function.append(normalized)
+                self.calibration_single_results["Pesticide outflow in liquid phase"] = pesticide_liquid
+            
+            #Calculate objective function
+            value = 0
+            for i in objective_function:
+                value += i**2
+            value = (value**0.5)/len(objective_function)
+            
+            return value
+        except:
+            return 1e20
         
         
     def calibration_execution_progress_hydrograph(self,information):
