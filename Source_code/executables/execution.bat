@@ -1,2 +1,2 @@
-cd "C:\qvfsmod\Source_code\inverse" 
-"C:\qvfsmod\Source_code\executables\vfsm" inverse.prj 
+cd "C:\Users\inigo.barberena\Documents\Pruebas_franceses\a" 
+"C:\qvfsmod\Source_code\executables\uh" sample.lis 

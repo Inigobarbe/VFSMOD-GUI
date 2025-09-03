@@ -27,17 +27,17 @@ File: output\sample.osp                               VFSMOD v4.6.0 11/2024
       3.250 m3  = Total Rainfall on Filter
      32.737 mm  = Total Runoff from Source (mm depth over Source Area)
     163.687 m3  = Total Runoff from Source
-     31.841 mm  = Total Runoff out from Filter (mm depth over Source+Filter)
-    160.274 m3  = Total Runoff out from Filter
+     31.842 mm  = Total Runoff out from Filter (mm depth over Source+Filter)
+    160.275 m3  = Total Runoff out from Filter
       8.421 m3  = Total Infiltration in Filter
       0.979     = Runoff Delivery Ratio
   
-    2780.536 kg = Mass Sediment Input to Filter
-      16.987 g/L= Concentration Sediment in Runoff from source Area
-    2148.265 kg = Mass Sediment Output from Filter
-      13.404 g/L= Concentration Sediment in Runoff exiting the Filter
-     632.271 kg = Mass Sediment retained in Filter
-       0.773    = Sediment Delivery Ratio
+    5965.543 kg = Mass Sediment Input to Filter
+      36.445 g/L= Concentration Sediment in Runoff from source Area
+    5117.018 kg = Mass Sediment Output from Filter
+      31.926 g/L= Concentration Sediment in Runoff exiting the Filter
+     848.524 kg = Mass Sediment retained in Filter
+       0.858    = Sediment Delivery Ratio
   
        8.65 m   = Effective Filter Length
        0.00 m   = Wedge Distance

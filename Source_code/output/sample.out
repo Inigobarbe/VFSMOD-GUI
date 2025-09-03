@@ -1,4 +1,4 @@
-File: output\sample.out                                UH v3.0.8, 09/2023
+File: output\sample.out                                UH v3.0.9, 04/2025
  
   
   HYDROGRAPH CALCULATION FOR WATERSHED-SCS METHOD
@@ -18,7 +18,7 @@ MUSLE type=  5 where R-factor is (see manual)
   
  OUTPUTS
  -------
-Runoff volume=  289.32 mm= 1446.58 m3
+Runoff volume=   32.71 mm=  163.55 m3
 Initial Abstraction=   21.77 mm
 Concentration time=    0.20 h=    12.29 min
   

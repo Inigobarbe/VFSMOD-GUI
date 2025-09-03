@@ -116,6 +116,7 @@ from ui.owq_graph_reduction import owq_graph_reduction
 from ui.owq_graph_evolution import owq_graph_evolution
 from ui.ohy_graphs import ohy_graphs
 from ui.figure_settings import figure_settings
+from ui.user_defined_storm_type_french import user_defined_storm_dialog_french
 
 
 
@@ -238,6 +239,7 @@ class qvfsmod():
         self.dlg_owq_graph_evolution = owq_graph_evolution()
         self.dlg_ohy_graphs = ohy_graphs()
         self.dlg_figure_settings = figure_settings()
+        self.dlg_user_storm_french = user_defined_storm_dialog_french()
         
         #Add icons to the dialogs
         if sys.platform.startswith("win"):#Windows
@@ -370,6 +372,7 @@ class qvfsmod():
         
         #If the storm type is user defined, then emerges a dialog to add the data
         self.dlg_base.storm_type.currentIndexChanged.connect(self.user_defined_storm_type)
+        self.dlg_base.show_storm.clicked.connect(self.user_defined_storm_type)
         
         #Sensitivity for calibration open dialogs
         self.dlg_base.calibration_sensitivity_hydrograph.clicked.connect(lambda _, b = [True,"hydrograph"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
@@ -462,6 +465,7 @@ class qvfsmod():
         
         #User defined storm
         self.dlg_user_storm.tableWidget.itemChanged.connect(self.update_user_storm_graph)
+        self.dlg_user_storm_french.tableWidget.itemChanged.connect(self.update_user_storm_graph_french)
         
         #Add shallow water parameters if present
         #For the whole hydrograph
@@ -558,7 +562,7 @@ class qvfsmod():
         self.add_images()
         
         # put the elements in the combobox
-        self.dlg_base.storm_type.addItems(["I","IA","II","III","User"])
+        self.dlg_base.storm_type.addItems(["I","IA","II","III","User-normalized","User-storm"])
         self.dlg_base.soil_type.addItems(["Clay","Silty clay","Sandy clay","Silty clay loam","Clay loam","Sandy clay loam","Silt","Silt loam","Loam",
             "Very fine sandy loam","Fine sandy loam","Sandy loam","Coarse sandy loam","Loamy very fine sand","Loamy fine sandy",
             "Loamy sand","Loamy coarse sand","Very fine sandy","Fine sand","Sand","Coarse sand"])
@@ -722,6 +726,10 @@ class qvfsmod():
         #Add and remove rows for the buffer segment
         self.dlg_buffer_segment.add_row.clicked.connect(self.add_row)
         self.dlg_buffer_segment.remove_row.clicked.connect(self.remove_row)
+        
+        #Add and remove rows for the storm french
+        self.dlg_user_storm_french.add.clicked.connect(self.add_row_french)
+        self.dlg_user_storm_french.remove.clicked.connect(self.remove_row_french)
         
         #Add and remove rows for the vfsmod hyetograph
         self.dlg_vfsmod_hyetograph.add.clicked.connect(self.vfsmod_hyetograph_add_row)
@@ -1099,6 +1107,7 @@ class qvfsmod():
         
         #Disable the ability to modify the timestep of the user defined storm and center items
         self.set_timestep_non_editable()
+        self.set_timestep_non_editable_french()
         
         #Add values of the inp file to the dialog
         self.dlg_base.uh_input.textChanged.connect(self.add_values_inp_dialog)
@@ -3995,6 +4004,7 @@ class qvfsmod():
                 self.dlg_base.storm_type.setCurrentIndex(storm_type-1)
                 if storm_type == 5: #add to table
                     self.dlg_user_storm.tableWidget.itemChanged.disconnect(self.update_user_storm_graph)
+                    self.add_values_dialog(lineas,6,0,self.dlg_user_storm.half)
                     self.dlg_user_storm.tableWidget.setRowCount(24)
                     precipitations = []
                     for i in range(len(lineas)):
@@ -4016,6 +4026,28 @@ class qvfsmod():
                     
                     self.dlg_user_storm.tableWidget.itemChanged.connect(self.update_user_storm_graph)
                     self.update_user_storm_graph()
+                if storm_type == 6: #add to table
+                    self.dlg_user_storm_french.tableWidget.itemChanged.disconnect(self.update_user_storm_graph_french)
+                    self.add_values_dialog(lineas,6,0,self.dlg_user_storm_french.half)
+                    
+                    precipitations = []
+                    for i in range(len(lineas)):
+                        if lineas[i][-10:] == "P/P24=0.5\n":
+                            for k in range(i+1,len(lineas)):
+                                try:
+                                    precipitation = float(lineas[k].split()[1])
+                                    time = float(lineas[k].split()[0])
+                                    precipitations.append(precipitation)
+                                except:
+                                    pass
+                    self.dlg_user_storm_french.tableWidget.setRowCount(len(precipitations))
+                    for fila in range(len(precipitations)):
+                        item = QTableWidgetItem(str(precipitations[fila]))
+                        self.dlg_user_storm_french.tableWidget.setItem(fila, 1, item)
+                        item.setTextAlignment(Qt.AlignCenter)
+                    
+                    self.dlg_user_storm_french.tableWidget.itemChanged.connect(self.update_user_storm_graph_french)
+                    self.update_user_storm_graph_french()
                 
                 #Source Length
                 self.add_values_dialog(lineas,0,5,self.dlg_base.length_source)
@@ -4051,7 +4083,7 @@ class qvfsmod():
                     self.add_values_dialog(lineas,0,7,self.dlg_base.timestep)
                 except:
                     pass
-            
+        
             except:
                 pass
         #Connect storm type
@@ -5967,6 +5999,7 @@ class qvfsmod():
         self.ax_user_defined_storm.set_xlabel("Time (s)",size = 12,family="arial",weight = "bold",color = "black")
         self.ax_user_defined_storm.set_ylabel("Frequency",size = 12,family="arial",weight = "bold",color = "black")
         self.ax_user_defined_storm.set_xticks(list(range(25)))
+        self.ax_user_defined_storm.tick_params(axis='x', labelsize=6)
         
         #Cumulated precipitation
         # Crear un eje Y secundario
@@ -5974,7 +6007,8 @@ class qvfsmod():
         self.ax_user_defined_storm_2.plot(data.Time, data.Precipitation, color="red", marker='o')
         self.ax_user_defined_storm_2.set_ylabel("Cumulative frequency",size = 12,family="arial",weight = "bold",color = "black")
         self.ax_user_defined_storm_2.set_yticks([x/100 for x in range(0,110,10)])
-
+        self.ax_user_defined_storm.tick_params(axis='x', labelsize=6)
+        
         #X ticks
         self.ax_user_defined_storm.tick_params(axis = "both",colors = "black",labelsize = 12)
         self.ax_user_defined_storm_2.tick_params(axis = "both",colors = "black",labelsize = 12)
@@ -6002,8 +6036,77 @@ class qvfsmod():
         #Save figure
         self.dlg_user_storm.print_graph.clicked.connect(lambda _, b= [self.dlg_user_storm,self.canvas_user_defined_storm]:self.figure_settings(b))
     
-    
-    
+    def update_user_storm_graph_french(self):  
+        """Method to update the graph of user defined storm"""
+        try:
+            #Obtain data
+            table = self.dlg_user_storm_french.tableWidget
+            rows = table.rowCount()
+            data = pd.DataFrame(data = {"Time":[float(table.item(row, 0).text()) for row in range(rows)],
+                "Precipitation":[float(table.item(row, 1).text()) for row in range(rows)]})
+            
+            #Add the graph
+            if not hasattr(self, 'canvas_user_defined_storm_french'):
+                #Create the canvas of the graph
+                # Si no existe, crear el canvas y añadirlo al layout
+                self.canvas_user_defined_storm_french = FigureCanvas(plt.Figure(figsize=(15, 6)))
+                # Asignar un layout al QFrame si no tiene uno
+                layout = QVBoxLayout(self.dlg_user_storm_french.frame_2)
+                self.dlg_user_storm_french.frame_2.setLayout(layout)
+                #Add canvas to layout
+                layout.addWidget(self.canvas_user_defined_storm_french)
+            
+            #Add graph
+            #Add graph
+            self.canvas_user_defined_storm_french.figure.clear()
+            self.ax_user_defined_storm_french = self.canvas_user_defined_storm_french.figure.subplots()
+            
+            horas = [data.Time.iloc[x] for x in range(len(data))]
+            precipitation = [float(data.Precipitation.iloc[0])]+[float(data.Precipitation.iloc[x]) - float(data.Precipitation.iloc[x-1]) for x in range(1,len(data.Precipitation))]
+            self.ax_user_defined_storm_french.bar(horas,precipitation,color='blue', edgecolor='black', linewidth=0.5,width = data.Time.iloc[1]-data.Time.iloc[0])
+            
+            #Axis
+            self.ax_user_defined_storm_french.set_xlabel("Time (s)",size = 12,family="arial",weight = "bold",color = "black")
+            self.ax_user_defined_storm_french.set_ylabel("Precipitation (mm)",size = 12,family="arial",weight = "bold",color = "black")
+            #self.ax_user_defined_storm_french.set_xticks(list(range(25)))
+            
+            #Cumulated precipitation
+            # Crear un eje Y secundario
+            self.ax_user_defined_storm_2_french = self.ax_user_defined_storm_french.twinx()
+            self.ax_user_defined_storm_2_french.plot(data.Time, data.Precipitation, color="red", marker='o')
+            self.ax_user_defined_storm_2_french.set_ylabel("Cumulative Precipitation (mm)",size = 12,family="arial",weight = "bold",color = "black")
+            #self.ax_user_defined_storm_2_french.set_yticks([x/100 for x in range(0,110,10)])
+
+            #X ticks
+            self.ax_user_defined_storm_french.tick_params(axis = "both",colors = "black",labelsize = 12)
+            self.ax_user_defined_storm_2_french.tick_params(axis = "both",colors = "black",labelsize = 12)
+
+            #Thousand separator
+            #Separador de miles
+            def xfunc(x,pos):
+                s = '{:0,d}'.format(int(x))
+                return s
+            x_format = tkr.FuncFormatter(xfunc)
+            self.ax_user_defined_storm_french.xaxis.set_major_formatter(x_format)
+            
+            #Delete grids
+            self.ax_user_defined_storm_2_french.grid(False)
+            
+            #Change background color
+            self.canvas_user_defined_storm_french.figure.set_facecolor('#f0f0f0')
+            self.ax_user_defined_storm_2_french.set_facecolor('#f0f0f0')
+            self.ax_user_defined_storm_french.set_facecolor('#f0f0f0')
+            # Ajustar los márgenes para añadir más espacio por debajo y por la izquierda
+            self.canvas_user_defined_storm_french.figure.subplots_adjust(wspace=1) #spacing beteween two graphs
+            self.canvas_user_defined_storm_french.figure.subplots_adjust(left=0.15, bottom=0.2)
+            #Draw canvas
+            self.canvas_user_defined_storm_french.draw()
+            #Save figure
+            self.dlg_user_storm_french.print_graph.clicked.connect(lambda _, b= [self.dlg_user_storm_french,self.canvas_user_defined_storm_french]:self.figure_settings(b))
+
+        except:
+            pass
+        
     def update_buffer_segment_graph(self):
         """Method to update the buffer segment graph"""
         # Clear canvas
@@ -6258,6 +6361,39 @@ class qvfsmod():
         
         #Connect signal again
         self.dlg_user_storm.tableWidget.itemChanged.connect(self.update_user_storm_graph)
+    
+    def set_timestep_non_editable_french(self):
+        """Method to disable the ability to modify the timestep of the user defined storm and center items"""
+        #Disconnect signal to dont update the graph
+        self.dlg_user_storm_french.tableWidget.itemChanged.disconnect(self.update_user_storm_graph_french)
+        
+        row_count = self.dlg_user_storm_french.tableWidget.rowCount()
+        
+        # Iterar sobre todas las filas y hacer la columna 0 (timestep) no editable
+        for row in range(row_count):
+            # Columna 0: Timestep (no editable)
+            item = self.dlg_user_storm_french.tableWidget.item(row, 0)
+            if item is None:
+                item = QTableWidgetItem()
+                self.dlg_user_storm_french.tableWidget.setItem(row, 0, item)
+            item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+            item.setTextAlignment(Qt.AlignCenter)
+
+            # Columna 1: Precipitación (editable pero centrado)
+            item_precip = self.dlg_user_storm_french.tableWidget.item(row, 1)
+            if item_precip is None:
+                item_precip = QTableWidgetItem()
+                self.dlg_user_storm_french.tableWidget.setItem(row, 1, item_precip)
+            item_precip.setTextAlignment(Qt.AlignCenter)
+        
+        # Deshabilitar el encabezado vertical (números de fila)
+        self.dlg_user_storm_french.tableWidget.verticalHeader().setVisible(False)
+        
+        #Change width of precipitation column
+        self.dlg_user_storm_french.tableWidget.setColumnWidth(1, 250)
+        
+        #Connect signal again
+        self.dlg_user_storm_french.tableWidget.itemChanged.connect(self.update_user_storm_graph_french)
     
     
     def browse_design_results_csv(self):
@@ -11129,7 +11265,6 @@ class qvfsmod():
                 self.dlg_base.verticalLayout_21.addWidget(boton)
                 politica_tamaño = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
                 boton.setSizePolicy(politica_tamaño)
-                print(nombre)
                 boton.clicked.connect(lambda _, b = nombre: self.add_parameter_name_uncertainity(b))
 
     def add_parameter_name_sensitivity(self,name):
@@ -14977,6 +15112,28 @@ class qvfsmod():
         #Update graph
         self.update_buffer_segment_graph()
     
+    
+    def add_row_french(self):
+        """Method to add rows in the french storm"""
+        table = self.dlg_user_storm_french.tableWidget
+        row_position = table.rowCount()
+        table.insertRow(row_position)
+        # Center cell contents in the new row
+        for column in range(table.columnCount()):
+            item = QTableWidgetItem()
+            item.setTextAlignment(Qt.AlignCenter)
+            table.setItem(row_position, column, item)
+
+    
+    def remove_row_french(self,numero_table_input):
+        """Method to add rows in the french storm"""
+        table = self.dlg_user_storm_french.tableWidget
+        selected_row = table.rowCount()
+        if selected_row >= 0:
+            table.removeRow(selected_row-1)
+        #Update graph
+        self.update_user_storm_graph_french()
+    
     def vfsmod_hyetograph_add_row(self):
         """Method to add row in the vfsmod hyetograph"""
         table = self.dlg_vfsmod_hyetograph.tableWidget
@@ -15140,7 +15297,7 @@ class qvfsmod():
         #Obtain directory of .lis file
         path = self.dlg_base.uh_file.text()
         if not os.path.isabs(path): #relative path
-            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+            ruta =  os.path.normpath(os.path.join(self.working_directory, path))
         else: #absolute path
             ruta =  os.path.normpath(path)
         working_directory = os.path.dirname(ruta)
@@ -15161,7 +15318,7 @@ class qvfsmod():
         #Obtain directory of .lis file
         path = self.dlg_base.uh_file.text()
         if not os.path.isabs(path): #relative path
-            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+            ruta =  os.path.normpath(os.path.join(self.working_directory, path))
         else: #absolute path
             ruta =  os.path.normpath(path)
         working_directory = os.path.dirname(ruta)
@@ -15182,7 +15339,7 @@ class qvfsmod():
         #Obtain directory of .lis file
         path = self.dlg_base.uh_file.text()
         if not os.path.isabs(path): #relative path
-            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+            ruta =  os.path.normpath(os.path.join(self.working_directory, path))
         else: #absolute path
             ruta =  os.path.normpath(path)
         working_directory = os.path.dirname(ruta)
@@ -15203,7 +15360,7 @@ class qvfsmod():
         #Obtain directory of .lis file
         path = self.dlg_base.uh_file.text()
         if not os.path.isabs(path): #relative path
-            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+            ruta =  os.path.normpath(os.path.join(self.working_directory, path))
         else: #absolute path
             ruta =  os.path.normpath(path)
         working_directory = os.path.dirname(ruta)
@@ -15224,7 +15381,7 @@ class qvfsmod():
         #Obtain directory of .lis file
         path = self.dlg_base.uh_file.text()
         if not os.path.isabs(path): #relative path
-            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+            ruta =  os.path.normpath(os.path.join(self.working_directory, path))
         else: #absolute path
             ruta =  os.path.normpath(path)
         working_directory = os.path.dirname(ruta)
@@ -15245,7 +15402,7 @@ class qvfsmod():
         #Obtain directory of .lis file
         path = self.dlg_base.uh_file.text()
         if not os.path.isabs(path): #relative path
-            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+            ruta =  os.path.normpath(os.path.join(self.working_directory, path))
         else: #absolute path
             ruta =  os.path.normpath(path)
         working_directory = os.path.dirname(ruta)
@@ -15281,7 +15438,7 @@ class qvfsmod():
         #Obtain directory of .prj file
         path = self.dlg_base.line_project_vfsmod.text()
         if not os.path.isabs(path): #relative path
-            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+            ruta =  os.path.normpath(os.path.join(self.working_directory, path))
         else: #absolute path
             ruta =  os.path.normpath(path)
         working_directory = os.path.dirname(ruta)
@@ -15302,7 +15459,7 @@ class qvfsmod():
         #Obtain directory of .prj file
         path = self.dlg_base.line_project_vfsmod.text()
         if not os.path.isabs(path): #relative path
-            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+            ruta =  os.path.normpath(os.path.join(self.working_directory, path))
         else: #absolute path
             ruta =  os.path.normpath(path)
         working_directory = os.path.dirname(ruta)
@@ -15323,7 +15480,7 @@ class qvfsmod():
         #Obtain directory of .prj file
         path = self.dlg_base.line_project_vfsmod.text()
         if not os.path.isabs(path): #relative path
-            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+            ruta =  os.path.normpath(os.path.join(self.working_directory, path))
         else: #absolute path
             ruta =  os.path.normpath(path)
         working_directory = os.path.dirname(ruta)
@@ -15344,7 +15501,7 @@ class qvfsmod():
         #Obtain directory of .prj file
         path = self.dlg_base.line_project_vfsmod.text()
         if not os.path.isabs(path): #relative path
-            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+            ruta =  os.path.normpath(os.path.join(self.working_directory, path))
         else: #absolute path
             ruta =  os.path.normpath(path)
         working_directory = os.path.dirname(ruta)
@@ -15365,7 +15522,7 @@ class qvfsmod():
         #Obtain directory of .prj file
         path = self.dlg_base.line_project_vfsmod.text()
         if not os.path.isabs(path): #relative path
-            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+            ruta =  os.path.normpath(os.path.join(self.working_directory, path))
         else: #absolute path
             ruta =  os.path.normpath(path)
         working_directory = os.path.dirname(ruta)
@@ -15386,7 +15543,7 @@ class qvfsmod():
         #Obtain directory of .prj file
         path = self.dlg_base.line_project_vfsmod.text()
         if not os.path.isabs(path): #relative path
-            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+            ruta =  os.path.normpath(os.path.join(self.working_directory, path))
         else: #absolute path
             ruta =  os.path.normpath(path)
         working_directory = os.path.dirname(ruta)
@@ -15407,7 +15564,7 @@ class qvfsmod():
         #Obtain directory of .prj file
         path = self.dlg_base.line_project_vfsmod.text()
         if not os.path.isabs(path): #relative path
-            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+            ruta =  os.path.normpath(os.path.join(self.working_directory, path))
         else: #absolute path
             ruta =  os.path.normpath(path)
         working_directory = os.path.dirname(ruta)
@@ -15431,7 +15588,7 @@ class qvfsmod():
         #Obtain directory of .prj file
         path = self.dlg_base.line_project_vfsmod.text()
         if not os.path.isabs(path): #relative path
-            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+            ruta =  os.path.normpath(os.path.join(self.working_directory, path))
         else: #absolute path
             ruta =  os.path.normpath(path)
         working_directory = os.path.dirname(ruta)
@@ -15452,7 +15609,7 @@ class qvfsmod():
         #Obtain directory of .prj file
         path = self.dlg_base.line_project_vfsmod.text()
         if not os.path.isabs(path): #relative path
-            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+            ruta =  os.path.normpath(os.path.join(self.working_directory, path))
         else: #absolute path
             ruta =  os.path.normpath(path)
         working_directory = os.path.dirname(ruta)
@@ -15473,7 +15630,7 @@ class qvfsmod():
         #Obtain directory of .prj file
         path = self.dlg_base.line_project_vfsmod.text()
         if not os.path.isabs(path): #relative path
-            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+            ruta =  os.path.normpath(os.path.join(self.working_directory, path))
         else: #absolute path
             ruta =  os.path.normpath(path)
         working_directory = os.path.dirname(ruta)
@@ -15494,7 +15651,7 @@ class qvfsmod():
         #Obtain directory of .prj file
         path = self.dlg_base.line_project_vfsmod.text()
         if not os.path.isabs(path): #relative path
-            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+            ruta =  os.path.normpath(os.path.join(self.working_directory, path))
         else: #absolute path
             ruta =  os.path.normpath(path)
         working_directory = os.path.dirname(ruta)
@@ -15515,7 +15672,7 @@ class qvfsmod():
         #Obtain directory of .prj file
         path = self.dlg_base.line_project_vfsmod.text()
         if not os.path.isabs(path): #relative path
-            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+            ruta =  os.path.normpath(os.path.join(self.working_directory, path))
         else: #absolute path
             ruta =  os.path.normpath(path)
         working_directory = os.path.dirname(ruta)
@@ -15536,7 +15693,7 @@ class qvfsmod():
         #Obtain directory of .prj file
         path = self.dlg_base.line_project_vfsmod.text()
         if not os.path.isabs(path): #relative path
-            ruta =  os.path.normpath(os.path.join(os.path.dirname(self.working_directory), path))
+            ruta =  os.path.normpath(os.path.join(self.working_directory, path))
         else: #absolute path
             ruta =  os.path.normpath(path)
         working_directory = os.path.dirname(ruta)
@@ -15775,6 +15932,7 @@ class qvfsmod():
     def create_lis_file(self):
         """Metod to create the .lis file for the UH execution"""
         lis_file = self.obtain_direction_vfsmod(self.dlg_base.uh_file.text())
+        #if not os.path.isabs(lis_file): #relative path
         with open(lis_file, 'w') as archivo:
             archivo.write(f"inp={str(Path(self.dlg_base.uh_input.text()))}  \n") 
             archivo.write(f"iro={str(Path(self.dlg_base.line_hydrograph.text()))}  \n")
@@ -15782,7 +15940,14 @@ class qvfsmod():
             archivo.write(f"isd={str(Path(self.dlg_base.line_sedimentograph.text()))}  \n")
             archivo.write(f"out={str(Path(self.dlg_base.line_output_1.text()))}  \n")
             archivo.write(f"hyt={str(Path(self.dlg_base.line_output_2.text()))}  \n")
-            
+        r'''else:
+            carpeta = os.path.dirname(self.obtain_direction_vfsmod(self.dlg_base.uh_file.text()))
+            with open(lis_file, 'w') as archivo:
+                archivo.write(f"inp={os.path.normpath(os.path.join(carpeta, self.dlg_base.uh_input.text()))}  \n") 
+                archivo.write(f"iro={os.path.normpath(os.path.join(carpeta, self.dlg_base.line_hydrograph.text()))}  \n")
+                archivo.write(f"irn={os.path.normpath(os.path.join(carpeta, self.dlg_base.line_hyetograph.text()))}  \n")
+                archivo.write(f"isd={os.path.normpath(os.path.join(carpeta, self.dlg_base.line_sedimentograph.text()))}  \n")
+                archivo.write(f"out={os.path.normpath(os.path.join(carpeta, self.dlg_base.line_output_1.text()))}  \n")'''
             
         #Update the design dialog
         self.add_storm_duration_to_design()
@@ -15816,20 +15981,36 @@ class qvfsmod():
         soil_type = [self.dlg_base.soil_type.itemText(i) for i in range(self.dlg_base.soil_type.count())][self.dlg_base.soil_type.currentIndex()]
         storm_type = int(self.dlg_base.storm_type.currentIndex())+1
         
-        try:
-            time_to_half = float(self.dlg_user_storm.half.text())
-        except:
-            self.warning_message("Please select correct time to the middle time in the storm (P/P24=0.5)")
+
+        if storm_type == 5:
+            try:
+                #User designed storm
+                table = self.dlg_user_storm.tableWidget
+                rows = table.rowCount()
+                user_defined_storm = pd.DataFrame(data = {"Time":[table.item(row, 0).text() for row in range(rows)],
+                    "Cumulated":[table.item(row, 1).text() for row in range(rows)]})
+                time_to_half = float(self.dlg_user_storm.half.text())
+            except:
+                self.warning_message("Please select correct time to the middle time in the storm (P/P24=0.5)")
         
-        table = self.dlg_user_storm.tableWidget
-        rows = table.rowCount()
-        user_defined_storm = pd.DataFrame(data = {"Time":[table.item(row, 0).text() for row in range(rows)],
-            "Cumulated":[table.item(row, 1).text() for row in range(rows)]})
-        
+        elif storm_type == 6:
+            try:
+                #User designed storm french
+                table = self.dlg_user_storm_french.tableWidget
+                rows = table.rowCount()
+                user_defined_storm_french = pd.DataFrame(data = {"Time":[table.item(row, 0).text() for row in range(rows)],
+                    "Cumulated":[table.item(row, 1).text() for row in range(rows)]})
+                time_to_half = float(self.dlg_user_storm_french.half.text())
+            except:
+                self.warning_message("Please select correct time to the middle time in the storm (P/P24=0.5)")
+                 
         #Create file
         inp_file = self.obtain_direction_lis(self.dlg_base.uh_input.text())
         with open(inp_file, 'w') as archivo:
-            linea_uno = f" {rainfall_amount}  {curve_number}  {area}  {storm_type}  {storm_duration}  {length}  {slope} {timestep} 'P,CN,A,storm type,D,L,Y (,dincr)"
+            if storm_type != 6:
+                linea_uno = f" {rainfall_amount}  {curve_number}  {area}  {storm_type}  {storm_duration}  {length}  {slope} {timestep} 'P,CN,A,storm type,D,L,Y (,dincr)"
+            elif storm_type == 6:
+                linea_uno = f" {rainfall_amount}  {curve_number}  {area}  {storm_type}  {storm_duration}  {length}  {slope} {timestep} 'P,CN,A,storm type,D,L,Y (,dincr)"
             linea_dos = "                                           'Note: Storm type I,IA,II,III (j=1,4)"
             linea_tres = f"{soil_type}                     'Soil Type"
             linea_cuatro = f"  {K_factor}  {crop_factor}  {practice_factor}  {particle_size}                           'K, C, P, Dp "
@@ -15845,6 +16026,12 @@ class qvfsmod():
                 archivo.write(f"{time_to_half} 'tmid (h) Time for mid storm point P/P24=0.5\n")
                 for i in range(len(user_defined_storm)):
                     archivo.write(f"{user_defined_storm.iloc[i,0]}	{user_defined_storm.iloc[i,1]}\n")
+            
+            if storm_type == 6:
+                archivo.write(f"{time_to_half} 'tmid (h) Time for mid storm point P/P24=0.5\n")
+                for i in range(len(user_defined_storm_french)):
+                    archivo.write(f"{user_defined_storm_french.iloc[i,0]}	{user_defined_storm_french.iloc[i,1]}\n")
+                    
             archivo.write("\n")
         
         
@@ -16557,8 +16744,16 @@ class qvfsmod():
             self.dlg_user_storm.raise_()
             #Update graph
             self.update_user_storm_graph()
+        
+        elif self.dlg_base.storm_type.currentIndex()==5:
+            self.dlg_user_storm_french.show()
+            self.dlg_user_storm_french.raise_()
+            #Update graph
+            self.update_user_storm_graph_french()
+        
         else:
             self.dlg_user_storm.close()
+            self.dlg_user_storm_french.close()
         
     
     def check_uh_output_exist(self):
@@ -16675,6 +16870,9 @@ class qvfsmod():
         add_image_button("images/remove.svg",self.dlg_hydrograph_calibration_edit.remove)
         add_image_button("images/add.svg",self.dlg_sedimentograph_calibration_edit.add)
         add_image_button("images/remove.svg",self.dlg_sedimentograph_calibration_edit.remove)
+        add_image_button("images/show.svg",self.dlg_base.show_storm)
+        add_image_button("images/add.svg",self.dlg_user_storm_french.add)
+        add_image_button("images/remove.svg",self.dlg_user_storm_french.remove)
         
         #Add search 
         add_image_button(search_path,self.dlg_base.select_directory_vfsmod)

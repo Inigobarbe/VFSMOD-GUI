@@ -428,7 +428,7 @@ QTableCornerButton::section {
              <x>0</x>
              <y>0</y>
              <width>593</width>
-             <height>944</height>
+             <height>952</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_25">
@@ -729,7 +729,7 @@ typical 0.01-0.07</string>
                   <widget class="QLineEdit" name="slope_source">
                    <property name="maximumSize">
                     <size>
-                     <width>54</width>
+                     <width>120</width>
                      <height>16777215</height>
                     </size>
                    </property>
@@ -753,7 +753,7 @@ typical 0.01-0.07</string>
                   <widget class="QLineEdit" name="area_source">
                    <property name="maximumSize">
                     <size>
-                     <width>54</width>
+                     <width>120</width>
                      <height>16777215</height>
                     </size>
                    </property>
@@ -777,7 +777,7 @@ typical 0.01-0.07</string>
                   <widget class="QLineEdit" name="length_source">
                    <property name="maximumSize">
                     <size>
-                     <width>54</width>
+                     <width>120</width>
                      <height>16777215</height>
                     </size>
                    </property>
@@ -1285,7 +1285,7 @@ typical 0.01-0.07</string>
                   <widget class="QLineEdit" name="storm_duration">
                    <property name="maximumSize">
                     <size>
-                     <width>54</width>
+                     <width>120</width>
                      <height>16777215</height>
                     </size>
                    </property>
@@ -1339,9 +1339,22 @@ typical 0.01-0.07</string>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>54</width>
+                     <width>120</width>
                      <height>16777215</height>
                     </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="show_storm">
+                   <property name="maximumSize">
+                    <size>
+                     <width>30</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
                    </property>
                   </widget>
                  </item>
@@ -1514,7 +1527,7 @@ default 5 min</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>593</width>
+             <width>608</width>
              <height>728</height>
             </rect>
            </property>
@@ -2418,8 +2431,8 @@ default 5 min</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>768</width>
-             <height>498</height>
+             <width>702</width>
+             <height>413</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_29">
@@ -3206,7 +3219,7 @@ default 5 min</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>231</width>
+                       <width>204</width>
                        <height>474</height>
                       </rect>
                      </property>
@@ -3514,8 +3527,8 @@ Solution Parameters</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>497</width>
-                       <height>173</height>
+                       <width>290</width>
+                       <height>28</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_98">
@@ -3773,7 +3786,7 @@ Solution Parameters</string>
                           <x>0</x>
                           <y>0</y>
                           <width>360</width>
-                          <height>245</height>
+                          <height>200</height>
                          </rect>
                         </property>
                         <layout class="QGridLayout" name="gridLayout_61">
@@ -4215,7 +4228,7 @@ Solution Parameters</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-460</y>
+             <y>0</y>
              <width>774</width>
              <height>941</height>
             </rect>
@@ -5236,7 +5249,7 @@ analysis</string>
              <x>0</x>
              <y>0</y>
              <width>908</width>
-             <height>481</height>
+             <height>383</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_65">

@@ -99,3 +99,33 @@ Mensaje: autodetected range of [nan, nan] is not finite
 Excepción: AttributeError
 Mensaje: 'qvfsmod' object has no attribute 'pesticide'
 
+Excepción: ValueError
+Mensaje: could not convert string to float: ''
+
+Excepción: ValueError
+Mensaje: max() arg is an empty sequence
+
+Excepción: ValueError
+Mensaje: max() arg is an empty sequence
+
+Excepción: ValueError
+Mensaje: max() arg is an empty sequence
+
+Excepción: ValueError
+Mensaje: max() arg is an empty sequence
+
+Excepción: AttributeError
+Mensaje: 'qvfsmod' object has no attribute 'dlg_uuser_defined_storm_dialog_french'
+
+Excepción: AttributeError
+Mensaje: 'qvfsmod' object has no attribute 'dlg_user_storm_french'
+
+Excepción: NameError
+Mensaje: name 'direction' is not defined
+
+Excepción: ValueError
+Mensaje: could not convert string to float: ''
+
+Excepción: ValueError
+Mensaje: could not convert string to float: ''
+

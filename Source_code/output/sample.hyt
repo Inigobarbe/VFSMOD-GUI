@@ -1,4 +1,4 @@
-File: output\sample.hyt                                UH v3.0.8, 09/2023
+File: output\sample.hyt                                UH v3.0.9, 04/2025
 
  SCS  3.0-MIN HYETOGRAPH (25 of  124 steps printed)
 
@@ -38,14 +38,14 @@ File: output\sample.hyt                                UH v3.0.8, 09/2023
 
   a) Foster et al. (1977)
     E=    5252.629 ft-tonf/acre =    35.193 MJ/ha
-    Volume Runoff=  289.3163 mm; qpeak =   69.1122 mm/h
-    Factors in Rm: Rstorm=  389.5110; Rrunoff= 1187.2925
-    Rm (Foster)=  610.3079 N/h
+    Volume Runoff=   32.7107 mm; qpeak =   69.1122 mm/h
+    Factors in Rm: Rstorm=  389.5110; Rrunoff=  134.2379
+    Rm (Foster)=  241.7387 N/h
 
   b) Williams (1975)
     Watershed area=     0.500 ha
-    Volume runoff= 1446.5814 m3; qpeak=    0.0960 m3/s
-    Rw (Williams)=  285.1733 N/h
+    Volume runoff=  163.5536 m3; qpeak=    0.0960 m3/s
+    Rw (Williams)=   84.1330 N/h
 
   c) GLEAMS/ daily CREAMS
     Rain  =100.00 mm
@@ -101,14 +101,14 @@ File: output\sample.hyt                                UH v3.0.8, 09/2023
   Method                Soil Loss A          Sediment   R-Factor  K-Factor  L-Factor S-Factor C-Factor P-Factor
                     kg/m^2    EngUnits t/ac  Conc g/l   N/ha      kg-N/N-m^2
 --------------------------------------------------------------------------------------------------------------
- Rm (Foster)          8.03         35.82         27.76      610.31    0.037    1.447    0.246    1.000    1.000
- Rw (Williams)        3.75         16.74         12.97      285.17
- Rm (GLEAMS)          1.40          6.23          4.82      106.08
- Rst (Cooley)         3.65         16.27         12.61      277.25
+ Rm (Foster)          3.18         14.19         97.24      241.74    0.037    1.447    0.246    1.000    1.000
+ Rw (Williams)        1.11          4.94         33.84       84.13
+ Rm (GLEAMS)          1.40          6.23         42.67      106.08
+ Rst (Cooley)         3.65         16.27        111.52      277.25
 --------------------------------------------------------------------------------------------------------------
                     kg/m^2    EngUnits t/ac  Conc g/l   N/ha      0.01ton.ac.h/(ac.ft-ton.in)
- PRZM (MUSLE)         3.75         16.71         12.95                0.282
- PRZM (MUSS)          4.91         21.92         16.98                0.282
+ PRZM (MUSLE)         1.11          4.93         33.79                0.282
+ PRZM (MUSS)          1.19          5.32         36.43                0.282
 
 ======================================================================
  Method selected for VFSMOD .isd file:  PRZM (MUSS)         
