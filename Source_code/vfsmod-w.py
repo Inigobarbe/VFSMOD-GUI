@@ -374,6 +374,8 @@ class qvfsmod():
         self.dlg_base.storm_type.currentIndexChanged.connect(self.user_defined_storm_type)
         self.dlg_base.show_storm.clicked.connect(self.user_defined_storm_type)
         
+        
+        
         #Sensitivity for calibration open dialogs
         self.dlg_base.calibration_sensitivity_hydrograph.clicked.connect(lambda _, b = [True,"hydrograph"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
         self.dlg_base.calibration_sensitivity_sedimentograph.clicked.connect(lambda _, b = [True,"sedimentograph"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
@@ -511,6 +513,9 @@ class qvfsmod():
         
         #Select directory of the project for UH and for VFSMOD
         self.dlg_base.select_directory_vfsmod.clicked.connect(self.select_directory_vfsmod)
+        
+        #Select name of the project for UH and for VFSMOD
+        self.dlg_base.select_project_name.clicked.connect(self.select_project_name_vfsmod)
         
         #Select UH project file
         self.dlg_base.select_lis.clicked.connect(self.select_lis)
@@ -3901,7 +3906,31 @@ class qvfsmod():
                 k.setEnabled(False)
                 k.setStyleSheet("background-color: #d9d9d9;")
                 
+    
+    def obtain_middle_time_storm(self,times,precipitations):
+        """Method to put the middle tme in the storm"""
+        total = precipitations[-1]
+        mitad = total / 2
 
+        # Convertir a numpy array
+        precipitations = np.array(precipitations)
+        times = np.array(times)
+
+        # Encontrar índice donde se sobrepasa la mitad
+        indice = np.where(precipitations >= mitad)[0][0]
+
+        if precipitations[indice] == mitad:
+            # Si coincide exactamente
+            tiempo_mitad = times[indice]
+        else:
+            # Interpolación lineal entre el punto anterior y el actual
+            x0, x1 = times[indice-1], times[indice]
+            y0, y1 = precipitations[indice-1], precipitations[indice]
+            
+            # Fórmula de interpolación lineal
+            tiempo_mitad = x0 + (mitad - y0) * (x1 - x0) / (y1 - y0)
+        return str(round(tiempo_mitad,2))
+    
     def show_design_buttons(self):
         """Method to add buttons to show design buttons and to show the dialog"""
         #For the two frames
@@ -4003,10 +4032,10 @@ class qvfsmod():
                 storm_type = int(self.add_values_dialog(lineas,0,3,self.dlg_base.storm_type,True))
                 self.dlg_base.storm_type.setCurrentIndex(storm_type-1)
                 if storm_type == 5: #add to table
-                    self.dlg_user_storm.tableWidget.itemChanged.disconnect(self.update_user_storm_graph)
-                    self.add_values_dialog(lineas,6,0,self.dlg_user_storm.half)
+                    self.dlg_user_storm.tableWidget.itemChanged.disconnect(self.update_user_storm_graph) 
                     self.dlg_user_storm.tableWidget.setRowCount(24)
                     precipitations = []
+                    times = []
                     for i in range(len(lineas)):
                         if lineas[i][-10:] == "P/P24=0.5\n":
                             for k in range(i+1,len(lineas)):
@@ -4014,6 +4043,7 @@ class qvfsmod():
                                     precipitation = float(lineas[k].split()[1])
                                     time = int(lineas[k].split()[0])
                                     precipitations.append(precipitation)
+                                    times.append(time)
                                     if time == 24:
                                         break
                                 except:
@@ -4024,13 +4054,19 @@ class qvfsmod():
                         self.dlg_user_storm.tableWidget.setItem(fila, 1, item)
                         item.setTextAlignment(Qt.AlignCenter)
                     
+                    #Add time to half of the histogram
+                    self.dlg_user_storm.half.setReadOnly(False) 
+                    self.dlg_user_storm.half.setText(self.obtain_middle_time_storm(times,precipitations))
+                    self.dlg_user_storm.half.setReadOnly(True)
+                    
                     self.dlg_user_storm.tableWidget.itemChanged.connect(self.update_user_storm_graph)
                     self.update_user_storm_graph()
                 if storm_type == 6: #add to table
                     self.dlg_user_storm_french.tableWidget.itemChanged.disconnect(self.update_user_storm_graph_french)
-                    self.add_values_dialog(lineas,6,0,self.dlg_user_storm_french.half)
+                    
                     
                     precipitations = []
+                    times = []
                     for i in range(len(lineas)):
                         if lineas[i][-10:] == "P/P24=0.5\n":
                             for k in range(i+1,len(lineas)):
@@ -4038,13 +4074,24 @@ class qvfsmod():
                                     precipitation = float(lineas[k].split()[1])
                                     time = float(lineas[k].split()[0])
                                     precipitations.append(precipitation)
+                                    times.append(time)
                                 except:
                                     pass
                     self.dlg_user_storm_french.tableWidget.setRowCount(len(precipitations))
                     for fila in range(len(precipitations)):
+                        #Add time
+                        item = QTableWidgetItem(str(times[fila]))
+                        self.dlg_user_storm_french.tableWidget.setItem(fila, 0, item)
+                        item.setTextAlignment(Qt.AlignCenter)
+                        #Add precipitation
                         item = QTableWidgetItem(str(precipitations[fila]))
                         self.dlg_user_storm_french.tableWidget.setItem(fila, 1, item)
                         item.setTextAlignment(Qt.AlignCenter)
+                    
+                    #Add time to half of the histogram
+                    self.dlg_user_storm_french.half.setReadOnly(False) 
+                    self.dlg_user_storm_french.half.setText(self.obtain_middle_time_storm(times,precipitations))
+                    self.dlg_user_storm_french.half.setReadOnly(True) 
                     
                     self.dlg_user_storm_french.tableWidget.itemChanged.connect(self.update_user_storm_graph_french)
                     self.update_user_storm_graph_french()
@@ -4268,13 +4315,19 @@ class qvfsmod():
             try: #if igr line does not exist among others
                 with open(path, 'r') as file:
                     lineas = file.readlines()
-                #Obtain number of pesticides
-                number_elements = lineas[4].split(";")[0].split()
-                number_pesticides = int((len(number_elements) - 7)/4+1)
+                
                 #Direct input
                 direct = int(self.add_values_dialog(lineas,1,0,self.dlg_water_quality.line_kd_1, True))
                 if direct == 1: self.dlg_water_quality.check_direct.setChecked(False)
                 else: self.dlg_water_quality.check_direct.setChecked(True)
+                
+                #Obtain number of pesticides
+                number_elements = lineas[1].split(";")[0].split()
+                if direct == 1:
+                    number_pesticides = len(number_elements)-2
+                else:
+                    number_pesticides = len(number_elements)-1
+                
                 #Kd
                 if direct == 0: 
                     #FIRST PESTICIDE
@@ -5975,6 +6028,12 @@ class qvfsmod():
         data = pd.DataFrame(data = {"Time":[float(table.item(row, 0).text()) for row in range(rows)],
             "Precipitation":[float(table.item(row, 1).text()) for row in range(rows)]})
         
+        #Add time to half of the histogram
+        self.dlg_user_storm.half.setReadOnly(False) 
+        self.dlg_user_storm.half.setText(self.obtain_middle_time_storm(list(data.Time),list(data.Precipitation)))
+        self.dlg_user_storm.half.setReadOnly(True)
+        
+                    
         #Add the graph
         if not hasattr(self, 'canvas_user_defined_storm'):
             #Create the canvas of the graph
@@ -6045,6 +6104,12 @@ class qvfsmod():
             data = pd.DataFrame(data = {"Time":[float(table.item(row, 0).text()) for row in range(rows)],
                 "Precipitation":[float(table.item(row, 1).text()) for row in range(rows)]})
             
+            
+            #Add time to half of the histogram
+            self.dlg_user_storm_french.half.setReadOnly(False) 
+            self.dlg_user_storm_french.half.setText(self.obtain_middle_time_storm(list(data.Time),list(data.Precipitation)))
+            self.dlg_user_storm_french.half.setReadOnly(True) 
+                    
             #Add the graph
             if not hasattr(self, 'canvas_user_defined_storm_french'):
                 #Create the canvas of the graph
@@ -14289,7 +14354,7 @@ class qvfsmod():
             resultado = subprocess.run([str(script_path)], capture_output=True, text=True)
         
         #Put warning
-        if not "...FINISHED..." in resultado.stdout:
+        if not "...FINISHED..." in resultado.stdout or "ERROR" in resultado.stdout:
             if str(resultado.stderr) != "":
                 self.warning_message(str(resultado.stderr), courier = True)
             else:
@@ -14964,8 +15029,8 @@ class qvfsmod():
         #Add text
         if self.dlg_infiltration_soil.radioButton_3.isChecked(): 
             self.dlg_soil_curves.label_2.setText("THETA TYPE: van Genuchten")
-            self.dlg_soil_curves.label_3.setText("OR")
-            self.dlg_soil_curves.label_4.setText("VGALPHA, 1/m")
+            self.dlg_soil_curves.label_3.setText("OR (m3/m3)")
+            self.dlg_soil_curves.label_4.setText("VGALPHA (1/m)")
             self.dlg_soil_curves.label_5.setText("VGN")
             self.dlg_soil_curves.label_6.setText("VGM")
             self.dlg_soil_curves.label_6.setVisible(True)
@@ -14973,8 +15038,8 @@ class qvfsmod():
             
         elif self.dlg_infiltration_soil.radioButton_4.isChecked(): 
             self.dlg_soil_curves.label_2.setText("THETA TYPE: Brooks and Corey")
-            self.dlg_soil_curves.label_3.setText("OR")
-            self.dlg_soil_curves.label_4.setText("BCALPHA, 1/m")
+            self.dlg_soil_curves.label_3.setText("OR (m3/m3)")
+            self.dlg_soil_curves.label_4.setText("BCALPHA (1/m)")
             self.dlg_soil_curves.label_5.setText("BCLAMBDA")
             self.dlg_soil_curves.label_6.setVisible(False)
             self.dlg_soil_curves.lineEdit_4.setVisible(False)
@@ -15203,6 +15268,12 @@ class qvfsmod():
             #Add pesticides to single value calibration and to design with uncertainity
             self.add_pesticides_dialog_single_calibration()
             self.add_pesticides_dialog_sensitivity_design()
+            
+    def select_project_name_vfsmod(self):
+        """Method to select the directory among the local files for VFSMOD"""
+        fname = QFileDialog.getOpenFileName(self.dlg_base, "Select directory", self.dlg_base.working_directory_vfsmod.text())
+        if fname[0]!="":
+            self.dlg_base.name_files.setText(Path(fname[0]).stem)
     
     def water_quality_dialog(self):
         """Method to add in the dialog the widgets when water quality is selected"""
@@ -16274,7 +16345,7 @@ class qvfsmod():
                     if row == 0:
                         linea_ocho += "                            ; fij molar formation fraction matrix {jxj}"
                     linea_ocho += "\n"
-            linea_nueve = "\n------------------------------------------------------------------\nIWQPRO    : Pesticide trapping: 1=Sabbagh;2= Sabbagh(refit);3=mech.mass bal.;4=Chen\nCSAB(I)   : Coefficients for refitted Sabbagh equation (used when IWQPRO=2)\nIKD       : Sorption type: 0, Kd(L/Kg); 1, Koc (L/Kg)\nKd(j) Koc(j): Sorption coefficient (j species) as distribution Kd (IKD= 0) or Koc (IKD=1) (L/Kg)\n%OC       : Source soil organic carbon, only read when IKD=1 (Koc) (%)\nIDG       : Degradation type: 1: EU-FOCUS k=Kref.k(T).k(theta); 2: US-EPA k=Kref;\n            3: k=Kref.k(T);4: k=Kref.k(1theta; 0: No degradation\nndgday    : no. of days (i) between events (d)\ndgHalf(j) : t0.5, pesticide half-life (d), kref=Ln2/t0.5\nFC        : top soil field capacity (m3/m3). This can be taken from FOCUS R1-R4 scenario\n            parameters used by the PRZM model\ndgPin(j)  : Pin, pesticide mass entering filter for event over source area (mg/m2)\ndgML      : Surface mixing layer thickness (cm, standard= 2cm PRZM)\ndgLD(j)   : lambda, dispersion length of chemical (m). This can be taken as  \n            0.05m from FOCUS-Pearl (Default)\ndgmres0(j): Pesticide residues (i species) on VFS surface (mixing layer) when event starts (mg/m2)\ndgT(i)    : T, daily air temperatures (C) for period between events, PRZM weather\ndgTheta(i): theta, Topsoil daily volumetric moisture (-) for period between events\nIMOB      : Residues remobilization: 1(or none): partial (recomm); 2:full; 3:no remob.\nMj        : Molar mass of compounds (g/mol) (only read when number of compounds is j>1)\nfij       : matrix of molar formation fractions between compounds {jxj} (when number of compounds is j>1)"
+            linea_nueve = "\n------------------------------------------------------------------\nIWQPRO    : Pesticide trapping: 1=Sabbagh;2= Sabbagh(refit);3=mech.mass bal.;4=Chen\nCSAB(I)   : Coefficients for refitted Sabbagh equation (used when IWQPRO=2)\nIKD       : Sorption type: 0, Kd(L/Kg); 1, Koc (L/Kg)\nKd(j) Koc(j): Sorption coefficient (j species) as distribution Kd (IKD= 0) or Koc (IKD=1) (L/Kg)\n%OC       : Source soil organic carbon, only read when IKD=1 (Koc) (%)\nIDG       : Degradation type: 1: EU-FOCUS k=Kref.k(T).k(theta); 2: US-EPA k=Kref;\n            3: k=Kref.k(T);4: k=Kref.k(1theta; 0: No degradation (no more inputs are read)\nndgday    : no. of days (i) between events (d)\ndgHalf(j) : t0.5, pesticide half-life (d), kref=Ln2/t0.5\nFC        : top soil field capacity (m3/m3). This can be taken from FOCUS R1-R4 scenario\n            parameters used by the PRZM model\ndgPin(j)  : Pin, pesticide mass entering filter for event over source area (mg/m2)\ndgML      : Surface mixing layer thickness (cm, standard= 2cm PRZM)\ndgLD(j)   : lambda, dispersion length of chemical (m). This can be taken as  \n            0.05m from FOCUS-Pearl (Default)\ndgmres0(j): Pesticide residues (i species) on VFS surface (mixing layer) when event starts (mg/m2)\ndgT(i)    : T, daily air temperatures (C) for period between events, PRZM weather\ndgTheta(i): theta, Topsoil daily volumetric moisture (-) for period between events\nIMOB      : Residues remobilization: 1(or none): partial (recomm); 2:full; 3:no remob.\nMj        : Molar mass of compounds (g/mol) (only read when number of compounds is j>1)\nfij       : matrix of molar formation fractions between compounds {jxj} (when number of compounds is j>1)"
             
             archivo.write(f"{linea_uno}\n")
             archivo.write(f"{linea_dos}\n")
@@ -16286,6 +16357,10 @@ class qvfsmod():
                 archivo.write(f"{linea_seis}\n")
                 archivo.write(f"{linea_siete}\n")
                 archivo.write(f"{linea_ocho}\n")
+            
+            else:
+                archivo.write(f"{linea_cuatro}\n")
+            
             archivo.write(f"{linea_nueve}\n")
         
         #Update ikw pesticide
@@ -16515,6 +16590,7 @@ class qvfsmod():
         self.dlg_base.crop_factor.setText("1")
         self.dlg_base.practice_factor.setText("1")'''
         
+        r'''
         #Values of overland flow inputs
         self.dlg_overland_flow.simulation_title.setText("Unit9, g8, u183-91    ")
         self.dlg_overland_flow.length.setText("8.655")
@@ -16527,7 +16603,7 @@ class qvfsmod():
         self.dlg_overland_flow.maximum.setText("350")
         self.dlg_overland_flow.output.setText("1")
         
-        #Strom type
+        #Storm type
         self.dlg_base.storm_type.setCurrentIndex(2)
         
         #Values of the buffer segment table
@@ -16560,7 +16636,7 @@ class qvfsmod():
         item.setBackground(Qt.gray)  # Fondo deshabilitado
         table.setItem(0, 0, item)
         table.setColumnWidth(0, 160)
-        
+        '''
 
         
         #Calibration
@@ -16744,12 +16820,15 @@ class qvfsmod():
             self.dlg_user_storm.raise_()
             #Update graph
             self.update_user_storm_graph()
+            
+
         
         elif self.dlg_base.storm_type.currentIndex()==5:
             self.dlg_user_storm_french.show()
             self.dlg_user_storm_french.raise_()
             #Update graph
             self.update_user_storm_graph_french()
+            
         
         else:
             self.dlg_user_storm.close()
@@ -16876,6 +16955,7 @@ class qvfsmod():
         
         #Add search 
         add_image_button(search_path,self.dlg_base.select_directory_vfsmod)
+        add_image_button(search_path,self.dlg_base.select_project_name)
         add_image_button(search_path,self.dlg_base.select_lis)
         add_image_button(search_path,self.dlg_base.select_inp)
         add_image_button(search_path,self.dlg_base.browse_hydrograph)
@@ -16962,7 +17042,10 @@ class qvfsmod():
 
                 <br>
                 Copyright 2024
-                Version 1.0.0
+                <br>
+                <b>Version 1.0.1</b>
+                <br>
+                02/10/2025
             """
         elif sys.platform.startswith("darwin") or sys.platform.startswith("linux"): #macOS
             html_text = f"""
@@ -16981,13 +17064,16 @@ class qvfsmod():
                 
                 <br>
                 Copyright 2024
-                Version 1.0.0
+                <br>
+                <b>Version 1.0.1</b>
+                <br>
+                02/10/2025
             """
         
         
         self.dlg_base.label_160.setText(html_text)
         self.dlg_base.label_161.setText(html_text)
-        self.dlg_base.label_162.setText("Please select any of the menu options")
+        self.dlg_base.label_162.setText("Please select a working directory and project name, then continue by selecting any of the options from the menu above")
         
         self.dlg_base.label_160.setStyleSheet("""
             font-family: 'MS Shell Dlg 2';  /* Cambia la fuente */

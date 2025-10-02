@@ -129,3 +129,27 @@ Mensaje: could not convert string to float: ''
 Excepción: ValueError
 Mensaje: could not convert string to float: ''
 
+Excepción: ValueError
+Mensaje: invalid literal for int() with base 10: 'f'
+
+Excepción: ValueError
+Mensaje: invalid literal for int() with base 10: 'f'
+
+Excepción: AttributeError
+Mensaje: 'qvfsmodMainWindow' object has no attribute 'select_project_name'
+
+Excepción: TypeError
+Mensaje: expected str, bytes or os.PathLike object, not tuple
+
+Excepción: TypeError
+Mensaje: expected str, bytes or os.PathLike object, not tuple
+
+Excepción: TypeError
+Mensaje: expected str, bytes or os.PathLike object, not tuple
+
+Excepción: NameError
+Mensaje: name 'tiempo' is not defined
+
+Excepción: TypeError
+Mensaje: setText(self, str): argument 1 has unexpected type 'float'
+

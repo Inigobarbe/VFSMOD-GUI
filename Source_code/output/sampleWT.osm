@@ -1,7 +1,7 @@
-File: output/sampleWT.osm                             VFSMOD v4.6.0 11/2024
+File: output\sampleWT.osm                             VFSMOD v4.1.1 06/2011
  INPUTS
  ------
- File: output/sampleWT.ohy                             VFSMOD v4.6.0 11/2024
+ File: output\sampleWT.ohy                             VFSMOD v4.1.1 06/2011
                                                                             
   Storm parameters                                                          
   ----------------                                                          
@@ -25,7 +25,7 @@ File: output/sampleWT.osm                             VFSMOD v4.6.0 11/2024
             Total rainfall (mm)=       25.15                                
    Peak rainfall intensity(m/s)=  0.1947E-04                                
      Peak inflow rate BC (m3/s)=  0.2192E-02                                
-          (The inflow hydrograph can be found in the OUTPUTS)               
+        (The inflow hydrograph can be found in the OUTPUTS)                 
                                                                             
   Filter parameters                                                         
   -----------------                                                         
@@ -53,13 +53,13 @@ File: output/sampleWT.osm                             VFSMOD v4.6.0 11/2024
                                                                             
   Soil parameters                                                           
   ---------------------                                                     
-  Saturated hydraulic cond.(Ks)=  0.3889E-03                                
-       Water table depth at (m)=    0.700000    BC(t>tw),Rvh=   1    1.0000 
-     SWCC curve in infiltration=     van Genuchten                          
-                  Or,alpha,n,m =    0.150000   13.460000    1.520000    0.34
-   KUNSAT curve in infiltration=     van Genuchten                          
-                              m=    0.348000                                
-    Sat. soil-water content(Os)=    0.390000                                
+  Saturated hydraulic cond.(Ks)=  0.1330E-05                                
+       Water table depth at (m)=    1.500000                                
+     SWCC curve in infiltration=    Brooks & Corey                          
+               Or,alpha,lambda =    0.000000    5.174110    0.730000        
+   KUNSAT curve in infiltration=    Brooks & Corey                          
+                      eta,alpha=    5.877500    5.174110                    
+    Sat. soil-water content(Os)=    0.311000                                
  Node number for flood checking=          57                                
                                                                             
   Simulation parameters                                                     
@@ -72,26 +72,26 @@ File: output/sampleWT.osm                             VFSMOD v4.6.0 11/2024
              Time step, dt (s) =    1.402495                                
   Number of nodes in system    =          57                                
   Number of elements in system =          28                                
-  Number of time steps        =        2568                                 
+  Number of time steps         =        2568                                
   Maximum number of iterations =         350                                
     Maximum flow rate and depth=    0.000735    0.013894                    
            Celerity of the wave=    0.088159                                
-              Courant time step=    1.402495                                
+              Courant time step=    1.753119                                
                   Froude number=    0.143276                                
-          Kinematic wave number=     1891.94                                
+          Kinematic wave number= 1891.937390                                
                  Courant number=    0.800000                                
-       Surface changes feedback=          NO                                
+       Surface changes feedback=         YES                                
                                                                             
                                                                             
- File: output/sampleWT.og1                             VFSMOD v4.6.0 11/2024
+ File: output\sampleWT.og1                             VFSMOD v4.1.1 06/2011
                                                                             
   Sediment parameters                                                       
   -----------------------------------------                                 
-  Sediment inflow concentration(Ci)=    0.015280      g/cm3                 
+  Sediment inflow concentration(Ci)=    0.034000      g/cm3                 
                     Particle class =    (user) fine                         
-       Particle size (diameter, dp)=    0.002300         cm                 
-        Particle fall velocity (Vf)=    0.045959       cm/s                 
-  Particle weight density (gamma-s)=    2.600000      g/cm3                 
+       Particle size (diameter, dp)=    0.001300         cm                 
+        Particle fall velocity (Vf)=    0.015141       cm/s                 
+  Particle weight density (gamma-s)=    2.650000      g/cm3                 
   % of particles with dp>0.0037 cm =   50.000000          %                 
   Porosity of deposited sediment(P)=   43.400000          %                 
                                                                             
@@ -109,26 +109,26 @@ File: output/sampleWT.osm                             VFSMOD v4.6.0 11/2024
  -------------
 Volume from rainfall=     0.8423E+00 m3
 Volume from up-field=     0.1325E+01 m3
-Volume from outflow =     0.1101E+01 m3
-Volume infiltrated  =     0.1066E+01 m3
+Volume from outflow =     0.1463E+01 m3
+Volume infiltrated  =     0.7045E+00 m3
   
  Hydrology
  -----------
-Time to beginning   =     0.1543E+04 s
-Time and q at peak  =     0.1753E+04 s     0.2692E-02 m3/s
-Time to end runoff  =     0.3436E+04 s
+Time to beginning   =     0.9817E+03 s
+Time and q at peak  =     0.1788E+04 s     0.2437E-02 m3/s
+Time to end runoff  =     0.3015E+04 s
   
  Sediment
  --------
-Sediment inflow     =     0.5232E+02 g/cm    0.2025E+05 g
-Sediment outflow    =     0.4766E+00 g/cm    0.1845E+03 g
-Trapping efficiency =       99.1 %
+Sediment inflow     =     0.1164E+03 g/cm    0.4505E+05 g
+Sediment outflow    =     0.4353E+01 g/cm    0.1685E+04 g
+Trapping efficiency =           96.3 %
                      ----------------
 Sediment deposition :
-        - Sediment wedge depth,   Y(t) =    0.03 cm
-        - Sediment wedge length,  X2(t)=    0.13 cm
-        - Effective filter length,L(t) =  865.37 cm
-        - Sediment tail at field, X1(t)=    0.52 cm
-        - Sediment depth in low section=    0.04 cm
-        - Rough sediment balance error =  100.93 %
-        - Rough water balance error    =    0.00 % (adjusted)
+        - Sediment wedge depth,   Y(t)   =   0.04cm
+        - Sediment wedge length,  X2(t)  =   0.14cm
+        - Effective filter length,L(t)   = 865.36cm
+        - Sediment tail at field, X1(t)  =   0.63cm
+        - Sediment depth in low section  =   0.09cm
+        - Rough sediment balance error   =  -0.01%
+        - Rough water balance error      =   0.00%

@@ -582,6 +582,12 @@ QTableCornerButton::section {
           <height>0</height>
          </size>
         </property>
+        <property name="styleSheet">
+         <string notr="true">QLineEdit {
+    background-color: #d9d9d9;
+}
+</string>
+        </property>
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
@@ -604,11 +610,22 @@ QTableCornerButton::section {
      </item>
      <item>
       <widget class="QLineEdit" name="half">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLineEdit {
+    background-color: #d9d9d9;
+}</string>
+       </property>
        <property name="text">
         <string>12</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

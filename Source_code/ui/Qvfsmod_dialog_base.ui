@@ -337,6 +337,13 @@ QTableCornerButton::section {
                </widget>
               </item>
               <item>
+               <widget class="QPushButton" name="select_project_name">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="horizontalSpacer_2">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -427,7 +434,7 @@ QTableCornerButton::section {
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>593</width>
+             <width>608</width>
              <height>952</height>
             </rect>
            </property>

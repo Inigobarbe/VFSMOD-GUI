@@ -1,4 +1,4 @@
-File: output\uncert.osp                               VFSMOD v4.5.2 02/2023
+File: output\uncert.osp                               VFSMOD v4.1.1 06/2011
  
  Files for this simulation
    File #=  1 code:ikw=inputs\design.ikw                                                          
@@ -12,3 +12,34 @@ File: output\uncert.osp                               VFSMOD v4.5.2 02/2023
    File #=  9 code:og2=output\uncert.og2                                                          
    File #= 10 code:osp=output\uncert.osp                                                          
    File #= 11 code:isd=inputs\design.isd                                                          
+ 
+ 
+  
+ 	Summary of Buffer Performance Indicators:
+  
+  5000.00 m^2 = Source Area (input)
+   100.00 m   = Source Flow Length (input)
+    50.00 m   = Source Area Width (input)
+     3.00 m   = Filter Strip Length (input)
+     3.87 m   = Filter Strip Width (input)
+    0.400     = Mean Filter Mannings Roughness (input)
+  
+     3.00 %   = Ratio of Filter Length to Source Flow Length
+   10.000 mm  = Total Rainfall
+    0.116 m3  = Total Rainfall on Filter
+    0.024 mm  = Total Runoff from Source (mm depth over Source Area)
+    0.118 m3  = Total Runoff from Source
+    0.000 mm  = Total Runoff out from Filter (mm depth over Source+Filter)
+    0.000 m3  = Total Runoff out from Filter
+    0.234 m3  = Total Infiltration in Filter
+    0.000     = Runoff Delivery Ratio
+  
+     0.908 kg = Mass Sediment Input to Filter
+     7.701 g/L= Concentration Sediment in Runoff from source Area
+     0.000 kg = Mass Sediment Output from Filter
+     0.000 g/L= Concentration Sediment in Runoff exiting the Filter
+     0.908 kg = Mass Sediment retained in Filter
+     0.000    = Sediment Delivery Ratio
+  
+     2.99 m   = Effective Filter Length
+     0.01 m   = Wedge Distance

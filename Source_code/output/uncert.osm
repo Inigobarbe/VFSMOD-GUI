@@ -1,1 +1,151 @@
-File: output\uncert.osm                               VFSMOD v4.5.2 02/2023
+File: output\uncert.osm                               VFSMOD v4.1.1 06/2011
+ INPUTS
+ ------
+ File: output\uncert.ohy                               VFSMOD v4.1.1 06/2011
+                                                                            
+  Storm parameters                                                          
+  ----------------                                                          
+                     Storm data: Unit9, g8, u183-91                         
+                     +------+---------------------+------------+            
+                     |Period|    Time interval    |  Rainfall  |            
+                     |      |         (s)         |   (m/s)    |            
+                     +------+---------------------+------------+            
+                     |    1 |     0.0  to   600.0 | 0.1206E-06 |            
+                     |    2 |   600.0  to  1200.0 | 0.1262E-06 |            
+                     |    3 |  1200.0  to  1800.0 | 0.1324E-06 |            
+                     |    4 |  1800.0  to  2400.0 | 0.1393E-06 |            
+                     |    5 |  2400.0  to  3000.0 | 0.1472E-06 |            
+                     |    6 |  3000.0  to  3600.0 | 0.1562E-06 |            
+                     |    7 |  3600.0  to  4200.0 | 0.1666E-06 |            
+                     |    8 |  4200.0  to  4800.0 | 0.1787E-06 |            
+                     |    9 |  4800.0  to  5400.0 | 0.1932E-06 |            
+                     |   10 |  5400.0  to  6000.0 | 0.2107E-06 |            
+                     |   11 |  6000.0  to  6600.0 | 0.2324E-06 |            
+                     |   12 |  6600.0  to  7200.0 | 0.2601E-06 |            
+                     |   13 |  7200.0  to  7800.0 | 0.2969E-06 |            
+                     |   14 |  7800.0  to  8400.0 | 0.3488E-06 |            
+                     |   15 |  8400.0  to  9000.0 | 0.4281E-06 |            
+                     |   16 |  9000.0  to  9600.0 | 0.5675E-06 |            
+                     |   17 |  9600.0  to 10200.0 | 0.8939E-06 |            
+                     |   18 | 10200.0  to 10800.0 | 0.3735E-05 |            
+                     |   19 | 10800.0  to 11400.0 | 0.3735E-05 |            
+                     |   20 | 11400.0  to 12000.0 | 0.8939E-06 |            
+                     |   21 | 12000.0  to 12600.0 | 0.5675E-06 |            
+                     |   22 | 12600.0  to 13200.0 | 0.4281E-06 |            
+                     |   23 | 13200.0  to 13800.0 | 0.3488E-06 |            
+                     |   24 | 13800.0  to 14400.0 | 0.2969E-06 |            
+                     |   25 | 14400.0  to 15000.0 | 0.2601E-06 |            
+                     |   26 | 15000.0  to 15600.0 | 0.2324E-06 |            
+                     |   27 | 15600.0  to 16200.0 | 0.2107E-06 |            
+                     |   28 | 16200.0  to 16800.0 | 0.1932E-06 |            
+                     |   29 | 16800.0  to 17400.0 | 0.1787E-06 |            
+                     |   30 | 17400.0  to 18000.0 | 0.1666E-06 |            
+                     |   31 | 18000.0  to 18600.0 | 0.1562E-06 |            
+                     |   32 | 18600.0  to 19200.0 | 0.1472E-06 |            
+                     |   33 | 19200.0  to 19800.0 | 0.1393E-06 |            
+                     |   34 | 19800.0  to 20400.0 | 0.1324E-06 |            
+                     |   35 | 20400.0  to 21000.0 | 0.1262E-06 |            
+                     |   36 | 21000.0  to 21600.0 | 0.1206E-06 |            
+                     |   37 | 21600.0  to 35780.5 | 0.0000E+00 |            
+                     +------+---------------------+------------+            
+            Total rainfall (mm)=       10.00                                
+   Peak rainfall intensity(m/s)=  0.3735E-05                                
+     Peak inflow rate BC (m3/s)=  0.2248E-04                                
+        (The inflow hydrograph can be found in the OUTPUTS)                 
+                                                                            
+  Filter parameters                                                         
+  -----------------                                                         
+        Length of the strip (m)=    3.000000                                
+         Width of the strip (m)=    3.870000                                
+        Surface characteristics=                                            
+                     +---------------------+---------+---------+            
+                     |    x(m) interval    |    n    |    So   |            
+                     +---------------------+---------+---------+            
+                     |  0.0000  to  0.3214 |  0.4000 |  0.0553 |            
+                     |  0.3214  to  0.6429 |  0.4000 |  0.0553 |            
+                     |  0.6429  to  0.9107 |  0.4000 |  0.0553 |            
+                     |  0.9107  to  1.2321 |  0.4000 |  0.0553 |            
+                     |  1.2321  to  1.5000 |  0.4000 |  0.0553 |            
+                     |  1.5000  to  1.8214 |  0.4000 |  0.0553 |            
+                     |  1.8214  to  2.1429 |  0.4000 |  0.0553 |            
+                     |  2.1429  to  2.4107 |  0.4000 |  0.0553 |            
+                     |  2.4107  to  2.7321 |  0.4000 |  0.0553 |            
+                     |  2.7321  to  3.0000 |  0.4000 |  0.0553 |            
+                     +---------------------+---------+---------+            
+                                                                            
+  Soil parameters                                                           
+  ---------------------                                                     
+  Saturated hydraulic cond.(Ks)=  0.1330E-04                                
+    Sat. soil-water content(Os)=    0.311000                                
+ Node number for flood checking=          57                                
+                                                                            
+  Simulation parameters                                                     
+  ---------------------                                                     
+       Length of simulation (s)=  0.3578E+05                                
+   Order of the basis functions=           2                                
+     Petrov-Galerkin parameters=  0.04332 -0.00308 -0.31645  0.14512        
+       Time weighting parameter=    0.500000                                
+             Space step, dx(m) =    0.053571                                
+             Time step, dt (s) =    2.858898                                
+  Number of nodes in system    =          57                                
+  Number of elements in system =          28                                
+  Number of time steps         =       12515                                
+  Maximum number of iterations =         350                                
+    Maximum flow rate and depth=    0.000017    0.001892                    
+           Celerity of the wave=    0.014991                                
+              Courant time step=    3.573622                                
+                  Froude number=    0.066028                                
+          Kinematic wave number=20128.742886                                
+                 Courant number=    0.800000                                
+       Surface changes feedback=          NO                                
+                                                                            
+                                                                            
+ File: output\uncert.og1                               VFSMOD v4.1.1 06/2011
+                                                                            
+  Sediment parameters                                                       
+  -----------------------------------------                                 
+  Sediment inflow concentration(Ci)=    0.007700      g/cm3                 
+                    Particle class =    (user) fine                         
+       Particle size (diameter, dp)=    0.002300         cm                 
+        Particle fall velocity (Vf)=    0.045959       cm/s                 
+  Particle weight density (gamma-s)=    2.600000      g/cm3                 
+  % of particles with dp>0.0037 cm =  100.000000          %                 
+  Porosity of deposited sediment(P)=   43.400000          %                 
+                                                                            
+  Filter parameters for sediment transport                                  
+  -----------------------------------------                                 
+             Filter main slope (Sc)=    0.055332                            
+          Filter media spacing (Ss)=    2.200000         cm                 
+   Modified Manning coefficient (n)=    0.012000  s.cm^-.33                 
+  Manning coeff. for bare soil (n2)=    0.040000   s.m^-.33                 
+            Filter media height (H)=   15.000000         cm                 
+                                                                            
+ OUTPUTS
+ -------
+ Water balance
+ -------------
+Volume from rainfall=     0.1161E+00 m3
+Volume from up-field=     0.1179E+00 m3
+Volume from outflow =     0.0000E+00 m3
+Volume infiltrated  =     0.2340E+00 m3
+  
+ Hydrology
+ -----------
+Time to beginning   =     0.0000E+00 s
+Time and q at peak  =     0.3574E+05 s     0.0000E+00 m3/s
+Time to end runoff  =     0.0000E+00 s
+  
+ Sediment
+ --------
+Sediment inflow     =     0.2346E+01 g/cm    0.9081E+03 g
+Sediment outflow    =     0.0000E+00 g/cm    0.0000E+00 g
+Trapping efficiency =          100.0 %
+                     ----------------
+Sediment deposition :
+        - Sediment wedge depth,   Y(t)   =   0.11cm
+        - Sediment wedge length,  X2(t)  =   0.55cm
+        - Effective filter length,L(t)   = 299.45cm
+        - Sediment tail at field, X1(t)  =   2.02cm
+        - Sediment depth in low section  =   0.00cm
+        - Rough sediment balance error   =  -5.83%
+        - Rough water balance error      =   0.00%
