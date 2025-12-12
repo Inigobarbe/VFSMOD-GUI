@@ -434,7 +434,7 @@ QTableCornerButton::section {
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>608</width>
+             <width>593</width>
              <height>952</height>
             </rect>
            </property>
@@ -1534,7 +1534,7 @@ default 5 min</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>608</width>
+             <width>593</width>
              <height>728</height>
             </rect>
            </property>

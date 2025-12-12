@@ -1,4 +1,4 @@
-inp=C:\Users\inigo.barberena\Documents\Pruebas_franceses\Buvard_VFSMod_input\20250808110104_sample_CN_WXX_10.inp  
+inp=inputs\sample2.inp  
 iro=inputs\sample.iro  
 irn=inputs\sample.irn  
 isd=inputs\sample.isd  

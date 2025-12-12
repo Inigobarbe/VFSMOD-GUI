@@ -153,3 +153,69 @@ Mensaje: name 'tiempo' is not defined
 Excepción: TypeError
 Mensaje: setText(self, str): argument 1 has unexpected type 'float'
 
+Excepción: IndexError
+Mensaje: list index out of range
+
+Excepción: FileNotFoundError
+Mensaje: [Errno 2] No such file or directory: 'C:\\qvfsmod\\Source_code\\inputs\\samplef.iwq'
+
+Excepción: FileNotFoundError
+Mensaje: [Errno 2] No such file or directory: 'C:\\qvfsmod\\Source_code\\inputs\\samplef.iwq'
+
+Excepción: FileNotFoundError
+Mensaje: [Errno 2] No such file or directory: 'C:\\qvfsmod\\Source_code\\inputs\\samplef.iwq'
+
+Excepción: FileNotFoundError
+Mensaje: [Errno 2] No such file or directory: 'C:\\qvfsmod\\Source_code\\inputs\\samplef.iwq'
+
+Excepción: AttributeError
+Mensaje: 'QHBoxLayout' object has no attribute 'show'
+
+Excepción: AttributeError
+Mensaje: 'QHBoxLayout' object has no attribute 'setVisible'
+
+Excepción: AttributeError
+Mensaje: 'QHBoxLayout' object has no attribute 'setStyleSheet'
+
+Excepción: NameError
+Mensaje: name 'pesticide' is not defined
+
+Excepción: AttributeError
+Mensaje: 'int' object has no attribute 'half_life_2'
+
+Excepción: AttributeError
+Mensaje: 'int' object has no attribute 'half_life_2'
+
+Excepción: ValueError
+Mensaje: invalid literal for int() with base 10: '1.0'
+
+Excepción: FileNotFoundError
+Mensaje: [Errno 2] No such file or directory: 'C:\\Users\\inigo.barberena\\Documents\\Borrar\\inputs\\sample.iso'
+
+Excepción: ValueError
+Mensaje: zero-size array to reduction operation minimum which has no identity
+
+Excepción: AttributeError
+Mensaje: 'QLabel' object has no attribute 'split'
+
+Excepción: TypeError
+Mensaje: Axes.hlines() missing 1 required positional argument: 'xmax'
+
+Excepción: AttributeError
+Mensaje: 'qvfsmod' object has no attribute 'nashes_bootstraping_sedimentograph'
+
+Excepción: AttributeError
+Mensaje: 'QLabel' object has no attribute 'setTetxt'
+
+Excepción: AttributeError
+Mensaje: 'infiltration_soil_properties' object has no attribute 'frame_10'
+
+Excepción: AttributeError
+Mensaje: 'infiltration_soil_properties' object has no attribute 'frame_10'
+
+Excepción: AttributeError
+Mensaje: 'soil_characteristic_curves' object has no attribute 'label_18'
+
+Excepción: TypeError
+Mensaje: can't multiply sequence by non-int of type 'float'
+

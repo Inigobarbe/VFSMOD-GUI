@@ -1,4 +1,4 @@
-File: output\sampleP3.osp                             VFSMOD v4.6.0 11/2024
+File: output\sampleP3.osp                             VFSMOD v4.6.1.1 10/2025
  
  Files for this simulation
    File #=  1 code:ikw=inputs\sampleP3.ikw                                                        
@@ -17,29 +17,29 @@ File: output\sampleP3.osp                             VFSMOD v4.6.0 11/2024
   
        Summary of Buffer Performance Indicators:
   
-     5000.0 m^2 = Source Area (input)
-     100.00 m   = Source Flow Length (input)
-      50.00 m   = Source Area Width (input)
+      136.0 m^2 = Source Area (input)
+      34.00 m   = Source Flow Length (input)
+       4.00 m   = Source Area Width (input)
        8.65 m   = Filter Strip Length (input)
        3.87 m   = Filter Strip Width (input)
       0.400     = Mean Filter Mannings Roughness (input)
   
-       8.65 %   = Ratio of Filter Length to Source Flow Length
-     97.015 mm  = Total Rainfall
-      3.250 m3  = Total Rainfall on Filter
-     32.834 mm  = Total Runoff from Source (mm depth over Source Area)
-    164.172 m3  = Total Runoff from Source
-     31.885 mm  = Total Runoff out from Filter (mm depth over Source+Filter)
-    160.491 m3  = Total Runoff out from Filter
-      8.529 m3  = Total Infiltration in Filter
-      0.978     = Runoff Delivery Ratio
+      25.46 %   = Ratio of Filter Length to Source Flow Length
+     25.147 mm  = Total Rainfall
+      0.842 m3  = Total Rainfall on Filter
+      9.744 mm  = Total Runoff from Source (mm depth over Source Area)
+      1.325 m3  = Total Runoff from Source
+      4.331 mm  = Total Runoff out from Filter (mm depth over Source+Filter)
+      0.734 m3  = Total Runoff out from Filter
+      1.433 m3  = Total Infiltration in Filter
+      0.554     = Runoff Delivery Ratio
   
-    2784.056 kg = Mass Sediment Input to Filter
-      16.958 g/L= Concentration Sediment in Runoff from source Area
-    2149.930 kg = Mass Sediment Output from Filter
-      13.396 g/L= Concentration Sediment in Runoff exiting the Filter
-     634.125 kg = Mass Sediment retained in Filter
-       0.772    = Sediment Delivery Ratio
+      34.194 kg = Mass Sediment Input to Filter
+      25.805 g/L= Concentration Sediment in Runoff from source Area
+      13.085 kg = Mass Sediment Output from Filter
+      17.825 g/L= Concentration Sediment in Runoff exiting the Filter
+      21.109 kg = Mass Sediment retained in Filter
+       0.383    = Sediment Delivery Ratio
   
        8.65 m   = Effective Filter Length
-       0.01 m   = Wedge Distance
+       0.00 m   = Wedge Distance

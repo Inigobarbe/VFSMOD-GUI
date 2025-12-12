@@ -198,7 +198,7 @@ QTableCornerButton::section {
       <item row="3" column="0">
        <widget class="QRadioButton" name="wetting">
         <property name="text">
-         <string>Wetting flow depth</string>
+         <string>Wetting front depth</string>
         </property>
        </widget>
       </item>

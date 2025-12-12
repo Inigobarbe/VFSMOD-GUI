@@ -571,7 +571,7 @@ class qvfsmod():
         self.dlg_base.soil_type.addItems(["Clay","Silty clay","Sandy clay","Silty clay loam","Clay loam","Sandy clay loam","Silt","Silt loam","Loam",
             "Very fine sandy loam","Fine sandy loam","Sandy loam","Coarse sandy loam","Loamy very fine sand","Loamy fine sandy",
             "Loamy sand","Loamy coarse sand","Very fine sandy","Fine sand","Sand","Coarse sand"])
-        self.dlg_water_quality.calculation.addItems(["No calculation","Degradation changes with temperature and moisture","Degradation only","Degradation changes with temperature","Degradation changes with moisture"])
+        self.dlg_water_quality.calculation.addItems(["No degradation","Degradation changes with temperature and moisture","Degradation only","Degradation changes with temperature","Degradation changes with moisture"])
         self.dlg_water_quality.trapping_equation.addItems(["Sabbagh","Refit Sabbagh","Mass balance","Chen"])
         self.dlg_calibration_advanced_settings_hydrograph.objective_function.addItems(["RMSE","NSE","NNSE"])
         self.dlg_calibration_advanced_settings_sedimentograph.objective_function.addItems(["RMSE","NSE","NNSE"])
@@ -579,7 +579,7 @@ class qvfsmod():
         self.dlg_incoming_sediment.particle_class.addItems(["Clay","Silt (1)","Small aggregate","Large aggregate","Sand","Silt (2)","User selected","Internal d50 calculation"])
         self.dlg_base.rainfall_factor.addItems(["Foster","Williams","GLEAMS","Cooley","PRZM MUSLE","PRZM MUSS (recommended)"])
         self.dlg_base.rainfall_factor.setCurrentIndex(5)
-        
+        self.dlg_buffer_properties.feedback.addItems(["No","Yes"])
         
         self.dlg_base.combo_water.addItems(["1. Pesticides","2. Solute Transport","3. Multi-Reactive"])
         #Disable selection of "2. Solute Transport" and "3. Multi-Reactive"
@@ -602,13 +602,14 @@ class qvfsmod():
         
         #If no pesticide mass balance/residue calculation is requested then hide frame
         self.dlg_water_quality.calculation.currentIndexChanged.connect(self.hide_mass_balance_frame)
-        self.dlg_water_quality.frame_5.hide()
+        self.hide_mass_balance_frame()
+        
         #Modify table of water quality
         self.dlg_water_quality.tableWidget.verticalHeader().setVisible(False)
         self.dlg_water_quality.tableWidget.setColumnWidth(0, 100) 
         self.dlg_water_quality.tableWidget.setColumnWidth(1, 230)
         self.dlg_water_quality.tableWidget.setColumnWidth(2, 250)
-        self.dlg_water_quality.days.textChanged.connect(self.change_rows_water_quality)
+        self.dlg_water_quality.days.editingFinished.connect(self.change_rows_water_quality)
         
         #Column widths of iro and irn
         self.dlg_vfsmod_hydrograph.tableWidget.setColumnWidth(1, 150)
@@ -694,6 +695,14 @@ class qvfsmod():
         self.dlg_infiltration_soil.frame_5.setVisible(False)
         self.dlg_infiltration_soil.radio_one.toggled.connect(self.show_second_layer)
         
+        #Hide second layer for soil characteristic curves parameters
+        self.dlg_soil_curves.label_18.hide()
+        self.dlg_soil_curves.frame_4.hide()
+        
+        #Hide information message about the fact that in the files only the information of the average appears, not about two layers
+        self.dlg_infiltration_soil.label_27.hide()
+        
+            
         #Enable water table dialog option
         self.dlg_infiltration_soil.frame_6.setVisible(False)
         self.dlg_infiltration_soil.check_water_table.stateChanged.connect(self.show_water_table)
@@ -713,7 +722,14 @@ class qvfsmod():
         self.dlg_base.edit_overland.clicked.connect(self.dlg_overland_flow_show)
         self.dlg_overland_flow.edit_segment.clicked.connect(self.dlg_buffer_segment_show)
         self.dlg_base.edit_infiltration.clicked.connect(self.dlg_infiltration_soil_show)
-        self.dlg_infiltration_soil.show_parameters.clicked.connect(self.show_soil_curves)
+        
+        
+        self.dlg_infiltration_soil.show_parameters.clicked.connect(lambda _, b = True:self.show_soil_curves(b))
+        self.dlg_infiltration_soil.radioButton_3.toggled.connect(lambda _, b = False:self.show_soil_curves(b))
+        self.dlg_infiltration_soil.radioButton_5.toggled.connect(lambda _, b = False:self.show_soil_curves(b))
+        self.dlg_infiltration_soil.radioButton_6.toggled.connect(lambda _, b = False:self.show_soil_curves(b))
+        
+        
         self.dlg_base.edit_buffer.clicked.connect(self.dlg_buffer_properties_show)
         self.dlg_base.edit_water.clicked.connect(lambda _, b = True:self.dlg_water_quality_show(b))
         self.dlg_base.edit_incoming.clicked.connect(self.dlg_incoming_sediment_show)
@@ -1125,6 +1141,20 @@ class qvfsmod():
         self.number_pesticides_dialog = 1
         self.dlg_water_quality.number_pesticides.textChanged.connect(self.add_pesticides_dialog)
         
+        #Only show layer thickness of first layer if two layers were selected
+        self.dlg_infiltration_soil.label_8.hide()
+        self.dlg_infiltration_soil.line_bottom.hide()
+        
+        
+        #Add message of hipothesis testing in FITEVAL
+        self.dlg_fiteval_hydrograph.label.setTextFormat(Qt.RichText) 
+        self.dlg_fiteval_hydrograph.label.setOpenExternalLinks(True)   
+        self.dlg_fiteval_hydrograph.label.setText("""Following the <a href="https://abe.ufl.edu/faculty/carpena/software/FITEVAL.shtml">FITEVAL</a> model goodness-of-fit testing<br>framework <a href="https://www.sciencedirect.com/science/article/pii/S0022169412010608?via%3Dihub ">(Ritter and Muñoz-Carpena, 2013)</a>,  the<br>p-value corresponds to the null hypothesis Ho: p(NSE<br>&lt;NSE_threshold) and complementary H1:<br>p(NSE≥NSE_threshold). When the p-value is larger than a<br>chosen significance 𝛼 for the problem, Ho cannot be<br>rejected and the model is found “unacceptable" for that<br>criteria. If the p-value is lower than the significance<br>𝛼, Ho can be rejected and the complementary hypothesis<br>supported, so the model passes the statistical test and<br>is deemed “acceptable”""")
+        self.dlg_fiteval_sedimentograph.label.setTextFormat(Qt.RichText) 
+        self.dlg_fiteval_sedimentograph.label.setOpenExternalLinks(True) 
+        self.dlg_fiteval_sedimentograph.label.setText("""Following the <a href="https://abe.ufl.edu/faculty/carpena/software/FITEVAL.shtml">FITEVAL</a> model goodness-of-fit testing<br>framework <a href="https://www.sciencedirect.com/science/article/pii/S0022169412010608?via%3Dihub ">(Ritter and Muñoz-Carpena, 2013)</a>,  the<br>p-value corresponds to the null hypothesis Ho: p(NSE<br>&lt;NSE_threshold) and complementary H1:<br>p(NSE≥NSE_threshold). When the p-value is larger than a<br>chosen significance 𝛼 for the problem, Ho cannot be<br>rejected and the model is found “unacceptable" for that<br>criteria. If the p-value is lower than the significance<br>𝛼, Ho can be rejected and the complementary hypothesis<br>supported, so the model passes the statistical test and<br>is deemed “acceptable”""")
+        
+        
         #Default values
         self.default_values()
         
@@ -1227,7 +1257,7 @@ class qvfsmod():
             ruta = os.path.join(os.getcwd(),str(Path("documentation/license.txt")))
             os.startfile(ruta)
         elif sys.platform.startswith("darwin"): #macOS
-            ruta = os.path.join(os.path.abspath(os.path.join(base_path,"..","..","..")),str(Path("documentation/license.txt")))
+            ruta = str(Path("/Library/Application Support/vfsmod-gui/documentation/license.txt"))
             subprocess.run(["open", ruta])
         elif sys.platform.startswith("linux"): #linux
             ruta = os.path.join(os.path.abspath(os.path.join(base_path,"..","..","..")),str(Path("documentation/license.txt")))
@@ -1537,15 +1567,23 @@ class qvfsmod():
         )
 
         # Función acumulada
-        cdf = np.cumsum(counts) / np.sum(counts)
+        if type_calibration == "hydrograph":
+            nashes = np.sort([x for x in self.nashes_bootstraping_hydrograph if not np.isnan(x)])
+        elif type_calibration == "sedimentograph":
+            nashes = np.sort([x for x in self.nashes_bootstraping_sedimentograph if not np.isnan(x)])
+        
+        cumulative = [np.searchsorted(nashes, b, side='right') / len(nashes) for b in bins]
         ax2 = ax1.twinx()
-        ax2.plot(bins[:-1], cdf, color="teal", lw=2, label="Cumulative")
+        ax2.plot(bins, cumulative, color="teal", lw=2, label="Cumulative")
+        
+        
         if inf_count>0:
             ax2.set_title(f"-Inf cases: {inf_count}")
         
         #Vertical line
         try:
             ax1.axvline(x=float(dialog.nash.text()), color='red', linestyle='--', linewidth=1.5)
+            ax2.hlines(y=float(dialog.p_value.text().split(":")[-1]), xmin=float(dialog.nash.text()), xmax=ax2.get_xlim()[1],transform=ax2.get_yaxis_transform(),color='red', linestyle='--', linewidth=1.5)
         except:
             pass
 
@@ -1599,14 +1637,20 @@ class qvfsmod():
             #Put p value
             p_value = sum(1 for nash in values if nash < float(dialog.nash.text())) / len(values)
             dialog.p_value.setText(f"p-value: {str(round(p_value,2))}")
-            #Put percentile values for nash
-            dialog.label_8.setText(str(round(stats.scoreatpercentile(values,2.5),2)))
-            dialog.label_13.setText(str(round(stats.scoreatpercentile(values,50),2)))
-            dialog.label_15.setText(str(round(stats.scoreatpercentile(values,97.5),2)))
+            #Put confidence interval for nash
+            median = str(round(stats.scoreatpercentile(values,50),2))
+            percentile_25 = str(round(stats.scoreatpercentile(values,2.5),2))
+            percentile_975 = str(round(stats.scoreatpercentile(values,97.5),2))
+            
+            dialog.label_3.setText(f"NSE [95%CI]: {median}[{percentile_25} - {percentile_975}]")
+
             #Same for RMSE
-            dialog.label_9.setText(f"{stats.scoreatpercentile(values_rmse,97.5):.2e}") #as in RMSE the higher the worse, I put 97.5% for 2.5%
-            dialog.label_14.setText(f"{stats.scoreatpercentile(values_rmse,50):.2e}")
-            dialog.label_16.setText(f"{stats.scoreatpercentile(values_rmse,2.5):.2e}")
+            median = f"{stats.scoreatpercentile(values_rmse,50):.2e}"
+            percentile_25 = f"{stats.scoreatpercentile(values_rmse,2.5):.2e}"
+            percentile_975 = f"{stats.scoreatpercentile(values_rmse,97.5):.2e}"
+            
+            dialog.label_7.setText(f"RMSE [95%CI]: {median}[{percentile_25} - {percentile_975}]")
+            
             
         except:
             pass
@@ -1771,9 +1815,9 @@ class qvfsmod():
                 font.setBold(True)
                 getattr(self.dlg_water_quality, f"pesticide_direct_label_{pesticide}").setFont(font)
                 
-                label = QLabel("Kd")
+                label = QLabel("Kd (L/kg)")
                 setattr(self.dlg_water_quality, f"label_kd_{pesticide}", label)
-                label = QLabel("KOC")
+                label = QLabel("Koc (L/kg)")
                 setattr(self.dlg_water_quality, f"label_koc_{pesticide}", label)
                 
                 line = QLineEdit()
@@ -3184,12 +3228,52 @@ class qvfsmod():
         
     def hide_mass_balance_frame(self):
         """Method to show/hide frame for mass balance calculation in water quality"""
+        #Hide elements
         if self.dlg_water_quality.calculation.currentIndex() == 0:
-            self.dlg_water_quality.frame_5.hide()
+            #Degradation data
+            self.dlg_water_quality.frame_8.hide()
+            #Days degradation
+            self.dlg_water_quality.tableWidget.hide()
+            #Top soil field capacity
+            self.dlg_water_quality.field_capacity.setEnabled(False)
+            self.dlg_water_quality.field_capacity.setStyleSheet("background-color: #d9d9d9;")
+            #Days between runnof events
+            self.dlg_water_quality.days.setEnabled(False)
+            self.dlg_water_quality.days.setStyleSheet("background-color: #d9d9d9;")
+            
+            #Pesticide half life and dispersion length of chemical  
+            for pesticide in range(1,self.maximum_number_pesticides_dialog+1):
+                #Half life
+                getattr(self.dlg_water_quality, f"half_life_{pesticide}").setEnabled(False)
+                getattr(self.dlg_water_quality, f"half_life_{pesticide}").setStyleSheet("background-color: #d9d9d9;")
+                #Dispersion length of chemical
+                getattr(self.dlg_water_quality, f"dispersion_{pesticide}").setEnabled(False)
+                getattr(self.dlg_water_quality, f"dispersion_{pesticide}").setStyleSheet("background-color: #d9d9d9;")
+                
+            
+            
+        #Show elements
         else: 
-            self.dlg_water_quality.frame_5.show()
-    
-    
+            #Degradation data
+            self.dlg_water_quality.frame_8.show()
+            #Days degradation
+            self.dlg_water_quality.tableWidget.show()
+            #Top soil field capacity
+            self.dlg_water_quality.field_capacity.setEnabled(True)
+            self.dlg_water_quality.field_capacity.setStyleSheet("background-color: #f0f0f0 ;")
+            #Days between runnof events
+            self.dlg_water_quality.days.setEnabled(True)
+            self.dlg_water_quality.days.setStyleSheet("background-color: #f0f0f0 ;")
+            
+            #Pesticide half life and dispersion length of chemical  
+            for pesticide in range(1,self.maximum_number_pesticides_dialog+1):
+                #Half life
+                getattr(self.dlg_water_quality, f"half_life_{pesticide}").setEnabled(True)
+                getattr(self.dlg_water_quality, f"half_life_{pesticide}").setStyleSheet("background-color: #f0f0f0;")
+                #Dispersion length of chemical
+                getattr(self.dlg_water_quality, f"dispersion_{pesticide}").setEnabled(True)
+                getattr(self.dlg_water_quality, f"dispersion_{pesticide}").setStyleSheet("background-color: #f0f0f0;")
+            
     
     def show_sensitivity_graph_design(self):
         """Method to add the outputs for the graph visualization for design"""
@@ -4268,7 +4352,8 @@ class qvfsmod():
                 #Height
                 self.add_values_dialog(lineas,0,2,self.dlg_buffer_properties.height_grass)
                 #Feedback
-                self.add_values_dialog(lineas,0,4,self.dlg_buffer_properties.feedback)
+                value = int(float((self.add_values_dialog(lineas,0,4,self.dlg_buffer_properties.feedback, True))))
+                self.dlg_buffer_properties.feedback.setCurrentIndex(value)
                 #Roughness-Grass
                 self.add_values_dialog(lineas,0,1,self.dlg_buffer_properties.roughness_grass)
                 #Roughness-Bare
@@ -4315,6 +4400,10 @@ class qvfsmod():
             try: #if igr line does not exist among others
                 with open(path, 'r') as file:
                     lineas = file.readlines()
+                
+                #Trapping equation
+                trapping_equation = int(self.add_values_dialog(lineas,0,0,self.dlg_base.rainfall,retrieve = True))
+                self.dlg_water_quality.trapping_equation.setCurrentIndex(trapping_equation-1)
                 
                 #Direct input
                 direct = int(self.add_values_dialog(lineas,1,0,self.dlg_water_quality.line_kd_1, True))
@@ -4623,7 +4712,7 @@ class qvfsmod():
             condition_one = False
             contador = 0
             for i in lineas_owq:
-                if i == "  Outputs for Water Quality\n":
+                if i.lstrip() == "Outputs for Water Quality\n":
                     condition_one = True
                 if condition_one and i.split("=")[-1] == " Runoff inflow\n":
                     contador +=1
@@ -4668,6 +4757,7 @@ class qvfsmod():
         #Create graph
         names = ['Infiltration (dQ)', 'Sediment (dE)', 'Runoff inflow',"Pesticide (dP)"]
         valores = [infiltration, sediment, runoff,pesticide]
+        
 
         # Crear el gráfico de barras
         bars = self.ax_owq_graph_reduction.bar(names, valores,color ="red")
@@ -4717,7 +4807,7 @@ class qvfsmod():
                 lineas_owq = archivo.readlines()
                 show_graph = False
                 for l in range(len(lineas_owq)):
-                        if lineas_owq[l] == "    Compound degradation between runoff events (mg\n":
+                        if lineas_owq[l].lstrip() == "Compound degradation between runoff events (mg)\n":
                             show_graph = True
                             column_raw = lineas_owq[l+2].split()
                             columns = ["Time(d)"]
@@ -4961,160 +5051,303 @@ class qvfsmod():
             self.ax_owq_graph_balance[0].clear()
             self.ax_owq_graph_balance[1].clear()
             
-            
-            sizes_today = [output_solid, output_liquid, soil_profile_sorbed-mixing_layer_sorbed, 
-                soil_profile_dissolved-mixing_layer_dissolved,sorbed_mixing_layer_last_event, trapped_in_sediment,mixing_layer_sorbed, mixing_layer_dissolved]  # Proporciones
-            
-            #Labels with percentage
-            labels_today = [
-                f'Outflow sorbed ({round(100*output_solid/sum(sizes_today),2)}%)', f'Outflow dissolved ({round(100*output_liquid/sum(sizes_today),2)}%)',
-                f'Leached sorbed ({round(100*(soil_profile_sorbed-mixing_layer_sorbed)/sum(sizes_today),2)}%)', f'Leached dissolved ({round(100*(soil_profile_dissolved-mixing_layer_dissolved)/sum(sizes_today),2)}%)',
-                f'Sorbed in mixing layer from last event ({round(100*sorbed_mixing_layer_last_event/sum(sizes_today),2)}%)',
-                f'Trapped with sediment ({round(100*trapped_in_sediment/sum(sizes_today),2)}%)',
-                f'Mixing layer sorbed ({round(100*mixing_layer_sorbed/sum(sizes_today),2)}%)', f'Mixing layer dissolved ({round(100*mixing_layer_dissolved/sum(sizes_today),2)}%)'
+            try:
+                sizes_today = [output_solid, output_liquid, soil_profile_sorbed-mixing_layer_sorbed, 
+                    soil_profile_dissolved-mixing_layer_dissolved,sorbed_mixing_layer_last_event, trapped_in_sediment,mixing_layer_sorbed, mixing_layer_dissolved]  # Proporciones
+                
+                #Labels with percentage
+                labels_today = [
+                    f'Outflow sorbed ({round(100*output_solid/sum(sizes_today),2)}%)', f'Outflow dissolved ({round(100*output_liquid/sum(sizes_today),2)}%)',
+                    f'Leached sorbed ({round(100*(soil_profile_sorbed-mixing_layer_sorbed)/sum(sizes_today),2)}%)', f'Leached dissolved ({round(100*(soil_profile_dissolved-mixing_layer_dissolved)/sum(sizes_today),2)}%)',
+                    f'Sorbed in mixing layer from last event ({round(100*sorbed_mixing_layer_last_event/sum(sizes_today),2)}%)',
+                    f'Trapped with sediment ({round(100*trapped_in_sediment/sum(sizes_today),2)}%)',
+                    f'Mixing layer sorbed ({round(100*mixing_layer_sorbed/sum(sizes_today),2)}%)', f'Mixing layer dissolved ({round(100*mixing_layer_dissolved/sum(sizes_today),2)}%)'
+                    ]
+                    
+                
+                colors = [
+                    '#1f77b4',  # Outflow solid (azul claro)
+                    '#66b3ff',  # Outflow liquid (azul más claro)
+                    '#2ca02c',  # Infiltrated sorbed (verde claro)
+                    '#145a32',  # Infiltrated dissolved (verde más oscuro)
+                    "#a569bd",  # Sorbed in mixing layer from last event
+                    '#e74c3c',   # Trapped with sediment (rojo)
+                    '#ff7f0e',  # Mixing layer sorbed (naranja)
+                    '#d35400',  # Mixing layer dissolved (naranja más oscuro)
                 ]
                 
-            
-            colors = [
-                '#1f77b4',  # Outflow solid (azul claro)
-                '#66b3ff',  # Outflow liquid (azul más claro)
-                '#2ca02c',  # Infiltrated sorbed (verde claro)
-                '#145a32',  # Infiltrated dissolved (verde más oscuro)
-                "#a569bd",  # Sorbed in mixing layer from last event
-                '#e74c3c',   # Trapped with sediment (rojo)
-                '#ff7f0e',  # Mixing layer sorbed (naranja)
-                '#d35400',  # Mixing layer dissolved (naranja más oscuro)
-            ]
-            
-            threshold = sum(sizes_today)*0.05  # Umbral para los valores pequeños
+                threshold = sum(sizes_today)*0.05  # Umbral para los valores pequeños
 
-            # Crear el gráfico de pastel
-            wedges, texts =self.ax_owq_graph_balance[0].pie(
-                sizes_today,
-                colors=colors,
-                autopct=None,
-                startangle=140,
-                wedgeprops={'edgecolor': 'black'},
-                pctdistance=0.85,  # Para valores absolutos dentro del pie
-                labeldistance=None  # Elimina las etiquetas fuera del pie
-            )
+                # Crear el gráfico de pastel
+                wedges, texts =self.ax_owq_graph_balance[0].pie(
+                    sizes_today,
+                    colors=colors,
+                    autopct=None,
+                    startangle=140,
+                    wedgeprops={'edgecolor': 'black'},
+                    pctdistance=0.85,  # Para valores absolutos dentro del pie
+                    labeldistance=None  # Elimina las etiquetas fuera del pie
+                )
 
-            # Recorrer cada segmento del gráfico de pastel
-            for i, p in enumerate(self.ax_owq_graph_balance[0].patches):
-                # Cálculo del ángulo central del arco
-                ang = (p.theta2 - p.theta1) / 2. + p.theta1
-                x = 0.6 * np.cos(np.deg2rad(ang))  # Coordenada x dentro del segmento
-                y = 0.6 * np.sin(np.deg2rad(ang))  # Coordenada y dentro del segmento
-                horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
-                #Only put data if is above threshold
-                if sizes_today[i] > threshold:
-                    # Si el valor es mayor o igual al umbral, poner la etiqueta dentro del pie
-                    self.ax_owq_graph_balance[0].annotate(
-                        f'{round(sizes_today[i], 2)} mg/m\u00b2',
-                        xy=(x, y),
-                        horizontalalignment='center',  # Centrar dentro del segmento
-                        verticalalignment='center',fontsize = 10, fontweight = "bold"
-                    )
-            
-            
-            #Legend
-            handles = [mpatches.Patch(color=colors[i], label=labels_today[i]) for i in range(len(labels_today))]
-            
-            handles_first, labels_first = handles[:4], labels_today[:4]
-            handles_second, labels_second = handles[4:], labels_today[4:]
-            
-            self.ax_owq_graph_balance[0].legend_ = None  
+                # Recorrer cada segmento del gráfico de pastel
+                for i, p in enumerate(self.ax_owq_graph_balance[0].patches):
+                    # Cálculo del ángulo central del arco
+                    ang = (p.theta2 - p.theta1) / 2. + p.theta1
+                    x = 0.6 * np.cos(np.deg2rad(ang))  # Coordenada x dentro del segmento
+                    y = 0.6 * np.sin(np.deg2rad(ang))  # Coordenada y dentro del segmento
+                    horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
+                    #Only put data if is above threshold
+                    if sizes_today[i] > threshold:
+                        # Si el valor es mayor o igual al umbral, poner la etiqueta dentro del pie
+                        self.ax_owq_graph_balance[0].annotate(
+                            f'{round(sizes_today[i], 2)} mg/m\u00b2',
+                            xy=(x, y),
+                            horizontalalignment='center',  # Centrar dentro del segmento
+                            verticalalignment='center',fontsize = 10, fontweight = "bold"
+                        )
+                
+                
+                #Legend
+                handles = [mpatches.Patch(color=colors[i], label=labels_today[i]) for i in range(len(labels_today))]
+                
+                handles_first, labels_first = handles[:4], labels_today[:4]
+                handles_second, labels_second = handles[4:], labels_today[4:]
+                
+                self.ax_owq_graph_balance[0].legend_ = None  
 
-            # Crear la primera leyenda (5 elementos)
-            legend1 = self.ax_owq_graph_balance[0].legend(
-                handles_first, labels_first,
-                loc='lower center',
-                bbox_to_anchor=(-0.2, -0.37),  # Ajusta posición
-                fontsize='small',
-                ncol=1,  # Una columna para mostrar 5 filas
-                frameon=False,
-                title  = "Residues not to be degraded"
-            )
+                # Crear la primera leyenda (5 elementos)
+                legend1 = self.ax_owq_graph_balance[0].legend(
+                    handles_first, labels_first,
+                    loc='lower center',
+                    bbox_to_anchor=(-0.2, -0.37),  # Ajusta posición
+                    fontsize='small',
+                    ncol=1,  # Una columna para mostrar 5 filas
+                    frameon=False,
+                    title  = "Residues not to be degraded"
+                )
 
-            # Agregar la primera leyenda antes de la segunda
-            self.ax_owq_graph_balance[0].add_artist(legend1)
+                # Agregar la primera leyenda antes de la segunda
+                self.ax_owq_graph_balance[0].add_artist(legend1)
 
-            # Crear la segunda leyenda (2 elementos)
-            legend2 = self.ax_owq_graph_balance[0].legend(
-                handles_second, labels_second,
-                loc='lower center',
-                bbox_to_anchor=(0.95, -0.37),  # Ajusta posición más a la derecha
-                fontsize='small',
-                ncol=1,  # Una columna para mostrar 2 filas
-                frameon=False,
-                title = "Residues to be degraded"
-            )
+                # Crear la segunda leyenda (2 elementos)
+                legend2 = self.ax_owq_graph_balance[0].legend(
+                    handles_second, labels_second,
+                    loc='lower center',
+                    bbox_to_anchor=(0.95, -0.37),  # Ajusta posición más a la derecha
+                    fontsize='small',
+                    ncol=1,  # Una columna para mostrar 2 filas
+                    frameon=False,
+                    title = "Residues to be degraded"
+                )
 
+                
+                
+                #Title
+                self.ax_owq_graph_balance[0].set_title("Pesticides mass distribution after event")
             
             
-            #Title
-            self.ax_owq_graph_balance[0].set_title("Pesticides mass distribution after event")
-            
-            
-            sizes_tomorrow = [dissolved_surface_residue_after_degradation, sorbed_surface_residue_after_degradation]  # Proporciones diferentes
+            except:
+                # Put white pie chart
+                self.ax_owq_graph_balance[0].clear()
+                self.ax_owq_graph_balance[0].pie(
+                    [1],
+                    colors=["white"],
+                    wedgeprops=dict(edgecolor="black")
+                )
+                self.ax_owq_graph_balance[0].set_aspect("equal")
+                self.ax_owq_graph_balance[0].axis("off")
 
-            #Labels with percetage
-            labels_tomorrow = [
-                f'Dissolved surface residue \nafter degradation ({round(100*dissolved_surface_residue_after_degradation/sum(sizes_tomorrow),2)}%)', 
-                f'Sorbed surface residue \nafter degradation ({round(100*sorbed_surface_residue_after_degradation/sum(sizes_tomorrow),2)}%)'
-            ]
-            
-            #Colors
-            colors_tomorrow = [
-                '#c2f0f0',  # Dissolved surface residue
-                '#ffb3b3'   # Sorbed surface residue
-            ]
-            
-            #Create pie
-            self.ax_owq_graph_balance[1].pie(
-                sizes_tomorrow,
-                colors=colors_tomorrow,
-                autopct=None,
-                startangle=140,
-                wedgeprops={'edgecolor': 'black'},
-                pctdistance=0.85,  # Para valores absolutos dentro del pie
-                labeldistance=None  # Elimina las etiquetas fuera del pie
-            )
-            
-            threshold = sum(sizes_tomorrow)*0.05  # Umbral para los valores pequeños
-            # Recorrer cada segmento del gráfico de pastel
-            for i, p in enumerate(self.ax_owq_graph_balance[1].patches):
-                # Cálculo del ángulo central del arco
-                ang = (p.theta2 - p.theta1) / 2. + p.theta1
-                x = 0.5 * np.cos(np.deg2rad(ang))  # Coordenada x dentro del segmento
-                y = 0.5 * np.sin(np.deg2rad(ang))  # Coordenada y dentro del segmento
-                horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
+                # Title
+                self.ax_owq_graph_balance[0].set_title("Pesticides mass distribution after event")
 
-                #Only put data if is above threshold
-                if sizes_tomorrow[i] > threshold:
-                    # Si el valor es mayor o igual al umbral, poner la etiqueta dentro del pie
-                    self.ax_owq_graph_balance[1].annotate(
-                        f'{round(sizes_tomorrow[i], 2)} mg/m\u00b2',
-                        xy=(x, y),
-                        horizontalalignment='center',  # Centrar dentro del segmento
-                        verticalalignment='center',fontsize = 10, fontweight = "bold"
-                    )
+                # ----- Añadir leyenda con todos los valores a 0 -----
+                labels_today = [
+                    'Outflow sorbed (0%)', 
+                    'Outflow dissolved (0%)',
+                    'Leached sorbed (0%)', 
+                    'Leached dissolved (0%)',
+                    'Sorbed in mixing layer from last event (0%)',
+                    'Trapped with sediment (0%)',
+                    'Mixing layer sorbed (0%)', 
+                    'Mixing layer dissolved (0%)'
+                ]
 
-            #Legend
-            handles_tomorrow = [mpatches.Patch(color=colors_tomorrow[i], label=labels_tomorrow[i], edgecolor="none") for i in range(len(labels_tomorrow))]
+                colors = [
+                    '#1f77b4',  # Outflow solid (azul claro)
+                    '#66b3ff',  # Outflow liquid (azul más claro)
+                    '#2ca02c',  # Infiltrated sorbed (verde claro)
+                    '#145a32',  # Infiltrated dissolved (verde más oscuro)
+                    "#a569bd",  # Sorbed in mixing layer from last event
+                    '#e74c3c',  # Trapped with sediment (rojo)
+                    '#ff7f0e',  # Mixing layer sorbed (naranja)
+                    '#d35400',  # Mixing layer dissolved (naranja más oscuro)
+                ]
+
+                # Crear handles para la leyenda
+                handles = [mpatches.Patch(color=colors[i], label=labels_today[i]) for i in range(len(labels_today))]
+
+                # Dividir las leyendas como en el caso normal
+                handles_first, labels_first = handles[:4], labels_today[:4]
+                handles_second, labels_second = handles[4:], labels_today[4:]
+
+                # Eliminar leyenda previa si existe
+                self.ax_owq_graph_balance[0].legend_ = None  
+
+                # Primera leyenda
+                legend1 = self.ax_owq_graph_balance[0].legend(
+                    handles_first, labels_first,
+                    loc='lower center',
+                    bbox_to_anchor=(-0.2, -0.37),
+                    fontsize='small',
+                    ncol=1,
+                    frameon=False,
+                    title="Residues not to be degraded"
+                )
+                self.ax_owq_graph_balance[0].add_artist(legend1)
+
+                # Segunda leyenda
+                legend2 = self.ax_owq_graph_balance[0].legend(
+                    handles_second, labels_second,
+                    loc='lower center',
+                    bbox_to_anchor=(0.95, -0.37),
+                    fontsize='small',
+                    ncol=1,
+                    frameon=False,
+                    title="Residues to be degraded"
+                )
+                
             
-            self.ax_owq_graph_balance[1].legend(
-                 handles_tomorrow,labels_tomorrow,
-                loc='lower center',
-                bbox_to_anchor=(0.6, -0.32),
-                fontsize='small',
-                ncol=1,  # Dos columnas en la leyenda
-                frameon=False,  # Fondo transparente y sin borde
-                title = "Degraded residues"
-            )
             
-            #Título
-            self.ax_owq_graph_balance[1].set_title("Pesticides mass distribution after degradation")
+            try:
+                sizes_tomorrow = [dissolved_surface_residue_after_degradation, sorbed_surface_residue_after_degradation]  # Proporciones diferentes
+
+                #Labels with percetage
+                labels_tomorrow = [
+                    f'Dissolved surface residue \nafter degradation ({round(100*dissolved_surface_residue_after_degradation/sum(sizes_tomorrow),2)}%)', 
+                    f'Sorbed surface residue \nafter degradation ({round(100*sorbed_surface_residue_after_degradation/sum(sizes_tomorrow),2)}%)'
+                ]
+                
+                #Colors
+                colors_tomorrow = [
+                    '#c2f0f0',  # Dissolved surface residue
+                    '#ffb3b3'   # Sorbed surface residue
+                ]
+                
+                #Create pie
+                self.ax_owq_graph_balance[1].pie(
+                    sizes_tomorrow,
+                    colors=colors_tomorrow,
+                    autopct=None,
+                    startangle=140,
+                    wedgeprops={'edgecolor': 'black'},
+                    pctdistance=0.85,  # Para valores absolutos dentro del pie
+                    labeldistance=None  # Elimina las etiquetas fuera del pie
+                )
+                
+                threshold = sum(sizes_tomorrow)*0.05  # Umbral para los valores pequeños
+                # Recorrer cada segmento del gráfico de pastel
+                for i, p in enumerate(self.ax_owq_graph_balance[1].patches):
+                    # Cálculo del ángulo central del arco
+                    ang = (p.theta2 - p.theta1) / 2. + p.theta1
+                    x = 0.5 * np.cos(np.deg2rad(ang))  # Coordenada x dentro del segmento
+                    y = 0.5 * np.sin(np.deg2rad(ang))  # Coordenada y dentro del segmento
+                    horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
+
+                    #Only put data if is above threshold
+                    if sizes_tomorrow[i] > threshold:
+                        # Si el valor es mayor o igual al umbral, poner la etiqueta dentro del pie
+                        self.ax_owq_graph_balance[1].annotate(
+                            f'{round(sizes_tomorrow[i], 2)} mg/m\u00b2',
+                            xy=(x, y),
+                            horizontalalignment='center',  # Centrar dentro del segmento
+                            verticalalignment='center',fontsize = 10, fontweight = "bold"
+                        )
+
+                #Legend
+                handles_tomorrow = [mpatches.Patch(color=colors_tomorrow[i], label=labels_tomorrow[i], edgecolor="none") for i in range(len(labels_tomorrow))]
+                
+                self.ax_owq_graph_balance[1].legend(
+                     handles_tomorrow,labels_tomorrow,
+                    loc='lower center',
+                    bbox_to_anchor=(0.6, -0.32),
+                    fontsize='small',
+                    ncol=1,  # Dos columnas en la leyenda
+                    frameon=False,  # Fondo transparente y sin borde
+                    title = "Degraded residues"
+                )
+                
+                #Título
+                self.ax_owq_graph_balance[1].set_title("Pesticides mass distribution after degradation")
+            except:
+                # Put white pie chart
+                self.ax_owq_graph_balance[1].clear()
+                self.ax_owq_graph_balance[1].pie(
+                    [1],
+                    colors=["white"],
+                    wedgeprops=dict(edgecolor="black")
+                )
+                self.ax_owq_graph_balance[1].set_aspect("equal")
+                self.ax_owq_graph_balance[1].axis("off")
+
+                # Title
+                self.ax_owq_graph_balance[1].set_title("Pesticides mass distribution after event")
+
+                # ----- Añadir leyenda con todos los valores a 0 -----
+                labels_today = [
+                    'Outflow sorbed (0%)', 
+                    'Outflow dissolved (0%)',
+                    'Leached sorbed (0%)', 
+                    'Leached dissolved (0%)',
+                    'Sorbed in mixing layer from last event (0%)',
+                    'Trapped with sediment (0%)',
+                    'Mixing layer sorbed (0%)', 
+                    'Mixing layer dissolved (0%)'
+                ]
+
+                colors = [
+                    '#1f77b4',  # Outflow solid (azul claro)
+                    '#66b3ff',  # Outflow liquid (azul más claro)
+                    '#2ca02c',  # Infiltrated sorbed (verde claro)
+                    '#145a32',  # Infiltrated dissolved (verde más oscuro)
+                    "#a569bd",  # Sorbed in mixing layer from last event
+                    '#e74c3c',  # Trapped with sediment (rojo)
+                    '#ff7f0e',  # Mixing layer sorbed (naranja)
+                    '#d35400',  # Mixing layer dissolved (naranja más oscuro)
+                ]
+
+                # Crear handles para la leyenda
+                handles = [mpatches.Patch(color=colors[i], label=labels_today[i]) for i in range(len(labels_today))]
+
+                # Dividir las leyendas como en el caso normal
+                handles_first, labels_first = handles[:4], labels_today[:4]
+                handles_second, labels_second = handles[4:], labels_today[4:]
+
+                # Eliminar leyenda previa si existe
+                self.ax_owq_graph_balance[1].legend_ = None  
+
+                # Primera leyenda
+                legend1 = self.ax_owq_graph_balance[1].legend(
+                    handles_first, labels_first,
+                    loc='lower center',
+                    bbox_to_anchor=(-0.2, -0.37),
+                    fontsize='small',
+                    ncol=1,
+                    frameon=False,
+                    title="Residues not to be degraded"
+                )
+                self.ax_owq_graph_balance[1].add_artist(legend1)
+
+                # Segunda leyenda
+                legend2 = self.ax_owq_graph_balance[1].legend(
+                    handles_second, labels_second,
+                    loc='lower center',
+                    bbox_to_anchor=(0.95, -0.37),
+                    fontsize='small',
+                    ncol=1,
+                    frameon=False,
+                    title="Residues to be degraded"
+                )
+                
             
             
 
@@ -5277,17 +5510,26 @@ class qvfsmod():
         self.ax_owq_graph[1].invert_yaxis()
 
         # Etiquetas de los ejes
-        self.ax_owq_graph[0].set_xlabel('Pore water concentration \n(mg/L)', color='black',weight = "bold")
-        self.ax_owq_graph[1].set_xlabel('Solid phase/liquid phase \n(mg/mg)', color='black',weight = "bold")
-        self.ax_owq_graph[0].set_ylabel('Depth (m)', color='black',weight = "bold")
+        self.ax_owq_graph[0].set_xlabel('Pore water concentration, C\n(mg/L)', color='black',weight = "bold",fontsize=10)
+        self.ax_owq_graph[1].set_xlabel('Solid phase concentration, S\n(mg/mg)', color='black',weight = "bold",fontsize=10)
+        self.ax_owq_graph[0].set_ylabel('Depth (m)', color='black',weight = "bold",fontsize=10)
 
-        # Colorear el área entre profundidad 0 y 0.06
-        self.ax_owq_graph[0].axhspan(0, 0.02, facecolor='gray', alpha=0.3)  # Opacidad del rectángulo
-        self.ax_owq_graph[1].axhspan(0, 0.02, facecolor='gray', alpha=0.3)  # Opacidad del rectángulo
+        # Colorear del mixing layer
+        #Primero obtener el valor del mixing layer
+        condition = False
+        contador = 0
+        with open(self.obtain_direction_prj(self.dlg_base.line_quality.text()), "r") as archivo:
+            lineas_owq = archivo.readlines()
+        for i in lineas_owq:
+            if i.split("=")[0]=="  Mixing layer thickness (dml)":
+                mixing_layer_thickness= float(i.split("=")[1].split()[0])/100
+                        
+        self.ax_owq_graph[0].axhspan(0, mixing_layer_thickness, facecolor='gray', alpha=0.3)  # Opacidad del rectángulo
+        self.ax_owq_graph[1].axhspan(0, mixing_layer_thickness, facecolor='gray', alpha=0.3)  # Opacidad del rectángulo
         
         # Añadir texto "mixing layer" dentro del rectángulo con flechas más a la derecha
-        self.ax_owq_graph[0].text(max(all_water_concentrations)*0.83, 0.01, 'Mixing \nLayer', fontsize=10, ha='center', va='center')
-        self.ax_owq_graph[1].text(max(all_phases)*0.83, 0.01, 'Mixing \nLayer', fontsize=10, ha='center', va='center')
+        self.ax_owq_graph[0].text(max(all_water_concentrations)*0.17, 0.01, 'Mixing \nLayer', fontsize=10, ha='center', va='center')
+        self.ax_owq_graph[1].text(max(all_phases)*0.17, 0.01, 'Mixing \nLayer', fontsize=10, ha='center', va='center')
 
         # Colorear los ejes en negro
         self.ax_owq_graph[0].spines['bottom'].set_color('black')
@@ -5299,12 +5541,6 @@ class qvfsmod():
         self.ax_owq_graph[0].spines['right'].set_color('black')
         self.ax_owq_graph[1].spines['right'].set_color('black')
         
-        #Add line with value 1 
-        ticks1 = self.ax_owq_graph[1].get_xticks()
-        for tick in self.ax_owq_graph[1].get_xticklabels():
-            if tick.get_text() == '1':
-                tick.set_color('red')
-        self.ax_owq_graph[1].axvline(x=1, color='red', linestyle='--')
         
         
         #Change background color
@@ -8471,8 +8707,8 @@ class qvfsmod():
                 
                 #In mac
                 elif sys.platform.startswith("darwin"):
-                    script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_uh_0.sh"
-                    uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "uh"
+                    script_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / f"execution_uh_0.sh"
+                    uh_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "uh"
 
                     # Unquarantine the 'uh' file (to allow it to be executed)
                     try:
@@ -8497,8 +8733,8 @@ class qvfsmod():
             
             #In mac
             elif sys.platform.startswith("darwin"):
-                script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_vfs_0.sh"
-                uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
+                script_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / f"execution_vfs_0.sh"
+                uh_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "vfsm"
 
                 # Unquarantine the 'vfs' file (to allow it to be executed)
                 try:
@@ -9316,21 +9552,21 @@ class qvfsmod():
             #In mac
             elif sys.platform.startswith("darwin"):
                 #Execution UH
-                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w"+"/executables/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_uh_{core}.sh")))
-                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-gui"+"/executables/execution.sh")), str(Path("/Library/Application Support/vfsmod-gui/executables"+"/"+f"execution_uh_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-gui"+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/design/"))}"')
-                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/uh"))}" design_{core}.lis'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-gui"+"/executables/uh"))}" design_{core}.lis'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
                     f.close()
                 #Execution VFS
-                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w/executables"+"/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_vfs_{core}.sh")))
-                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-gui/executables"+"/execution.sh")), str(Path("/Library/Application Support/vfsmod-gui/executables"+"/"+f"execution_vfs_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-gui"+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/design/"))}"')
-                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/vfsm"))}" design_{core}.prj'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-gui"+"/executables/vfsm"))}" design_{core}.prj'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
@@ -9477,21 +9713,21 @@ class qvfsmod():
             #In mac
             elif sys.platform.startswith("darwin"):
                 #Execution UH
-                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w/executables"+"/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_uh_{core}.sh")))
-                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-gui/executables"+"/execution.sh")), str(Path("/Library/Application Support/vfsmod-gui/executables"+"/"+f"execution_uh_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-gui"+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/sensitivity/"))}"')
-                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/uh"))}" sensitivity_{core}.lis'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-gui"+"/executables/uh"))}" sensitivity_{core}.lis'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
                     f.close()
                 #Execution VFS
-                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w/executables"+"/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_vfs_{core}.sh")))
-                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-gui/executables"+"/execution.sh")), str(Path("/Library/Application Support/vfsmod-gui/executables"+"/"+f"execution_vfs_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-gui"+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/sensitivity/"))}"')
-                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/vfsm"))}" sensitivity_{core}.prj'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-gui"+"/executables/vfsm"))}" sensitivity_{core}.prj'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
@@ -9652,21 +9888,21 @@ class qvfsmod():
             #In mac
             elif sys.platform.startswith("darwin"):
                 #Execution UH
-                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w/executables"+"/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_uh_{core}.sh")))
-                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-gui/executables"+"/execution.sh")), str(Path("/Library/Application Support/vfsmod-gui/executables"+"/"+f"execution_uh_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-gui"+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/design/"))}"')
-                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/uh"))}" design_{core}.lis'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-gui"+"/executables/uh"))}" design_{core}.lis'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
                     f.close()
                 #Execution VFS
-                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w/executables"+"/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_vfs_{core}.sh")))
-                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-gui/executables"+"/execution.sh")), str(Path("/Library/Application Support/vfsmod-gui/executables"+"/"+f"execution_vfs_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-gui"+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/design/"))}"')
-                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/vfsm"))}" design_{core}.prj'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-gui"+"/executables/vfsm"))}" design_{core}.prj'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
@@ -9777,21 +10013,21 @@ class qvfsmod():
             #In mac
             elif sys.platform.startswith("darwin"):
                 #Execution UH
-                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w/executables"+"/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_uh_{core}.sh")))
-                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-gui/executables"+"/execution.sh")), str(Path("/Library/Application Support/vfsmod-gui/executables"+"/"+f"execution_uh_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-gui"+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/"))}"')
-                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/uh"))}" inverse_{core}.lis'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-gui"+"/executables/uh"))}" inverse_{core}.lis'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
                     f.close()
                 #Execution VFS
-                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w"+"/executables/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_vfs_{core}.sh")))
-                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-gui"+"/executables/execution.sh")), str(Path("/Library/Application Support/vfsmod-gui/executables"+"/"+f"execution_vfs_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-gui"+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/"))}"')
-                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/vfsm"))}" inverse_{core}.prj'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-gui"+"/executables/vfsm"))}" inverse_{core}.prj'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
@@ -9989,21 +10225,21 @@ class qvfsmod():
             #In mac
             elif sys.platform.startswith("darwin"):
                 #Execution UH
-                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w"+"/executables/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_uh_{core}.sh")))
-                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-gui"+"/executables/execution.sh")), str(Path("/Library/Application Support/vfsmod-gui/executables"+"/"+f"execution_uh_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-gui"+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/uncertainty/"))}"')
-                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/uh"))}" uncertainty_{core}.lis'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-gui"+"/executables/uh"))}" uncertainty_{core}.lis'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
                     f.close()
                 #Execution VFS
-                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-w"+"/executables/execution.sh")), str(Path("/Library/Application Support/vfsmod-w/executables"+"/"+f"execution_vfs_{core}.sh")))
-                with open(str(Path("/Library/Application Support/vfsmod-w"+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
+                shutil.copyfile(str(Path("/Library/Application Support/vfsmod-gui"+"/executables/execution.sh")), str(Path("/Library/Application Support/vfsmod-gui/executables"+"/"+f"execution_vfs_{core}.sh")))
+                with open(str(Path("/Library/Application Support/vfsmod-gui"+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
                     linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/uncertainty/"))}"')
-                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/vfsm"))}" uncertainty_{core}.prj'
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-gui"+"/executables/vfsm"))}" uncertainty_{core}.prj'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
@@ -11983,8 +12219,8 @@ class qvfsmod():
                 shell=True)
         #In mac
         elif sys.platform.startswith("darwin"):
-            script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "execution.sh"
-            uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
+            script_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "execution.sh"
+            uh_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "vfsm"
 
             # Unquarantine the 'uh' file (to allow it to be executed)
             try:
@@ -12136,8 +12372,8 @@ class qvfsmod():
                 shell=True)
         #In mac
         elif sys.platform.startswith("darwin"):
-            script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "execution.sh"
-            uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
+            script_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "execution.sh"
+            uh_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "vfsm"
 
             # Unquarantine the 'uh' file (to allow it to be executed)
             try:
@@ -12400,8 +12636,8 @@ class qvfsmod():
                 shell=True)
         #In mac
         elif sys.platform.startswith("darwin"):
-            script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "execution.sh"
-            uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
+            script_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "execution.sh"
+            uh_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "vfsm"
 
             # Unquarantine the 'uh' file (to allow it to be executed)
             try:
@@ -13333,10 +13569,10 @@ class qvfsmod():
             f.close()
         #In mac
         elif sys.platform.startswith("darwin"):
-            with open(str(Path("/Library/Application Support/vfsmod-w"+"/executables/execution.sh")), "w", newline="\n") as f:
+            with open(str(Path("/Library/Application Support/vfsmod-gui"+"/executables/execution.sh")), "w", newline="\n") as f:
                 linea_uno = "#!/bin/bash\n"
                 linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/"))}"')
-                linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/vfsm"))}" inverse.prj'
+                linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-gui"+"/executables/vfsm"))}" inverse.prj'
                 f.write("{} \n".format(linea_uno))
                 f.write("{} \n".format(linea_dos))
                 f.write("{} \n".format(linea_tres))
@@ -14337,8 +14573,8 @@ class qvfsmod():
                 shell=True)
         #In mac
         elif sys.platform.startswith("darwin"):
-            script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "execution.sh"
-            uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
+            script_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "execution.sh"
+            uh_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "vfsm"
 
             # Unquarantine the 'vfsm' file (to allow it to be executed)
             try:
@@ -14863,10 +15099,10 @@ class qvfsmod():
         
         #In mac
         elif sys.platform.startswith("darwin"):
-            with open(str(Path("/Library/Application Support/vfsmod-w"+"/executables/execution.sh")), "w", newline="\n") as f:
+            with open(str(Path("/Library/Application Support/vfsmod-gui"+"/executables/execution.sh")), "w", newline="\n") as f:
                 linea_uno = "#!/bin/bash\n"
                 linea_dos = "cd {}".format(f'"{os.path.dirname(os.path.normpath(self.obtain_direction_vfsmod(self.dlg_base.line_project_vfsmod.text())))}"')
-                linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/vfsm"))}" {os.path.normpath(os.path.basename(self.dlg_base.line_project_vfsmod.text()))}'
+                linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-gui"+"/executables/vfsm"))}" {os.path.normpath(os.path.basename(self.dlg_base.line_project_vfsmod.text()))}'
                 f.write("{} \n".format(linea_uno))
                 f.write("{} \n".format(linea_dos))
                 f.write("{} \n".format(linea_tres))
@@ -15024,10 +15260,11 @@ class qvfsmod():
             
             
     
-    def show_soil_curves(self):
+    def show_soil_curves(self,show):
         """Show soil curves dialog with changes in the text"""
         #Add text
         if self.dlg_infiltration_soil.radioButton_3.isChecked(): 
+            #First layer
             self.dlg_soil_curves.label_2.setText("THETA TYPE: van Genuchten")
             self.dlg_soil_curves.label_3.setText("OR (m3/m3)")
             self.dlg_soil_curves.label_4.setText("VGALPHA (1/m)")
@@ -15035,36 +15272,74 @@ class qvfsmod():
             self.dlg_soil_curves.label_6.setText("VGM")
             self.dlg_soil_curves.label_6.setVisible(True)
             self.dlg_soil_curves.lineEdit_4.setVisible(True)
+            #Second layer
+            self.dlg_soil_curves.label_10.setText("THETA TYPE: van Genuchten")
+            self.dlg_soil_curves.label_11.setText("OR (m3/m3)")
+            self.dlg_soil_curves.label_12.setText("VGALPHA (1/m)")
+            self.dlg_soil_curves.label_13.setText("VGN")
+            self.dlg_soil_curves.label_14.setText("VGM")
+            self.dlg_soil_curves.label_14.setVisible(True)
+            self.dlg_soil_curves.lineEdit_10.setVisible(True)
             
         elif self.dlg_infiltration_soil.radioButton_4.isChecked(): 
+            #First layer
             self.dlg_soil_curves.label_2.setText("THETA TYPE: Brooks and Corey")
             self.dlg_soil_curves.label_3.setText("OR (m3/m3)")
             self.dlg_soil_curves.label_4.setText("BCALPHA (1/m)")
             self.dlg_soil_curves.label_5.setText("BCLAMBDA")
             self.dlg_soil_curves.label_6.setVisible(False)
             self.dlg_soil_curves.lineEdit_4.setVisible(False)
+            #Second layer
+            self.dlg_soil_curves.label_10.setText("THETA TYPE: Brooks and Corey")
+            self.dlg_soil_curves.label_11.setText("OR (m3/m3)")
+            self.dlg_soil_curves.label_12.setText("BCALPHA (1/m)")
+            self.dlg_soil_curves.label_13.setText("BCLAMBDA")
+            self.dlg_soil_curves.label_14.setVisible(False)
+            self.dlg_soil_curves.lineEdit_10.setVisible(False)
             
         if self.dlg_infiltration_soil.radioButton_5.isChecked(): 
+            #First layer
             self.dlg_soil_curves.label_7.setText("KUN TYPE: van Genuchten")
             self.dlg_soil_curves.label_8.setText("VGM")
             self.dlg_soil_curves.label_9.setVisible(False)
             self.dlg_soil_curves.lineEdit_6.setVisible(False)
+            #Second layer
+            self.dlg_soil_curves.label_15.setText("KUN TYPE: van Genuchten")
+            self.dlg_soil_curves.label_16.setText("VGM")
+            self.dlg_soil_curves.label_17.setVisible(False)
+            self.dlg_soil_curves.lineEdit_12.setVisible(False)
             
         elif self.dlg_infiltration_soil.radioButton_6.isChecked(): 
+            #First layer
             self.dlg_soil_curves.label_7.setText("KUN TYPE: Brooks and Corey")
             self.dlg_soil_curves.label_8.setText("BCETA")
             self.dlg_soil_curves.label_9.setVisible(True)
             self.dlg_soil_curves.lineEdit_6.setVisible(True)
+            #Second layer
+            self.dlg_soil_curves.label_15.setText("KUN TYPE: Brooks and Corey")
+            self.dlg_soil_curves.label_16.setText("BCETA")
+            self.dlg_soil_curves.label_17.setVisible(True)
+            self.dlg_soil_curves.lineEdit_12.setVisible(True)
             
         elif self.dlg_infiltration_soil.radioButton_7.isChecked(): 
+            #First layer
             self.dlg_soil_curves.label_7.setText("KUN TYPE: Gardner")
             self.dlg_soil_curves.label_8.setText("GDALPHA")
             self.dlg_soil_curves.label_9.setVisible(False)
             self.dlg_soil_curves.lineEdit_6.setVisible(False)
-            
-        #Show dialog
-        self.dlg_soil_curves.show()
-        self.dlg_soil_curves.raise_()
+            #Second layer
+            self.dlg_soil_curves.label_15.setText("KUN TYPE: Gardner")
+            self.dlg_soil_curves.label_16.setText("GDALPHA")
+            self.dlg_soil_curves.label_17.setVisible(False)
+            self.dlg_soil_curves.lineEdit_12.setVisible(False)
+        
+        if show:
+            #Show dialog
+            self.dlg_soil_curves.show()
+            self.dlg_soil_curves.raise_()
+    
+    
+    
     
     def update_k_units_cmh_1(self):
         """Method to update K units (cm/h) when text changed in the other units for the first layer"""
@@ -15153,9 +15428,28 @@ class qvfsmod():
         """Method to add or quit second layer in infiltration and soil properties"""
         if self.dlg_infiltration_soil.radio_one.isChecked():
             self.dlg_infiltration_soil.frame_5.setVisible(False)
+            #Only show layer thickness of first layer if two layers were selected
+            self.dlg_infiltration_soil.label_8.hide()
+            self.dlg_infiltration_soil.line_bottom.hide()
+            #Hide information message about the fact that in the files only the information of the average appears, not about two layers
+            self.dlg_infiltration_soil.label_27.hide()
+            #Hide second layer for soil characteristic curves parameters
+            self.dlg_soil_curves.label_18.hide()
+            self.dlg_soil_curves.frame_4.hide()
+
+            
         if self.dlg_infiltration_soil.radio_two.isChecked():
             self.dlg_infiltration_soil.frame_5.setVisible(True)
-    
+            #Only show layer thickness of first layer if two layers were selected
+            self.dlg_infiltration_soil.label_8.show()
+            self.dlg_infiltration_soil.line_bottom.show()
+            #Show information message about the fact that in the files only the information of the average appears, not about two layers
+            self.dlg_infiltration_soil.label_27.show()
+            #Show second layer for soil characteristic curves parameters
+            self.dlg_soil_curves.label_18.show()
+            self.dlg_soil_curves.frame_4.show()
+            
+            
     def add_row(self):
         """Method to add rows in the buffer segment table"""
         table = self.dlg_buffer_segment.tableWidget
@@ -15271,9 +15565,29 @@ class qvfsmod():
             
     def select_project_name_vfsmod(self):
         """Method to select the directory among the local files for VFSMOD"""
-        fname = QFileDialog.getOpenFileName(self.dlg_base, "Select directory", self.dlg_base.working_directory_vfsmod.text())
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        fname = QFileDialog.getOpenFileName(self.dlg_base, "Select project file", self.dlg_base.working_directory_vfsmod.text(),"Project or List Files (*.prj *.lis)")
         if fname[0]!="":
+            #Put the relative path if the file is inside the folder
+            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
+                text = os.path.relpath(fname[0], working_directory)
+            else: #absolute path
+                text = fname[0]
+            #Add text to the project name
             self.dlg_base.name_files.setText(Path(fname[0]).stem)
+            
+            #Add lis or prj to the Model execution window
+            extension = Path(fname[0]).suffix
+            if extension == "lis":
+                self.dlg_base.uh_file.setText(os.path.normpath(text))
+                #Update filepaths
+                self.add_values_uh_outputs_dialog()
+            elif extension == "prj":
+                self.dlg_base.line_project_vfsmod.setText(os.path.normpath(text))
+                #Update filepaths
+                self.add_values_vfs_outputs_dialog()
+            
+            
     
     def water_quality_dialog(self):
         """Method to add in the dialog the widgets when water quality is selected"""
@@ -15815,8 +16129,8 @@ class qvfsmod():
             
         #In mac
         elif sys.platform.startswith("darwin"):
-            script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "execution.sh"
-            uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "uh"
+            script_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "execution.sh"
+            uh_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "uh"
 
             # Unquarantine the 'uh' file (to allow it to be executed)
             try:
@@ -15864,22 +16178,22 @@ class qvfsmod():
             #Move lis file
             shutil.copyfile(lis_file, Path(self.working_directory)/os.path.basename(lis_file))
             #Move rest
-            shutil.copyfile(self.obtain_direction_lis(self.dlg_base.uh_input.text()), Path(self.working_directory)/"inputs"/f"{Path(lis_file).stem}.inp")
-            shutil.copyfile(self.obtain_direction_lis(self.dlg_base.line_hydrograph.text()), Path(self.working_directory)/"inputs"/f"{Path(lis_file).stem}.iro")
-            shutil.copyfile(self.obtain_direction_lis(self.dlg_base.line_hyetograph.text()), Path(self.working_directory)/"inputs"/f"{Path(lis_file).stem}.irn")
-            shutil.copyfile(self.obtain_direction_lis(self.dlg_base.line_sedimentograph.text()), Path(self.working_directory)/"inputs"/f"{Path(lis_file).stem}.isd")
-            shutil.copyfile(self.obtain_direction_lis(self.dlg_base.line_output_1.text()), Path(self.working_directory)/"output"/f"{Path(lis_file).stem}.out")
-            shutil.copyfile(self.obtain_direction_lis(self.dlg_base.line_output_2.text()), Path(self.working_directory)/"output"/f"{Path(lis_file).stem}.hyt")
+            shutil.copyfile(self.obtain_direction_lis(self.dlg_base.uh_input.text()), Path(self.working_directory)/"inputs"/f"{Path(self.obtain_direction_lis(self.dlg_base.uh_input.text())).stem}.inp")
+            shutil.copyfile(self.obtain_direction_lis(self.dlg_base.line_hydrograph.text()), Path(self.working_directory)/"inputs"/f"{Path(self.obtain_direction_lis(self.dlg_base.line_hydrograph.text())).stem}.iro")
+            shutil.copyfile(self.obtain_direction_lis(self.dlg_base.line_hyetograph.text()), Path(self.working_directory)/"inputs"/f"{Path(self.obtain_direction_lis(self.dlg_base.line_hyetograph.text())).stem}.irn")
+            shutil.copyfile(self.obtain_direction_lis(self.dlg_base.line_sedimentograph.text()), Path(self.working_directory)/"inputs"/f"{Path(self.obtain_direction_lis(self.dlg_base.line_sedimentograph.text())).stem}.isd")
+            shutil.copyfile(self.obtain_direction_lis(self.dlg_base.line_output_1.text()), Path(self.working_directory)/"output"/f"{Path(self.obtain_direction_lis(self.dlg_base.line_output_1.text())).stem}.out")
+            shutil.copyfile(self.obtain_direction_lis(self.dlg_base.line_output_2.text()), Path(self.working_directory)/"output"/f"{Path(self.obtain_direction_lis(self.dlg_base.line_output_2.text())).stem}.hyt")
             
             #Change lis path to relative
             self.dlg_base.uh_file.setText(f"{Path(lis_file).stem}.lis")
             
             #As we have ordered the inputs and outputs put the corresponding names to lineEdits
-            self.dlg_base.line_hydrograph.setText(str(Path(f"inputs/{Path(lis_file).stem}.iro")))
-            self.dlg_base.line_hyetograph.setText(str(Path(f"inputs/{Path(lis_file).stem}.irn")))
-            self.dlg_base.line_sedimentograph.setText(str(Path(f"inputs/{Path(lis_file).stem}.isd")))
-            self.dlg_base.line_output_1.setText(str(Path(f"output/{Path(lis_file).stem}.out")))
-            self.dlg_base.line_output_2.setText(str(Path(f"output/{Path(lis_file).stem}.hyt")))
+            self.dlg_base.line_hydrograph.setText(str(Path(f"inputs/{Path(self.obtain_direction_lis(self.dlg_base.line_hydrograph.text())).stem}.iro")))
+            self.dlg_base.line_hyetograph.setText(str(Path(f"inputs/{Path(self.obtain_direction_lis(self.dlg_base.line_hyetograph.text())).stem}.irn")))
+            self.dlg_base.line_sedimentograph.setText(str(Path(f"inputs/{Path(self.obtain_direction_lis(self.dlg_base.line_sedimentograph.text())).stem}.isd")))
+            self.dlg_base.line_output_1.setText(str(Path(f"output/{Path(self.obtain_direction_lis(self.dlg_base.line_output_1.text())).stem}.out")))
+            self.dlg_base.line_output_2.setText(str(Path(f"output/{Path(self.obtain_direction_lis(self.dlg_base.line_output_2.text())).stem}.hyt")))
             
     
     
@@ -15900,37 +16214,37 @@ class qvfsmod():
             #Move prj file
             shutil.copyfile(prj_file, Path(self.working_directory)/os.path.basename(prj_file))
             #Move rest
-            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_overland.text()), Path(self.working_directory)/"inputs"/f"{Path(prj_file).stem}.ikw")
-            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_infiltration.text()), Path(self.working_directory)/"inputs"/f"{Path(prj_file).stem}.iso")
-            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_buffer.text()), Path(self.working_directory)/"inputs"/f"{Path(prj_file).stem}.igr")
-            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_incoming.text()), Path(self.working_directory)/"inputs"/f"{Path(prj_file).stem}.isd")
-            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_storm.text()), Path(self.working_directory)/"inputs"/f"{Path(prj_file).stem}.irn")
-            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_source.text()), Path(self.working_directory)/"inputs"/f"{Path(prj_file).stem}.iro")
-            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_water.text()), Path(self.working_directory)/"inputs"/f"{Path(prj_file).stem}.iwq")
-            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_sediment.text()), Path(self.working_directory)/"output"/f"{Path(prj_file).stem}.og1")
-            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_flow.text()), Path(self.working_directory)/"output"/f"{Path(prj_file).stem}.og2")
-            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_hydrograph_2.text()), Path(self.working_directory)/"output"/f"{Path(prj_file).stem}.ohy")
-            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_waterland.text()), Path(self.working_directory)/"output"/f"{Path(prj_file).stem}.osm")
-            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_overall.text()), Path(self.working_directory)/"output"/f"{Path(prj_file).stem}.osp")
-            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_quality.text()), Path(self.working_directory)/"output"/f"{Path(prj_file).stem}.owq")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_overland.text()), Path(self.working_directory)/"inputs"/f"{Path(self.obtain_direction_prj(self.dlg_base.line_overland.text())).stem}.ikw")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_infiltration.text()), Path(self.working_directory)/"inputs"/f"{Path(self.obtain_direction_prj(self.dlg_base.line_infiltration.text())).stem}.iso")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_buffer.text()), Path(self.working_directory)/"inputs"/f"{Path(self.obtain_direction_prj(self.dlg_base.line_buffer.text())).stem}.igr")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_incoming.text()), Path(self.working_directory)/"inputs"/f"{Path(self.obtain_direction_prj(self.dlg_base.line_incoming.text())).stem}.isd")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_storm.text()), Path(self.working_directory)/"inputs"/f"{Path(self.obtain_direction_prj(self.dlg_base.line_storm.text())).stem}.irn")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_source.text()), Path(self.working_directory)/"inputs"/f"{Path(self.obtain_direction_prj(self.dlg_base.line_source.text())).stem}.iro")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_water.text()), Path(self.working_directory)/"inputs"/f"{Path(self.obtain_direction_prj(self.dlg_base.line_water.text())).stem}.iwq")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_sediment.text()), Path(self.working_directory)/"output"/f"{Path(self.obtain_direction_prj(self.dlg_base.line_sediment.text())).stem}.og1")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_flow.text()), Path(self.working_directory)/"output"/f"{Path(self.obtain_direction_prj(self.dlg_base.line_flow.text())).stem}.og2")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_hydrograph_2.text()), Path(self.working_directory)/"output"/f"{Path(self.obtain_direction_prj(self.dlg_base.line_hydrograph_2.text())).stem}.ohy")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_waterland.text()), Path(self.working_directory)/"output"/f"{Path(self.obtain_direction_prj(self.dlg_base.line_waterland.text())).stem}.osm")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_overall.text()), Path(self.working_directory)/"output"/f"{Path(self.obtain_direction_prj(self.dlg_base.line_overall.text())).stem}.osp")
+            shutil.copyfile(self.obtain_direction_prj(self.dlg_base.line_quality.text()), Path(self.working_directory)/"output"/f"{Path(self.obtain_direction_prj(self.dlg_base.line_quality.text())).stem}.owq")
             
             #Change prj path to relative
             self.dlg_base.line_project_vfsmod.setText(f"{Path(prj_file).stem}.prj")
             
             #As we have ordered the inputs and outputs put the corresponding names to lineEdits
-            self.dlg_base.line_overland.setText(str(Path(f"inputs/{Path(prj_file).stem}.ikw")))
-            self.dlg_base.line_infiltration.setText(str(Path(f"inputs/{Path(prj_file).stem}.iso")))
-            self.dlg_base.line_buffer.setText(str(Path(f"inputs/{Path(prj_file).stem}.igr")))
-            self.dlg_base.line_incoming.setText(str(Path(f"inputs/{Path(prj_file).stem}.isd")))
-            self.dlg_base.line_storm.setText(str(Path(f"inputs/{Path(prj_file).stem}.irn")))
-            self.dlg_base.line_source.setText(str(Path(f"inputs/{Path(prj_file).stem}.iro")))
-            self.dlg_base.line_water.setText(str(Path(f"inputs/{Path(prj_file).stem}.iwq")))
-            self.dlg_base.line_sediment.setText(str(Path(f"output/{Path(prj_file).stem}.og1")))
-            self.dlg_base.line_flow.setText(str(Path(f"output/{Path(prj_file).stem}.og2")))
-            self.dlg_base.line_hydrograph_2.setText(str(Path(f"output/{Path(prj_file).stem}.ohy")))
-            self.dlg_base.line_waterland.setText(str(Path(f"output/{Path(prj_file).stem}.osm")))
-            self.dlg_base.line_overall.setText(str(Path(f"output/{Path(prj_file).stem}.osp")))
-            self.dlg_base.line_quality.setText(str(Path(f"output/{Path(prj_file).stem}.owq")))
+            self.dlg_base.line_overland.setText(str(Path(f"inputs/{Path(self.obtain_direction_prj(self.dlg_base.line_overland.text())).stem}.ikw")))
+            self.dlg_base.line_infiltration.setText(str(Path(f"inputs/{Path(self.obtain_direction_prj(self.dlg_base.line_infiltration.text())).stem}.iso")))
+            self.dlg_base.line_buffer.setText(str(Path(f"inputs/{Path(self.obtain_direction_prj(self.dlg_base.line_buffer.text())).stem}.igr")))
+            self.dlg_base.line_incoming.setText(str(Path(f"inputs/{Path(self.obtain_direction_prj(self.dlg_base.line_incoming.text())).stem}.isd")))
+            self.dlg_base.line_storm.setText(str(Path(f"inputs/{Path(self.obtain_direction_prj(self.dlg_base.line_storm.text())).stem}.irn")))
+            self.dlg_base.line_source.setText(str(Path(f"inputs/{Path(self.obtain_direction_prj(self.dlg_base.line_source.text())).stem}.iro")))
+            self.dlg_base.line_water.setText(str(Path(f"inputs/{Path(self.obtain_direction_prj(self.dlg_base.line_water.text())).stem}.iwq")))
+            self.dlg_base.line_sediment.setText(str(Path(f"output/{Path(self.obtain_direction_prj(self.dlg_base.line_sediment.text())).stem}.og1")))
+            self.dlg_base.line_flow.setText(str(Path(f"output/{Path(self.obtain_direction_prj(self.dlg_base.line_flow.text())).stem}.og2")))
+            self.dlg_base.line_hydrograph_2.setText(str(Path(f"output/{Path(self.obtain_direction_prj(self.dlg_base.line_hydrograph_2.text())).stem}.ohy")))
+            self.dlg_base.line_waterland.setText(str(Path(f"output/{Path(self.obtain_direction_prj(self.dlg_base.line_waterland.text())).stem}.osm")))
+            self.dlg_base.line_overall.setText(str(Path(f"output/{Path(self.obtain_direction_prj(self.dlg_base.line_overall.text())).stem}.osp")))
+            self.dlg_base.line_quality.setText(str(Path(f"output/{Path(self.obtain_direction_prj(self.dlg_base.line_quality.text())).stem}.owq")))
     
     
     
@@ -15980,10 +16294,10 @@ class qvfsmod():
         
         #In mac
         elif sys.platform.startswith("darwin"):
-            with open(str(Path("/Library/Application Support/vfsmod-w"+"/executables/execution.sh")), "w", newline="\n") as f:
+            with open(str(Path("/Library/Application Support/vfsmod-gui"+"/executables/execution.sh")), "w", newline="\n") as f:
                 linea_uno = "#!/bin/bash\n"
                 linea_dos = "cd {}".format(f'"{os.path.dirname(os.path.normpath(self.obtain_direction_vfsmod(self.dlg_base.uh_file.text())))}"')
-                linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-w"+"/executables/uh"))}" {os.path.normpath(os.path.basename(self.dlg_base.uh_file.text()))}'
+                linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-gui"+"/executables/uh"))}" {os.path.normpath(os.path.basename(self.dlg_base.uh_file.text()))}'
                 f.write("{} \n".format(linea_uno))
                 f.write("{} \n".format(linea_dos))
                 f.write("{} \n".format(linea_tres))
@@ -16179,7 +16493,7 @@ class qvfsmod():
         if self.dlg_infiltration_soil.radio_two.isChecked():
             depth_one = float(self.dlg_infiltration_soil.line_bottom.text())
             depth_two = float(self.dlg_infiltration_soil.line_bottom_2.text())
-            saturate_conductivity = (saturate_conductivity*depth_one+saturate_conductivity_2*depth_two)/(depth_one+depth_two)
+            saturate_conductivity = (depth_one+depth_two)/(depth_one/saturate_conductivity+depth_two/saturate_conductivity_2)
             suction_front = (suction_front*depth_one+suction_front_2*depth_two)/(depth_one+depth_two)
             saturated_content = (saturated_content*depth_one+saturated_content_2*depth_two)/(depth_one+depth_two)
             initial_content = (initial_content*depth_one+initial_content_2*depth_two)/(depth_one+depth_two)
@@ -16211,15 +16525,32 @@ class qvfsmod():
                 linea_uno = f"  {saturate_conductivity}   {suction_front}   {saturated_content}   {initial_content}   {maximum_storage}   {fraction_filter}"     
                 linea_dos = f"   {water_table_depth}"
                 if self.dlg_infiltration_soil.radioButton_3.isChecked():
-                    linea_tres = f"  {ITHETATYPE}   {self.dlg_soil_curves.lineEdit.text()}   {self.dlg_soil_curves.lineEdit_2.text()}   {self.dlg_soil_curves.lineEdit_3.text()}   {self.dlg_soil_curves.lineEdit_4.text()}"
+                    if self.dlg_infiltration_soil.radio_one.isChecked(): #if one layer
+                        linea_tres = f"  {ITHETATYPE}   {self.dlg_soil_curves.lineEdit.text()}   {self.dlg_soil_curves.lineEdit_2.text()}   {self.dlg_soil_curves.lineEdit_3.text()}   {self.dlg_soil_curves.lineEdit_4.text()}"
+                    else: #if two layers
+                        linea_tres = f"  {ITHETATYPE}   {(float(self.dlg_soil_curves.lineEdit.text())*depth_one+float(self.dlg_soil_curves.lineEdit_7.text())*depth_two)/(depth_one+depth_two)}   {(float(self.dlg_soil_curves.lineEdit_2.text())*depth_one+float(self.dlg_soil_curves.lineEdit_8.text())*depth_two)/(depth_one+depth_two)}   {(float(self.dlg_soil_curves.lineEdit_3.text())*depth_one+float(self.dlg_soil_curves.lineEdit_9.text())*depth_two)/(depth_one+depth_two)}   {(float(self.dlg_soil_curves.lineEdit_4.text())*depth_one+float(self.dlg_soil_curves.lineEdit_10.text())*depth_two)/(depth_one+depth_two)}"
+                
                 else:
-                    linea_tres = f"  {ITHETATYPE}   {self.dlg_soil_curves.lineEdit.text()}   {self.dlg_soil_curves.lineEdit_2.text()}   {self.dlg_soil_curves.lineEdit_3.text()}"
+                    if self.dlg_infiltration_soil.radio_one.isChecked(): #if one layer
+                        linea_tres = f"  {ITHETATYPE}   {self.dlg_soil_curves.lineEdit.text()}   {self.dlg_soil_curves.lineEdit_2.text()}   {self.dlg_soil_curves.lineEdit_3.text()}"
+                    else: #if two layers
+                        linea_tres = f"  {ITHETATYPE}   {(float(self.dlg_soil_curves.lineEdit.text())*depth_one+float(self.dlg_soil_curves.lineEdit_7.text())*depth_two)/(depth_one+depth_two)}   {(float(self.dlg_soil_curves.lineEdit_2.text())*depth_one+float(self.dlg_soil_curves.lineEdit_8.text())*depth_two)/(depth_one+depth_two)}   {(float(self.dlg_soil_curves.lineEdit_3.text())*depth_one+float(self.dlg_soil_curves.lineEdit_9.text())*depth_two)/(depth_one+depth_two)}"
+                    
                 if self.dlg_infiltration_soil.radioButton_5.isChecked() or self.dlg_infiltration_soil.radioButton_7.isChecked():
-                    linea_cuatro = f"  {IKUNSTYPE}   {self.dlg_soil_curves.lineEdit_5.text()}"
+                    if self.dlg_infiltration_soil.radio_one.isChecked(): #if one layer
+                        linea_cuatro = f"  {IKUNSTYPE}   {self.dlg_soil_curves.lineEdit_5.text()}"
+                    else: #if two layers
+                        linea_cuatro = f"  {IKUNSTYPE}   {(float(self.dlg_soil_curves.lineEdit_5.text())*depth_one+float(self.dlg_soil_curves.lineEdit_11.text())*depth_two)/(depth_one+depth_two)}"
+                    
                 else:
-                    linea_cuatro = f"  {IKUNSTYPE}   {self.dlg_soil_curves.lineEdit_5.text()}   {self.dlg_soil_curves.lineEdit_6.text()}"
+                    if self.dlg_infiltration_soil.radio_one.isChecked(): #if one layer
+                        linea_cuatro = f"  {IKUNSTYPE}   {self.dlg_soil_curves.lineEdit_5.text()}   {self.dlg_soil_curves.lineEdit_6.text()}"
+                    else: #if two layers
+                        linea_cuatro = f"  {IKUNSTYPE}   {(float(self.dlg_soil_curves.lineEdit_5.text())*depth_one+float(self.dlg_soil_curves.lineEdit_11.text())*depth_two)/(depth_one+depth_two)}   {(float(self.dlg_soil_curves.lineEdit_6.text())*depth_one+float(self.dlg_soil_curves.lineEdit_12.text())*depth_two)/(depth_one+depth_two)}"
+                    
                 if self.dlg_infiltration_soil.check_input.isChecked():
                     linea_cinco = f" {RVH}"
+                    
                 linea_seis = " \n     -------------------------------------\n Ks(m/s)   Sav(m)  Theta-s   Theta-i   Sm(m)   Schk(ponding ck)  WTD(Water Table Depth / No value means 'standard' iso file)\n WTD(m, no value or non numeric value means no water table present and lines below not needed)\n ITHETATYPE OR/OR  VGALPHA/BCALPHA VGN/BCLAMBDA VGM\n IKUNSATYPE VGM/BCETA/GDNALPHA         BCALPHA \n"
                 archivo.write(f"{linea_uno}\n")
                 archivo.write(f"{linea_dos}\n")
@@ -16240,7 +16571,7 @@ class qvfsmod():
         roughness_grass = float(self.dlg_buffer_properties.roughness_grass.text())
         height_grass = float(self.dlg_buffer_properties.height_grass.text())
         roughness_bare = float(self.dlg_buffer_properties.roughness_bare.text())
-        feedback = float(self.dlg_buffer_properties.feedback.text())
+        feedback = float(self.dlg_buffer_properties.feedback.currentIndex())
         #We create the file
         igr_file =self.obtain_direction_prj(self.dlg_base.line_buffer.text())
         #If directory doesn't exist then create it
@@ -16308,26 +16639,46 @@ class qvfsmod():
             linea_tres = f"{clay}			; %Clay content in field soil"
             linea_cuatro = f"{idg} IDG"
             
-            linea_cinco = f"{days} {half_life} {field_capacity} {mass} {thickness} {dgld} {dgmres0} "
+            #If IDG = 0 then we put some values by default
+            if idg == 0:
+                linea_cinco = f"{1} {100} {0.25} {mass} {thickness} {0.05} {dgmres0} "
+            else:
+                linea_cinco = f"{days} {half_life} {field_capacity} {mass} {thickness} {dgld} {dgmres0} "
             for p in range(number_pesticides-1):
-                linea_cinco += f"{getattr(self.dlg_water_quality, f'half_life_{p+2}').text()} {getattr(self.dlg_water_quality, f'mass_{p+2}').text()} {getattr(self.dlg_water_quality, f'dispersion_{p+2}').text()} {getattr(self.dlg_water_quality, f'remobilized_{p+2}').text()} "
+                #If IDG = 0 then we put some values by default
+                if idg == 0:
+                    linea_cinco += f"{100} {getattr(self.dlg_water_quality, f'mass_{p+2}').text()} {0.05} {getattr(self.dlg_water_quality, f'remobilized_{p+2}').text()} "
+                else:
+                    linea_cinco += f"{getattr(self.dlg_water_quality, f'half_life_{p+2}').text()} {getattr(self.dlg_water_quality, f'mass_{p+2}').text()} {getattr(self.dlg_water_quality, f'dispersion_{p+2}').text()} {getattr(self.dlg_water_quality, f'remobilized_{p+2}').text()} "
             linea_cinco += "; ndgday dgHalf FC dgPin dgML dgLD dgmres0 (repeat {dgHalf,dgPIN,dgLD,dgmres0}_j for j species)"
             linea_seis = ""
-            rows = self.dlg_water_quality.tableWidget.rowCount()
+            #If IDG = 0 then we put some values by default
+            if idg == 0:
+                rows = 1
+            else:
+                rows = self.dlg_water_quality.tableWidget.rowCount()
             for row in range(rows):
                 item = self.dlg_water_quality.tableWidget.item(row, 1)
                 value = item.text()
-                linea_seis += f"{value} "
+                #If IDG = 0 then we put some values by default
+                if idg == 0:
+                    linea_seis += f"{25} "
+                else:
+                    linea_seis += f"{value} "
             linea_seis += "(dgT(i),i=1,ndgday) (Celsius)"
             
             linea_siete = ""
             for row in range(rows):
                 item = self.dlg_water_quality.tableWidget.item(row, 2)
                 value = item.text()
-                linea_siete += f"{value} "
+                #If IDG = 0 then we put some values by default
+                if idg == 0:
+                    linea_siete += f"{0.25} "
+                else:
+                    linea_siete += f"{value} "
             linea_siete += "(dgTheta(i),i=1,ndgday (-)"
             linea_ocho = f"{imob}                                       ; IMOB\n"
-            if number_pesticides>1:
+            if number_pesticides>1 and idg !=0:
                 #Add molar
                 for p in range(number_pesticides):
                     linea_ocho += f"{getattr(self.dlg_degradation_data, f'pesticide_{p+1}_molar_mass').text()} "
@@ -16360,6 +16711,10 @@ class qvfsmod():
             
             else:
                 archivo.write(f"{linea_cuatro}\n")
+                archivo.write(f"{linea_cinco}\n")
+                archivo.write(f"{linea_seis}\n")
+                archivo.write(f"{linea_siete}\n")
+                archivo.write(f"{linea_ocho}\n")
             
             archivo.write(f"{linea_nueve}\n")
         
@@ -16540,7 +16895,9 @@ class qvfsmod():
     def default_values(self):
         """Method to set default values for input values"""
         if sys.platform.startswith("darwin"):
-            self.dlg_base.working_directory_vfsmod.setText("/Library/Application Support/vfsmod-w")
+            with open(str(Path("/Library/Application Support/vfsmod-gui/installation_directory.txt")), "r") as f:
+                install_dir = f.read().strip()
+            self.dlg_base.working_directory_vfsmod.setText(str(Path(install_dir)))
         elif sys.platform.startswith("win"):
             self.dlg_base.working_directory_vfsmod.setText(os.getcwd())
     
@@ -16637,7 +16994,11 @@ class qvfsmod():
         table.setItem(0, 0, item)
         table.setColumnWidth(0, 160)
         '''
-
+        
+        #Put by default "Mass balance" as pesticide trapping equation
+        if not os.path.exists(self.obtain_direction_prj(self.dlg_base.line_water.text())):
+            self.dlg_water_quality.trapping_equation.setCurrentIndex(2)
+        
         
         #Calibration
         #Hydrograph
@@ -17033,7 +17394,6 @@ class qvfsmod():
                 - John E. Parsons, North Carolina State University<br>
                 <b>GUI developer</b>: <br>
                 - Iñigo Barberena Ruiz, Public University of Navarre<br>
-                Version 1.0.0<br>
                 Contact for Questions or Problems: carpena@ufl.edu<br>
                 This work is licensed under <b>CC BY-ND 4.0</b>
                     <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src="images/cc.svg" alt="">
@@ -17043,9 +17403,9 @@ class qvfsmod():
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.1</b>
+                <b>Version 1.0.3</b>
                 <br>
-                02/10/2025
+                09/12/2025
             """
         elif sys.platform.startswith("darwin") or sys.platform.startswith("linux"): #macOS
             html_text = f"""
@@ -17055,19 +17415,18 @@ class qvfsmod():
                 - John E. Parsons, North Carolina State University<br>
                 <b>GUI developer</b>: <br>
                 - Iñigo Barberena Ruiz, Public University of Navarre<br>
-                Version 1.0.0<br>
                 Contact for Questions or Problems: carpena@ufl.edu<br>
                 This work is licensed under <b>CC BY-ND 4.0</b>
-                    <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src="/Library/Application Support/vfsmod-w/images/cc.svg" alt="">
-                    <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src="/Library/Application Support/vfsmod-w/images/by.svg" alt="">
-                    <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src="/Library/Application Support/vfsmod-w/images/nd.svg" alt="">
+                    <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src="/Library/Application Support/vfsmod-gui/images/cc.svg" alt="">
+                    <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src="/Library/Application Support/vfsmod-gui/images/by.svg" alt="">
+                    <img style="height:16px;width:16px;margin-left:3px;vertical-align:text-bottom;" src="/Library/Application Support/vfsmod-gui/images/nd.svg" alt="">
                 
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.1</b>
+                <b>Version 1.0.3</b>
                 <br>
-                02/10/2025
+                09/12/2025
             """
         
         
@@ -17600,8 +17959,8 @@ def design_paralelization(number_execution,core,combinations_design,working_dire
     
     #In mac
     elif sys.platform.startswith("darwin"):
-        script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_uh_{core}.sh"
-        uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "uh"
+        script_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / f"execution_uh_{core}.sh"
+        uh_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "uh"
 
         # Unquarantine the 'uh' file (to allow it to be executed)
         try:
@@ -17633,8 +17992,8 @@ def design_paralelization(number_execution,core,combinations_design,working_dire
     
     #In mac
     elif sys.platform.startswith("darwin"):
-        script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_vfs_{core}.sh"
-        uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
+        script_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / f"execution_vfs_{core}.sh"
+        uh_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "vfsm"
 
         # Unquarantine the 'vfs' file (to allow it to be executed)
         try:
@@ -17956,8 +18315,8 @@ def execution_uncertainity_analysis(number_execution,core,param_values,dic_data,
         
         #In mac
         elif sys.platform.startswith("darwin"):
-            script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_uh_{core}.sh"
-            uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "uh"
+            script_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / f"execution_uh_{core}.sh"
+            uh_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "uh"
 
             # Unquarantine the 'uh' file (to allow it to be executed)
             try:
@@ -17990,8 +18349,8 @@ def execution_uncertainity_analysis(number_execution,core,param_values,dic_data,
     
     #In mac
     elif sys.platform.startswith("darwin"):
-        script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_vfs_{core}.sh"
-        uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
+        script_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / f"execution_vfs_{core}.sh"
+        uh_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "vfsm"
 
         # Unquarantine the 'vfs' file (to allow it to be executed)
         try:
@@ -18346,8 +18705,8 @@ def execution_sensitivity_analysis_design(number_execution,core,param_values,dic
     
     #In mac
     elif sys.platform.startswith("darwin"):
-        script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_uh_{core}.sh"
-        uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "uh"
+        script_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / f"execution_uh_{core}.sh"
+        uh_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "uh"
 
         # Unquarantine the 'uh' file (to allow it to be executed)
         try:
@@ -18380,8 +18739,8 @@ def execution_sensitivity_analysis_design(number_execution,core,param_values,dic
     
     #In mac
     elif sys.platform.startswith("darwin"):
-        script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_vfs_{core}.sh"
-        uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
+        script_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / f"execution_vfs_{core}.sh"
+        uh_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "vfsm"
 
         # Unquarantine the 'vfs' file (to allow it to be executed)
         try:
@@ -18710,8 +19069,8 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
         
         #In mac
         elif sys.platform.startswith("darwin"):
-            script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_uh_{core}.sh"
-            uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "uh"
+            script_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / f"execution_uh_{core}.sh"
+            uh_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "uh"
 
             # Unquarantine the 'uh' file (to allow it to be executed)
             try:
@@ -18744,8 +19103,8 @@ def execution_sensitivity_analysis(number_execution,core,param_values,dic_data,s
     
     #In mac
     elif sys.platform.startswith("darwin"):
-        script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_vfs_{core}.sh"
-        uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
+        script_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / f"execution_vfs_{core}.sh"
+        uh_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "vfsm"
 
         # Unquarantine the 'vfs' file (to allow it to be executed)
         try:
@@ -19135,8 +19494,8 @@ def execution_sensitivity_analysis_calibration(number_execution,core,param_value
     
     #In mac
     elif sys.platform.startswith("darwin"):
-        script_path = Path("/Library/Application Support/vfsmod-w") / "executables" / f"execution_vfs_{core}.sh"
-        uh_path = Path("/Library/Application Support/vfsmod-w") / "executables" / "vfsm"
+        script_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / f"execution_vfs_{core}.sh"
+        uh_path = Path("/Library/Application Support/vfsmod-gui") / "executables" / "vfsm"
 
         # Unquarantine the 'vfs' file (to allow it to be executed)
         try:

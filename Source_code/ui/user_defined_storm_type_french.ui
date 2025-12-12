@@ -211,7 +211,7 @@ QTableCornerButton::section {
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Time to the middle time in the storm (P/P24=0.5)</string>
+        <string>Time to the middle of the storm (h)</string>
        </property>
       </widget>
      </item>
@@ -431,7 +431,7 @@ QTableCornerButton::section {
      </column>
      <column>
       <property name="text">
-       <string>Cumulative precipitation (P/P24)</string>
+       <string>Cumulative precipitation, P (mm)</string>
       </property>
       <property name="whatsThis">
        <string/>

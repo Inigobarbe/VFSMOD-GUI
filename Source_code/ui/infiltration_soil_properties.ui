@@ -126,9 +126,9 @@ QTableCornerButton::section {
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-154</y>
+        <y>-482</y>
         <width>870</width>
-        <height>787</height>
+        <height>879</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_9">
@@ -194,7 +194,236 @@ QTableCornerButton::section {
          </layout>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="4" column="0">
+        <widget class="QFrame" name="frame_6">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_7">
+          <item row="0" column="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_11">
+            <item>
+             <widget class="QLabel" name="label_23">
+              <property name="text">
+               <string>Water Table Depth, WTD (m)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="line_water_depth">
+              <property name="text">
+               <string>1.0</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="0" colspan="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_12">
+            <item>
+             <widget class="QCheckBox" name="check_input">
+              <property name="minimumSize">
+               <size>
+                <width>262</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>250</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Soil saturated hydraulic 
+conductivity anisotropy ratio </string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="line_input">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>150</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>-0.5</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item row="2" column="0" colspan="3">
+           <widget class="QFrame" name="frame_9">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_11">
+             <item row="1" column="1">
+              <widget class="QFrame" name="frame_8">
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_6">
+                <item row="2" column="0">
+                 <widget class="QRadioButton" name="radioButton_6">
+                  <property name="text">
+                   <string>Brooks and Corey</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QRadioButton" name="radioButton_5">
+                  <property name="text">
+                   <string>van Genuchten</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0">
+                 <widget class="QRadioButton" name="radioButton_7">
+                  <property name="text">
+                   <string>Gardner</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_25">
+                  <property name="font">
+                   <font>
+                    <family>Georgia</family>
+                    <pointsize>-1</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>Hydraulic Conductivity Curve</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QFrame" name="frame_7">
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_5">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_24">
+                  <property name="font">
+                   <font>
+                    <family>Georgia</family>
+                    <pointsize>-1</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>Soil Water Characteristic Curve</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QRadioButton" name="radioButton_3">
+                  <property name="text">
+                   <string>van Genuchten</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QRadioButton" name="radioButton_4">
+                  <property name="text">
+                   <string>Brooks and Corey</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QPushButton" name="show_parameters">
+               <property name="text">
+                <string>Show 
+Parameters</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_28">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_26">
+            <property name="font">
+             <font>
+              <family>Georgia</family>
+              <pointsize>-1</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Soil Characteristic Curves</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="0">
         <widget class="QFrame" name="frame_2">
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
@@ -255,7 +484,7 @@ QTableCornerButton::section {
                   </size>
                  </property>
                  <property name="text">
-                  <string>Vertical Saturated K, VKS</string>
+                  <string>Vertical Saturated K, VKs</string>
                  </property>
                 </widget>
                </item>
@@ -370,7 +599,7 @@ Wetting Front, Sav (m)</string>
                   </size>
                  </property>
                  <property name="text">
-                  <string>Bottom Depth (cm)</string>
+                  <string>Layer Thickness (cm)</string>
                  </property>
                 </widget>
                </item>
@@ -533,7 +762,7 @@ Wetting Front, Sav (m)</string>
                   </size>
                  </property>
                  <property name="text">
-                  <string>Vertical Saturated K, VKS</string>
+                  <string>Vertical Saturated K, VKs</string>
                  </property>
                 </widget>
                </item>
@@ -648,14 +877,14 @@ Wetting Front, Sav (m)</string>
                   </size>
                  </property>
                  <property name="text">
-                  <string>Bottom Depth (cm)</string>
+                  <string>Layer Thickness (cm)</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QLineEdit" name="line_bottom_2">
                  <property name="text">
-                  <string>100</string>
+                  <string>85</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignCenter</set>
@@ -904,211 +1133,7 @@ is checked, (0&lt;=SCHK&lt;=0.5)</string>
          </layout>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QFrame" name="frame_6">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_7">
-          <item row="2" column="0">
-           <widget class="QFrame" name="frame_7">
-            <property name="frameShape">
-             <enum>QFrame::StyledPanel</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_5">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_24">
-               <property name="font">
-                <font>
-                 <family>Georgia</family>
-                 <pointsize>-1</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string>Soil Water Characteristic Curve</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QRadioButton" name="radioButton_3">
-               <property name="text">
-                <string>van Genuchten</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QRadioButton" name="radioButton_4">
-               <property name="text">
-                <string>Brooks and Corey</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_11">
-            <item>
-             <widget class="QLabel" name="label_23">
-              <property name="text">
-               <string>Water Table Depth, WTD (m)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="line_water_depth">
-              <property name="text">
-               <string>1.0</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="label_26">
-            <property name="font">
-             <font>
-              <family>Georgia</family>
-              <pointsize>-1</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>Soil Characteristic Curves</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QPushButton" name="show_parameters">
-            <property name="text">
-             <string>Show 
-Parameters</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QFrame" name="frame_8">
-            <property name="frameShape">
-             <enum>QFrame::StyledPanel</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_6">
-             <item row="2" column="0">
-              <widget class="QRadioButton" name="radioButton_6">
-               <property name="text">
-                <string>Brooks and Corey</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_25">
-               <property name="font">
-                <font>
-                 <family>Georgia</family>
-                 <pointsize>-1</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string>Hydraulic Conductivity Curve</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QRadioButton" name="radioButton_5">
-               <property name="text">
-                <string>van Genuchten</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QRadioButton" name="radioButton_7">
-               <property name="text">
-                <string>Gardner</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="0" column="0" colspan="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_12">
-            <item>
-             <widget class="QCheckBox" name="check_input">
-              <property name="minimumSize">
-               <size>
-                <width>262</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>250</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Soil saturated hydraulic 
-conductivity anisotropy ratio </string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="line_input">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>150</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>-0.5</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="3" column="0">
+       <item row="5" column="0">
         <layout class="QHBoxLayout" name="horizontalLayout_13">
          <item>
           <widget class="QPushButton" name="save_continue">
@@ -1132,6 +1157,28 @@ conductivity anisotropy ratio </string>
           </widget>
          </item>
         </layout>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_27">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">    QLabel {
+        font-family: Georgia;
+        font-size: 8pt;
+    }
+</string>
+         </property>
+         <property name="text">
+          <string>Multiple layers are used by the GUI to calculate the effective values for the soil (i.e. Ks as the depth-weighed harmonic mean of the layers Ks and
+the rest of the properties as depth-weighted arithmetic mean). After the calculations, the effective soil properties are saved as a single-layer soil
+in VFSMOD for simulations</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
