@@ -16,7 +16,8 @@ import PyQt5
 from PyQt5 import QtWidgets,QtGui
 from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QThread,pyqtSignal
 from PyQt5.QtGui import QIcon, QFont, QGuiApplication, QPixmap, QImage, QBrush, QColor
-from PyQt5.QtWidgets import QAction, QComboBox,QMessageBox,QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy,QAction, QMenu,QCheckBox, QFrame,QGridLayout,QHBoxLayout
+from PyQt5.QtWidgets import QAction, QComboBox,QMessageBox,QApplication,QFileDialog,QButtonGroup,QRadioButton,QSpacerItem,QSizePolicy,QAction, QMenu,QCheckBox, QFrame,QGridLayout,QHBoxLayout
+from PyQt5.QtCore import QTimer
 from scipy.optimize import differential_evolution, minimize
 from multiprocessing import Pool,freeze_support
 import psutil
@@ -55,6 +56,7 @@ import math
 import os
 import sys
 import textwrap
+import traceback
 
 
 #LOCAL FILES
@@ -121,19 +123,41 @@ from ui.user_defined_storm_type_french import user_defined_storm_dialog_french
 
 
 #Detection of non expected errors
-def global_exception_handler(exctype, value, traceback):
-    """
-    Manejador global de excepciones no controladas.
-    """
-    QMessageBox.critical(None, "Python error", f"{value}")
-    # Opcional: registrar el error en un archivo de log
-    with open("error_log.txt", "a") as log_file:
-        log_file.write(f"Excepción: {exctype.__name__}\n")
-        log_file.write(f"Mensaje: {value}\n\n")
-    print(f"Error capturado globalmente: {value}")
+LOG_PATH = os.path.join(os.getcwd(), "error_log.txt")
 
-# Configurar el manejador global
+   
+def global_exception_handler(exctype, value, tb):
+    tb_str = "".join(traceback.format_exception(exctype, value, tb))
+    
+    # Guardar en log (PRIMERO)
+    with open(LOG_PATH, "a", encoding="utf-8") as log_file:
+        log_file.write(tb_str)
+        log_file.write("\n" + "=" * 80 + "\n")
+
+    print(tb_str)
+
+    # Mostrar error SIN bloquear la GUI
+    def show_message():
+        app = QApplication.instance()
+
+        msg = QMessageBox(app.activeWindow())
+        msg.setIcon(QMessageBox.Critical)
+        msg.setWindowTitle("Python error")
+        msg.setText("An unexpected error occurred")
+        msg.setDetailedText(tb_str)
+
+        msg.setAttribute(Qt.WA_DeleteOnClose, False)
+        msg.show()
+
+        # Mantener referencia viva
+        app._last_exception_msgbox = msg
+
+    QTimer.singleShot(0, show_message)
+ 
+    
 sys.excepthook = global_exception_handler
+
+
 
 
 #Obtain the base path for the resources for the executable
@@ -325,9 +349,9 @@ class qvfsmod():
         self.dlg_fiteval_sedimentograph.nash.textChanged.connect(lambda _, b ="sedimentograph":self.calibration_hydrograph_bootstraping_update(b))
         
         #Sensitivity calibration results conditions
-        self.dlg_base.results_sensitivity_hydrograph.clicked.connect(self.dlg_sensitivity_calibration_results_hydrograph.show)
-        self.dlg_base.results_sensitivity_sedimentograph.clicked.connect(self.dlg_sensitivity_calibration_results_hydrograph.show)
-        self.dlg_base.results_sensitivity_single.clicked.connect(self.dlg_sensitivity_calibration_results_hydrograph.show)
+        self.dlg_base.results_sensitivity_hydrograph.clicked.connect(lambda:(self.dlg_sensitivity_calibration_results_hydrograph.show(),self.dlg_sensitivity_calibration_results_hydrograph.raise_()))
+        self.dlg_base.results_sensitivity_sedimentograph.clicked.connect(lambda:(self.dlg_sensitivity_calibration_results_hydrograph.show(),self.dlg_sensitivity_calibration_results_hydrograph.raise_()))
+        self.dlg_base.results_sensitivity_single.clicked.connect(lambda:(self.dlg_sensitivity_calibration_results_hydrograph.show(),self.dlg_sensitivity_calibration_results_hydrograph.raise_()))
         self.dlg_sensitivity_calibration_results_hydrograph.browse_file.clicked.connect(self.browse_sensitivity_calibration_results)
         self.dlg_sensitivity_calibration_results_hydrograph.line_file.textChanged.connect(self.udpate_sensitivity_calibration_results)
         self.dlg_base.results_sensitivity_hydrograph.clicked.connect(self.udpate_sensitivity_calibration_results)
@@ -440,17 +464,17 @@ class qvfsmod():
         
         
         #Show calibration 
-        self.dlg_base.show_calibration_hydrograph.clicked.connect(self.dlg_hydrograph_calibration.show)
-        self.dlg_base.show_calibration_sedimentograph.clicked.connect(self.dlg_sediment_calibration.show)
-        self.dlg_base.inputs_discharge_single.clicked.connect(self.dlg_discharge_calibration_single.show)
-        self.dlg_base.inputs_sediment_single.clicked.connect(self.dlg_sediment_calibration_single.show)
-        self.dlg_base.inputs_pesticide_single.clicked.connect(self.dlg_pesticide_calibration.show)
-        self.dlg_base.calibration_result_single.clicked.connect(self.dlg_calibration_results_single.show)
+        self.dlg_base.show_calibration_hydrograph.clicked.connect(lambda:(self.dlg_hydrograph_calibration.show(),self.dlg_hydrograph_calibration.raise_()))
+        self.dlg_base.show_calibration_sedimentograph.clicked.connect(lambda:(self.dlg_sediment_calibration.show(),self.dlg_sediment_calibration.raise_()))
+        self.dlg_base.inputs_discharge_single.clicked.connect(lambda:(self.dlg_discharge_calibration_single.show(),self.dlg_discharge_calibration_single.raise_()))
+        self.dlg_base.inputs_sediment_single.clicked.connect(lambda:(self.dlg_sediment_calibration_single.show(),self.dlg_sediment_calibration_single.raise_()))
+        self.dlg_base.inputs_pesticide_single.clicked.connect(lambda:(self.dlg_pesticide_calibration.show(),self.dlg_pesticide_calibration.raise_()))
+        self.dlg_base.calibration_result_single.clicked.connect(lambda:(self.dlg_calibration_results_single.show(),self.dlg_calibration_results_single.raise_()))
         
         
         #Calibration results
-        self.dlg_base.calibration_result_hydrograph.clicked.connect(self.dlg_calibration_results_hydrograph.show)
-        self.dlg_base.calibration_result_sedimentograph.clicked.connect(self.dlg_calibration_results_sedimentograph.show)
+        self.dlg_base.calibration_result_hydrograph.clicked.connect(lambda:(self.dlg_calibration_results_hydrograph.show(),self.dlg_calibration_results_hydrograph.raise_()))
+        self.dlg_base.calibration_result_sedimentograph.clicked.connect(lambda:(self.dlg_calibration_results_sedimentograph.show(),self.dlg_calibration_results_sedimentograph.raise_()))
         self.dlg_calibration_results_hydrograph.results.textChanged.connect(self.update_graph_calibration_hydrograph)
         self.dlg_calibration_results_hydrograph.one_one.toggled.connect(self.update_graph_calibration_hydrograph)
         self.dlg_base.calibration_result_hydrograph.clicked.connect(self.update_graph_calibration_hydrograph)
@@ -459,6 +483,11 @@ class qvfsmod():
         self.dlg_calibration_results_single.results.textChanged.connect(self.update_graph_calibration_single)
         self.dlg_base.calibration_result_sedimentograph.clicked.connect(self.update_graph_calibration_sedimentograph)
         self.dlg_base.calibration_result_single.clicked.connect(self.update_graph_calibration_single)
+        
+        #Close calibration results
+        self.dlg_calibration_results_hydrograph.pushButton_3.clicked.connect(self.dlg_calibration_results_hydrograph.close)
+        self.dlg_calibration_results_sedimentograph.pushButton_3.clicked.connect(self.dlg_calibration_results_sedimentograph.close)
+        self.dlg_calibration_results_single.pushButton_3.clicked.connect(self.dlg_calibration_results_single.close)
         
         
         #Save uh project and vfs project
@@ -598,7 +627,7 @@ class qvfsmod():
         self.dlg_design_results_graph.column.currentIndexChanged.connect(self.update_design_graph)
         
         #Watch results from design process
-        self.dlg_base.view_results_design.clicked.connect(self.dlg_design_results.show)
+        self.dlg_base.view_results_design.clicked.connect(lambda:(self.dlg_design_results.show(),self.dlg_design_results.raise_()))
         
         #If no pesticide mass balance/residue calculation is requested then hide frame
         self.dlg_water_quality.calculation.currentIndexChanged.connect(self.hide_mass_balance_frame)
@@ -943,9 +972,9 @@ class qvfsmod():
         
         
         #Show advances settings of calibration
-        self.dlg_base.advanced_hydrograph.clicked.connect(self.dlg_calibration_advanced_settings_hydrograph.show)
-        self.dlg_base.advanced_sedimentograph.clicked.connect(self.dlg_calibration_advanced_settings_sedimentograph.show)
-        self.dlg_base.advanced_single.clicked.connect(self.dlg_calibration_advanced_settings_single.show)
+        self.dlg_base.advanced_hydrograph.clicked.connect(lambda:(self.dlg_calibration_advanced_settings_hydrograph.show(),self.dlg_calibration_advanced_settings_hydrograph.raise_()))
+        self.dlg_base.advanced_sedimentograph.clicked.connect(lambda:(self.dlg_calibration_advanced_settings_sedimentograph.show(),self.dlg_calibration_advanced_settings_sedimentograph.raise_()))
+        self.dlg_base.advanced_single.clicked.connect(lambda: (self.dlg_calibration_advanced_settings_single.show(),self.dlg_calibration_advanced_settings_single.raise_()))
         self.dlg_calibration_advanced_settings_hydrograph.close_dialog.clicked.connect(self.dlg_calibration_advanced_settings_hydrograph.close)
         self.dlg_calibration_advanced_settings_sedimentograph.close_dialog.clicked.connect(self.dlg_calibration_advanced_settings_sedimentograph.close)
         self.dlg_calibration_advanced_settings_single.close_dialog.clicked.connect(self.dlg_calibration_advanced_settings_single.close)
@@ -1148,11 +1177,18 @@ class qvfsmod():
         
         #Add message of hipothesis testing in FITEVAL
         self.dlg_fiteval_hydrograph.label.setTextFormat(Qt.RichText) 
-        self.dlg_fiteval_hydrograph.label.setOpenExternalLinks(True)   
-        self.dlg_fiteval_hydrograph.label.setText("""Following the <a href="https://abe.ufl.edu/faculty/carpena/software/FITEVAL.shtml">FITEVAL</a> model goodness-of-fit testing<br>framework <a href="https://www.sciencedirect.com/science/article/pii/S0022169412010608?via%3Dihub ">(Ritter and Muñoz-Carpena, 2013)</a>,  the<br>p-value corresponds to the null hypothesis Ho: p(NSE<br>&lt;NSE_threshold) and complementary H1:<br>p(NSE≥NSE_threshold). When the p-value is larger than a<br>chosen significance 𝛼 for the problem, Ho cannot be<br>rejected and the model is found “unacceptable" for that<br>criteria. If the p-value is lower than the significance<br>𝛼, Ho can be rejected and the complementary hypothesis<br>supported, so the model passes the statistical test and<br>is deemed “acceptable”""")
+        self.dlg_fiteval_hydrograph.label.setOpenExternalLinks(True)
+        self.dlg_fiteval_hydrograph.label.setWordWrap(True)        
+        self.dlg_fiteval_hydrograph.label.setText("""<span style="font-size: 10pt;">Following the <a href="https://abe.ufl.edu/faculty/carpena/software/FITEVAL.shtml">FITEVAL</a> model goodness-of-fit testing<br>framework <a href="https://www.sciencedirect.com/science/article/pii/S0022169412010608?via%3Dihub ">(Ritter and Muñoz-Carpena, 2013)</a>,  the p-value corresponds to the null hypothesis Ho: p(NSE&lt;NSE_threshold) and complementary H1:<br>p(NSE≥NSE_threshold). When the p-value is larger than a chosen significance 𝛼 for the problem, Ho cannot be rejected and the model is found “unacceptable" for that criteria. If the p-value is lower than the significance 𝛼, Ho can be rejected and the complementary hypothesis supported, so the model passes the statistical test and is deemed “acceptable”</span>""")
         self.dlg_fiteval_sedimentograph.label.setTextFormat(Qt.RichText) 
         self.dlg_fiteval_sedimentograph.label.setOpenExternalLinks(True) 
-        self.dlg_fiteval_sedimentograph.label.setText("""Following the <a href="https://abe.ufl.edu/faculty/carpena/software/FITEVAL.shtml">FITEVAL</a> model goodness-of-fit testing<br>framework <a href="https://www.sciencedirect.com/science/article/pii/S0022169412010608?via%3Dihub ">(Ritter and Muñoz-Carpena, 2013)</a>,  the<br>p-value corresponds to the null hypothesis Ho: p(NSE<br>&lt;NSE_threshold) and complementary H1:<br>p(NSE≥NSE_threshold). When the p-value is larger than a<br>chosen significance 𝛼 for the problem, Ho cannot be<br>rejected and the model is found “unacceptable" for that<br>criteria. If the p-value is lower than the significance<br>𝛼, Ho can be rejected and the complementary hypothesis<br>supported, so the model passes the statistical test and<br>is deemed “acceptable”""")
+        self.dlg_fiteval_sedimentograph.label.setWordWrap(True)  
+        self.dlg_fiteval_sedimentograph.label.setText("""<span style="font-size: 10pt;">Following the <a href="https://abe.ufl.edu/faculty/carpena/software/FITEVAL.shtml">FITEVAL</a> model goodness-of-fit testing<br>framework <a href="https://www.sciencedirect.com/science/article/pii/S0022169412010608?via%3Dihub ">(Ritter and Muñoz-Carpena, 2013)</a>,  the p-value corresponds to the null hypothesis Ho: p(NSE&lt;NSE_threshold) and complementary H1:<br>p(NSE≥NSE_threshold). When the p-value is larger than a chosen significance 𝛼 for the problem, Ho cannot be rejected and the model is found “unacceptable" for that criteria. If the p-value is lower than the significance 𝛼, Ho can be rejected and the complementary hypothesis supported, so the model passes the statistical test and is deemed “acceptable”</span>""")
+        
+        #Add message of number of layers
+        self.dlg_infiltration_soil.label_27.setTextFormat(Qt.RichText) 
+        self.dlg_infiltration_soil.label_27.setWordWrap(True)        
+        self.dlg_infiltration_soil.label_27.setText("""<span style="font-size: 10pt;">Multiple layers are used by the GUI to calculate the effective values for the soil (i.e. Ks as the depth-weighed harmonic mean of the layers Ks and the rest of the properties as depth-weighted arithmetic mean). After the calculations, the effective soil properties are saved as a single-layer soil in VFSMOD for simulations</span>""")
         
         
         #Default values
@@ -11658,13 +11694,25 @@ class qvfsmod():
             return
         
         #Create the dictionary to know the bounds of the input parameters
-        self.calibration_dictionary = self.create_dictionary_calibration_single()
+        try:
+            self.calibration_dictionary = self.create_dictionary_calibration_single()
+        except:
+            self.warning_message("Please check ranges are correctly set")
+            return
+        
+        #If the range is too big, then the sampling has to be done in logarithmic space
+        self.calibration_dictionary, self.logarithmic_inputs = self.create_dictionary_calibration_logarithmic(self.calibration_dictionary)
+        
         
         #Error if no inputs where selected
         if len(self.calibration_dictionary)==0:
             self.warning_message("Please select at least one input to calibrate")
             return
-        
+        #We create a class to stop the calibration if 
+        class StopOptimization_iterations(Exception):
+            pass
+        class StopOptimization_convergence(Exception):
+            pass
         #first we create the thread class to be able to use the dialog when executing
         class ejecutor(QThread):
             resultado_progress = pyqtSignal(list)
@@ -11694,10 +11742,16 @@ class qvfsmod():
                         self.best_result["result"] = result
                         
                     if self.ejecuciones == self.max_iterations: #condition of maximum number of iterations to stop the code
-                        1/0
+                        raise StopOptimization_iterations()
+                    
+                    
                     #Save inputs and results
                     self.list_of_inputs.append(x)
                     self.list_of_results.append(result)
+                    
+                    ventana = 30
+                    if len(self.list_of_results)>ventana and abs(min(self.list_of_results[-ventana:])-max(self.list_of_results[-ventana:]))<self.tolerance: #condition of achieving tolerance
+                        raise StopOptimization_convergence()
                     
                     
                     return result   
@@ -11706,10 +11760,30 @@ class qvfsmod():
                 limites = list(self.dictionary.values())
                 #Global calibration
                 try:
-                    resultado_global = differential_evolution(objetivo, bounds=limites, strategy='best1bin',tol=self.tolerance)
-                except ZeroDivisionError: #maximum iterations achieved
+                    resultado_global = differential_evolution(objetivo, bounds=limites, strategy='rand1bin',popsize = 30,mutation = (1,1.9),
+                        recombination = 0.9,tol = 0, atol = 0,polish = False)
+                        
+                except StopOptimization_iterations: #maximum iterations achieved
                     self.resultado_progress.emit(["Warning","Maximum iterations achieved \n Adding best result...\n"])
-                resultado = objetivo(self.best_result["x"]) #execute best just so that users can see it
+                    
+                except StopOptimization_convergence: #convergence achieved
+                    self.resultado_progress.emit(["Warning","Tolerance to convergence achieved \n Adding best result...\n"])
+                     
+                #Local optimization
+                self.resultado_progress.emit(["Warning", "Running local optimization\n"])
+                res_polish = minimize(objetivo,
+                    self.best_result["x"],
+                    method="Nelder-Mead",
+                    bounds=limites)
+                
+                # Actualizar mejor resultado si mejora
+                if res_polish.fun < self.best_result["result"]:
+                    self.best_result["x"] = res_polish.x
+                    self.best_result["result"] = res_polish.fun
+                
+                #Execute best result to save it
+                self.resultado_progress.emit(["Warning","Adding best result...\n"])
+                resultado = objetivo(self.best_result["x"]) 
                 self.list_of_inputs[:-1] #eilminate last one
                 self.list_of_results[:-1]
                     
@@ -11747,13 +11821,25 @@ class qvfsmod():
         self.move_files_calibration_sedimentograph()
         
         #Create the dictionary to know the bounds of the input parameters
-        self.calibration_dictionary = self.create_dictionary_calibration_sedimentograph()
+        try:
+            self.calibration_dictionary = self.create_dictionary_calibration_sedimentograph()
+        except:
+            self.warning_message("Please check ranges are correctly set")
+            return
+        
+        #If the range is too big, then the sampling has to be done in logarithmic space
+        self.calibration_dictionary, self.logarithmic_inputs = self.create_dictionary_calibration_logarithmic(self.calibration_dictionary)
+        
         
         #Error if no inputs where selected
         if len(self.calibration_dictionary)==0:
             self.warning_message("Please select at least one input to calibrate")
             return
-        
+        #We create a class to stop the calibration if 
+        class StopOptimization_iterations(Exception):
+            pass
+        class StopOptimization_convergence(Exception):
+            pass
         #first we create the thread class to be able to use the dialog when executing
         self.objective_function = [self.dlg_calibration_advanced_settings_sedimentograph.objective_function.itemText(i) for i in range(self.dlg_calibration_advanced_settings_sedimentograph.objective_function.count())][self.dlg_calibration_advanced_settings_sedimentograph.objective_function.currentIndex()]
         class ejecutor(QThread):
@@ -11784,10 +11870,16 @@ class qvfsmod():
                         self.best_result["result"] = result
                         
                     if self.ejecuciones == self.max_iterations: #condition of maximum number of iterations to stop the code
-                        1/0
+                        raise StopOptimization_iterations()
+                    
+                    
                     #Save inputs and results
                     self.list_of_inputs.append(x)
                     self.list_of_results.append(result)
+                    
+                    ventana = 30
+                    if len(self.list_of_results)>ventana and abs(min(self.list_of_results[-ventana:])-max(self.list_of_results[-ventana:]))<self.tolerance: #condition of achieving tolerance
+                        raise StopOptimization_convergence()
                     
                     
                     return result   
@@ -11796,13 +11888,33 @@ class qvfsmod():
                 limites = list(self.dictionary.values())
                 #Global calibration
                 try:
-                    resultado_global = differential_evolution(objetivo, bounds=limites, strategy='best1bin',tol=self.tolerance)
-                except ZeroDivisionError: #maximum iterations achieved
+                    resultado_global = differential_evolution(objetivo, bounds=limites, strategy='rand1bin',popsize = 30,mutation = (1,1.9),
+                        recombination = 0.9,tol = 0, atol = 0,polish = False)
+                except StopOptimization_iterations: #maximum iterations achieved
                     self.resultado_progress.emit(["Warning","Maximum iterations achieved \n Adding best result...\n"])
-                resultado = objetivo(self.best_result["x"]) #execute best just so that users can see it
+                    
+                except StopOptimization_convergence: #convergence achieved
+                    self.resultado_progress.emit(["Warning","Tolerance to convergence achieved \n Adding best result...\n"])
+                    
+                #Local optimization
+                self.resultado_progress.emit(["Warning", "Running local optimization\n"])
+                res_polish = minimize(objetivo,
+                    self.best_result["x"],
+                    method="Nelder-Mead",
+                    bounds=limites)
+                
+                # Actualizar mejor resultado si mejora
+                if res_polish.fun < self.best_result["result"]:
+                    self.best_result["x"] = res_polish.x
+                    self.best_result["result"] = res_polish.fun
+                
+                #Execute best result to save it
+                self.resultado_progress.emit(["Warning","Adding best result...\n"])
+                resultado = objetivo(self.best_result["x"]) 
                 self.list_of_inputs[:-1] #eilminate last one
                 self.list_of_results[:-1]
-                    
+                
+                
                 #Message end global calibration
                 self.resultado_progress.emit(["Warning","Calibration ended"])
                 
@@ -12024,7 +12136,14 @@ class qvfsmod():
         self.move_files_calibration_hydrograph()
         
         #Create the dictionary to know the bounds of the input parameters
-        self.calibration_dictionary = self.create_dictionary_calibration_hydrograph()
+        try:
+            self.calibration_dictionary = self.create_dictionary_calibration_hydrograph()
+        except:
+            self.warning_message("Please check ranges are correctly set")
+            return
+        #If the range is too big, then the sampling has to be done in logarithmic space
+        self.calibration_dictionary, self.logarithmic_inputs = self.create_dictionary_calibration_logarithmic(self.calibration_dictionary)
+        
         
         #Error if no inputs where selected
         if len(self.calibration_dictionary)==0:
@@ -12033,6 +12152,12 @@ class qvfsmod():
         
         #Obtain information of objective function
         self.objective_function = [self.dlg_calibration_advanced_settings_hydrograph.objective_function.itemText(i) for i in range(self.dlg_calibration_advanced_settings_hydrograph.objective_function.count())][self.dlg_calibration_advanced_settings_hydrograph.objective_function.currentIndex()]
+        #We create a class to stop the calibration if 
+        class StopOptimization_iterations(Exception):
+            pass
+        class StopOptimization_convergence(Exception):
+            pass
+
         #first we create the thread class to be able to use the dialog when executing
         class ejecutor(QThread):
             resultado_progress = pyqtSignal(list)
@@ -12062,32 +12187,55 @@ class qvfsmod():
                         self.best_result["result"] = result
                         
                     if self.ejecuciones == self.max_iterations: #condition of maximum number of iterations to stop the code
-                        1/0
+                        raise StopOptimization_iterations()
+                    
+                    
                     #Save inputs and results
                     self.list_of_inputs.append(x)
                     self.list_of_results.append(result)
                     
+                    ventana = 30
+                    if len(self.list_of_results)>ventana and abs(min(self.list_of_results[-ventana:])-max(self.list_of_results[-ventana:]))<self.tolerance: #condition of achieving tolerance
+                        raise StopOptimization_convergence()
                     
                     return result   
-                    
                 #Limits to the calibration
                 limites = list(self.dictionary.values())
                 #Global calibration
                 try:
-                    resultado_global = differential_evolution(objetivo, bounds=limites, strategy='best1bin',tol=self.tolerance)
-                except ZeroDivisionError: #maximum iterations achieved
-                    self.resultado_progress.emit(["Warning","Maximum iterations achieved \n Adding best result...\n"])
-                resultado = objetivo(self.best_result["x"]) #execute best just so that users can see it
+                    resultado_global = differential_evolution(objetivo, bounds=limites, strategy='rand1bin',popsize = 30,mutation = (1,1.9),
+                        recombination = 0.9,tol = 0, atol = 0,polish = False)
+                    #resultado = objetivo(self.best_result["x"])
+                except StopOptimization_iterations: #maximum iterations achieved
+                    self.resultado_progress.emit(["Warning","Maximum iterations achieved\n"])
+                    #resultado = objetivo(self.best_result["x"])
+                except StopOptimization_convergence: #convergence achieved
+                    self.resultado_progress.emit(["Warning","Tolerance to convergence achieved\n"])
+                    #resultado = objetivo(self.best_result["x"])  
+                
+                #Local optimization
+                self.resultado_progress.emit(["Warning", "Running local optimization\n"])
+                res_polish = minimize(objetivo,
+                    self.best_result["x"],
+                    method="Nelder-Mead",
+                    bounds=limites)
+                
+                # Actualizar mejor resultado si mejora
+                if res_polish.fun < self.best_result["result"]:
+                    self.best_result["x"] = res_polish.x
+                    self.best_result["result"] = res_polish.fun
+                
+                #Execute best result to save it
+                self.resultado_progress.emit(["Warning","Adding best result...\n"])
+                resultado = objetivo(self.best_result["x"]) 
                 self.list_of_inputs[:-1] #eilminate last one
                 self.list_of_results[:-1]
-                    
+                
                 #Message end global calibration
                 self.resultado_progress.emit(["Warning","Calibration ended"])
-                
                 #If last result there was an error then add the error
                 if resultado == 1e20:
                     self.resultado_progress.emit(["Error","Calibration ended"])
-                
                 #Save results
                 self.save_results_calibration(self.list_of_inputs,self.list_of_results)
                 
@@ -12136,7 +12284,10 @@ class qvfsmod():
         #First we translate the inputs of that method to a way so can it can be used
         dic_inputs = {}
         for k,i in enumerate(self.calibration_dictionary.keys()):
-            dic_inputs[i]= input_parameters[k]
+            if i in self.logarithmic_inputs: #if the range of the input is very big, previously we converted it to logarithmic. Now we convert again to normal numbers. 
+                dic_inputs[i]= 10**input_parameters[k]
+            else:
+                dic_inputs[i]= input_parameters[k]
         #Modify inputs
         for i in dic_inputs.keys():
             #vertical
@@ -12330,7 +12481,10 @@ class qvfsmod():
         #First we translate the inputs of that method to a way so can it can be used
         dic_inputs = {}
         for k,i in enumerate(self.calibration_dictionary.keys()):
-            dic_inputs[i]= input_parameters[k]
+            if i in self.logarithmic_inputs: #if the range of the input is very big, previously we converted it to logarithmic. Now we convert again to normal numbers. 
+                dic_inputs[i]= 10**input_parameters[k]
+            else:
+                dic_inputs[i]= input_parameters[k]
         #Modify inputs
         for i in dic_inputs.keys():
             #spacing
@@ -12503,7 +12657,10 @@ class qvfsmod():
         #First we translate the inputs of that method to a way so can it can be used
         dic_inputs = {}
         for k,i in enumerate(self.calibration_dictionary.keys()):
-            dic_inputs[i]= input_parameters[k]
+            if i in self.logarithmic_inputs: #if the range of the input is very big, previously we converted it to logarithmic. Now we convert again to normal numbers. 
+                dic_inputs[i]= 10**input_parameters[k]
+            else:
+                dic_inputs[i]= input_parameters[k]
         #Modify inputs
         for i in dic_inputs.keys():
             #DISCHARGE VALUES
@@ -13115,7 +13272,10 @@ class qvfsmod():
             diferencias_media_observados = self.data_aligned.iloc[:,0] - media_observados
             cuadrados_diferencias_observados = diferencias_media_observados ** 2
             suma_cuadrados_diferencias_observados = cuadrados_diferencias_observados.sum()
-            nash_sutcliffe_efficiency = 1 - (suma_cuadrados_diferencias / suma_cuadrados_diferencias_observados)
+            if suma_cuadrados_diferencias_observados == 0:
+                nash_sutcliffe_efficiency = "nan"
+            else:
+                nash_sutcliffe_efficiency = 1 - (suma_cuadrados_diferencias / suma_cuadrados_diferencias_observados)
             #RMSE
             diferencias = calibration_df_progress.iloc[:,0] - self.data_aligned.iloc[:,0]
             cuadrados_diferencias = diferencias ** 2
@@ -13127,7 +13287,10 @@ class qvfsmod():
             squared_differences = (simulated - observed) ** 2
             numerator = squared_differences.sum()
             denominator = ((abs(simulated - mean_observed) + abs(observed - mean_observed)) ** 2).sum()
-            ioa = 1 - (numerator / denominator)
+            if denominator == 0:
+                ioa = "nan"
+            else:
+                ioa = 1 - (numerator / denominator)
             #IOA_m
             observed = self.data_aligned.iloc[:,0]
             simulated = calibration_df_progress.iloc[:,0]
@@ -13135,19 +13298,30 @@ class qvfsmod():
             squared_differences = (simulated - observed) ** 2
             numerator = squared_differences.sum()
             denominator = ((abs(simulated - mean_observed) + abs(observed - mean_observed)) ** 2).sum()
-            ioa_m = 1 - (numerator / denominator)
+            if denominator == 0:
+                ioa_m = "nan"
+            else:
+                ioa_m = 1 - (numerator / denominator)
             #IOA_r
             numerator_r = ((simulated - observed) ** 2).sum()
             denominator_r = (observed ** 2).sum()
-            ioa_r = 1 - (numerator_r / denominator_r)
+            if denominator_r==0:
+                ioa_r = "nan"
+            else:
+                ioa_r = 1 - (numerator_r / denominator_r)
             #MAE
             mae = (abs(simulated - observed)).mean()
             #Ceff_m 
             mean_observed = observed.mean()
-            Ceff_m = 1 - (cuadrados_diferencias.sum() / ((observed - mean_observed) ** 2).sum())
+            if ((observed - mean_observed) ** 2).sum()==0:
+                Ceff_m = "nan"
+            else:
+                Ceff_m = 1 - (cuadrados_diferencias.sum() / ((observed - mean_observed) ** 2).sum())
             #Ceff_r
-            Ceff_r = 1 - (cuadrados_diferencias.sum() / (calibration_df_progress.iloc[:,0] ** 2).sum())
-            
+            if (calibration_df_progress.iloc[:,0] ** 2).sum() == 0:
+                Ceff_r = "nan"
+            else:
+                Ceff_r = 1 - (cuadrados_diferencias.sum() / (calibration_df_progress.iloc[:,0] ** 2).sum())
             #Create csv with results
             if self.calibration_sedimentograph:
                 path = self.obtain_direction_vfsmod(self.dlg_calibration_advanced_settings_sedimentograph.exit_file.text())
@@ -13169,10 +13343,16 @@ class qvfsmod():
                         f.write(f"Final OF: {-min(results)}" + '\n')
                     f.write(f"Estimated parameter values: ")
                     for i in range(len(self.calibration_dictionary.keys())):
-                        if i != len(self.calibration_dictionary.keys())-1:
-                            f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]},")
+                        if list(self.calibration_dictionary.keys())[i] in self.logarithmic_inputs:
+                            if i != len(self.calibration_dictionary.keys())-1:
+                                f.write(f"{list(self.calibration_dictionary.keys())[i]}: {10**inputs[results.index(final_of)][i]},")
+                            else:
+                                f.write(f"{list(self.calibration_dictionary.keys())[i]}: {10**inputs[results.index(final_of)][i]}\n")
                         else:
-                            f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]}\n")
+                            if i != len(self.calibration_dictionary.keys())-1:
+                                f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]},")
+                            else:
+                                f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]}\n")
                     f.write(f"--------Goodness of fit--------\n")
                     f.write(f"Ceff = {nash_sutcliffe_efficiency}"+"\n")
                     f.write(f"Ceff_m = {Ceff_m}"+"\n")
@@ -13192,7 +13372,6 @@ class qvfsmod():
             except PermissionError:
                 self.warning_message(f"{path} file is opened and Calibration data could not be saved")
                 return
-            
             #Put filepath in the results dialog
             if self.calibration_sedimentograph:
                 self.dlg_calibration_results_sedimentograph.results.setText(self.dlg_calibration_advanced_settings_sedimentograph.exit_file.text())
@@ -13201,7 +13380,6 @@ class qvfsmod():
             
             #Put the optimized project in the working directory with a name to informe that it is optimized
             self.add_optimized_project_to_folder()
-        
         #Delete all outputs. If not in the next execution owq might be not created by the execution but still present and not giving error
         self.delete_files_calibration_single()
         
@@ -13225,10 +13403,16 @@ class qvfsmod():
                     f.write(f"Final OF: {final_of}" + '\n')
                     f.write(f"Estimated parameter values: ")
                     for i in range(len(self.calibration_dictionary.keys())):
-                        if i != len(self.calibration_dictionary.keys())-1:
-                            f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]},")
+                        if list(self.calibration_dictionary.keys())[i] in self.logarithmic_inputs:
+                            if i != len(self.calibration_dictionary.keys())-1:
+                                f.write(f"{list(self.calibration_dictionary.keys())[i]}: {10**inputs[results.index(final_of)][i]},")
+                            else:
+                                f.write(f"{list(self.calibration_dictionary.keys())[i]}: {10**inputs[results.index(final_of)][i]}\n")
                         else:
-                            f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]}\n")
+                            if i != len(self.calibration_dictionary.keys())-1:
+                                f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]},")
+                            else:
+                                f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]}\n")
                     f.write(f"Observed vs predicted values: \n")
                     for i in range(len(self.output_calibrate_single.keys())):
                         if i != len(self.output_calibrate_single.keys())-1:
@@ -13657,7 +13841,19 @@ class qvfsmod():
         #IWQ
         if self.water_quality:
             copy_paste("iwq")
-        
+    
+    def create_dictionary_calibration_logarithmic(self,dictionary):
+        """Method to convert the ranges in logatithmic if the range is too big"""
+        logarithmic_inputs = []
+        for i in dictionary.keys():
+            minimum = dictionary[i][0]
+            maximum = dictionary[i][1]
+            if maximum>(minimum*1000):
+                dictionary[i][0] = np.log10(minimum)
+                dictionary[i][1] = np.log10(maximum)
+                logarithmic_inputs.append(i)
+                
+        return dictionary,logarithmic_inputs
         
     def create_dictionary_calibration_hydrograph(self):
         """Method to create the dictionary of bounds of the input parameters for the calibration of hydrograph"""
@@ -16862,6 +17058,7 @@ class qvfsmod():
             elif lineEdits_extension[i] == "prj" and os.path.exists(self.obtain_direction_vfsmod(i.text())):
                 prj_exist = True
         
+        
         #If lis doesnt exist then files are not added automatically and they have to be added
         if not lis_exist:
             lineEdits_extension = {self.dlg_base.uh_input:"inp",self.dlg_base.line_hydrograph:"iro",
@@ -16875,6 +17072,10 @@ class qvfsmod():
                     i.setText(os.path.normpath(self.dlg_base.name_files.text() + "."+extension))
                 else:
                     i.setText(str(Path(directory + "/"+ self.dlg_base.name_files.text() + "."+extension)))
+        
+        #Just in case update the name of the inputs and output files
+        self.add_values_uh_outputs_dialog()
+        
         #Same for prj
         if not prj_exist:
             lineEdits_extension = {self.dlg_base.line_overland:"ikw",self.dlg_base.line_infiltration:"iso",
@@ -16891,7 +17092,10 @@ class qvfsmod():
                     i.setText(str(Path(self.dlg_base.name_files.text() + "."+extension)))
                 else:
                     i.setText(str(Path(directory + "/"+ self.dlg_base.name_files.text() + "."+extension)))
-    
+        
+        #Just in case update the name of the inputs and output files
+        self.add_values_vfs_outputs_dialog()
+        
     def default_values(self):
         """Method to set default values for input values"""
         if sys.platform.startswith("darwin"):
@@ -17403,9 +17607,9 @@ class qvfsmod():
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.3</b>
+                <b>Version 1.0.7</b>
                 <br>
-                09/12/2025
+                09/01/2026
             """
         elif sys.platform.startswith("darwin") or sys.platform.startswith("linux"): #macOS
             html_text = f"""
@@ -17424,9 +17628,9 @@ class qvfsmod():
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.3</b>
+                <b>Version 1.0.7</b>
                 <br>
-                09/12/2025
+                09/01/2026
             """
         
         
@@ -20092,20 +20296,28 @@ class UncertainityAnalysisThread(QThread):
         self.update_progress.emit([execution_num,result])
 
 if __name__ == "__main__":
-    freeze_support() #to be able to use multiprocessing after converting it to an executable
-    
-    
-    
-    #We scalate the dialogs and all the elements depending on the resolution of the screen
-    if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
-        PyQt5.QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+    try:
+        freeze_support() #to be able to use multiprocessing after converting it to an executable
+        
+        
+        
+        #We scalate the dialogs and all the elements depending on the resolution of the screen
+        if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
+            PyQt5.QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
-    if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
-        PyQt5.QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
-    app = QtWidgets.QApplication(sys.argv)
-    
-    
-    
-    dialog = qvfsmod()
-    dialog.run()
-    sys.exit(app.exec_())
+        if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
+            PyQt5.QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+        app = QtWidgets.QApplication(sys.argv)
+        
+        
+        
+        dialog = qvfsmod()
+        dialog.run()
+        sys.exit(app.exec_())
+    except Exception:
+        exctype, value, tb = sys.exc_info()
+        full_trace = ''.join(traceback.format_exception(exctype, value, tb))
+        
+        # Guarda exactamente todo en el log
+        with open(LOG_PATH, "w") as f:
+            f.write(full_trace + "\n")

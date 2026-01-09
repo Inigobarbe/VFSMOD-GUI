@@ -1,221 +1,78 @@
-Excepción: ValueError
-Mensaje: could not convert string to float: 'l'
-
-Excepción: AttributeError
-Mensaje: PathCollection.set() got an unexpected keyword argument 'xerr'
-
-Excepción: AttributeError
-Mensaje: PathCollection.set() got an unexpected keyword argument 'xerr'
-
-Excepción: NameError
-Mensaje: name 'nan_function' is not defined
-
-Excepción: NameError
-Mensaje: name 'nan_function' is not defined
-
-Excepción: NameError
-Mensaje: name 'mu_star_conf' is not defined
-
-Excepción: AttributeError
-Mensaje: 'qvfsmod' object has no attribute 'setWindowIcon'
-
-Excepción: AttributeError
-Mensaje: 'qvfsmod' object has no attribute 'setWindowIcon'
-
-Excepción: FileNotFoundError
-Mensaje: [WinError 2] El sistema no puede encontrar el archivo especificado: 'C:/documentation/license.txt'
-
-Excepción: FileNotFoundError
-Mensaje: [WinError 2] El sistema no puede encontrar el archivo especificado: 'C:/documentation/license.txt'
-
-Excepción: FileNotFoundError
-Mensaje: [WinError 2] El sistema no puede encontrar el archivo especificado: 'C:/documentation/license.txt'
-
-Excepción: FileNotFoundError
-Mensaje: [WinError 2] El sistema no puede encontrar el archivo especificado: 'C:/documentation/license.txt'
-
-Excepción: FileNotFoundError
-Mensaje: [WinError 2] El sistema no puede encontrar el archivo especificado: 'C:/documentation/license.txt'
-
-Excepción: FileNotFoundError
-Mensaje: [WinError 2] El sistema no puede encontrar el archivo especificado: 'C:/documentation/license.txt'
-
-Excepción: AxisError
-Mensaje: axis -1 is out of bounds for array of dimension 0
-
-Excepción: AxisError
-Mensaje: axis -1 is out of bounds for array of dimension 0
-
-Excepción: NameError
-Mensaje: name 'ax' is not defined
-
-Excepción: ValueError
-Mensaje: Can't mix absolute and relative paths
-
-Excepción: ValueError
-Mensaje: Can't mix absolute and relative paths
-
-Excepción: ValueError
-Mensaje: Can't mix absolute and relative paths
-
-Excepción: NameError
-Mensaje: name 'relative_path' is not defined
-
-Excepción: UFuncTypeError
-Mensaje: Cannot cast ufunc 'lstsq_n' input 1 from dtype('O') to dtype('float64') with casting rule 'same_kind'
-
-Excepción: ValueError
-Mensaje: could not convert string to float: ''
-
-Excepción: KeyError
-Mensaje: 'Buffer Length PDR 2 0.9'
-
-Excepción: UFuncTypeError
-Mensaje: Cannot cast ufunc 'lstsq_m' input 1 from dtype('O') to dtype('float64') with casting rule 'same_kind'
-
-Excepción: UFuncTypeError
-Mensaje: Cannot cast ufunc 'lstsq_m' input 1 from dtype('O') to dtype('float64') with casting rule 'same_kind'
-
-Excepción: AttributeError
-Mensaje: 'list' object has no attribute 'to_csv'
-
-Excepción: NameError
-Mensaje: name 'results' is not defined
-
-Excepción: UFuncTypeError
-Mensaje: Cannot cast ufunc 'lstsq_m' input 1 from dtype('O') to dtype('float64') with casting rule 'same_kind'
-
-Excepción: ValueError
-Mensaje: dtype of [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
- 0 0 0 0 0 0] array must be 'float', float32 or float64
-
-Excepción: UFuncTypeError
-Mensaje: Cannot cast ufunc 'lstsq_m' input 1 from dtype('O') to dtype('float64') with casting rule 'same_kind'
-
-Excepción: ValueError
-Mensaje: autodetected range of [nan, nan] is not finite
-
-Excepción: AttributeError
-Mensaje: 'qvfsmod' object has no attribute 'pesticide'
-
-Excepción: ValueError
-Mensaje: could not convert string to float: ''
-
-Excepción: ValueError
-Mensaje: max() arg is an empty sequence
-
-Excepción: ValueError
-Mensaje: max() arg is an empty sequence
-
-Excepción: ValueError
-Mensaje: max() arg is an empty sequence
-
-Excepción: ValueError
-Mensaje: max() arg is an empty sequence
-
-Excepción: AttributeError
-Mensaje: 'qvfsmod' object has no attribute 'dlg_uuser_defined_storm_dialog_french'
-
-Excepción: AttributeError
-Mensaje: 'qvfsmod' object has no attribute 'dlg_user_storm_french'
-
-Excepción: NameError
-Mensaje: name 'direction' is not defined
-
-Excepción: ValueError
-Mensaje: could not convert string to float: ''
-
-Excepción: ValueError
-Mensaje: could not convert string to float: ''
-
-Excepción: ValueError
-Mensaje: invalid literal for int() with base 10: 'f'
-
-Excepción: ValueError
-Mensaje: invalid literal for int() with base 10: 'f'
-
-Excepción: AttributeError
-Mensaje: 'qvfsmodMainWindow' object has no attribute 'select_project_name'
-
-Excepción: TypeError
-Mensaje: expected str, bytes or os.PathLike object, not tuple
-
-Excepción: TypeError
-Mensaje: expected str, bytes or os.PathLike object, not tuple
-
-Excepción: TypeError
-Mensaje: expected str, bytes or os.PathLike object, not tuple
-
-Excepción: NameError
-Mensaje: name 'tiempo' is not defined
-
-Excepción: TypeError
-Mensaje: setText(self, str): argument 1 has unexpected type 'float'
-
-Excepción: IndexError
-Mensaje: list index out of range
-
-Excepción: FileNotFoundError
-Mensaje: [Errno 2] No such file or directory: 'C:\\qvfsmod\\Source_code\\inputs\\samplef.iwq'
-
-Excepción: FileNotFoundError
-Mensaje: [Errno 2] No such file or directory: 'C:\\qvfsmod\\Source_code\\inputs\\samplef.iwq'
-
-Excepción: FileNotFoundError
-Mensaje: [Errno 2] No such file or directory: 'C:\\qvfsmod\\Source_code\\inputs\\samplef.iwq'
-
-Excepción: FileNotFoundError
-Mensaje: [Errno 2] No such file or directory: 'C:\\qvfsmod\\Source_code\\inputs\\samplef.iwq'
-
-Excepción: AttributeError
-Mensaje: 'QHBoxLayout' object has no attribute 'show'
-
-Excepción: AttributeError
-Mensaje: 'QHBoxLayout' object has no attribute 'setVisible'
-
-Excepción: AttributeError
-Mensaje: 'QHBoxLayout' object has no attribute 'setStyleSheet'
-
-Excepción: NameError
-Mensaje: name 'pesticide' is not defined
-
-Excepción: AttributeError
-Mensaje: 'int' object has no attribute 'half_life_2'
-
-Excepción: AttributeError
-Mensaje: 'int' object has no attribute 'half_life_2'
-
-Excepción: ValueError
-Mensaje: invalid literal for int() with base 10: '1.0'
-
-Excepción: FileNotFoundError
-Mensaje: [Errno 2] No such file or directory: 'C:\\Users\\inigo.barberena\\Documents\\Borrar\\inputs\\sample.iso'
-
-Excepción: ValueError
-Mensaje: zero-size array to reduction operation minimum which has no identity
-
-Excepción: AttributeError
-Mensaje: 'QLabel' object has no attribute 'split'
-
-Excepción: TypeError
-Mensaje: Axes.hlines() missing 1 required positional argument: 'xmax'
-
-Excepción: AttributeError
-Mensaje: 'qvfsmod' object has no attribute 'nashes_bootstraping_sedimentograph'
-
-Excepción: AttributeError
-Mensaje: 'QLabel' object has no attribute 'setTetxt'
-
-Excepción: AttributeError
-Mensaje: 'infiltration_soil_properties' object has no attribute 'frame_10'
-
-Excepción: AttributeError
-Mensaje: 'infiltration_soil_properties' object has no attribute 'frame_10'
-
-Excepción: AttributeError
-Mensaje: 'soil_characteristic_curves' object has no attribute 'label_18'
-
-Excepción: TypeError
-Mensaje: can't multiply sequence by non-int of type 'float'
-
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 20200, in <module>
+    dialog = qvfsmod()
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 190, in __init__
+    self.initGui()
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 490, in initGui
+    self.dlg_calibration_results_single.pushButton_3.clicked.connect(self.calibration_result_single.close)
+AttributeError: 'qvfsmod' object has no attribute 'calibration_result_single'
+
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 11788, in run_calibration_sedimentograph
+    self.sedimentograph_calibration_df = self.obtain_df_sedimentograph_calibration()
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12196, in obtain_df_sedimentograph_calibration
+    with open(ruta, "r") as archivo:
+PermissionError: [Errno 13] Permission denied: 'C:\\qvfsmod\\Source_code'
+
+================================================================================
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12151, in run
+    resultado_global = differential_evolution(objetivo, bounds=limites, strategy='best1bin')
+  File "C:\Users\inigo.barberena\AppData\Local\anaconda3\lib\site-packages\scipy\optimize\_differentialevolution.py", line 397, in differential_evolution
+    ret = solver.solve()
+  File "C:\Users\inigo.barberena\AppData\Local\anaconda3\lib\site-packages\scipy\optimize\_differentialevolution.py", line 998, in solve
+    next(self)
+  File "C:\Users\inigo.barberena\AppData\Local\anaconda3\lib\site-packages\scipy\optimize\_differentialevolution.py", line 1385, in __next__
+    energy = self.func(parameters)
+  File "C:\Users\inigo.barberena\AppData\Local\anaconda3\lib\site-packages\scipy\_lib\_util.py", line 372, in __call__
+    return self.f(x, *self.args)
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12144, in objetivo
+    raise StopOptimization_convergence()
+qvfsmod.run_calibration_hydrograph.<locals>.StopOptimization_convergence
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12158, in run
+    resultado = objetivo(self.best_result["x"])
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12144, in objetivo
+    raise StopOptimization_convergence()
+qvfsmod.run_calibration_hydrograph.<locals>.StopOptimization_convergence
+
+================================================================================
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12151, in run
+    resultado_global = differential_evolution(objetivo, bounds=limites, strategy='rand1bin',popsize = 30,mutation = (1,2),
+  File "C:\Users\inigo.barberena\AppData\Local\anaconda3\lib\site-packages\scipy\optimize\_differentialevolution.py", line 382, in differential_evolution
+    with DifferentialEvolutionSolver(func, bounds, args=args,
+  File "C:\Users\inigo.barberena\AppData\Local\anaconda3\lib\site-packages\scipy\optimize\_differentialevolution.py", line 665, in __init__
+    raise ValueError('The mutation constant must be a float in '
+ValueError: The mutation constant must be a float in U[0, 2), or specified as a tuple(min, max) where min < max and min, max are in U[0, 2).
+
+================================================================================
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12151, in run
+    resultado_global = differential_evolution(objetivo, bounds=limites, strategy='rand1bin',popsize = 30,mutation = (1.0,2.0),
+  File "C:\Users\inigo.barberena\AppData\Local\anaconda3\lib\site-packages\scipy\optimize\_differentialevolution.py", line 382, in differential_evolution
+    with DifferentialEvolutionSolver(func, bounds, args=args,
+  File "C:\Users\inigo.barberena\AppData\Local\anaconda3\lib\site-packages\scipy\optimize\_differentialevolution.py", line 665, in __init__
+    raise ValueError('The mutation constant must be a float in '
+ValueError: The mutation constant must be a float in U[0, 2), or specified as a tuple(min, max) where min < max and min, max are in U[0, 2).
+
+================================================================================
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12091, in run_calibration_hydrograph
+    self.calibration_dictionary = self.create_dictionary_calibration_hydrograph()
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13842, in create_dictionary_calibration_hydrograph
+    dictionary["vertical"] = [float(self.dlg_hydrograph_calibration.min_vertical.text()),float(self.dlg_hydrograph_calibration.max_vertical.text())]
+ValueError: could not convert string to float: '1-2'
+
+================================================================================
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12091, in run_calibration_hydrograph
+    self.calibration_dictionary = self.create_dictionary_calibration_hydrograph()
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13854, in create_dictionary_calibration_hydrograph
+    dictionary["saturated"] = [float(self.dlg_hydrograph_calibration.min_saturated.text()),float(self.dlg_hydrograph_calibration.max_saturated.text())]
+ValueError: could not convert string to float: '0,5'
+
+================================================================================

@@ -2438,8 +2438,8 @@ default 5 min</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>702</width>
-             <height>413</height>
+             <width>768</width>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_29">
@@ -3226,7 +3226,7 @@ default 5 min</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>204</width>
+                       <width>231</width>
                        <height>474</height>
                       </rect>
                      </property>
@@ -3534,8 +3534,8 @@ Solution Parameters</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>290</width>
-                       <height>28</height>
+                       <width>497</width>
+                       <height>173</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_98">
@@ -3793,7 +3793,7 @@ Solution Parameters</string>
                           <x>0</x>
                           <y>0</y>
                           <width>360</width>
-                          <height>200</height>
+                          <height>245</height>
                          </rect>
                         </property>
                         <layout class="QGridLayout" name="gridLayout_61">
@@ -4235,9 +4235,9 @@ Solution Parameters</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>774</width>
-             <height>941</height>
+             <y>-450</y>
+             <width>766</width>
+             <height>931</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_9">
@@ -4338,7 +4338,7 @@ Solution Parameters</string>
                <item row="2" column="1" colspan="2">
                 <widget class="QFrame" name="frame_41">
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -4375,7 +4375,7 @@ analysis</string>
                <item row="2" column="3" colspan="2">
                 <widget class="QFrame" name="frame_42">
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -4445,7 +4445,7 @@ analysis</string>
                <item row="5" column="4">
                 <widget class="QFrame" name="frame_44">
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -4554,7 +4554,7 @@ analysis</string>
                <item row="5" column="1">
                 <widget class="QFrame" name="frame_43">
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -4606,64 +4606,10 @@ analysis</string>
                <enum>QFrame::Raised</enum>
               </property>
               <layout class="QGridLayout" name="gridLayout_42">
-               <item row="0" column="0" colspan="2">
-                <widget class="QLabel" name="label_75">
-                 <property name="font">
-                  <font>
-                   <family>Georgia</family>
-                   <pointsize>-1</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>Single values calibration</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0" colspan="2">
-                <layout class="QGridLayout" name="gridLayout_51">
-                 <item row="1" column="1">
-                  <widget class="QPushButton" name="browse_single_lines">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLineEdit" name="single_values_line">
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_64">
-                   <property name="text">
-                    <string>VFS project file</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="2">
-                  <spacer name="horizontalSpacer_5">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
                <item row="2" column="0" rowspan="2" colspan="2">
                 <widget class="QFrame" name="frame_32">
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -4672,7 +4618,7 @@ analysis</string>
                   <item row="0" column="0">
                    <widget class="QFrame" name="frame_31">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -4789,7 +4735,7 @@ for calibration</string>
                   <item row="0" column="1">
                    <widget class="QFrame" name="frame_33">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -4906,7 +4852,7 @@ for calibration</string>
                   <item row="0" column="2">
                    <widget class="QFrame" name="frame_34">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
@@ -5107,6 +5053,144 @@ for calibration</string>
                  </layout>
                 </widget>
                </item>
+               <item row="0" column="0" colspan="2">
+                <widget class="QLabel" name="label_75">
+                 <property name="font">
+                  <font>
+                   <family>Georgia</family>
+                   <pointsize>-1</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Single values calibration</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0" colspan="2">
+                <layout class="QGridLayout" name="gridLayout_51">
+                 <item row="1" column="1">
+                  <widget class="QPushButton" name="browse_single_lines">
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLineEdit" name="single_values_line">
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_64">
+                   <property name="text">
+                    <string>VFS project file</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="2">
+                  <spacer name="horizontalSpacer_5">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+               <item row="4" column="0" colspan="2">
+                <layout class="QHBoxLayout" name="horizontalLayout_54">
+                 <item>
+                  <widget class="QFrame" name="frame_45">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QGridLayout" name="gridLayout_72">
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="label_109">
+                      <property name="text">
+                       <string>Identifiability
+analysis</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QPushButton" name="results_sensitivity_single">
+                      <property name="text">
+                       <string>Results</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QPushButton" name="calibration_sensitivity_single">
+                      <property name="text">
+                       <string>Execute</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QFrame" name="frame_46">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QGridLayout" name="gridLayout_73">
+                    <item row="1" column="0">
+                     <widget class="QPushButton" name="run_calibration_single">
+                      <property name="text">
+                       <string>Run </string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QPushButton" name="advanced_single">
+                      <property name="text">
+                       <string>Advanced settings</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QPushButton" name="calibration_result_single">
+                      <property name="text">
+                       <string>Results</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0" colspan="2">
+                     <widget class="QLabel" name="label_110">
+                      <property name="text">
+                       <string>Calibration</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
               </layout>
              </widget>
             </item>
@@ -5116,90 +5200,6 @@ for calibration</string>
                <enum>Qt::Horizontal</enum>
               </property>
              </widget>
-            </item>
-            <item row="3" column="0">
-             <layout class="QHBoxLayout" name="horizontalLayout_54">
-              <item>
-               <widget class="QFrame" name="frame_45">
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_72">
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_109">
-                   <property name="text">
-                    <string>Identifiability
-analysis</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QPushButton" name="results_sensitivity_single">
-                   <property name="text">
-                    <string>Results</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QPushButton" name="calibration_sensitivity_single">
-                   <property name="text">
-                    <string>Execute</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QFrame" name="frame_46">
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_73">
-                 <item row="1" column="0">
-                  <widget class="QPushButton" name="run_calibration_single">
-                   <property name="text">
-                    <string>Run </string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QPushButton" name="advanced_single">
-                   <property name="text">
-                    <string>Advanced settings</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QPushButton" name="calibration_result_single">
-                   <property name="text">
-                    <string>Results</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0" colspan="2">
-                  <widget class="QLabel" name="label_110">
-                   <property name="text">
-                    <string>Calibration</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-             </layout>
             </item>
             <item row="1" column="0">
              <widget class="Line" name="line_3">
@@ -5256,7 +5256,7 @@ analysis</string>
              <x>0</x>
              <y>0</y>
              <width>908</width>
-             <height>383</height>
+             <height>481</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_65">

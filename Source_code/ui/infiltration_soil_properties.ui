@@ -126,7 +126,7 @@ QTableCornerButton::section {
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-482</y>
+        <y>0</y>
         <width>870</width>
         <height>879</height>
        </rect>
@@ -1174,9 +1174,10 @@ is checked, (0&lt;=SCHK&lt;=0.5)</string>
 </string>
          </property>
          <property name="text">
-          <string>Multiple layers are used by the GUI to calculate the effective values for the soil (i.e. Ks as the depth-weighed harmonic mean of the layers Ks and
-the rest of the properties as depth-weighted arithmetic mean). After the calculations, the effective soil properties are saved as a single-layer soil
-in VFSMOD for simulations</string>
+          <string>Multiple layers are used by the GUI to calculate the effective values for the soil (i.e. Ks as the depth-weighed harmonic mean of the layers Ks and the rest of the properties as depth-weighted arithmetic mean). After the calculations, the effective soil properties are saved as a single-layer soil in VFSMOD for simulations</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
