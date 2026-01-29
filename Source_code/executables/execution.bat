@@ -1,2 +1,2 @@
-cd "C:\qvfsmod\Source_code\inverse" 
-"C:\qvfsmod\Source_code\executables\vfsm" inverse.prj 
+cd "C:\qvfsmod\Source_code\calibration" 
+"C:\qvfsmod\Source_code\executables\vfsm" calibration.prj 

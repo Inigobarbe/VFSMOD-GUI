@@ -420,6 +420,7 @@ class qvfsmod():
         self.dlg_base.check_pesticide_out.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
         self.dlg_base.check_pesticide_solid.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
         self.dlg_base.check_pesticide_liquid.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
+        self.dlg_base.check_pesticide_remobilization.stateChanged.connect(lambda _, b = [False,"single"]:self.dlg_calibration_sensitivity_hydrograph_show(b))
         
         
         #Update graph senstiivity global
@@ -989,7 +990,7 @@ class qvfsmod():
         #Calibration check conditions
         check_list_calibration = [self.dlg_base.check_total_discharge,self.dlg_base.check_filtered_discharge,
             self.dlg_base.check_total_sediment,self.dlg_base.check_filtered_sediment,
-            self.dlg_base.check_filtered_pesticide,self.dlg_base.check_pesticide_out,self.dlg_base.check_pesticide_solid,self.dlg_base.check_pesticide_liquid]
+            self.dlg_base.check_filtered_pesticide,self.dlg_base.check_pesticide_out,self.dlg_base.check_pesticide_solid,self.dlg_base.check_pesticide_liquid,self.dlg_base.check_pesticide_remobilization]
         for i in check_list_calibration:
             i.stateChanged.connect(lambda _,b = i:self.calibration_single_values_checks(b))
         
@@ -1191,9 +1192,19 @@ class qvfsmod():
         self.dlg_infiltration_soil.label_27.setText("""<span style="font-size: 10pt;">Multiple layers are used by the GUI to calculate the effective values for the soil (i.e. Ks as the depth-weighed harmonic mean of the layers Ks and the rest of the properties as depth-weighted arithmetic mean). After the calculations, the effective soil properties are saved as a single-layer soil in VFSMOD for simulations</span>""")
         
         
+        #If the name of the project changes in calibration, then change the name of the output file
+        self.dlg_base.vfs_project.textChanged.connect(lambda _, b = "hydrograph":self.update_name_output_calibration(b))
+        self.dlg_base.vfs_file.textChanged.connect(lambda _, b = "sedimentograph":self.update_name_output_calibration(b))
+        self.dlg_base.vfs_file.textChanged.connect(lambda _, b = "single":self.update_name_output_calibration(b))
+        
         #Default values
         self.default_values()
         
+        #If the path of the observed or hydrograph or sedimentograph changed then update the path to the dialog where the hydrograph or the sedimentograph can be observed and vicecersa
+        self.dlg_base.hydrograph_file.textChanged.connect(lambda _, b = "1":self.update_path_calibration_observed(b))
+        self.dlg_base.sedimentograph_file.textChanged.connect(lambda _, b = "2":self.update_path_calibration_observed(b))
+        self.dlg_hydrograph_calibration_edit.file_hydrograph.textChanged.connect(lambda _, b = "3":self.update_path_calibration_observed(b))
+        self.dlg_sedimentograph_calibration_edit.file_sedimentograph.textChanged.connect(lambda _, b = "4":self.update_path_calibration_observed(b))
         
         
         #Change table of buffer segments when buffer length is changed
@@ -1225,6 +1236,40 @@ class qvfsmod():
         #When clicking save then close figures settings dialog
         self.dlg_figure_settings.accept.clicked.connect(self.save_figures)
         self.dlg_figure_settings.accept.clicked.connect(self.dlg_figure_settings.close)
+    
+    
+    
+    def update_path_calibration_observed(self,information):
+        """Method to the path of the observed or hydrograph or sedimentograph changed then update the path to the dialog where the hydrograph or the sedimentograph can be observed and vicecersa"""
+        if information == "1":
+            self.dlg_hydrograph_calibration_edit.file_hydrograph.setText(self.dlg_base.hydrograph_file.text())
+        elif information == "2":
+            self.dlg_sedimentograph_calibration_edit.file_sedimentograph.setText(self.dlg_base.sedimentograph_file.text())
+        elif information == "3":
+            self.dlg_base.hydrograph_file.setText(self.dlg_hydrograph_calibration_edit.file_hydrograph.text())
+        elif information == "4":
+            self.dlg_base.sedimentograph_file.setText(self.dlg_sedimentograph_calibration_edit.file_sedimentograph.text())
+
+        
+    def update_name_output_calibration(self,calibration_type):
+        """Method to update the calibration output file name if the name of the project changed"""
+        #Dictionary calibration_type:[project_lineEdit,calibration_output_file]
+        dictionary_dialogs = {"hydrograph":[self.dlg_base.vfs_project,self.dlg_calibration_advanced_settings_hydrograph.exit_file],
+            "sedimentograph":[self.dlg_base.vfs_file,self.dlg_calibration_advanced_settings_sedimentograph.exit_file],
+            "single":[self.dlg_base.single_values_line,self.dlg_calibration_advanced_settings_single.exit_file]}
+        try:
+            #Obtain name of project
+            project_path = Path(dictionary_dialogs[calibration_type][0].text())
+            project_name = project_path.stem
+            #Change name of output file
+            ruta = Path(dictionary_dialogs[calibration_type][1].text())
+            ruta_nueva = ruta.with_name(f"results_calibration_{project_name}_{calibration_type}.csv")
+            #Set new name
+            dictionary_dialogs[calibration_type][1].setText(str(ruta_nueva))
+
+        except:
+            pass
+    
     
     def correct_fraction_filter_ponding_checked(self):
         """Method to put the fraction of the filter where ponding is checked to 0.5 if a higher value than 0.5 is added"""
@@ -2256,7 +2301,7 @@ class qvfsmod():
             self.type_calibration_sensitivity = "single"
             inputs = []
             #Hydrograph inputs
-            if self.dlg_base.check_total_discharge.isChecked() or self.dlg_base.check_filtered_discharge.isChecked() or self.dlg_base.check_total_sediment.isChecked() or self.dlg_base.check_filtered_sediment.isChecked() or self.dlg_base.check_filtered_pesticide.isChecked() or self.dlg_base.check_pesticide_out.isChecked() or self.dlg_base.check_pesticide_solid.isChecked() or self.dlg_base.check_pesticide_liquid.isChecked():
+            if self.dlg_base.check_total_discharge.isChecked() or self.dlg_base.check_filtered_discharge.isChecked() or self.dlg_base.check_total_sediment.isChecked() or self.dlg_base.check_filtered_sediment.isChecked() or self.dlg_base.check_filtered_pesticide.isChecked() or self.dlg_base.check_pesticide_out.isChecked() or self.dlg_base.check_pesticide_solid.isChecked() or self.dlg_base.check_pesticide_liquid.isChecked() or self.dlg_base.check_pesticide_remobilization.isChecked():
                 #First add the ones that area always
                 inputs += ["Vertical Saturated K","Saturated Water Content","Maximum Surface Storage","Fraction of the filter where ponding is checked","Width of the Strip (m)","Buffer length (m)","Filter Manning n (RNA s/m^1/3)","Average Filter Slope"]
                 #Then add the others
@@ -2330,13 +2375,13 @@ class qvfsmod():
                             inputs.append("Initial Water Content")
             
             #Sedimentograph inputs
-            if self.dlg_base.check_total_sediment.isChecked() or self.dlg_base.check_filtered_sediment.isChecked() or self.dlg_base.check_filtered_pesticide.isChecked() or self.dlg_base.check_pesticide_out.isChecked() or self.dlg_base.check_pesticide_solid.isChecked() or self.dlg_base.check_pesticide_liquid.isChecked():
+            if self.dlg_base.check_total_sediment.isChecked() or self.dlg_base.check_filtered_sediment.isChecked() or self.dlg_base.check_filtered_pesticide.isChecked() or self.dlg_base.check_pesticide_out.isChecked() or self.dlg_base.check_pesticide_solid.isChecked() or self.dlg_base.check_pesticide_liquid.isChecked() or self.dlg_base.check_pesticide_remobilization.isChecked():
                 inputs += ["Spacing for grass stems (cm)","Roughness-Grass Mannings n VN","Height of grass (cm)","Roughness-Bare surface Mannings n (Vn2)",
                     "Portion of Particles from incoming sediment with diameter >0.0037 cm","Incoming flow sediment concentration (g/cm^3)",
                     "Porosity of deposited sediment as a fraction","Sediment particle size diameter d50 (cm)","Sediment particle density (g/cm^3)"]
             
             #Pesticide inputs
-            if self.dlg_base.check_filtered_pesticide.isChecked() or self.dlg_base.check_pesticide_out.isChecked() or self.dlg_base.check_pesticide_solid.isChecked() or self.dlg_base.check_pesticide_liquid.isChecked():
+            if self.dlg_base.check_filtered_pesticide.isChecked() or self.dlg_base.check_pesticide_out.isChecked() or self.dlg_base.check_pesticide_solid.isChecked() or self.dlg_base.check_pesticide_liquid.isChecked() or self.dlg_base.check_pesticide_remobilization.isChecked():
                 prj_path = self.obtain_direction_vfsmod(self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.text())
                 if os.path.exists(prj_path) and os.path.isfile(prj_path):
                     #Obtain prj path
@@ -2412,8 +2457,9 @@ class qvfsmod():
     
     def dlg_hydrograph_calibration_edit_show(self):
         """Method to show the editable hyddrograph for the calibration"""
-        #Add text of the file
-        self.dlg_hydrograph_calibration_edit.file_hydrograph.setText(self.dlg_base.hydrograph_file.text())
+        #Add text of the file only if there is something in the lineEdit
+        if self.dlg_base.hydrograph_file.text()!="":
+            self.dlg_hydrograph_calibration_edit.file_hydrograph.setText(self.dlg_base.hydrograph_file.text())
         #Change width of column
         self.dlg_hydrograph_calibration_edit.tableWidget.setColumnWidth(1, 150)
         #Update graph
@@ -2424,8 +2470,9 @@ class qvfsmod():
     
     def dlg_sedimentograph_calibration_edit_show(self):
         """Method to show the editable hyddrograph for the calibration"""
-        #Add text of the file
-        self.dlg_sedimentograph_calibration_edit.file_sedimentograph.setText(self.dlg_base.sedimentograph_file.text())
+        #Add text of the file only if there is something in the lineEdit
+        if self.dlg_base.sedimentograph_file.text()!="":
+            self.dlg_sedimentograph_calibration_edit.file_sedimentograph.setText(self.dlg_base.sedimentograph_file.text())
         #Update graph
         self.dlg_sedimentograph_calibration_edit_add_values_table()
         #Show dialog
@@ -2617,6 +2664,8 @@ class qvfsmod():
             else: #absolute path
                 text = fname[0]
             self.dlg_hydrograph_calibration_edit.file_hydrograph.setText(os.path.normpath(text))
+            #Put the file name in the lineEdit of the dialog base
+            self.dlg_base.hydrograph_file.setText(os.path.normpath(text))
     
     def dlg_sedimentograph_calibration_edit_browse(self):
         """Method to browse the hydrograph file"""
@@ -2629,7 +2678,8 @@ class qvfsmod():
             else: #absolute path
                 text = fname[0]
             self.dlg_sedimentograph_calibration_edit.file_sedimentograph.setText(os.path.normpath(text))
-    
+            #Put the file name in the lineEdit of the dialog base
+            self.dlg_base.sedimentograph_file.setText(os.path.normpath(text))
     
     def dlg_hydrograph_calibration_edit_add(self,table):
         """Method to add row to table in hydrograph calibration edit"""
@@ -2661,6 +2711,10 @@ class qvfsmod():
         with open(path, 'w') as archivo:
             for i in range(len(data)):
                 archivo.write(f"{data.iloc[i,0]}	{data.iloc[i,1]}\n")
+        
+        #Put the path that was saved in the main dialog
+        self.dlg_base.hydrograph_file.setText(self.dlg_hydrograph_calibration_edit.file_hydrograph.text())
+        
         #Close if its save and close
         if condition:
             self.dlg_hydrograph_calibration_edit.close()
@@ -2677,6 +2731,10 @@ class qvfsmod():
         with open(path, 'w') as archivo:
             for i in range(len(data)):
                 archivo.write(f"{data.iloc[i,0]}	{data.iloc[i,1]}\n")
+        
+        #Put the path that was saved in the main dialog
+        self.dlg_base.sedimentograph_file.setText(self.dlg_sedimentograph_calibration_edit.file_sedimentograph.text())
+        
         #Close if its save and close
         if condition:
             self.dlg_sedimentograph_calibration_edit.close()
@@ -2773,6 +2831,14 @@ class qvfsmod():
             else:
                 self.dlg_base.line_pesticide_liquid.setEnabled(False)
                 self.dlg_base.line_pesticide_liquid.setStyleSheet("background-color: #d9d9d9;")
+        
+        if check == self.dlg_base.check_pesticide_remobilization:
+            if check.isChecked():
+                self.dlg_base.line_pesticide_remobilization.setStyleSheet("background-color: #f0f0f0;")
+                self.dlg_base.line_pesticide_remobilization.setEnabled(True)
+            else:
+                self.dlg_base.line_pesticide_remobilization.setEnabled(False)
+                self.dlg_base.line_pesticide_remobilization.setStyleSheet("background-color: #d9d9d9;")
         
     def add_shallow_water_table_paramters_calibration(self):
         """Method to add shallow water parameters to hydrograph calibration"""
@@ -5013,9 +5079,11 @@ class qvfsmod():
                 for i in lineas_owq:
                     if i == f" Normalized values by source area:\n":
                         condition = True
+                    if i.split("=")[-1].rstrip()==" Source Area (input)":
+                        area = float(i.split("=")[0].split()[0])
                     if i.split("=")[-1].rstrip()==string and condition:
                         if string != " Source Area (input)":
-                            return float(i.split("=")[0].split()[int(number_pesticide)-1])
+                            return float(i.split("=")[0].split()[int(number_pesticide)-1])*area
                         else:
                             return float(i.split("=")[0].split()[0])
 
@@ -6749,7 +6817,7 @@ class qvfsmod():
     def browse_sensitivity_calibration_results(self):
         """Method tho browse project for sensitivity for sensitivity for calibration"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
-        fname = QFileDialog.getOpenFileName(self.dlg_sensitivity_calibration_results_hydrograph, "Select CSV Project File",str(Path(working_directory +"/inverse/output")), "CSV files (*.csv)")
+        fname = QFileDialog.getOpenFileName(self.dlg_sensitivity_calibration_results_hydrograph, "Select CSV Project File",str(Path(working_directory +"/calibration/output")), "CSV files (*.csv)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
@@ -6844,7 +6912,7 @@ class qvfsmod():
     def browse_files_calibration_hydrograph(self):
         """Method to select the file for calibration results"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
-        fname = QFileDialog.getOpenFileName(self.dlg_calibration_results_hydrograph, "Select Calibration Results File",str(Path(working_directory+"/inverse")) , "CSV files (*.csv)")
+        fname = QFileDialog.getOpenFileName(self.dlg_calibration_results_hydrograph, "Select Calibration Results File",str(Path(working_directory+"/calibration")) , "CSV files (*.csv)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
@@ -6856,7 +6924,7 @@ class qvfsmod():
     def browse_files_calibration_sedimentograph(self):
         """Method to select the file for calibration results"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
-        fname = QFileDialog.getOpenFileName(self.dlg_calibration_results_sedimentograph, "Select Calibration Results File",str(Path(working_directory+"/inverse")) , "CSV files (*.csv)")
+        fname = QFileDialog.getOpenFileName(self.dlg_calibration_results_sedimentograph, "Select Calibration Results File",str(Path(working_directory+"/calibration")) , "CSV files (*.csv)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
@@ -6868,7 +6936,7 @@ class qvfsmod():
     def browse_files_calibration_single(self):
         """Method to select the file for single calibration results"""
         working_directory = self.dlg_base.working_directory_vfsmod.text()
-        fname = QFileDialog.getOpenFileName(self.dlg_calibration_results_single, "Select Calibration Results File",str(Path(working_directory+"/inverse")) , "CSV files (*.csv)")
+        fname = QFileDialog.getOpenFileName(self.dlg_calibration_results_single, "Select Calibration Results File",str(Path(working_directory+"/calibration")) , "CSV files (*.csv)")
         if fname[0]!="":
             #Put the relative path if the file is inside the folder
             if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
@@ -9949,7 +10017,7 @@ class qvfsmod():
         """Method to move files to the corresponding folders for sensitiviy analysis for calibration"""
         #FIRST WE MOVE THE FILES TO THE FOLDER OF SENSITIVITY ANALYSIS
         #Prj
-        prj_file = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/inverse.prj"))
+        prj_file = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration/calibration.prj"))
         #Check if water quality is simulated
         with open(self.obtain_direction_vfsmod(self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.text()), "r") as archivo:
             lineas = archivo.readlines()
@@ -9960,27 +10028,27 @@ class qvfsmod():
             
         #Create file
         with open(prj_file, 'w') as archivo:
-            archivo.write(f"ikw={str(Path('inputs/inverse.ikw'))}  \n") 
-            archivo.write(f"iso={str(Path('inputs/inverse.iso'))}  \n")
-            archivo.write(f"igr={str(Path('inputs/inverse.igr'))}  \n")
-            archivo.write(f"isd={str(Path('inputs/inverse.isd'))}  \n")
-            archivo.write(f"irn={str(Path('inputs/inverse.irn'))}  \n")
-            archivo.write(f"iro={str(Path('inputs/inverse.iro'))}  \n")
+            archivo.write(f"ikw={str(Path('inputs/calibration.ikw'))}  \n") 
+            archivo.write(f"iso={str(Path('inputs/calibration.iso'))}  \n")
+            archivo.write(f"igr={str(Path('inputs/calibration.igr'))}  \n")
+            archivo.write(f"isd={str(Path('inputs/calibration.isd'))}  \n")
+            archivo.write(f"irn={str(Path('inputs/calibration.irn'))}  \n")
+            archivo.write(f"iro={str(Path('inputs/calibration.iro'))}  \n")
             if self.water_quality:
-                archivo.write(f"iwq={str(Path('inputs/inverse.iwq'))}  \n")
-            archivo.write(f"og1={str(Path('output/inverse.og1'))}  \n") 
-            archivo.write(f"og2={str(Path('output/inverse.og2'))}  \n")
-            archivo.write(f"ohy={str(Path('output/inverse.ohy'))}  \n")
-            archivo.write(f"osm={str(Path('output/inverse.osm'))}  \n")
-            archivo.write(f"osp={str(Path('output/inverse.osp'))}  \n")
+                archivo.write(f"iwq={str(Path('inputs/calibration.iwq'))}  \n")
+            archivo.write(f"og1={str(Path('output/calibration.og1'))}  \n") 
+            archivo.write(f"og2={str(Path('output/calibration.og2'))}  \n")
+            archivo.write(f"ohy={str(Path('output/calibration.ohy'))}  \n")
+            archivo.write(f"osm={str(Path('output/calibration.osm'))}  \n")
+            archivo.write(f"osp={str(Path('output/calibration.osp'))}  \n")
             if self.water_quality:
-                archivo.write(f"owq={str(Path('output/inverse.owq'))}  \n")
+                archivo.write(f"owq={str(Path('output/calibration.owq'))}  \n")
         
         
         #REST OF THE FILES
         #Function to copy and paste the inputs to create the files to use in the sensitivity analysis
         def copy_paste(process,type_input):
-            ruta_pegar = str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/inverse/inputs/inverse.{type_input}" ))
+            ruta_pegar = str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/calibration/inputs/calibration.{type_input}" ))
             ruta = self.obtain_direction_vfsmod(self.dlg_calibration_sensitivity_hydrograph.vfs_file_sensitivity.text())
             if os.path.exists(ruta) and os.path.isfile(ruta):
                 #First we open .prj and obtain the direction of the copying file
@@ -10017,19 +10085,19 @@ class qvfsmod():
         for core in range(self.number_cores*5):#we do *5 because if not there can be problems of overlapping:processes executing files that are already executing
             with open(prj_file, 'r') as file:
                 lineas = file.readlines()
-            lineas = [linea.replace("inverse",f"inverse_{core}") for linea in lineas]
-            new_filepath = prj_file.replace("inverse.prj",f"inverse_{core}.prj")
+            lineas = [linea.replace("calibration",f"calibration_{core}") for linea in lineas]
+            new_filepath = prj_file.replace("calibration.prj",f"calibration_{core}.prj")
             with open(new_filepath, 'w') as archivo:
                 for i in lineas:
                     archivo.write(i)
                     
         #Move replicated input files 
-        carpeta = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse"))
+        carpeta = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration"))
         folder_path = os.path.join(carpeta, "inputs")
         files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f)) and "_" not in f]
         for i in range(self.number_cores*5):
             for k in files:
-                shutil.copyfile(str(Path(carpeta+"/inputs/"+k)), str(Path(carpeta+"/inputs/"+k.replace("inverse",f"inverse_{i}"))))
+                shutil.copyfile(str(Path(carpeta+"/inputs/"+k)), str(Path(carpeta+"/inputs/"+k.replace("calibration",f"calibration_{i}"))))
         #Replicate executables
         carpeta_bat = str(Path(self.plugin_directory+"/executables"))
         for core in range(self.number_cores*5):
@@ -10038,8 +10106,8 @@ class qvfsmod():
                 #Execution VFS
                 shutil.copyfile(str(Path(carpeta_bat+"/execution.bat")), str(Path(carpeta_bat+"/"+f"execution_vfs_{core}.bat")))
                 f = open(str(Path(carpeta_bat+"/"+f"execution_vfs_{core}.bat")),"w+")
-                linea_uno = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/"))}"')
-                linea_dos = f'"{str(Path(self.plugin_directory+"/executables/vfsm"))}" inverse_{core}.prj'
+                linea_uno = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration/"))}"')
+                linea_dos = f'"{str(Path(self.plugin_directory+"/executables/vfsm"))}" calibration_{core}.prj'
                 linea_tres = "Pause"
                 f.write("{} \n".format(linea_uno))
                 f.write("{} \n".format(linea_dos))
@@ -10052,8 +10120,8 @@ class qvfsmod():
                 shutil.copyfile(str(Path("/Library/Application Support/vfsmod-gui/executables"+"/execution.sh")), str(Path("/Library/Application Support/vfsmod-gui/executables"+"/"+f"execution_uh_{core}.sh")))
                 with open(str(Path("/Library/Application Support/vfsmod-gui"+f"/executables/execution_uh_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
-                    linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/"))}"')
-                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-gui"+"/executables/uh"))}" inverse_{core}.lis'
+                    linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration/"))}"')
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-gui"+"/executables/uh"))}" calibration_{core}.lis'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
@@ -10062,8 +10130,8 @@ class qvfsmod():
                 shutil.copyfile(str(Path("/Library/Application Support/vfsmod-gui"+"/executables/execution.sh")), str(Path("/Library/Application Support/vfsmod-gui/executables"+"/"+f"execution_vfs_{core}.sh")))
                 with open(str(Path("/Library/Application Support/vfsmod-gui"+f"/executables/execution_vfs_{core}.sh")), "w", newline="\n") as f:
                     linea_uno = "#!/bin/bash\n"
-                    linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/"))}"')
-                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-gui"+"/executables/vfsm"))}" inverse_{core}.prj'
+                    linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration/"))}"')
+                    linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-gui"+"/executables/vfsm"))}" calibration_{core}.prj'
                     f.write("{} \n".format(linea_uno))
                     f.write("{} \n".format(linea_dos))
                     f.write("{} \n".format(linea_tres))
@@ -10080,7 +10148,7 @@ class qvfsmod():
     
     def delete_files_calibration_single(self):
         """Method to delete files of design analysis after parallelization"""
-        files_delete = [str(Path(self.working_directory+"/inverse/output/"+x)) for x in os.listdir(str(Path(self.working_directory+"/inverse"+"/output")))]
+        files_delete = [str(Path(self.working_directory+"/calibration/output/"+x)) for x in os.listdir(str(Path(self.working_directory+"/calibration"+"/output")))]
         for i in files_delete:
             os.remove(i)
     
@@ -10104,9 +10172,9 @@ class qvfsmod():
     
     def delete_files_sensitivity_calibration(self):
         """Method to delete files of sensitivity for calibration analysis after parallelization"""
-        files_delete = [str(Path(self.working_directory+"/inverse/"+x)) for x in os.listdir(str(Path(self.working_directory+"/inverse"))) if "inverse" in x and "_" in x]
-        files_delete += [str(Path(self.working_directory+"/inverse/inputs/"+x)) for x in os.listdir(str(Path(self.working_directory+"/inverse"+"/inputs"))) if "inverse" in x and "_" in x]
-        files_delete += [str(Path(self.working_directory+"/inverse/output/"+x)) for x in os.listdir(str(Path(self.working_directory+"/inverse"+"/output"))) if "inverse" in x and "_" in x and x[-3:]!="csv"]
+        files_delete = [str(Path(self.working_directory+"/calibration/"+x)) for x in os.listdir(str(Path(self.working_directory+"/calibration"))) if "calibration" in x and "_" in x]
+        files_delete += [str(Path(self.working_directory+"/calibration/inputs/"+x)) for x in os.listdir(str(Path(self.working_directory+"/calibration"+"/inputs"))) if "calibration" in x and "_" in x]
+        files_delete += [str(Path(self.working_directory+"/calibration/output/"+x)) for x in os.listdir(str(Path(self.working_directory+"/calibration"+"/output"))) if "calibration" in x and "_" in x and x[-3:]!="csv"]
         files_delete += [str(Path(self.plugin_directory+"/executables/"+x)) for x in os.listdir(str(Path(self.plugin_directory+"/executables"))) if "execution" in x and "_" in x]
         for i in files_delete:
             os.remove(i)
@@ -10302,12 +10370,12 @@ class qvfsmod():
     
     def create_folder_sensitivity_analysis_calibration(self):
         """Method to create the folder needed to sensitivity analysis for calibration"""
-        if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse"))):
-            os.mkdir(os.path.join(self.working_directory, "inverse"))
-        if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/inputs"))):
-            os.mkdir(os.path.join(self.working_directory, "inverse","inputs"))
-        if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/output"))):
-            os.mkdir(os.path.join(self.working_directory, "inverse","output"))
+        if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration"))):
+            os.mkdir(os.path.join(self.working_directory, "calibration"))
+        if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration/inputs"))):
+            os.mkdir(os.path.join(self.working_directory, "calibration","inputs"))
+        if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration/output"))):
+            os.mkdir(os.path.join(self.working_directory, "calibration","output"))
     
     def create_folder_uncertainity_analysis(self):
         """Method to create the folder needed to uncertainty analysis"""
@@ -11640,7 +11708,6 @@ class qvfsmod():
             #If single value prj is selected then update the number of pesticides
             if information[2]==self.dlg_base.single_values_line:
                 self.add_pesticides_dialog_single_calibration()
-                
     
     def obtain_outputs_to_calibrate_single(self):   
         """Method to obtain the outputs that are going to be calibrated in single values calibration"""
@@ -11669,7 +11736,9 @@ class qvfsmod():
         #Pesticide outflow in liquid phase
         if self.dlg_base.check_pesticide_liquid.isChecked():
             outputs["Pesticide outflow in liquid phase"] = float(self.dlg_base.line_pesticide_liquid.text())
-            
+        #Pesticide next event residue remobilization
+        if self.dlg_base.check_pesticide_remobilization.isChecked():
+            outputs["Pesticide residue remobilization"] = float(self.dlg_base.line_pesticide_remobilization.text())
         return outputs
         
     
@@ -11689,7 +11758,7 @@ class qvfsmod():
         
         
         #Error if pesticide calibration is selected but there is not water quality
-        if not self.water_quality and (self.dlg_base.check_filtered_pesticide.isChecked() or self.dlg_base.check_pesticide_out.isChecked() or self.dlg_base.check_pesticide_solid.isChecked() or self.dlg_base.check_pesticide_liquid.isChecked()):
+        if not self.water_quality and (self.dlg_base.check_filtered_pesticide.isChecked() or self.dlg_base.check_pesticide_out.isChecked() or self.dlg_base.check_pesticide_solid.isChecked() or self.dlg_base.check_pesticide_liquid.isChecked() or self.dlg_base.check_pesticide_remobilization.isChecked()):
             self.warning_message("Pesticide calibration is selected but the project doesn't contain the water quality module")
             return
         
@@ -11762,7 +11831,8 @@ class qvfsmod():
                 try:
                     resultado_global = differential_evolution(objetivo, bounds=limites, strategy='rand1bin',popsize = 30,mutation = (1,1.9),
                         recombination = 0.9,tol = 0, atol = 0,polish = False)
-                        
+                    self.resultado_progress.emit(["Warning","Calibration successfully completed \n Adding best result...\n"])
+                    
                 except StopOptimization_iterations: #maximum iterations achieved
                     self.resultado_progress.emit(["Warning","Maximum iterations achieved \n Adding best result...\n"])
                     
@@ -11890,6 +11960,7 @@ class qvfsmod():
                 try:
                     resultado_global = differential_evolution(objetivo, bounds=limites, strategy='rand1bin',popsize = 30,mutation = (1,1.9),
                         recombination = 0.9,tol = 0, atol = 0,polish = False)
+                    self.resultado_progress.emit(["Warning","Calibration successfully completed \n Adding best result...\n"])
                 except StopOptimization_iterations: #maximum iterations achieved
                     self.resultado_progress.emit(["Warning","Maximum iterations achieved \n Adding best result...\n"])
                     
@@ -11967,12 +12038,12 @@ class qvfsmod():
         """Method to move files to the corresponding folders for calibration"""
         #Move sedimentograph
         try:
-            shutil.copyfile(os.path.normpath(self.obtain_direction_vfsmod(self.dlg_base.sedimentograph_file.text())),str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/inverse/{os.path.basename(self.dlg_base.sedimentograph_file.text())}")))
+            shutil.copyfile(os.path.normpath(self.obtain_direction_vfsmod(self.dlg_base.sedimentograph_file.text())),str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/calibration/{os.path.basename(self.dlg_base.sedimentograph_file.text())}")))
         except SameFileError:
             pass
             
         #Prj
-        prj_file = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/inverse.prj"))
+        prj_file = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration/calibration.prj"))
         #Check if water quality is simulated
         with open(self.obtain_direction_vfsmod(self.dlg_base.vfs_file.text()), "r") as archivo:
             lineas = archivo.readlines()
@@ -11983,37 +12054,37 @@ class qvfsmod():
             
         #Create file
         with open(prj_file, 'w') as archivo:
-            archivo.write(f"ikw={str(Path('inputs/inverse.ikw'))}  \n") 
-            archivo.write(f"iso={str(Path('inputs/inverse.iso'))}  \n")
-            archivo.write(f"igr={str(Path('inputs/inverse.igr'))}  \n")
-            archivo.write(f"isd={str(Path('inputs/inverse.isd'))}  \n")
-            archivo.write(f"irn={str(Path('inputs/inverse.irn'))}  \n")
-            archivo.write(f"iro={str(Path('inputs/inverse.iro'))}  \n")
+            archivo.write(f"ikw={str(Path('inputs/calibration.ikw'))}  \n") 
+            archivo.write(f"iso={str(Path('inputs/calibration.iso'))}  \n")
+            archivo.write(f"igr={str(Path('inputs/calibration.igr'))}  \n")
+            archivo.write(f"isd={str(Path('inputs/calibration.isd'))}  \n")
+            archivo.write(f"irn={str(Path('inputs/calibration.irn'))}  \n")
+            archivo.write(f"iro={str(Path('inputs/calibration.iro'))}  \n")
             if self.water_quality:
-                archivo.write(f"iwq={str(Path('inputs/inverse.iwq'))}  \n")
-            archivo.write(f"og1={str(Path('output/inverse.og1'))}  \n") 
-            archivo.write(f"og2={str(Path('output/inverse.og2'))}  \n")
-            archivo.write(f"ohy={str(Path('output/inverse.ohy'))}  \n")
-            archivo.write(f"osm={str(Path('output/inverse.osm'))}  \n")
-            archivo.write(f"osp={str(Path('output/inverse.osp'))}  \n")
+                archivo.write(f"iwq={str(Path('inputs/calibration.iwq'))}  \n")
+            archivo.write(f"og1={str(Path('output/calibration.og1'))}  \n") 
+            archivo.write(f"og2={str(Path('output/calibration.og2'))}  \n")
+            archivo.write(f"ohy={str(Path('output/calibration.ohy'))}  \n")
+            archivo.write(f"osm={str(Path('output/calibration.osm'))}  \n")
+            archivo.write(f"osp={str(Path('output/calibration.osp'))}  \n")
             if self.water_quality:
-                archivo.write(f"owq={str(Path('output/inverse.owq'))}  \n")
+                archivo.write(f"owq={str(Path('output/calibration.owq'))}  \n")
         
         #UH
-        lis_file = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/inverse.lis"))
+        lis_file = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration/calibration.lis"))
         #Create file
         with open(lis_file, 'w') as archivo:
-            archivo.write(f"inp={str(Path('inputs/inverse.inp'))}  \n") 
-            archivo.write(f"iro={str(Path('inputs/inverse.iro'))}  \n")
-            archivo.write(f"irn={str(Path('inputs/inverse.irn'))}  \n")
-            archivo.write(f"isd={str(Path('inputs/inverse.isd'))}  \n")
-            archivo.write(f"out={str(Path('inputs/inverse.out'))}  \n")
-            archivo.write(f"hyt={str(Path('inputs/inverse.hyt'))}  \n")
+            archivo.write(f"inp={str(Path('inputs/calibration.inp'))}  \n") 
+            archivo.write(f"iro={str(Path('inputs/calibration.iro'))}  \n")
+            archivo.write(f"irn={str(Path('inputs/calibration.irn'))}  \n")
+            archivo.write(f"isd={str(Path('inputs/calibration.isd'))}  \n")
+            archivo.write(f"out={str(Path('inputs/calibration.out'))}  \n")
+            archivo.write(f"hyt={str(Path('inputs/calibration.hyt'))}  \n")
         
         #REST OF THE FILES
         #Function to copy and paste the inputs to create the files to use in the design analysis
         def copy_paste(type_input):
-            ruta_pegar = str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/inverse/inputs/inverse.{type_input}" ))
+            ruta_pegar = str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/calibration/inputs/calibration.{type_input}" ))
             ruta = self.obtain_direction_vfsmod(self.dlg_base.vfs_file.text())
             if os.path.exists(ruta) and os.path.isfile(ruta):
                 #First we open .prj and obtain the direction of the copying file
@@ -12047,7 +12118,7 @@ class qvfsmod():
     def move_files_calibration_single(self):
         """Method to move files to the corresponding folders for calibration"""
         #Prj
-        prj_file = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/inverse.prj"))
+        prj_file = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration/calibration.prj"))
         #Check if water quality is simulated
         with open(self.obtain_direction_vfsmod(self.dlg_base.single_values_line.text()), "r") as archivo:
             lineas = archivo.readlines()
@@ -12058,37 +12129,37 @@ class qvfsmod():
             
         #Create file
         with open(prj_file, 'w') as archivo:
-            archivo.write(f"ikw={str(Path('inputs/inverse.ikw'))}  \n") 
-            archivo.write(f"iso={str(Path('inputs/inverse.iso'))}  \n")
-            archivo.write(f"igr={str(Path('inputs/inverse.igr'))}  \n")
-            archivo.write(f"isd={str(Path('inputs/inverse.isd'))}  \n")
-            archivo.write(f"irn={str(Path('inputs/inverse.irn'))}  \n")
-            archivo.write(f"iro={str(Path('inputs/inverse.iro'))}  \n")
+            archivo.write(f"ikw={str(Path('inputs/calibration.ikw'))}  \n") 
+            archivo.write(f"iso={str(Path('inputs/calibration.iso'))}  \n")
+            archivo.write(f"igr={str(Path('inputs/calibration.igr'))}  \n")
+            archivo.write(f"isd={str(Path('inputs/calibration.isd'))}  \n")
+            archivo.write(f"irn={str(Path('inputs/calibration.irn'))}  \n")
+            archivo.write(f"iro={str(Path('inputs/calibration.iro'))}  \n")
             if self.water_quality:
-                archivo.write(f"iwq={str(Path('inputs/inverse.iwq'))}  \n")
-            archivo.write(f"og1={str(Path('output/inverse.og1'))}  \n") 
-            archivo.write(f"og2={str(Path('output/inverse.og2'))}  \n")
-            archivo.write(f"ohy={str(Path('output/inverse.ohy'))}  \n")
-            archivo.write(f"osm={str(Path('output/inverse.osm'))}  \n")
-            archivo.write(f"osp={str(Path('output/inverse.osp'))}  \n")
+                archivo.write(f"iwq={str(Path('inputs/calibration.iwq'))}  \n")
+            archivo.write(f"og1={str(Path('output/calibration.og1'))}  \n") 
+            archivo.write(f"og2={str(Path('output/calibration.og2'))}  \n")
+            archivo.write(f"ohy={str(Path('output/calibration.ohy'))}  \n")
+            archivo.write(f"osm={str(Path('output/calibration.osm'))}  \n")
+            archivo.write(f"osp={str(Path('output/calibration.osp'))}  \n")
             if self.water_quality:
-                archivo.write(f"owq={str(Path('output/inverse.owq'))}  \n")
+                archivo.write(f"owq={str(Path('output/calibration.owq'))}  \n")
         
         #UH
-        lis_file = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/inverse.lis"))
+        lis_file = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration/calibration.lis"))
         #Create file
         with open(lis_file, 'w') as archivo:
-            archivo.write(f"inp={str(Path('inputs/inverse.inp'))}  \n") 
-            archivo.write(f"iro={str(Path('inputs/inverse.iro'))}  \n")
-            archivo.write(f"irn={str(Path('inputs/inverse.irn'))}  \n")
-            archivo.write(f"isd={str(Path('inputs/inverse.isd'))}  \n")
-            archivo.write(f"out={str(Path('inputs/inverse.out'))}  \n")
-            archivo.write(f"hyt={str(Path('inputs/inverse.hyt'))}  \n")
+            archivo.write(f"inp={str(Path('inputs/calibration.inp'))}  \n") 
+            archivo.write(f"iro={str(Path('inputs/calibration.iro'))}  \n")
+            archivo.write(f"irn={str(Path('inputs/calibration.irn'))}  \n")
+            archivo.write(f"isd={str(Path('inputs/calibration.isd'))}  \n")
+            archivo.write(f"out={str(Path('inputs/calibration.out'))}  \n")
+            archivo.write(f"hyt={str(Path('inputs/calibration.hyt'))}  \n")
         
         #REST OF THE FILES
         #Function to copy and paste the inputs to create the files to use in the design analysis
         def copy_paste(type_input):
-            ruta_pegar = str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/inverse/inputs/inverse.{type_input}")) 
+            ruta_pegar = str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/calibration/inputs/calibration.{type_input}")) 
             ruta = self.obtain_direction_vfsmod(self.dlg_base.single_values_line.text())
             if os.path.exists(ruta) and os.path.isfile(ruta):
                 #First we open .prj and obtain the direction of the copying file
@@ -12205,6 +12276,7 @@ class qvfsmod():
                 try:
                     resultado_global = differential_evolution(objetivo, bounds=limites, strategy='rand1bin',popsize = 30,mutation = (1,1.9),
                         recombination = 0.9,tol = 0, atol = 0,polish = False)
+                    self.resultado_progress.emit(["Warning","Calibration successfully completed \n Adding best result...\n"])
                     #resultado = objetivo(self.best_result["x"])
                 except StopOptimization_iterations: #maximum iterations achieved
                     self.resultado_progress.emit(["Warning","Maximum iterations achieved\n"])
@@ -12257,8 +12329,11 @@ class qvfsmod():
         discharge = []
         times = []
         for i in lineas:
-            discharge.append(float(i.split()[1]))
-            times.append(float(i.split()[0]))
+            try:
+                discharge.append(float(i.split()[1]))
+                times.append(float(i.split()[0]))
+            except:
+                pass
         df = pd.DataFrame(data = {"Time":times,"Discharge":discharge})
         return df
     
@@ -12273,8 +12348,11 @@ class qvfsmod():
         sediment = []
         times = []
         for i in lineas:
-            sediment.append(float(i.split()[1]))
-            times.append(float(i.split()[0]))
+            try:
+                sediment.append(float(i.split()[1]))
+                times.append(float(i.split()[0]))
+            except:
+                pass
         df = pd.DataFrame(data = {"Time":times,"Sediment":sediment})
         return df
 
@@ -12393,7 +12471,7 @@ class qvfsmod():
             self.calibration_df_progress = pd.DataFrame(data = {"Time":self.hydrograph_calibration_df.Time.tolist(),"Sediment":[np.nan] * len(self.hydrograph_calibration_df)})
             return 1e20
         #Read output
-        ruta = str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/inverse/output/inverse.ohy"))
+        ruta = str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/calibration/output/calibration.ohy"))
         with open(ruta, "r") as archivo:
             lineas = archivo.readlines()
         discharge = []
@@ -12551,7 +12629,7 @@ class qvfsmod():
         
         #Read output
         #First obtain the gso data in (g/cm.s)
-        ruta = str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/inverse/output/inverse.og1"))
+        ruta = str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/calibration/output/calibration.og1"))
         with open(ruta, "r") as archivo:
             lineas = archivo.readlines()
         sediment = []
@@ -12563,7 +12641,7 @@ class qvfsmod():
                     sediment.append(float(lineas[k].split()[9]))
         self.calibration_df_progress = pd.DataFrame(data = {"Time":times,"Sediment":sediment})
         #Then obtain the width of the filter
-        with open(str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/inverse/output/inverse.osp")), "r") as archivo:
+        with open(str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/calibration/output/calibration.osp")), "r") as archivo:
             lineas = archivo.readlines()
         try:
             for i in lineas:
@@ -12826,7 +12904,7 @@ class qvfsmod():
             #Create variable to add objective function
             objective_function = []
             #Function to obtain results from osp
-            ruta = str(Path(self.working_directory+f"/inverse/output/inverse.osp"))
+            ruta = str(Path(self.working_directory+f"/calibration/output/calibration.osp"))
             with open(ruta, "r") as archivo:
                 lineas = archivo.readlines()
             def obtain_result_osp(string):
@@ -12842,7 +12920,7 @@ class qvfsmod():
             
             #Same for owq
             if self.water_quality:
-                ruta = str(Path(self.working_directory+f"/inverse/output/inverse.owq"))
+                ruta = str(Path(self.working_directory+f"/calibration/output/calibration.owq"))
                 try:
                     with open(ruta, "r") as archivo:
                         lineas_owq = archivo.readlines()
@@ -12854,12 +12932,31 @@ class qvfsmod():
                     for i in lineas_owq:
                         if i == f" Normalized values by source area:\n":
                             condition = True
+                        if i.split("=")[-1].rstrip()==" Source Area (input)":
+                            area = float(i.split("=")[0].split()[0])
                         if i.split("=")[-1].rstrip()==string and condition:
                             if string != " Source Area (input)":
-                                return float(i.split("=")[0].split()[int(number_pesticide)-1])
+                                return float(i.split("=")[0].split()[int(number_pesticide)-1])*area
                             else:
                                 return float(i.split("=")[0].split()[0])
-                                    
+                def obtain_result_owq_residue(string,number_pesticide):
+                    condition = False
+                    for i in lineas_owq:
+                        if i == f" Normalized values by source area:\n":
+                            condition = True
+                        if i.split("=")[-1].rstrip()==" Source Area (input)":
+                            area = float(i.split("=")[0].split()[0])
+                        try:
+                            if i.split("=")[1].rstrip()==string and condition:
+                                if string != " Source Area (input)":
+                                    return float(i.split("=")[0].split()[int(number_pesticide)-1])*area
+                                else:
+                                    return float(i.split("=")[0].split()[0])
+                        except:
+                            pass                    
+                
+                
+                
                 #Obtain the pesticide to save results
                 for i in self.dictionary_radio_inputs_pesticides_single_calibration:
                     if i.isChecked():
@@ -12920,6 +13017,12 @@ class qvfsmod():
                 normalized = (pesticide_liquid - float(self.dlg_base.line_pesticide_liquid.text()))/float(self.dlg_base.line_pesticide_liquid.text())
                 objective_function.append(normalized)
                 self.calibration_single_results["Pesticide outflow in liquid phase"] = pesticide_liquid
+            
+            if "Pesticide residue remobilization" in self.output_calibrate_single.keys():
+                pesticide_remobilization= obtain_result_owq_residue(" Next event residue remobilization (mresn, IMOB",pesticide)
+                normalized = (pesticide_remobilization - float(self.dlg_base.line_pesticide_remobilization.text()))/float(self.dlg_base.line_pesticide_remobilization.text())
+                objective_function.append(normalized)
+                self.calibration_single_results["Pesticide residue remobilization"] = pesticide_remobilization
             
             #Calculate objective function
             value = 0
@@ -13232,6 +13335,7 @@ class qvfsmod():
                 
                 labels_simulated = list(self.calibration_single_results.keys())
                 values_simulated = list(self.calibration_single_results.values())
+
                 
                 for i in range(len(self.output_calibrate_single.keys())):
                     #Add graph
@@ -13434,7 +13538,7 @@ class qvfsmod():
         """Method to add the optimized project to the working folder with a name to informe that it is optimized"""
         #Check if there is water quality
         #Check if water quality is simulated
-        with open(str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/inverse.prj")), "r") as archivo:
+        with open(str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration/calibration.prj")), "r") as archivo:
             lineas = archivo.readlines()
         self.water_quality = False
         for i in lineas:
@@ -13474,7 +13578,7 @@ class qvfsmod():
         #Function to copy and paste the inputs to create the files to use in the design analysis
         def copy_paste(type_input):
             ruta_pegar = str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/inputs/{name_present_project}.{type_input}" ))
-            ruta = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/inverse.prj"))
+            ruta = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration/calibration.prj"))
             if os.path.exists(ruta) and os.path.isfile(ruta):
                 #First we open .prj and obtain the direction of the copying file
                 with open(ruta, "r") as archivo:
@@ -13744,8 +13848,8 @@ class qvfsmod():
         #In windows
         if sys.platform.startswith("win"):
             f = open(str(Path(self.plugin_directory+"/executables/execution.bat")),"w+")
-            linea_uno = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/"))}"')
-            linea_dos = f'"{str(Path(self.plugin_directory+"/executables/vfsm"))}" inverse.prj'
+            linea_uno = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration/"))}"')
+            linea_dos = f'"{str(Path(self.plugin_directory+"/executables/vfsm"))}" calibration.prj'
             linea_tres = "Pause"
             f.write("{} \n".format(linea_uno))
             f.write("{} \n".format(linea_dos))
@@ -13755,8 +13859,8 @@ class qvfsmod():
         elif sys.platform.startswith("darwin"):
             with open(str(Path("/Library/Application Support/vfsmod-gui"+"/executables/execution.sh")), "w", newline="\n") as f:
                 linea_uno = "#!/bin/bash\n"
-                linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/"))}"')
-                linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-gui"+"/executables/vfsm"))}" inverse.prj'
+                linea_dos = "cd {}".format(f'"{str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration/"))}"')
+                linea_tres = f'"{str(Path("/Library/Application Support/vfsmod-gui"+"/executables/vfsm"))}" calibration.prj'
                 f.write("{} \n".format(linea_uno))
                 f.write("{} \n".format(linea_dos))
                 f.write("{} \n".format(linea_tres))
@@ -13766,12 +13870,12 @@ class qvfsmod():
         """Method to move files to the corresponding folders for calibration"""
         #Move hydrograph
         try:
-            shutil.copyfile(str(Path(self.obtain_direction_vfsmod(self.dlg_base.hydrograph_file.text()))),str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/inverse/{os.path.basename(self.dlg_base.hydrograph_file.text())}")))
+            shutil.copyfile(str(Path(self.obtain_direction_vfsmod(self.dlg_base.hydrograph_file.text()))),str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/calibration/{os.path.basename(self.dlg_base.hydrograph_file.text())}")))
         except SameFileError:
             pass
             
         #Prj
-        prj_file = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/inverse.prj"))
+        prj_file = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration/calibration.prj"))
         #Check if water quality is simulated
         with open(os.path.normpath(self.obtain_direction_vfsmod(self.dlg_base.vfs_project.text())), "r") as archivo:
             lineas = archivo.readlines()
@@ -13782,37 +13886,37 @@ class qvfsmod():
             
         #Create file
         with open(prj_file, 'w') as archivo:
-            archivo.write(f"ikw={str(Path('inputs/inverse.ikw'))}  \n")
-            archivo.write(f"iso={str(Path('inputs/inverse.iso'))}  \n")
-            archivo.write(f"igr={str(Path('inputs/inverse.igr'))}  \n")
-            archivo.write(f"isd={str(Path('inputs/inverse.isd'))}  \n")
-            archivo.write(f"irn={str(Path('inputs/inverse.irn'))}  \n")
-            archivo.write(f"iro={str(Path('inputs/inverse.iro'))}  \n")
+            archivo.write(f"ikw={str(Path('inputs/calibration.ikw'))}  \n")
+            archivo.write(f"iso={str(Path('inputs/calibration.iso'))}  \n")
+            archivo.write(f"igr={str(Path('inputs/calibration.igr'))}  \n")
+            archivo.write(f"isd={str(Path('inputs/calibration.isd'))}  \n")
+            archivo.write(f"irn={str(Path('inputs/calibration.irn'))}  \n")
+            archivo.write(f"iro={str(Path('inputs/calibration.iro'))}  \n")
             if self.water_quality:
-                archivo.write(f"iwq={str(Path('inputs/inverse.iwq'))}  \n")
-            archivo.write(f"og1={str(Path('output/inverse.og1'))}  \n") 
-            archivo.write(f"og2={str(Path('output/inverse.og2'))}  \n")
-            archivo.write(f"ohy={str(Path('output/inverse.ohy'))}  \n")
-            archivo.write(f"osm={str(Path('output/inverse.osm'))}  \n")
-            archivo.write(f"osp={str(Path('output/inverse.osp'))}  \n")
+                archivo.write(f"iwq={str(Path('inputs/calibration.iwq'))}  \n")
+            archivo.write(f"og1={str(Path('output/calibration.og1'))}  \n") 
+            archivo.write(f"og2={str(Path('output/calibration.og2'))}  \n")
+            archivo.write(f"ohy={str(Path('output/calibration.ohy'))}  \n")
+            archivo.write(f"osm={str(Path('output/calibration.osm'))}  \n")
+            archivo.write(f"osp={str(Path('output/calibration.osp'))}  \n")
             if self.water_quality:
-                archivo.write(f"owq={str(Path('output/inverse.owq'))}  \n")
+                archivo.write(f"owq={str(Path('output/calibration.owq'))}  \n")
         
         #UH
-        lis_file = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/inverse.lis"))
+        lis_file = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration/calibration.lis"))
         #Create file
         with open(lis_file, 'w') as archivo:
-            archivo.write(f"inp={str(Path('inputs/inverse.inp'))}  \n") 
-            archivo.write(f"iro={str(Path('inputs/inverse.iro'))}  \n")
-            archivo.write(f"irn={str(Path('inputs/inverse.irn'))}  \n")
-            archivo.write(f"isd={str(Path('inputs/inverse.isd'))}  \n")
-            archivo.write(f"out={str(Path('inputs/inverse.out'))}  \n")
-            archivo.write(f"hyt={str(Path('inputs/inverse.hyt'))}  \n")
+            archivo.write(f"inp={str(Path('inputs/calibration.inp'))}  \n") 
+            archivo.write(f"iro={str(Path('inputs/calibration.iro'))}  \n")
+            archivo.write(f"irn={str(Path('inputs/calibration.irn'))}  \n")
+            archivo.write(f"isd={str(Path('inputs/calibration.isd'))}  \n")
+            archivo.write(f"out={str(Path('inputs/calibration.out'))}  \n")
+            archivo.write(f"hyt={str(Path('inputs/calibration.hyt'))}  \n")
         
         #REST OF THE FILES
         #Function to copy and paste the inputs to create the files to use in the design analysis
         def copy_paste(type_input):
-            ruta_pegar = str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/inverse/inputs/inverse.{type_input}")) 
+            ruta_pegar = str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/calibration/inputs/calibration.{type_input}")) 
             ruta = self.obtain_direction_vfsmod(self.dlg_base.vfs_project.text())
             if os.path.exists(ruta) and os.path.isfile(ruta):
                 #First we open .prj and obtain the direction of the copying file
@@ -14211,7 +14315,7 @@ class qvfsmod():
     
     def modify_inputs_calibration(self,extension, row, column, new_value):
         """Method to modify inputs in calibration"""
-        filepath = str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/inverse/inputs/inverse.{extension}"))
+        filepath = str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/calibration/inputs/calibration.{extension}"))
         with open(filepath, 'r') as file:
             lineas = file.readlines()
         numbers_str = lineas[row]
@@ -14420,7 +14524,7 @@ class qvfsmod():
     def modify_mannign_slope_hydrograph_calibration(self,column,new_value):
         """Method to modify the manning and slope for hydrograph calibration"""
         #We obtain information of ikw file
-        ikw = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/inputs/inverse.ikw"))
+        ikw = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration/inputs/calibration.ikw"))
         
         with open(ikw, "r") as archivo:
             lineas = archivo.readlines()
@@ -14444,7 +14548,7 @@ class qvfsmod():
     def modify_ikw_file_calibration(self,value_change):
         """Metod to modify the ikw file for the hydrograph calibration"""
         #We obtain information of ikw file
-        ikw = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/inputs/inverse.ikw"))
+        ikw = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration/inputs/calibration.ikw"))
         #We substitute value of length
         with open(ikw, "r") as archivo:
             lineas = archivo.readlines()
@@ -14513,7 +14617,7 @@ class qvfsmod():
     def modify_ikw_file_calibration_single(self,value_change):
         """Metod to modify the ikw file for the single calibration"""
         #We obtain information of ikw file
-        ikw = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/inverse/inputs/inverse.ikw"))
+        ikw = str(Path(self.dlg_base.working_directory_vfsmod.text()+"/calibration/inputs/calibration.ikw"))
         #We substitute value of length
         with open(ikw, "r") as archivo:
             lineas = archivo.readlines()
@@ -14581,12 +14685,12 @@ class qvfsmod():
     
     def create_folder_calibration(self):
         """Method to create the folder needed to calibration"""
-        if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+r"/inverse"))):
-            os.mkdir(os.path.join(self.working_directory, "inverse"))
-        if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+r"/inverse/inputs"))):
-            os.mkdir(os.path.join(self.working_directory, "inverse","inputs"))
-        if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+r"/inverse/output"))):
-            os.mkdir(os.path.join(self.working_directory, "inverse","output"))
+        if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+r"/calibration"))):
+            os.mkdir(os.path.join(self.working_directory, "calibration"))
+        if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+r"/calibration/inputs"))):
+            os.mkdir(os.path.join(self.working_directory, "calibration","inputs"))
+        if not os.path.exists(str(Path(self.dlg_base.working_directory_vfsmod.text()+r"/calibration/output"))):
+            os.mkdir(os.path.join(self.working_directory, "calibration","output"))
     
     def draw_calibration_hydrology(self):
         """Method to draw the dialog in calibration of hydrology"""
@@ -17111,7 +17215,7 @@ class qvfsmod():
         self.dlg_base.file_save_design.setText(str(Path("design/output/sensitivity_design_morris.csv")))
         self.dlg_base.file_save.setText(str(Path("sensitivity/output/sensitivity_oat.csv")))
         self.dlg_base.file_save_uncertainity.setText(str(Path("uncertainty/output/uncertainty.csv")))
-        self.dlg_calibration_sensitivity_hydrograph.file_save.setText(str(Path("inverse/output/calibration_sensitivity.csv")))
+        self.dlg_calibration_sensitivity_hydrograph.file_save.setText(str(Path("calibration/output/calibration_sensitivity.csv")))
         self.dlg_base.name_design_csv.setText(str(Path("design/output/design_results.csv")))
         
         #File paths
@@ -17138,6 +17242,14 @@ class qvfsmod():
         self.dlg_base.line_quality.setText(str(Path(fr"output/sample.owq")))
         
         self.dlg_base.name_files.setText("sample")
+        
+        #Add name path to observed calibrations 
+        self.dlg_base.hydrograph_file.setText("meas_hyd.txt")
+        self.dlg_base.sedimentograph_file.setText("meas_gso.txt")
+        
+        #Add name path to observed calibrations in edit
+        self.dlg_hydrograph_calibration_edit.file_hydrograph.setText(str(Path(r"calibration/observed_hydrograph.txt")))
+        self.dlg_sedimentograph_calibration_edit.file_sedimentograph.setText(str(Path(r"calibration/observed_sedimentograph.txt")))
         
         r'''self.dlg_base.rainfall.setText("25")
         self.dlg_base.storm_duration.setText("6")
@@ -17607,9 +17719,9 @@ class qvfsmod():
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.7</b>
+                <b>Version 1.0.8</b>
                 <br>
-                09/01/2026
+                29/01/2026
             """
         elif sys.platform.startswith("darwin") or sys.platform.startswith("linux"): #macOS
             html_text = f"""
@@ -17628,9 +17740,9 @@ class qvfsmod():
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.7</b>
+                <b>Version 1.0.8</b>
                 <br>
-                09/01/2026
+                29/01/2026
             """
         
         
@@ -19721,9 +19833,9 @@ def execution_sensitivity_analysis_calibration(number_execution,core,param_value
 def modify_inputs_sensitivity_calibration(extension, row, column, new_value, process,core,working_directory):
     """Function to modfiy inputs in sensitivity analysis"""
     if process == "uh":
-        ruta = str(Path(working_directory+f"/inverse/inverse_{core}.lis"))
+        ruta = str(Path(working_directory+f"/calibration/calibration_{core}.lis"))
     else:
-        ruta = str(Path(working_directory+f"/inverse/inverse_{core}.prj"))
+        ruta = str(Path(working_directory+f"/calibration/calibration_{core}.prj"))
     with open(ruta, "r") as archivo:
         lineas_prj = archivo.readlines()
     for i in lineas_prj:
@@ -19752,7 +19864,7 @@ def change_buffer_length_sensitivity_calibration(value_change,core,vfs_sensitivi
     """Function to modifi length of buffer in sensitivity analysis"""
     #First we save the .ikw file path
     ruta = vfs_sensitivity_file
-    ikw = str(Path(working_directory+f"/inverse/inputs/inverse_{core}.ikw"))
+    ikw = str(Path(working_directory+f"/calibration/inputs/calibration_{core}.ikw"))
     #We substitute value of length
     with open(ikw, "r") as archivo:
         lineas = archivo.readlines()
@@ -19853,13 +19965,13 @@ def change_buffer_length_sensitivity_calibration(value_change,core,vfs_sensitivi
         contenido +=f" {df_a.iloc[i,0]}   {df_a.iloc[i,1]}   {df_a.iloc[i,2]}\n"
     for i in lineas_ikw_original[4+number_segments:]:       
         contenido+=f"{i}"
-    with open(str(Path(working_directory+f"/inverse/inputs/inverse_{core}.ikw")), 'w') as archivo:
+    with open(str(Path(working_directory+f"/calibration/inputs/calibration_{core}.ikw")), 'w') as archivo:
         archivo.write(contenido)
     
 def change_filter_manning_sensitivity_calibration(value_change,column,core,working_directory):
     """Function to change the manning and slope value of the buffer in sensitivity analysis"""
     #We obtain information of ikw file
-    ikw = str(Path(working_directory+f"/inverse/inputs/inverse_{core}.ikw"))
+    ikw = str(Path(working_directory+f"/calibration/inputs/calibration_{core}.ikw"))
     
     with open(ikw, "r") as archivo:
         lineas = archivo.readlines()
@@ -19921,7 +20033,7 @@ def save_results_sensitivity_analysis_calibration(number_execution,core,working_
 
     else:
         if type_calibration == "hydrograph":
-            ruta = str(Path(working_directory+f"/inverse/output/inverse_{core}.ohy"))
+            ruta = str(Path(working_directory+f"/calibration/output/calibration_{core}.ohy"))
             with open(ruta, "r") as archivo:
                 lineas = archivo.readlines()
             discharge = []
@@ -19981,7 +20093,7 @@ def save_results_sensitivity_analysis_calibration(number_execution,core,working_
             df_conc = pd.DataFrame(data = {"Error":[0],"Goodnes of fit":[nash_sutcliffe_efficiency]})
         
         elif type_calibration == "sedimentograph":
-            ruta = str(Path(working_directory+f"/inverse/output/inverse_{core}.og1"))
+            ruta = str(Path(working_directory+f"/calibration/output/calibration_{core}.og1"))
             with open(ruta, "r") as archivo:
                 lineas = archivo.readlines()
             sediment = []
@@ -19993,7 +20105,7 @@ def save_results_sensitivity_analysis_calibration(number_execution,core,working_
                         sediment.append(float(lineas[k].split()[9]))
             calibration_df_progress = pd.DataFrame(data = {"Time":times,"Sediment":sediment})
             #Then obtain the width of the filter
-            with open(str(Path(working_directory+f"/inverse/output/inverse_{core}.osp")), "r") as archivo:
+            with open(str(Path(working_directory+f"/calibration/output/calibration_{core}.osp")), "r") as archivo:
                 lineas = archivo.readlines()
             for i in lineas:
                 if i.split("=")[-1]==" Filter Strip Width (input)\n":
@@ -20054,7 +20166,7 @@ def save_results_sensitivity_analysis_calibration(number_execution,core,working_
             #Create variable to add objective function
             objective_function = []
             #Function to obtain results from osp
-            ruta = str(Path(working_directory+f"/inverse/output/inverse_{core}.osp"))
+            ruta = str(Path(working_directory+f"/calibration/output/calibration_{core}.osp"))
             with open(ruta, "r") as archivo:
                 lineas = archivo.readlines()
             def obtain_result_osp(string):
@@ -20070,7 +20182,7 @@ def save_results_sensitivity_analysis_calibration(number_execution,core,working_
             
             #Same for owq
             if water_quality:
-                ruta = str(Path(working_directory+f"/inverse/output/inverse_{core}.owq"))
+                ruta = str(Path(working_directory+f"/calibration/output/calibration_{core}.owq"))
                 with open(ruta, "r") as archivo:
                     lineas_owq = archivo.readlines()
                     
@@ -20079,11 +20191,29 @@ def save_results_sensitivity_analysis_calibration(number_execution,core,working_
                     for i in lineas_owq:
                         if i == f" Normalized values by source area:\n":
                             condition = True
+                        if i.split("=")[-1].rstrip()==" Source Area (input)":
+                            area = float(i.split("=")[0].split()[0])
                         if i.split("=")[-1].rstrip()==string and condition:
                             if string != " Source Area (input)":
-                                return float(i.split("=")[0].split()[int(number_pesticide)-1])
+                                return float(i.split("=")[0].split()[int(number_pesticide)-1])*area
                             else:
                                 return float(i.split("=")[0].split()[0])
+                
+                def obtain_result_owq_residue(string,number_pesticide):
+                    condition = False
+                    for i in lineas_owq:
+                        if i == f" Normalized values by source area:\n":
+                            condition = True
+                        if i.split("=")[-1].rstrip()==" Source Area (input)":
+                            area = float(i.split("=")[0].split()[0])
+                        try:
+                            if i.split("=")[1].rstrip()==string and condition:
+                                if string != " Source Area (input)":
+                                    return float(i.split("=")[0].split()[int(number_pesticide)-1])*area
+                                else:
+                                    return float(i.split("=")[0].split()[0])
+                        except:
+                            pass
             
             #Obtain results
             if "Total discharge" in hidrograma.keys():
@@ -20129,6 +20259,14 @@ def save_results_sensitivity_analysis_calibration(number_execution,core,working_
                 pesticide_liquid = obtain_result_owq(" Pesticide outflow in liquid phase (mod)",number_pesticide)
                 normalized = (pesticide_liquid - hidrograma["Pesticide outflow in liquid phase"])/hidrograma["Pesticide outflow in liquid phase"]
                 objective_function.append(normalized)
+                
+            if "Pesticide residue remobilization" in hidrograma.keys():
+                pesticide_remobilization= obtain_result_owq_residue(" Next event residue remobilization (mresn, IMOB",number_pesticide)
+                normalized = (pesticide_remobilization - hidrograma["Pesticide residue remobilization"])/hidrograma["Pesticide residue remobilization"]
+                objective_function.append(normalized)
+            
+            
+            
             
             #Calculate objective function
             value = 0

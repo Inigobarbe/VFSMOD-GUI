@@ -162,7 +162,7 @@ QTableCornerButton::section {
      <item>
       <widget class="QLineEdit" name="exit_file">
        <property name="text">
-        <string>inverse/fittedparam_hydrograph.csv</string>
+        <string>calibration/fittedparam_hydrograph.csv</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
