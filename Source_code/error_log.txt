@@ -1,1245 +1,613 @@
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 20346, in <module>
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 20575, in <module>
     dialog = qvfsmod()
   File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 190, in __init__
     self.initGui()
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 1200, in initGui
-    self.default_values()
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 17172, in default_values
-    self.dlg_sedimentograph_calibration_edit.setText(str(Path(r"calibration/observed_sedimentograph.txt")))
-AttributeError: 'sedimentograph_calibration_edit' object has no attribute 'setText'
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 1017, in initGui
+    self.dlg_calibration_progress.stop.clicked.connect(self.worker.stop)
+AttributeError: 'qvfsmod' object has no attribute 'worker'
 
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12166, in run_calibration_hydrograph
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12298, in obtain_df_hydrograph_calibration
-    discharge = []
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12062, in run
+    resultado_global = differential_evolution(objetivo, bounds=limites, strategy='rand1bin',popsize = 30,mutation = (1,1.9),
+  File "C:\Users\inigo.barberena\AppData\Local\anaconda3\lib\site-packages\scipy\optimize\_differentialevolution.py", line 397, in differential_evolution
+    ret = solver.solve()
+  File "C:\Users\inigo.barberena\AppData\Local\anaconda3\lib\site-packages\scipy\optimize\_differentialevolution.py", line 989, in solve
+    self._calculate_population_energies(
+  File "C:\Users\inigo.barberena\AppData\Local\anaconda3\lib\site-packages\scipy\optimize\_differentialevolution.py", line 1122, in _calculate_population_energies
+    calc_energies = list(
+  File "C:\Users\inigo.barberena\AppData\Local\anaconda3\lib\site-packages\scipy\_lib\_util.py", line 372, in __call__
+    return self.f(x, *self.args)
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12033, in objetivo
+    raise StopOptimization_user()
+qvfsmod.run_calibration_sedimentograph.<locals>.StopOptimization_user
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12166, in run_calibration_hydrograph
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12298, in obtain_df_hydrograph_calibration
-    discharge = []
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13840, in update_graph_calibration_hydrograph
+    max_val = max(simulated + observed)
+ValueError: max() arg is an empty sequence
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 11850, in run_calibration_sedimentograph
-    #Obtain dataframe of sedimentograph
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12314, in obtain_df_sedimentograph_calibration
-    sediment = []
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6411, in dlg_buffer_segment_show
+    self.update_buffer_segment_graph()
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6604, in update_buffer_segment_graph
+    norm = plt.Normalize(roughnesses.min(), roughnesses.max())
+  File "C:\Users\inigo.barberena\AppData\Local\anaconda3\lib\site-packages\numpy\core\_methods.py", line 44, in _amin
+    return umr_minimum(a, axis, None, out, keepdims, initial, where)
+ValueError: zero-size array to reduction operation minimum which has no identity
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 1204, in <lambda>
-    self.dlg_base.sedimentograph_file.textChanged.connect(lambda _, b = "2":self.update_path_calibration_observed(b))
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 1248, in update_path_calibration_observed
-    self.dlg_sedimentograph_calibration_edit.file_hydrograph.setText(self.dlg_base.sedimentograph_file.text())
-AttributeError: 'sedimentograph_calibration_edit' object has no attribute 'file_hydrograph'
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 2456, in save_vfs_project
+    self.update_buffer_length_table()
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 3284, in update_buffer_length_table
+    length_to_change = float(self.dlg_overland_flow.length.text())
+ValueError: could not convert string to float: ''
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 1204, in <lambda>
-    self.dlg_base.sedimentograph_file.textChanged.connect(lambda _, b = "2":self.update_path_calibration_observed(b))
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 1248, in update_path_calibration_observed
-    self.dlg_sedimentograph_calibration_edit.file_hydrograph.setText(self.dlg_base.sedimentograph_file.text())
-AttributeError: 'sedimentograph_calibration_edit' object has no attribute 'file_hydrograph'
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 4223, in add_values_vfs_outputs_dialog
+    self.add_hyetograph_to_dialog(False)
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 15641, in add_hyetograph_to_dialog
+    self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.disconnect(self.update_vfsmod_hyetograph_graph)
+TypeError: 'method' object is not connected
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 4223, in add_values_vfs_outputs_dialog
+    self.add_hyetograph_to_dialog(False)
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 15641, in add_hyetograph_to_dialog
+    self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.disconnect(self.update_vfsmod_hyetograph_graph)
+TypeError: 'method' object is not connected
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 17393, in update_file_names
+    self.add_values_vfs_outputs_dialog()
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 4223, in add_values_vfs_outputs_dialog
+    self.add_hyetograph_to_dialog(False)
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 15641, in add_hyetograph_to_dialog
+    self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.disconnect(self.update_vfsmod_hyetograph_graph)
+TypeError: 'method' object is not connected
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 4219, in add_values_vfs_outputs_dialog
+    self.dlg_overland_flow_show(False)
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 4417, in dlg_overland_flow_show
+    self.dlg_buffer_segment.tableWidget.itemChanged.disconnect(self.update_buffer_segment_graph)
+TypeError: 'method' object is not connected
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 17397, in update_file_names
+    self.add_values_vfs_outputs_dialog()
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 4219, in add_values_vfs_outputs_dialog
+    self.dlg_overland_flow_show(False)
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 4417, in dlg_overland_flow_show
+    self.dlg_buffer_segment.tableWidget.itemChanged.disconnect(self.update_buffer_segment_graph)
+TypeError: 'method' object is not connected
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 6584, in update_buffer_segment_graph
+    self.ax_buffer_segment.clear()
+AttributeError: 'qvfsmod' object has no attribute 'ax_buffer_segment'
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 3567, in <lambda>
+    radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_sensitivity_graph_global() if checked else None)
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 7480, in update_sensitivity_graph_global
+    self.ax_sobol[0].bar(change_input_names_fit_space(names_inputs), st, yerr=st_conf, capsize=5, color='b')
+NameError: name 'change_input_names_fit_space' is not defined
 
 ================================================================================
 Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13342, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13345, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 11869, in run
-    self.save_results_calibration(self.list_of_inputs,self.list_of_results)
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13527, in save_results_calibration_single
-    f.write(f"{list(self.output_calibrate_single.keys())[i]}: {list(self.output_calibrate_single.values())[i]}-{list(self.calibration_single_results.values())[i]}\n")
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13346, in calibration_execution_progress_single
-    self.ax_calibration_progress[i].bar("Simulated", values_simulated[i], color='red')
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 11869, in run
-    self.save_results_calibration(self.list_of_inputs,self.list_of_results)
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13528, in save_results_calibration_single
-    f.write(f"{list(self.output_calibrate_single.keys())[i]}: {list(self.output_calibrate_single.values())[i]}-{list(self.calibration_single_results.values())[i]}\n")
-IndexError: list index out of range
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 11757, in run_calibration_single
-    self.move_files_calibration_single()
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12123, in move_files_calibration_single
-    with open(self.obtain_direction_vfsmod(self.dlg_base.single_values_line.text()), "r") as archivo:
-FileNotFoundError: [Errno 2] No such file or directory: 'C:\\qvfsmod\\Source_code\\sample.P3prj'
-
-================================================================================
-Traceback (most recent call last):
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 11757, in run_calibration_single
-    self.move_files_calibration_single()
-  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12123, in move_files_calibration_single
-    with open(self.obtain_direction_vfsmod(self.dlg_base.single_values_line.text()), "r") as archivo:
-FileNotFoundError: [Errno 2] No such file or directory: 'C:\\qvfsmod\\Source_code\\sample.P3prj'
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 3567, in <lambda>
+    radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_sensitivity_graph_global() if checked else None)
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 7480, in update_sensitivity_graph_global
+    self.ax_sobol[0].bar(change_input_names_fit_space(names_inputs), st, yerr=st_conf, capsize=5, color='b')
+NameError: name 'change_input_names_fit_space' is not defined
 
 ================================================================================

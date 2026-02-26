@@ -1,6 +1,7 @@
- 25  85  .5  3  6  100  .02       'P,CN,A,storm type,D,L,Y
-                                  'Note: Storm type I,IA,II,III,user,user1 (j=1,6)
-Clay                              'Soil Type
- -1  1  1 -1                      'K, C, P, Dp 
-  1                               'IREOTY
-  1                               'Soil Org Matter
+ 25  85  0.5  1  6  100  0.02       'P,CN,A,storm type,D,L,Y
+                                           'Note: Storm type I,IA,II,III (j=1,4)
+Clay                     'Soil Type
+ -1  1  1 -1                           'K, C, P, Dp 
+  1                                 'IREOTY
+  1                            'Soil Org Matter
+

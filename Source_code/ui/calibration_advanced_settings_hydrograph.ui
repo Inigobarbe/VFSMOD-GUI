@@ -123,8 +123,14 @@ QTableCornerButton::section {
       <widget class="QLabel" name="label">
        <property name="minimumSize">
         <size>
-         <width>215</width>
+         <width>233</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>233</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="text">
@@ -150,8 +156,14 @@ QTableCornerButton::section {
       <widget class="QLabel" name="label_2">
        <property name="minimumSize">
         <size>
-         <width>215</width>
+         <width>233</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>233</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="text">
@@ -177,8 +189,14 @@ QTableCornerButton::section {
       <widget class="QLabel" name="label_3">
        <property name="minimumSize">
         <size>
-         <width>215</width>
+         <width>233</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>233</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="text">
@@ -197,8 +215,14 @@ QTableCornerButton::section {
       <widget class="QLabel" name="label_4">
        <property name="minimumSize">
         <size>
-         <width>215</width>
+         <width>233</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>233</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="text">

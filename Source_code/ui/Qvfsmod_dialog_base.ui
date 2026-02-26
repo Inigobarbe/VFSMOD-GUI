@@ -3245,7 +3245,7 @@ default 5 min</string>
                            </size>
                           </property>
                           <property name="text">
-                           <string>All Parameters</string>
+                           <string>All Inputs</string>
                           </property>
                          </widget>
                         </item>
@@ -4235,7 +4235,7 @@ Solution Parameters</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-450</y>
+             <y>-98</y>
              <width>766</width>
              <height>977</height>
             </rect>
@@ -5874,7 +5874,7 @@ analysis</string>
                            </size>
                           </property>
                           <property name="text">
-                           <string>All Parameters</string>
+                           <string>All Inputs</string>
                           </property>
                          </widget>
                         </item>
@@ -7308,7 +7308,7 @@ Solution Parameters</string>
                            </size>
                           </property>
                           <property name="text">
-                           <string>All Parameters</string>
+                           <string>All Inputs</string>
                           </property>
                          </widget>
                         </item>
@@ -8150,8 +8150,8 @@ Solution Parameters</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>211</width>
-             <height>83</height>
+             <width>768</width>
+             <height>498</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_74">

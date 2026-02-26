@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>924</width>
-    <height>369</height>
+    <height>387</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -139,10 +139,26 @@ QTextEdit {
         <x>0</x>
         <y>0</y>
         <width>906</width>
-        <height>351</height>
+        <height>369</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="1">
+        <widget class="QFrame" name="frame">
+         <property name="minimumSize">
+          <size>
+           <width>300</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0">
         <widget class="QTextEdit" name="textEdit">
          <property name="minimumSize">
@@ -159,19 +175,10 @@ QTextEdit {
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QFrame" name="frame">
-         <property name="minimumSize">
-          <size>
-           <width>300</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="stop">
+         <property name="text">
+          <string>Stop calibration</string>
          </property>
         </widget>
        </item>

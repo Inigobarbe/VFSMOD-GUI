@@ -127,6 +127,12 @@ QTableCornerButton::section {
          <height>0</height>
         </size>
        </property>
+       <property name="maximumSize">
+        <size>
+         <width>233</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="text">
         <string>Maximum iterations</string>
        </property>
@@ -154,6 +160,12 @@ QTableCornerButton::section {
          <height>0</height>
         </size>
        </property>
+       <property name="maximumSize">
+        <size>
+         <width>233</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="text">
         <string>Exit file name</string>
        </property>
@@ -177,8 +189,14 @@ QTableCornerButton::section {
       <widget class="QLabel" name="label_3">
        <property name="minimumSize">
         <size>
-         <width>186</width>
+         <width>233</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>233</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="text">

@@ -1,0 +1,13 @@
+ikw=inputs\sampleP_opt_hydr.ikw  
+iso=inputs\sampleP_opt_hydr.iso  
+igr=inputs\sampleP_opt_hydr.igr  
+isd=inputs\sampleP_opt_hydr.isd  
+irn=inputs\sampleP_opt_hydr.irn  
+iro=inputs\sampleP_opt_hydr.iro  
+iwq=inputs\sampleP_opt_hydr.iwq  
+og1=output\sampleP_opt_hydr.og1  
+og2=output\sampleP_opt_hydr.og2  
+ohy=output\sampleP_opt_hydr.ohy  
+osm=output\sampleP_opt_hydr.osm  
+osp=output\sampleP_opt_hydr.osp  
+owq=output\sampleP_opt_hydr.owq  

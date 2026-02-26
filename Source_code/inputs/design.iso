@@ -1,4 +1,8 @@
-  1.33E-05   0.37904   0.311   0.125   0   1
+  .0000133   .37904   .311   .125   0   1
+   0
+  2   0   5.17411   .73
+  2   5.8775   5.17411
+ -.19327
  
      -------------------------------------
  Ks(m/s)   Sav(m)  Theta-s   Theta-i   Sm(m)   Schk(ponding ck)  WTD(Water Table Depth / No value means 'standard' iso file)

@@ -1,0 +1,11 @@
+ikw=inputs\sample_opt_hydr_opt_sedim_opt_single.ikw  
+iso=inputs\sample_opt_hydr_opt_sedim_opt_single.iso  
+igr=inputs\sample_opt_hydr_opt_sedim_opt_single.igr  
+isd=inputs\sample_opt_hydr_opt_sedim_opt_single.isd  
+irn=inputs\sample_opt_hydr_opt_sedim_opt_single.irn  
+iro=inputs\sample_opt_hydr_opt_sedim_opt_single.iro  
+og1=output\sample_opt_hydr_opt_sedim_opt_single.og1  
+og2=output\sample_opt_hydr_opt_sedim_opt_single.og2  
+ohy=output\sample_opt_hydr_opt_sedim_opt_single.ohy  
+osm=output\sample_opt_hydr_opt_sedim_opt_single.osm  
+osp=output\sample_opt_hydr_opt_sedim_opt_single.osp  

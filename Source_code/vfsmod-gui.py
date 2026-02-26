@@ -577,6 +577,10 @@ class qvfsmod():
         self.dlg_base.browse_overall.clicked.connect(self.select_osp)
         self.dlg_base.browse_quality.clicked.connect(self.select_owq)
         
+        #Browse file identifiability analysis
+        self.dlg_calibration_sensitivity_hydrograph.browse_file.clicked.connect(self.select_file_identifiability)
+        
+        
         #Change files names if the name of the files is changed
         self.dlg_base.name_files.textChanged.connect(self.update_file_names)
         
@@ -749,9 +753,9 @@ class qvfsmod():
         
         
         #Show the VFSMOD editing dialogs
-        self.dlg_base.edit_overland.clicked.connect(self.dlg_overland_flow_show)
-        self.dlg_overland_flow.edit_segment.clicked.connect(self.dlg_buffer_segment_show)
-        self.dlg_base.edit_infiltration.clicked.connect(self.dlg_infiltration_soil_show)
+        self.dlg_base.edit_overland.clicked.connect(lambda _, b = True:self.dlg_overland_flow_show(b))
+        self.dlg_overland_flow.edit_segment.clicked.connect(lambda _, b = True:self.dlg_buffer_segment_show(b))
+        self.dlg_base.edit_infiltration.clicked.connect(lambda _, b = True:self.dlg_infiltration_soil_show(b))
         
         
         self.dlg_infiltration_soil.show_parameters.clicked.connect(lambda _, b = True:self.show_soil_curves(b))
@@ -760,9 +764,9 @@ class qvfsmod():
         self.dlg_infiltration_soil.radioButton_6.toggled.connect(lambda _, b = False:self.show_soil_curves(b))
         
         
-        self.dlg_base.edit_buffer.clicked.connect(self.dlg_buffer_properties_show)
+        self.dlg_base.edit_buffer.clicked.connect(lambda _, b = True:self.dlg_buffer_properties_show(b))
         self.dlg_base.edit_water.clicked.connect(lambda _, b = True:self.dlg_water_quality_show(b))
-        self.dlg_base.edit_incoming.clicked.connect(self.dlg_incoming_sediment_show)
+        self.dlg_base.edit_incoming.clicked.connect(lambda _, b = True:self.dlg_incoming_sediment_show(b))
         self.dlg_base.edit_storm.clicked.connect(lambda _, b = True:self.add_hyetograph_to_dialog(b))
         self.dlg_base.edit_source.clicked.connect(lambda _, b = True:self.add_hydrograph_to_dialog(b))
         
@@ -854,6 +858,8 @@ class qvfsmod():
         self.dlg_base.add_design.clicked.connect(self.add_sensitivity_table_design)
         self.dlg_base.add_uncertainity.clicked.connect(self.add_uncertainity_table)
         self.dlg_calibration_sensitivity_hydrograph.add.clicked.connect(self.add_sensitivity_table_calibration)
+        
+        
         #Button to delete information of the sensitivity table an to uncertainity
         self.dlg_base.remove.clicked.connect(self.delete_sensitivity_table)
         self.dlg_base.remove_design.clicked.connect(self.delete_sensitivity_table_design)
@@ -995,9 +1001,25 @@ class qvfsmod():
             i.stateChanged.connect(lambda _,b = i:self.calibration_single_values_checks(b))
         
         #Run calibration
+        #Dictionary to convert from the name of the paraemeter that the code understands to more understandable name. 
+        self.dic_names_well_written_calibration = {"vertical":"Vertical saturated K (m/s)","average":"Average suction wetting front (SAV, m)","saturated":"Saturated water content (OS;m3/m3)",
+            "initial":"Initial water content (OI, m3/m3)","maximum":"Maximum Surface Storage (SM, m)","fraction":"Filter fraction where ponding is checked (SCHK,-)",
+            "width":"Filter width (FWIDTH,m)","length":"Filter length (VL, m)","manning":"Filter Manning's n(RNA, s/m^1-3)","slope":"Average Filter Slope(SOA, m/m)",
+            "water_depth":"Water table depth(m)","soil_saturated":"Soil saturated hydraulic conductivity anisotropy ratio ","soil_or":"Soil water characteristic curve OR",
+            "soil_vgalpha":"Soil water characteristic curve VGALPHA","soil_vgn":"Soil water characteristic curve VGN","soil_vgm":"Soil water characteristic curve VGM",
+            "soil_bcalpha":"Soil water characteristic curve BCALPHA","soil_bclamda":"Soil water characteristic curve BCLAMBDA","unsaturated_vgm":"Unsaturated hydraulic conductivity curve VGM",
+            "unsaturated_bceta":"Unsaturated hydraulic conductivity curve BCETA","unsaturated_bcalpha":"Unsaturated hydraulic conductivity curve BCALPHA","usaturated_gdalpha":"Unsaturated hydraulic conductivity curve GDALPHA",
+            "spacing":"Spacing for grass stems (SS, cm)","rougheness_grass":"Roughness-grass Manning's (VN,s/cm^1/3)","height":"Height of grass (H, cm)","roughness_bare":"Roughness-bare surface Manning's n (VN2,s/m^3)",
+            "coarse_sediment":"Coarse sediment fraction d>0.0037 cm (COARSE, unit fraction)","incoming_flow":"Incoming Flow sediment concentration (Cl,g/cm3)",
+            "porosity":"Porosity of deposited sediment (fraction)","particle_class":"Sediment particle class, diameter d50 (DP,cm)","particle_densitiy":"Sediment particle density (SG, g/cm3)",
+            "clay":"Clay content (%)","top":"Top soil field capacity (m3/m3)","mixing_layer":"Surface mixing layer thickness (cm)","linear_sorption":"Linear sorption coefficient (L/Kg)","adsorption_coefficient":"Adsorption coefficient (L/Kg)",
+            "organic_carbon":"Organic carbon(%)"}
+        
         self.dlg_base.run_hydrograph.clicked.connect(self.run_calibration_hydrograph)
         self.dlg_base.run_sedimentograph.clicked.connect(self.run_calibration_sedimentograph)
         self.dlg_base.run_calibration_single.clicked.connect(self.run_calibration_single)
+        
+        
         
         #Add distributions to combobox
         self.dlg_base.distributions.addItems(["Uniform","Triangular","Normal truncated"])
@@ -1195,7 +1217,7 @@ class qvfsmod():
         #If the name of the project changes in calibration, then change the name of the output file
         self.dlg_base.vfs_project.textChanged.connect(lambda _, b = "hydrograph":self.update_name_output_calibration(b))
         self.dlg_base.vfs_file.textChanged.connect(lambda _, b = "sedimentograph":self.update_name_output_calibration(b))
-        self.dlg_base.vfs_file.textChanged.connect(lambda _, b = "single":self.update_name_output_calibration(b))
+        self.dlg_base.single_values_line.textChanged.connect(lambda _, b = "single":self.update_name_output_calibration(b))
         
         #Default values
         self.default_values()
@@ -1274,7 +1296,7 @@ class qvfsmod():
     def correct_fraction_filter_ponding_checked(self):
         """Method to put the fraction of the filter where ponding is checked to 0.5 if a higher value than 0.5 is added"""
         try:
-            if float(self.dlg_infiltration_soil.line_fraction.text())>0.5:
+            if float(self.dlg_infiltration_soil.line_fraction.text())>0.5 and self.dlg_infiltration_soil.isActiveWindow():
                 self.dlg_infiltration_soil.line_fraction.setText("-1")
                 self.warning_message("Fraction of the filter where ponding is checked is recommended to be not higher than 0.5. \nChanging value to default (-1).")
         except:
@@ -2854,59 +2876,73 @@ class qvfsmod():
             #Suction at the wetting front
             self.dlg_hydrograph_calibration.frame_35.setVisible(False)
             set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_90,False)
-            self.dlg_hydrograph_calibration.no_average.setChecked(True)
+            #self.dlg_hydrograph_calibration.no_average.setChecked(True)
+            
             #Initial water content
             self.dlg_hydrograph_calibration.frame_38.setVisible(False)
             set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_87,False)
-            self.dlg_hydrograph_calibration.no_initial.setChecked(True)
+            #self.dlg_hydrograph_calibration.no_initial.setChecked(True)
+            
             #Water table
             self.dlg_hydrograph_calibration.frame_4.setVisible(False)
             set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_3,False)
-            self.dlg_hydrograph_calibration.no_depth.setChecked(True)
+            #self.dlg_hydrograph_calibration.no_depth.setChecked(True)
+            
             #Soil saturated hydraulic \nconductivity anisotropy ratio 
             self.dlg_hydrograph_calibration.frame_6.setVisible(False)
             set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_4,False)
-            self.dlg_hydrograph_calibration.no_ansiotropy.setChecked(True)
+            #self.dlg_hydrograph_calibration.no_ansiotropy.setChecked(True)
+            
             #OR
             self.dlg_hydrograph_calibration.frame_9.setVisible(False)
             set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_5,False)
-            self.dlg_hydrograph_calibration.no_soil_or.setChecked(True)
+            #self.dlg_hydrograph_calibration.no_soil_or.setChecked(True)
+            
             #VGALPHA
             self.dlg_hydrograph_calibration.frame_8.setVisible(False)
             set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_6,False)
-            self.dlg_hydrograph_calibration.no_soil_vgalpha.setChecked(True)
+            #self.dlg_hydrograph_calibration.no_soil_vgalpha.setChecked(True)
+            
             #VGN
             self.dlg_hydrograph_calibration.frame_5.setVisible(False)
             set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_7,False)
-            self.dlg_hydrograph_calibration.no_soil_vgn.setChecked(True)
+            #self.dlg_hydrograph_calibration.no_soil_vgn.setChecked(True)
+            
             #VGM
             self.dlg_hydrograph_calibration.frame_7.setVisible(False)
             set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_8,False)
-            self.dlg_hydrograph_calibration.no_soil_vgm.setChecked(True)
+            #self.dlg_hydrograph_calibration.no_soil_vgm.setChecked(True)
+            
             #BCALPHA 
             self.dlg_hydrograph_calibration.frame_10.setVisible(False)
             set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_9,False)
-            self.dlg_hydrograph_calibration.no_soil_bcalpha.setChecked(True)
+            #self.dlg_hydrograph_calibration.no_soil_bcalpha.setChecked(True)
+            
             #BCLAMBDA
             self.dlg_hydrograph_calibration.frame_12.setVisible(False)
             set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_10,False)
-            self.dlg_hydrograph_calibration.no_soil_bclambda.setChecked(True)
+            #self.dlg_hydrograph_calibration.no_soil_bclambda.setChecked(True)
+            
             #VGM
             self.dlg_hydrograph_calibration.frame_11.setVisible(False)
             set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_11,False)
-            self.dlg_hydrograph_calibration.no_unsaturated_vgm.setChecked(True)
+            #self.dlg_hydrograph_calibration.no_unsaturated_vgm.setChecked(True)
+            
             #BCETA 
             self.dlg_hydrograph_calibration.frame_14.setVisible(False)
             set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_12,False)
-            self.dlg_hydrograph_calibration.no_unsaturated_bceta.setChecked(True)
+            #self.dlg_hydrograph_calibration.no_unsaturated_bceta.setChecked(True)
+            
             #BCALPHA
             self.dlg_hydrograph_calibration.frame_15.setVisible(False)
             set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_13,False)
-            self.dlg_hydrograph_calibration.no_unsaturated_bcalpha.setChecked(True)
+            #self.dlg_hydrograph_calibration.no_unsaturated_bcalpha.setChecked(True)
+            
             #GDALPHA
             self.dlg_hydrograph_calibration.frame_13.setVisible(False)
             set_visible_horizontal(self.dlg_hydrograph_calibration.horizontalLayout_14,False)
-            self.dlg_hydrograph_calibration.no_unsaturated_gdalpha.setChecked(True)
+            #self.dlg_hydrograph_calibration.no_unsaturated_gdalpha.setChecked(True)
+            
             #Obtain iso path
             with open(prj_path, "r") as archivo:
                 lineas = archivo.readlines()
@@ -3021,59 +3057,73 @@ class qvfsmod():
             #Suction at the wetting front
             self.dlg_discharge_calibration_single.frame_35.setVisible(False)
             set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_90,False)
-            self.dlg_discharge_calibration_single.no_average.setChecked(True)
+            #self.dlg_discharge_calibration_single.no_average.setChecked(True)
+            
             #Initial water content
             self.dlg_discharge_calibration_single.frame_38.setVisible(False)
             set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_87,False)
-            self.dlg_discharge_calibration_single.no_initial.setChecked(True)
+            #self.dlg_discharge_calibration_single.no_initial.setChecked(True)
+            
             #Water table
             self.dlg_discharge_calibration_single.frame_4.setVisible(False)
             set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_3,False)
-            self.dlg_discharge_calibration_single.no_depth.setChecked(True)
+            #self.dlg_discharge_calibration_single.no_depth.setChecked(True)
+            
             #Soil saturated hydraulic \nconductivity anisotropy ratio 
             self.dlg_discharge_calibration_single.frame_6.setVisible(False)
             set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_4,False)
-            self.dlg_discharge_calibration_single.no_ansiotropy.setChecked(True)
+            #self.dlg_discharge_calibration_single.no_ansiotropy.setChecked(True)
+            
             #OR
             self.dlg_discharge_calibration_single.frame_9.setVisible(False)
             set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_5,False)
-            self.dlg_discharge_calibration_single.no_soil_or.setChecked(True)
+            #self.dlg_discharge_calibration_single.no_soil_or.setChecked(True)
+            
             #VGALPHA
             self.dlg_discharge_calibration_single.frame_8.setVisible(False)
             set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_6,False)
-            self.dlg_discharge_calibration_single.no_soil_vgalpha.setChecked(True)
+            #self.dlg_discharge_calibration_single.no_soil_vgalpha.setChecked(True)
+            
             #VGN
             self.dlg_discharge_calibration_single.frame_5.setVisible(False)
             set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_7,False)
-            self.dlg_discharge_calibration_single.no_soil_vgn.setChecked(True)
+            #self.dlg_discharge_calibration_single.no_soil_vgn.setChecked(True)
+            
             #VGM
             self.dlg_discharge_calibration_single.frame_7.setVisible(False)
             set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_8,False)
-            self.dlg_discharge_calibration_single.no_soil_vgm.setChecked(True)
+            #self.dlg_discharge_calibration_single.no_soil_vgm.setChecked(True)
+            
             #BCALPHA 
             self.dlg_discharge_calibration_single.frame_10.setVisible(False)
             set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_9,False)
-            self.dlg_discharge_calibration_single.no_soil_bcalpha.setChecked(True)
+            #self.dlg_discharge_calibration_single.no_soil_bcalpha.setChecked(True)
+            
             #BCLAMBDA
             self.dlg_discharge_calibration_single.frame_12.setVisible(False)
             set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_10,False)
-            self.dlg_discharge_calibration_single.no_soil_bclambda.setChecked(True)
+            #self.dlg_discharge_calibration_single.no_soil_bclambda.setChecked(True)
+            
             #VGM
             self.dlg_discharge_calibration_single.frame_11.setVisible(False)
             set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_11,False)
-            self.dlg_discharge_calibration_single.no_unsaturated_vgm.setChecked(True)
+            #self.dlg_discharge_calibration_single.no_unsaturated_vgm.setChecked(True)
+            
             #BCETA 
             self.dlg_discharge_calibration_single.frame_14.setVisible(False)
             set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_12,False)
-            self.dlg_discharge_calibration_single.no_unsaturated_bceta.setChecked(True)
+            #self.dlg_discharge_calibration_single.no_unsaturated_bceta.setChecked(True)
+            
             #BCALPHA
             self.dlg_discharge_calibration_single.frame_15.setVisible(False)
             set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_13,False)
-            self.dlg_discharge_calibration_single.no_unsaturated_bcalpha.setChecked(True)
+            #self.dlg_discharge_calibration_single.no_unsaturated_bcalpha.setChecked(True)
+            
             #GDALPHA
             self.dlg_discharge_calibration_single.frame_13.setVisible(False)
             set_visible_horizontal(self.dlg_discharge_calibration_single.horizontalLayout_14,False)
-            self.dlg_discharge_calibration_single.no_unsaturated_gdalpha.setChecked(True)
+            #self.dlg_discharge_calibration_single.no_unsaturated_gdalpha.setChecked(True)
+            
             #Obtain iso path
             with open(prj_path, "r") as archivo:
                 lineas = archivo.readlines()
@@ -3174,15 +3224,18 @@ class qvfsmod():
             #Linear sorption coefficient \n(L/Kg)
             self.dlg_pesticide_calibration.frame_45.setVisible(False)
             set_visible_horizontal(self.dlg_pesticide_calibration.horizontalLayout_108,False)
-            self.dlg_pesticide_calibration.no_linear.setChecked(True)
+            #self.dlg_pesticide_calibration.no_linear.setChecked(True)
+            
             #Adsorption coefficient \n(L/Kg)
             self.dlg_pesticide_calibration.frame_47.setVisible(False)
             set_visible_horizontal(self.dlg_pesticide_calibration.horizontalLayout_106,False)
-            self.dlg_pesticide_calibration.no_adsorption.setChecked(True)
+            #self.dlg_pesticide_calibration.no_adsorption.setChecked(True)
+            
             #Organic carbon\n(%)
             self.dlg_pesticide_calibration.frame_43.setVisible(False)
             set_visible_horizontal(self.dlg_pesticide_calibration.horizontalLayout_110,False)
-            self.dlg_pesticide_calibration.no_organic.setChecked(True)
+            #self.dlg_pesticide_calibration.no_organic.setChecked(True)
+            
             
             #Obtain iso path
             with open(prj_path, "r") as archivo:
@@ -4167,10 +4220,21 @@ class qvfsmod():
                         
             except:
                 pass
-                
+            
+        #Update values in the dialog
+        self.dlg_overland_flow_show(False)
+        self.dlg_infiltration_soil_show(False)
+        self.dlg_buffer_properties_show(False)
+        self.dlg_incoming_sediment_show(False)
+        self.add_hyetograph_to_dialog(False)
+        self.dlg_water_quality_show(False)
+        
+        
         #Check water quality
         if water_quality:
             self.dlg_base.water_quality.setChecked(True)
+        else:
+            self.dlg_base.water_quality.setChecked(False)
             
         
     def add_values_uh_outputs_dialog(self):
@@ -4322,7 +4386,7 @@ class qvfsmod():
         #Connect storm type
         self.dlg_base.storm_type.currentIndexChanged.connect(self.user_defined_storm_type)
     
-    def dlg_overland_flow_show(self):
+    def dlg_overland_flow_show(self,show = True):
         """Method to add values of the ikw to the dialog"""
         path = self.obtain_direction_prj(self.dlg_base.line_overland.text())
         if os.path.exists(path) and os.path.isfile(path):
@@ -4356,7 +4420,10 @@ class qvfsmod():
                                      "Roughness":[list(map(float, lineas[x].split()))[1] for x in range(4,4+number_segments)],
                                      "Slope":[list(map(float, lineas[x].split()))[2] for x in range(4,4+number_segments)]})
                 
-                self.dlg_buffer_segment.tableWidget.itemChanged.disconnect(self.update_buffer_segment_graph)
+                try:
+                    self.dlg_buffer_segment.tableWidget.itemChanged.disconnect(self.update_buffer_segment_graph)
+                except:
+                    pass
                 self.dlg_buffer_segment.tableWidget.setRowCount(len(df))
                 for fila in range(len(df)):
                     for columna in range(len(df.columns)):
@@ -4364,22 +4431,25 @@ class qvfsmod():
                         self.dlg_buffer_segment.tableWidget.setItem(fila, columna, item)
                         item.setTextAlignment(Qt.AlignCenter)
                 
-                self.dlg_buffer_segment.tableWidget.itemChanged.connect(self.update_buffer_segment_graph)
-                self.update_buffer_segment_graph()
+                if show:
+                    self.dlg_buffer_segment.tableWidget.itemChanged.connect(self.update_buffer_segment_graph)
+                    self.update_buffer_segment_graph()
                 
             except:
                 pass
         #Show graph
-        self.dlg_overland_flow.show()
-        self.dlg_overland_flow.raise_()
+        if show:
+            self.dlg_overland_flow.show()
+            self.dlg_overland_flow.raise_()
                 
     
-    def dlg_infiltration_soil_show(self):
+    def dlg_infiltration_soil_show(self,show = True):
         """Method to add values of the iso to the dialog"""
         path = self.obtain_direction_prj(self.dlg_base.line_infiltration.text())
         #Show dialog
-        self.dlg_infiltration_soil.show()
-        self.dlg_infiltration_soil.raise_()
+        if show:
+            self.dlg_infiltration_soil.show()
+            self.dlg_infiltration_soil.raise_()
         #Add values
         if os.path.exists(path) and os.path.isfile(path):
             try:
@@ -4441,7 +4511,7 @@ class qvfsmod():
             
         
     
-    def dlg_buffer_properties_show(self):
+    def dlg_buffer_properties_show(self,show = True):
         """Method to add values of the igr to the dialog"""
         path = self.obtain_direction_prj(self.dlg_base.line_buffer.text())
         if os.path.exists(path) and os.path.isfile(path):
@@ -4465,10 +4535,11 @@ class qvfsmod():
             
         
         #Show dialog
-        self.dlg_buffer_properties.show()
-        self.dlg_buffer_properties.raise_()
+        if show:
+            self.dlg_buffer_properties.show()
+            self.dlg_buffer_properties.raise_()
     
-    def dlg_incoming_sediment_show(self):
+    def dlg_incoming_sediment_show(self,show = True):
         """Method to add values of the isd to the dialog"""
         path = self.obtain_direction_prj(self.dlg_base.line_incoming.text())
         if os.path.exists(path) and os.path.isfile(path):
@@ -4492,8 +4563,9 @@ class qvfsmod():
                 pass
         
         #Show dialog
-        self.dlg_incoming_sediment.show()
-        self.dlg_incoming_sediment.raise_()
+        if show:
+            self.dlg_incoming_sediment.show()
+            self.dlg_incoming_sediment.raise_()
     
     def dlg_water_quality_show(self,show=True):
         """Method to add values of thw iwq file to dialog"""
@@ -6336,7 +6408,7 @@ class qvfsmod():
             pass
         
         
-    def dlg_buffer_segment_show(self):
+    def dlg_buffer_segment_show(self,show = True):
         """Method to show buffer segment dialog and update graph"""
         #If canvas exist then clear. If not then create it. 
         if not hasattr(self, 'canvas_buffer_segment'):
@@ -6356,9 +6428,10 @@ class qvfsmod():
         
         self.ax_buffer_segment = self.canvas_buffer_segment.figure.subplots()
         
-        self.dlg_buffer_segment.show()
-        self.dlg_buffer_segment.raise_()
-        self.update_buffer_segment_graph()
+        if show:
+            self.dlg_buffer_segment.show()
+            self.dlg_buffer_segment.raise_()
+            self.update_buffer_segment_graph()
     
     def update_user_storm_graph(self):  
         """Method to update the graph of user defined storm"""
@@ -7325,17 +7398,17 @@ class qvfsmod():
                     return
                 
                 #Total order 
-                self.ax_fast[0].bar(names_inputs, st, yerr=st_conf, capsize=5, color='b')
+                self.ax_fast[0].bar(self.change_input_names_fit_space(names_inputs), st, yerr=st_conf, capsize=5, color='b')
                 self.ax_fast[0].set_title('FAST Total order index (ST)', fontsize=10)
                 self.ax_fast[0].set_ylabel('FAST index')
-                self.ax_fast[0].tick_params(axis='x', rotation=20,labelsize = 10)
+                self.ax_fast[0].tick_params(axis='x', rotation=90,labelsize = 10)
                 for label in self.ax_fast[0].get_xticklabels():
                     label.set_ha('right')
                 
                 #First order 
-                self.ax_fast[1].bar(names_inputs, s1, yerr=s1_conf, capsize=5, color='b')
+                self.ax_fast[1].bar(self.change_input_names_fit_space(names_inputs), s1, yerr=s1_conf, capsize=5, color='b')
                 self.ax_fast[1].set_title('FAST First order index (S1)', fontsize=10)
-                self.ax_fast[1].tick_params(axis='x', rotation=20,labelsize = 10)
+                self.ax_fast[1].tick_params(axis='x', rotation=90,labelsize = 10)
                 for label in self.ax_fast[1].get_xticklabels():
                     label.set_ha('right')
                 
@@ -7390,7 +7463,7 @@ class qvfsmod():
                         for k in lineas[i+1:]:
                             if k == "----------------------------------------------------------------------" + '\n':
                                     break
-                            names_inputs.append(k.split(":")[0])
+                            names_inputs.append(k.split(":")[0]) 
                             s1.append(nan_function(k.split(":")[1].split("_")[0]))
                             s1_conf.append(nan_function(k.split(":")[1].split("_")[1]))
                             st.append(nan_function(k.split(":")[1].split("_")[2]))
@@ -7404,17 +7477,17 @@ class qvfsmod():
                     return
                 
                 #Total order 
-                self.ax_sobol[0].bar(names_inputs, st, yerr=st_conf, capsize=5, color='b')
+                self.ax_sobol[0].bar(self.change_input_names_fit_space(names_inputs), st, yerr=st_conf, capsize=5, color='b')
                 self.ax_sobol[0].set_title('Sobol Total order index (ST)', fontsize=10)
                 self.ax_sobol[0].set_ylabel('Sobol index')
-                self.ax_sobol[0].tick_params(axis='x', rotation=20,labelsize = 10)
+                self.ax_sobol[0].tick_params(axis='x', rotation=90,labelsize = 10)
                 for label in self.ax_sobol[0].get_xticklabels():
                     label.set_ha('right')
                 
                 #First order 
-                self.ax_sobol[1].bar(names_inputs, s1, yerr=s1_conf, capsize=5, color='b')
+                self.ax_sobol[1].bar(self.change_input_names_fit_space(names_inputs), s1, yerr=s1_conf, capsize=5, color='b')
                 self.ax_sobol[1].set_title('Sobol First order index (S1)', fontsize=10)
-                self.ax_sobol[1].tick_params(axis='x', rotation=20,labelsize = 10)
+                self.ax_sobol[1].tick_params(axis='x', rotation=90,labelsize = 10)
                 for label in self.ax_sobol[1].get_xticklabels():
                     label.set_ha('right')
                 
@@ -7438,6 +7511,54 @@ class qvfsmod():
         #Save figure
         self.dlg_base.print_graph_sensitivity.clicked.connect(lambda _, b= [self.dlg_base,self.canvas_sensitivity_graph]:self.figure_settings(b))
     
+    
+    def change_input_names_fit_space(self,input_names):
+        """Method to reduce the length of the inputs to fit in the dialog"""
+        conversion_dictionary = {"Source Area Length along the slope (m)":"Source Length (m)","Source Area Slope as a fraction":"Source Slope",
+             "Percent organic matter":"Perc_Org_Matter","Particle Class Diameter":"Part_Class_Diam","Width of the Strip (m)":"Strip_Width_m",
+             "Filter Manning n (RNA s/m^1/3)":"Filter_Manning_n","Number of Elemental Nodal Points":"Num_Nodal_Points",
+             "Average Suction at the Wetting Front":"Avg_Wetting_Suction","Initial Water Content":"Init_Water_Cont","Saturated Water Content":"Sat_Water_Cont",
+             "Maximum Surface Storage":"Max_Surf_Storage","Fraction of the filter where ponding is checked":"Pond_Check_Frac",
+             "Soil saturated hydraulic conductivity ansiotropy ratio":"Ksat_Aniso_Ratio",
+             "Soil water characteristic OR":"Soil_Char_OR","Soil water characteristic VGALPHA":"Soil_VG_Alpha",
+             "Soil water characteristic VGN":"Soil_VG_N","Soil water characteristic VGM":"Soil_VG_M",
+             "Soil water characteristic BCALPHA":"Soil_BC_Alpha","Soil water characteristic BCLAMDA":"Soil_BC_Lambda",
+             "Unsaturated hydraulic conductivity curve VGM":"Unsat_K_VGM",
+             "Unsaturated hydraulic conductivity curve BCETA":"Unsat_K_BCETA",
+             "Unsaturated hydraulic conductivity curve BCALPHA":"Unsat_K_BCALPHA",
+             "Unsaturated hydraulic conductivity curve GDALPHA":"Unsat_K_GDALPHA",
+             "Spacing for grass stems (cm)":"Grass_Stem_Space","Roughness-Grass Mannings n VN":"Grass_Manning_VN",
+             "Roughness-Bare surface Mannings n (Vn2)":"Bare_Manning_VN2",
+             "Incoming flow sediment concentration (g/cm^3)":"In_Sed_Conc",
+             "Sediment particle size diameter d50 (cm)":"Sed_D50_cm",
+             "Porosity of deposited sediment as a fraction":"Dep_Sed_Porosity",
+             "Portion of Particles from incoming sediment with diameter >0.0037 cm":"Sed_Large_Frac",
+             "Sediment particle density (g/cm^3)":"Sed_Density_gcm3","Linear sorption coefficient (L/Kg)":"Lin_Sorp_Coeff",
+             "Adsorption coefficient (L/Kg)":"Ads_Coeff_LKg","Clay in incoming sediment (%)":"Clay_Sed_Perc",
+             "Pesticide half-life (days)":"Pest_Half_Life","Topsoil field capacity (m3/m3)":"Top_Field_Cap",
+             "Total pesticide mass per unit area source field (mg/m2)":"Tot_Pest_Mass",
+             "Surface mixing layer thickness (cm)":"Surf_Mix_Layer","Dispersion length of chemical (m)":"Chem_Disp_Len",
+             "Runoff remobilized VFS residue from last event (mg/m2)":"VFS_Remob_Res"}
+        
+        for i in range(len(input_names)):
+            try:
+                frase = input_names[i]
+                # Separar por espacios
+                lista_palabras = frase.split()
+                if lista_palabras[-2] == "Pesticide":
+                    texto_sin_pesticida = " ".join(lista_palabras[:-2])
+                    if texto_sin_pesticida in conversion_dictionary.keys():
+                        texto_abreviado = conversion_dictionary[texto_sin_pesticida]
+                        texto_abreviado +=f"_Pest_{lista_palabras[-1]}"
+                        input_names[i] = texto_abreviado
+                elif frase in conversion_dictionary.keys():
+                    input_names[i] = conversion_dictionary[frase]
+            except:
+                pass
+            
+        
+        return input_names
+                
     
     
     def update_sensitivity_graph_design(self):
@@ -7888,7 +8009,7 @@ class qvfsmod():
                         for k in lineas[i+1:]:
                             if k == "----------------------------------------------------------------------" + '\n':
                                     break
-                            names_inputs.append(k.split(":")[0])
+                            names_inputs.append(k.split(":")[0]) 
                             s1.append(nan_function(k.split(":")[1].split("_")[0]))
                             s1_conf.append(nan_function(k.split(":")[1].split("_")[1]))
                             st.append(nan_function(k.split(":")[1].split("_")[2]))
@@ -7900,17 +8021,17 @@ class qvfsmod():
                     return
                 
                 #Total order 
-                self.ax_fast_design[0].bar(names_inputs, st, yerr=st_conf, capsize=5, color='b') 
+                self.ax_fast_design[0].bar(self.change_input_names_fit_space(names_inputs), st, yerr=st_conf, capsize=5, color='b') 
                 self.ax_fast_design[0].set_title('FAST Total order index (ST)', fontsize=10)
                 self.ax_fast_design[0].set_ylabel('FAST index')
-                self.ax_fast_design[0].tick_params(axis='x', rotation=20,labelsize = 10)
+                self.ax_fast_design[0].tick_params(axis='x', rotation=90,labelsize = 10)
                 for label in self.ax_fast_design[0].get_xticklabels():
                     label.set_ha('right')
                 
                 #First order 
-                self.ax_fast_design[1].bar(names_inputs, s1, yerr=s1_conf, capsize=5, color='b')
+                self.ax_fast_design[1].bar(self.change_input_names_fit_space(names_inputs), s1, yerr=s1_conf, capsize=5, color='b')
                 self.ax_fast_design[1].set_title('FAST First order index (S1)', fontsize=10)
-                self.ax_fast_design[1].tick_params(axis='x', rotation=20,labelsize = 10)
+                self.ax_fast_design[1].tick_params(axis='x', rotation=90,labelsize = 10)
                 for label in self.ax_fast_design[1].get_xticklabels():
                     label.set_ha('right')
                 
@@ -7964,7 +8085,7 @@ class qvfsmod():
                         for k in lineas[i+1:]:
                             if k == "----------------------------------------------------------------------" + '\n':
                                     break
-                            names_inputs.append(k.split(":")[0])
+                            names_inputs.append(k.split(":")[0]) 
                             s1.append(nan_function(k.split(":")[1].split("_")[0]))
                             s1_conf.append(nan_function(k.split(":")[1].split("_")[1]))
                             st.append(nan_function(k.split(":")[1].split("_")[2]))
@@ -7977,17 +8098,17 @@ class qvfsmod():
                     return
                 
                 #Total order 
-                self.ax_sobol_design[0].bar(names_inputs, st, yerr=st_conf, capsize=5, color='b')
+                self.ax_sobol_design[0].bar(self.change_input_names_fit_space(names_inputs), st, yerr=st_conf, capsize=5, color='b')
                 self.ax_sobol_design[0].set_title('Sobol Total order index (ST)', fontsize=10)
                 self.ax_sobol_design[0].set_ylabel('Sobol index')
-                self.ax_sobol_design[0].tick_params(axis='x', rotation=20,labelsize = 10)
+                self.ax_sobol_design[0].tick_params(axis='x', rotation=90,labelsize = 10)
                 for label in self.ax_sobol_design[0].get_xticklabels():
                     label.set_ha('right')
                 
                 #First order 
-                self.ax_sobol_design[1].bar(names_inputs, s1, yerr=s1_conf, capsize=5, color='b')
+                self.ax_sobol_design[1].bar(self.change_input_names_fit_space(names_inputs), s1, yerr=s1_conf, capsize=5, color='b')
                 self.ax_sobol_design[1].set_title('Sobol First order index (S1)', fontsize=10)
-                self.ax_sobol_design[1].tick_params(axis='x', rotation=20,labelsize = 10)
+                self.ax_sobol_design[1].tick_params(axis='x', rotation=90,labelsize = 10)
                 for label in self.ax_sobol_design[1].get_xticklabels():
                     label.set_ha('right')
                 
@@ -10172,7 +10293,7 @@ class qvfsmod():
     
     def delete_files_sensitivity_calibration(self):
         """Method to delete files of sensitivity for calibration analysis after parallelization"""
-        files_delete = [str(Path(self.working_directory+"/calibration/"+x)) for x in os.listdir(str(Path(self.working_directory+"/calibration"))) if "calibration" in x and "_" in x]
+        files_delete = [str(Path(self.working_directory+"/calibration/"+x)) for x in os.listdir(str(Path(self.working_directory+"/calibration"))) if "calibration" in x and "_" in x and x[-3:]!="csv"]
         files_delete += [str(Path(self.working_directory+"/calibration/inputs/"+x)) for x in os.listdir(str(Path(self.working_directory+"/calibration"+"/inputs"))) if "calibration" in x and "_" in x]
         files_delete += [str(Path(self.working_directory+"/calibration/output/"+x)) for x in os.listdir(str(Path(self.working_directory+"/calibration"+"/output"))) if "calibration" in x and "_" in x and x[-3:]!="csv"]
         files_delete += [str(Path(self.plugin_directory+"/executables/"+x)) for x in os.listdir(str(Path(self.plugin_directory+"/executables"))) if "execution" in x and "_" in x]
@@ -11747,6 +11868,12 @@ class qvfsmod():
         #Obtain the outputs that are going to calibrate
         self.output_calibrate_single = self.obtain_outputs_to_calibrate_single()
         
+        #Error if there are numeric values in dictionary
+        if not any(isinstance(v, (int, float)) for v in self.output_calibrate_single.values()):
+            self.warning_message("No observed values were selected")
+            return
+            
+        
         #Put the progress
         self.calibration_execution_progress_single([0,])
         
@@ -11769,6 +11896,12 @@ class qvfsmod():
             self.warning_message("Please check ranges are correctly set")
             return
         
+        #If minimum is higher than maximum or equal then give error
+        for i in self.calibration_dictionary.keys():
+            if self.calibration_dictionary[i][0]>=self.calibration_dictionary[i][1]:
+                self.warning_message(f"The minimum value of the parameter '{self.dic_names_well_written_calibration[i]}' is not smaller than the maximum value \n Please correct and rerun")
+                return
+                
         #If the range is too big, then the sampling has to be done in logarithmic space
         self.calibration_dictionary, self.logarithmic_inputs = self.create_dictionary_calibration_logarithmic(self.calibration_dictionary)
         
@@ -11781,6 +11914,8 @@ class qvfsmod():
         class StopOptimization_iterations(Exception):
             pass
         class StopOptimization_convergence(Exception):
+            pass
+        class StopOptimization_user(Exception):
             pass
         #first we create the thread class to be able to use the dialog when executing
         class ejecutor(QThread):
@@ -11796,11 +11931,18 @@ class qvfsmod():
                 self.max_iterations = int(max_iterations)
                 self.tolerance = float(tolerance)
                 self.save_results_calibration = save_results_calibration
-                
+                self._stop_requested = False
+            
+            def stop(self):
+                """Method to stop the calibration"""
+                self._stop_requested = True
             def run(self):
                 #Method to update progress in the optimization
                 self.ejecuciones = 0 
                 def objetivo(x):
+                    #Check if user has requested to stop
+                    if self._stop_requested:
+                        raise StopOptimization_user()
                     result = self.execution_calibration_single(x)
                     # Emitir la señal con el número de ejecuciones y el resultado
                     self.ejecuciones += 1
@@ -11838,13 +11980,25 @@ class qvfsmod():
                     
                 except StopOptimization_convergence: #convergence achieved
                     self.resultado_progress.emit(["Warning","Tolerance to convergence achieved \n Adding best result...\n"])
-                     
+                
+                except StopOptimization_user:
+                    self.resultado_progress.emit(["Warning", "Calibration stopped by user\n"])
+                    return
+                    
                 #Local optimization
                 self.resultado_progress.emit(["Warning", "Running local optimization\n"])
                 res_polish = minimize(objetivo,
                     self.best_result["x"],
                     method="Nelder-Mead",
-                    bounds=limites)
+                    bounds=limites,
+                    options={
+                        "fatol": self.tolerance,
+                        "maxiter": self.max_iterations
+                    })
+                if res_polish.message == "Optimization terminated successfully.":
+                    self.resultado_progress.emit(["Warning","Local optimization finished due to achieving convergence\n"])
+                elif res_polish.message == "Maximum number of iterations has been exceeded.":
+                    self.resultado_progress.emit(["Warning","Maximum iterations in local optimization achieved\n"])
                 
                 # Actualizar mejor resultado si mejora
                 if res_polish.fun < self.best_result["result"]:
@@ -11870,6 +12024,15 @@ class qvfsmod():
         self.worker = ejecutor(self.plugin_directory, self.execution_calibration_single,self.calibration_dictionary,
             self.dlg_calibration_advanced_settings_single.max_iterations.text(),self.dlg_calibration_advanced_settings_single.tolerance.text(),
             self.save_results_calibration_single)
+        #Method to stop calibration
+        #We disconnect to not conect many times to the method
+        try:
+            self.dlg_calibration_progress.stop.clicked.disconnect()
+        except TypeError:
+            pass
+
+        self.dlg_calibration_progress.stop.clicked.connect(self.worker.stop)
+        
         self.worker.start()
         self.worker.resultado_progress.connect(self.calibration_execution_progress_single)
     
@@ -11897,6 +12060,12 @@ class qvfsmod():
             self.warning_message("Please check ranges are correctly set")
             return
         
+        #If minimum is higher than maximum or equal then give error
+        for i in self.calibration_dictionary.keys():
+            if self.calibration_dictionary[i][0]>=self.calibration_dictionary[i][1]:
+                self.warning_message(f"The minimum value of the parameter '{self.dic_names_well_written_calibration[i]}' is not smaller than the maximum value \n Please correct and rerun")
+                return
+        
         #If the range is too big, then the sampling has to be done in logarithmic space
         self.calibration_dictionary, self.logarithmic_inputs = self.create_dictionary_calibration_logarithmic(self.calibration_dictionary)
         
@@ -11910,6 +12079,9 @@ class qvfsmod():
             pass
         class StopOptimization_convergence(Exception):
             pass
+        class StopOptimization_user(Exception):
+            pass
+            
         #first we create the thread class to be able to use the dialog when executing
         self.objective_function = [self.dlg_calibration_advanced_settings_sedimentograph.objective_function.itemText(i) for i in range(self.dlg_calibration_advanced_settings_sedimentograph.objective_function.count())][self.dlg_calibration_advanced_settings_sedimentograph.objective_function.currentIndex()]
         class ejecutor(QThread):
@@ -11925,11 +12097,18 @@ class qvfsmod():
                 self.max_iterations = int(max_iterations)
                 self.tolerance = float(tolerance)
                 self.save_results_calibration = save_results_calibration
-                
+                self._stop_requested = False
+            
+            def stop(self):
+                """Method to stop the calibration"""
+                self._stop_requested = True
             def run(self):
                 #Method to update progress in the optimization
                 self.ejecuciones = 0 
                 def objetivo(x):
+                    #Check if user has requested to stop
+                    if self._stop_requested:
+                        raise StopOptimization_user()
                     result = self.execution_calibration_sedimentograph(x)
                     # Emitir la señal con el número de ejecuciones y el resultado
                     self.ejecuciones += 1
@@ -11966,13 +12145,23 @@ class qvfsmod():
                     
                 except StopOptimization_convergence: #convergence achieved
                     self.resultado_progress.emit(["Warning","Tolerance to convergence achieved \n Adding best result...\n"])
-                    
+                except StopOptimization_user:
+                    self.resultado_progress.emit(["Warning", "Calibration stopped by user\n"])
+                    return
                 #Local optimization
                 self.resultado_progress.emit(["Warning", "Running local optimization\n"])
                 res_polish = minimize(objetivo,
                     self.best_result["x"],
                     method="Nelder-Mead",
-                    bounds=limites)
+                    bounds=limites,
+                    options={
+                        "fatol": self.tolerance,
+                        "maxiter": self.max_iterations
+                    })
+                if res_polish.message == "Optimization terminated successfully.":
+                    self.resultado_progress.emit(["Warning","Local optimization finished due to achieving convergence\n"])
+                elif res_polish.message == "Maximum number of iterations has been exceeded.":
+                    self.resultado_progress.emit(["Warning","Maximum iterations in local optimization achieved\n"])
                 
                 # Actualizar mejor resultado si mejora
                 if res_polish.fun < self.best_result["result"]:
@@ -11999,6 +12188,16 @@ class qvfsmod():
         self.worker = ejecutor(self.plugin_directory, self.execution_calibration_sedimentograph,self.calibration_dictionary,
             self.dlg_calibration_advanced_settings_sedimentograph.max_iterations.text(),self.dlg_calibration_advanced_settings_sedimentograph.tolerance.text(),
             self.save_results_calibration)
+        
+        #Method to stop calibration
+        #We disconnect to not conect many times to the method
+        try:
+            self.dlg_calibration_progress.stop.clicked.disconnect()
+        except TypeError:
+            pass
+
+        self.dlg_calibration_progress.stop.clicked.connect(self.worker.stop)
+        
         self.worker.start()
         self.worker.resultado_progress.connect(self.calibration_execution_progress_sedimentograph)
     
@@ -12195,6 +12394,8 @@ class qvfsmod():
         self.calibration_hydrograph = True
         self.calibration_sedimentograph = False
         
+        
+        
         #Obtain dataframe of hydrograph
         self.hydrograph_calibration_df = self.obtain_df_hydrograph_calibration()
         #First, put the progress
@@ -12212,9 +12413,16 @@ class qvfsmod():
         except:
             self.warning_message("Please check ranges are correctly set")
             return
+        
+        #If minimum is higher than maximum or equal then give error
+        for i in self.calibration_dictionary.keys():
+            if self.calibration_dictionary[i][0]>=self.calibration_dictionary[i][1]:
+                self.warning_message(f"The minimum value of the parameter '{self.dic_names_well_written_calibration[i]}' is not smaller than the maximum value \n Please correct and rerun")
+                return
+        
+        
         #If the range is too big, then the sampling has to be done in logarithmic space
         self.calibration_dictionary, self.logarithmic_inputs = self.create_dictionary_calibration_logarithmic(self.calibration_dictionary)
-        
         
         #Error if no inputs where selected
         if len(self.calibration_dictionary)==0:
@@ -12227,6 +12435,8 @@ class qvfsmod():
         class StopOptimization_iterations(Exception):
             pass
         class StopOptimization_convergence(Exception):
+            pass
+        class StopOptimization_user(Exception):
             pass
 
         #first we create the thread class to be able to use the dialog when executing
@@ -12243,11 +12453,21 @@ class qvfsmod():
                 self.max_iterations = int(max_iterations)
                 self.tolerance = float(tolerance)
                 self.save_results_calibration = save_results_calibration
-                
+                self._stop_requested = False
+            
+            def stop(self):
+                """Method to stop the calibration"""
+                self._stop_requested = True
+            
             def run(self):
                 #Method to update progress in the optimization
                 self.ejecuciones = 0 
                 def objetivo(x):
+                    
+                    #Check if user has requested to stop
+                    if self._stop_requested:
+                        raise StopOptimization_user()
+        
                     result = self.execution_calibration_hydrograph(x)
                     # Emitir la señal con el número de ejecuciones y el resultado
                     self.ejecuciones += 1
@@ -12284,13 +12504,25 @@ class qvfsmod():
                 except StopOptimization_convergence: #convergence achieved
                     self.resultado_progress.emit(["Warning","Tolerance to convergence achieved\n"])
                     #resultado = objetivo(self.best_result["x"])  
+                except StopOptimization_user:
+                    self.resultado_progress.emit(["Warning", "Calibration stopped by user\n"])
+                    return
                 
                 #Local optimization
                 self.resultado_progress.emit(["Warning", "Running local optimization\n"])
                 res_polish = minimize(objetivo,
                     self.best_result["x"],
                     method="Nelder-Mead",
-                    bounds=limites)
+                    bounds=limites,
+                    options={
+                        "fatol": self.tolerance,
+                        "maxiter": self.max_iterations
+                    })
+                if res_polish.message == "Optimization terminated successfully.":
+                    self.resultado_progress.emit(["Warning","Local optimization finished due to achieving convergence\n"])
+                elif res_polish.message == "Maximum number of iterations has been exceeded.":
+                    self.resultado_progress.emit(["Warning","Maximum iterations in local optimization achieved\n"])
+                
                 
                 # Actualizar mejor resultado si mejora
                 if res_polish.fun < self.best_result["result"]:
@@ -12314,6 +12546,16 @@ class qvfsmod():
         self.worker = ejecutor(self.plugin_directory, self.execution_calibration_hydrograph,self.calibration_dictionary,
             self.dlg_calibration_advanced_settings_hydrograph.max_iterations.text(),self.dlg_calibration_advanced_settings_hydrograph.tolerance.text(),
             self.save_results_calibration)
+        
+        #Method to stop calibration
+        #We disconnect to not conect many times to the method
+        try:
+            self.dlg_calibration_progress.stop.clicked.disconnect()
+        except TypeError:
+            pass
+
+        self.dlg_calibration_progress.stop.clicked.connect(self.worker.stop)
+        
         self.worker.start()
         self.worker.resultado_progress.connect(self.calibration_execution_progress_hydrograph)
     
@@ -13117,8 +13359,8 @@ class qvfsmod():
                 self.ax_calibration_progress = self.canvas_calibration_graph.figure.subplots()
                 
                 #Add lines
-                self.ax_calibration_progress.plot(self.hydrograph_calibration_df.Time,self.hydrograph_calibration_df.Discharge,label = "Measured",marker='o')
-                self.ax_calibration_progress.plot(self.calibration_df_progress.Time,self.calibration_df_progress.Discharge,label = "Simulated",marker='o')
+                self.ax_calibration_progress.plot(self.calibration_df_progress.Time,self.calibration_df_progress.Discharge,label = "Simulated",linewidth=2,zorder = 1)
+                self.ax_calibration_progress.scatter(self.hydrograph_calibration_df.Time,self.hydrograph_calibration_df.Discharge,label = "Observed",color = "orange",zorder = 2)
                 
                 #Limits
                 #Labels
@@ -13220,8 +13462,8 @@ class qvfsmod():
                 self.ax_calibration_progress = self.canvas_calibration_graph.figure.subplots()
                 
                 #Add lines
-                self.ax_calibration_progress.plot(self.sedimentograph_calibration_df.Time,self.sedimentograph_calibration_df.Sediment,label = "Measured",marker='o')
-                self.ax_calibration_progress.plot(self.calibration_df_progress.Time,self.calibration_df_progress.Sediment,label = "Simulated",marker='o')
+                self.ax_calibration_progress.plot(self.calibration_df_progress.Time,self.calibration_df_progress.Sediment,label = "Simulated",linewidth=2,zorder = 1)
+                self.ax_calibration_progress.scatter(self.sedimentograph_calibration_df.Time,self.sedimentograph_calibration_df.Sediment,label = "Observed",color = "orange",zorder = 2)
                 
                 #Limits
                 #Labels
@@ -13449,14 +13691,14 @@ class qvfsmod():
                     for i in range(len(self.calibration_dictionary.keys())):
                         if list(self.calibration_dictionary.keys())[i] in self.logarithmic_inputs:
                             if i != len(self.calibration_dictionary.keys())-1:
-                                f.write(f"{list(self.calibration_dictionary.keys())[i]}: {10**inputs[results.index(final_of)][i]},")
+                                f.write(f"{self.dic_names_well_written_calibration[list(self.calibration_dictionary.keys())[i]]}: {10**inputs[results.index(final_of)][i]},")
                             else:
-                                f.write(f"{list(self.calibration_dictionary.keys())[i]}: {10**inputs[results.index(final_of)][i]}\n")
+                                f.write(f"{self.dic_names_well_written_calibration[list(self.calibration_dictionary.keys())[i]]}: {10**inputs[results.index(final_of)][i]}\n")
                         else:
                             if i != len(self.calibration_dictionary.keys())-1:
-                                f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]},")
+                                f.write(f"{self.dic_names_well_written_calibration[list(self.calibration_dictionary.keys())[i]]}: {inputs[results.index(final_of)][i]},")
                             else:
-                                f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]}\n")
+                                f.write(f"{self.dic_names_well_written_calibration[list(self.calibration_dictionary.keys())[i]]}: {inputs[results.index(final_of)][i]}\n")
                     f.write(f"--------Goodness of fit--------\n")
                     f.write(f"Ceff = {nash_sutcliffe_efficiency}"+"\n")
                     f.write(f"Ceff_m = {Ceff_m}"+"\n")
@@ -13509,27 +13751,29 @@ class qvfsmod():
                     for i in range(len(self.calibration_dictionary.keys())):
                         if list(self.calibration_dictionary.keys())[i] in self.logarithmic_inputs:
                             if i != len(self.calibration_dictionary.keys())-1:
-                                f.write(f"{list(self.calibration_dictionary.keys())[i]}: {10**inputs[results.index(final_of)][i]},")
+                                f.write(f"{self.dic_names_well_written_calibration[list(self.calibration_dictionary.keys())[i]]}: {10**inputs[results.index(final_of)][i]},")
                             else:
-                                f.write(f"{list(self.calibration_dictionary.keys())[i]}: {10**inputs[results.index(final_of)][i]}\n")
+                                f.write(f"{self.dic_names_well_written_calibration[list(self.calibration_dictionary.keys())[i]]}: {10**inputs[results.index(final_of)][i]}\n")
                         else:
                             if i != len(self.calibration_dictionary.keys())-1:
-                                f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]},")
+                                f.write(f"{self.dic_names_well_written_calibration[list(self.calibration_dictionary.keys())[i]]}: {inputs[results.index(final_of)][i]},")
                             else:
-                                f.write(f"{list(self.calibration_dictionary.keys())[i]}: {inputs[results.index(final_of)][i]}\n")
+                                f.write(f"{self.dic_names_well_written_calibration[list(self.calibration_dictionary.keys())[i]]}: {inputs[results.index(final_of)][i]}\n")
                     f.write(f"Observed vs predicted values: \n")
                     for i in range(len(self.output_calibrate_single.keys())):
                         if i != len(self.output_calibrate_single.keys())-1:
                             f.write(f"{list(self.output_calibrate_single.keys())[i]}: {list(self.output_calibrate_single.values())[i]}-{list(self.calibration_single_results.values())[i]},")
                         else:
                             f.write(f"{list(self.output_calibrate_single.keys())[i]}: {list(self.output_calibrate_single.values())[i]}-{list(self.calibration_single_results.values())[i]}\n")
-                        
+                    
             except PermissionError:
                 self.warning_message(f"{path} file is opened. Please close it to save results")
             
             #Put filepath in the results dialog
             self.dlg_calibration_results_single.results.setText(self.dlg_calibration_advanced_settings_single.exit_file.text())
-
+            
+            #Put the optimized project in the working directory with a name to informe that it is optimized
+            self.add_optimized_project_to_folder()
         
         #Delete all outputs. If not in the next execution owq might be not created by the execution but still present and not giving error
         self.delete_files_calibration_single()
@@ -13554,6 +13798,11 @@ class qvfsmod():
         elif self.calibration_sedimentograph:
             name_original_project = os.path.basename(self.obtain_direction_vfsmod(self.dlg_base.vfs_file.text())).split('.')[0]
             name_present_project = f"{name_original_project}_opt_sedim"
+            prj_file = str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/{name_present_project}.prj"))
+        
+        else:
+            name_original_project = os.path.basename(self.obtain_direction_vfsmod(self.dlg_base.single_values_line.text())).split('.')[0]
+            name_present_project = f"{name_original_project}_opt_single"
             prj_file = str(Path(self.dlg_base.working_directory_vfsmod.text()+f"/{name_present_project}.prj"))
         
         with open(prj_file, 'w') as archivo:
@@ -13670,10 +13919,9 @@ class qvfsmod():
 
                 
             elif self.dlg_calibration_results_hydrograph.graph_fit.isChecked():
-                self.ax_calibration_graph_hydrograph.plot(times, observed,
-                    color = "blue", label = "Observed",marker = "o")
-                self.ax_calibration_graph_hydrograph.plot(times, simulated,color = "red", 
-                    label = "Simulated",marker = "o")
+                self.ax_calibration_graph_hydrograph.plot(times,simulated,label = "Simulated",linewidth=2,zorder = 1)
+                self.ax_calibration_graph_hydrograph.scatter(times,observed,label = "Observed",color = "orange",zorder = 2)
+                
                 self.ax_calibration_graph_hydrograph.legend()
                 self.ax_calibration_graph_hydrograph.set_xlabel("Time (s)",size = 12,family="arial",weight = "bold",color = "black")
                 self.ax_calibration_graph_hydrograph.set_ylabel("Discharge (m$^{3}$/s)",size = 12,family="arial",weight = "bold",color = "black")
@@ -13748,10 +13996,10 @@ class qvfsmod():
 
                 
             elif self.dlg_calibration_results_sedimentograph.graph_fit.isChecked():
-                self.ax_calibration_graph_sedimentograph.plot(times, observed,
-                    color = "blue", label = "Observed",marker = "o")
-                self.ax_calibration_graph_sedimentograph.plot(times, simulated,color = "red", 
-                    label = "Simulated",marker = "o")
+                self.ax_calibration_graph_sedimentograph.plot(times,simulated,label = "Simulated",linewidth=2,zorder = 1)
+                self.ax_calibration_graph_sedimentograph.scatter(times,observed,label = "Observed",color = "orange",zorder = 2)
+                
+                
                 self.ax_calibration_graph_sedimentograph.legend()
                 self.ax_calibration_graph_sedimentograph.set_xlabel("Time (s)",size = 12,family="arial",weight = "bold",color = "black")
                 self.ax_calibration_graph_sedimentograph.set_ylabel("Sediment (g/s)",size = 12,family="arial",weight = "bold",color = "black")
@@ -14004,6 +14252,7 @@ class qvfsmod():
             water_depth,soil_saturated,soil_or,soil_vgalpha,soil_vgn,soil_vgm,soil_bcalpha,soil_bclamda,unsaturated_vgm,unsaturated_bceta,unsaturated_bcalpha,usaturated_gdalpha])
         
         #Create dictionary
+        
         if vertical == "calibrate":
             dictionary["vertical"] = [float(self.dlg_hydrograph_calibration.min_vertical.text()),float(self.dlg_hydrograph_calibration.max_vertical.text())]
             
@@ -14101,6 +14350,7 @@ class qvfsmod():
 
         #Change inputs if "Change" has selected
         self.change_base_inputs_calibration_sedimentograph([spacing,rougheness_grass,height,roughness_bare,coarse_sediment,incoming_flow,porosity,particle_class,particle_densitiy])
+        
         
         #Create dictionary
         if spacing == "calibrate":
@@ -14295,6 +14545,7 @@ class qvfsmod():
         
         if particle_densitiy == "calibrate":
             dictionary["particle_densitiy"] = [float(self.dlg_sediment_calibration_single.min_density.text()),float(self.dlg_sediment_calibration_single.max_density.text())]
+        
         
         #Pesticide
         if clay == "calibrate":
@@ -15446,7 +15697,9 @@ class qvfsmod():
     def add_hyetograph_to_dialog(self,show = True):
         """Method to add the hyetograph information to the dialog"""
         #Disconnect update of graph to avoid all the updates
-        self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.disconnect(self.update_vfsmod_hyetograph_graph)
+        if show:
+            self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.disconnect(self.update_vfsmod_hyetograph_graph)
+
         #Obtain information
         direccion = self.obtain_direction_prj(self.dlg_base.line_storm.text())
         #Eliminate first all the rows and lineEdits so that we dont get the information of another file
@@ -15482,10 +15735,10 @@ class qvfsmod():
         if show:
             self.dlg_vfsmod_hyetograph.show()
             self.dlg_vfsmod_hyetograph.raise_()
-        self.show_hietograph_vfsmod_graph()
-        #Connect again update of graph to avoid all the updates
-        self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.connect(self.update_vfsmod_hyetograph_graph)
-        self.update_vfsmod_hyetograph_graph()
+            self.show_hietograph_vfsmod_graph()
+            #Connect again update of graph to avoid all the updates
+            self.dlg_vfsmod_hyetograph.tableWidget.itemChanged.connect(self.update_vfsmod_hyetograph_graph)
+            self.update_vfsmod_hyetograph_graph()
     
     def add_hydrograph_to_dialog(self, show = True):
         """Method to add the hyetograph information to the dialog"""
@@ -16394,6 +16647,19 @@ class qvfsmod():
         #Check if VFSMOD outputs exist
         self.check_vfsmod_output_exist()
  
+    def select_file_identifiability(self):
+        """Method to select the folder where identifiability analysis results are going to be saved"""
+        working_directory = self.dlg_base.working_directory_vfsmod.text()
+        fname = QFileDialog.getOpenFileName(self.dlg_calibration_sensitivity_hydrograph, "Select Identifiability Results File",str(Path(working_directory +"/calibration/output")), "CSV files (*.csv)")
+        if fname[0]!="":
+            #Put the relative path if the file is inside the folder
+            if os.path.commonpath([os.path.normpath(fname[0]), os.path.normpath(working_directory)]) == os.path.normpath(working_directory):
+                text = os.path.relpath(fname[0], working_directory)
+            else: #absolute path
+                text = fname[0]
+            self.dlg_calibration_sensitivity_hydrograph.file_save.setText(os.path.normpath(text))
+    
+    
     
     def uh_execution(self):
         """Method for executing the UH module"""
@@ -16723,16 +16989,16 @@ class qvfsmod():
     def create_ikw_file(self,close =False):
         """Method to create .ikw file"""
         #Inputs
-        simulation_title = self.dlg_overland_flow.simulation_title.text()
-        buffer_length = self.dlg_overland_flow.length.text()
-        width_strip = self.dlg_overland_flow.width.text()
-        number_nodes = self.dlg_overland_flow.nodes.text()
-        time_weigth = self.dlg_overland_flow.time.text()
-        number_element_nodal = self.dlg_overland_flow.nodal.text()
-        petrov_galerkin = self.dlg_overland_flow.petrov.text()
-        courant_number = self.dlg_overland_flow.courant.text()
-        maximum_iterations = self.dlg_overland_flow.maximum.text()
-        output_element_information = self.dlg_overland_flow.output.text()
+        simulation_title = self.dlg_overland_flow.simulation_title.text().replace("\n", " ").replace("\r", "")
+        buffer_length = self.dlg_overland_flow.length.text().replace("\n", " ").replace("\r", "")
+        width_strip = self.dlg_overland_flow.width.text().replace("\n", " ").replace("\r", "")
+        number_nodes = self.dlg_overland_flow.nodes.text().replace("\n", " ").replace("\r", "")
+        time_weigth = self.dlg_overland_flow.time.text().replace("\n", " ").replace("\r", "")
+        number_element_nodal = self.dlg_overland_flow.nodal.text().replace("\n", " ").replace("\r", "")
+        petrov_galerkin = self.dlg_overland_flow.petrov.text().replace("\n", " ").replace("\r", "")
+        courant_number = self.dlg_overland_flow.courant.text().replace("\n", " ").replace("\r", "")
+        maximum_iterations = self.dlg_overland_flow.maximum.text().replace("\n", " ").replace("\r", "")
+        output_element_information = self.dlg_overland_flow.output.text().replace("\n", " ").replace("\r", "")
         #Buffer segment
         table = self.dlg_buffer_segment.tableWidget
         rows = table.rowCount()
@@ -16897,22 +17163,22 @@ class qvfsmod():
         if self.dlg_water_quality.check_direct.isChecked(): direct_input = 0
         else: direct_input = 1
         IWQPRO = self.dlg_water_quality.trapping_equation.currentIndex()+1
-        a = self.dlg_water_quality.equation_a.text()
-        b = self.dlg_water_quality.equation_b.text()
-        c = self.dlg_water_quality.equation_c.text()
-        d = self.dlg_water_quality.equation_d.text()
-        e = self.dlg_water_quality.equation_e.text()
-        vkoc = self.dlg_water_quality.line_koc_1.text()
-        vkd = self.dlg_water_quality.line_kd_1.text()
-        oc = self.dlg_water_quality.line_oc_1.text()
-        clay = self.dlg_water_quality.line_clay.text()
-        days = self.dlg_water_quality.days.text()
-        half_life = self.dlg_water_quality.half_life_1.text()
-        field_capacity = self.dlg_water_quality.field_capacity.text()
-        mass = self.dlg_water_quality.mass_1.text()
-        thickness = self.dlg_water_quality.thickness.text()
-        dgld = self.dlg_water_quality.dispersion_1.text()
-        dgmres0 = self.dlg_water_quality.remobilized_1.text()
+        a = self.dlg_water_quality.equation_a.text().replace("\n", " ").replace("\r", "")
+        b = self.dlg_water_quality.equation_b.text().replace("\n", " ").replace("\r", "")
+        c = self.dlg_water_quality.equation_c.text().replace("\n", " ").replace("\r", "")
+        d = self.dlg_water_quality.equation_d.text().replace("\n", " ").replace("\r", "")
+        e = self.dlg_water_quality.equation_e.text().replace("\n", " ").replace("\r", "")
+        vkoc = self.dlg_water_quality.line_koc_1.text().replace("\n", " ").replace("\r", "")
+        vkd = self.dlg_water_quality.line_kd_1.text().replace("\n", " ").replace("\r", "")
+        oc = self.dlg_water_quality.line_oc_1.text().replace("\n", " ").replace("\r", "")
+        clay = self.dlg_water_quality.line_clay.text().replace("\n", " ").replace("\r", "")
+        days = self.dlg_water_quality.days.text().replace("\n", " ").replace("\r", "")
+        half_life = self.dlg_water_quality.half_life_1.text().replace("\n", " ").replace("\r", "")
+        field_capacity = self.dlg_water_quality.field_capacity.text().replace("\n", " ").replace("\r", "")
+        mass = self.dlg_water_quality.mass_1.text().replace("\n", " ").replace("\r", "")
+        thickness = self.dlg_water_quality.thickness.text().replace("\n", " ").replace("\r", "")
+        dgld = self.dlg_water_quality.dispersion_1.text().replace("\n", " ").replace("\r", "")
+        dgmres0 = self.dlg_water_quality.remobilized_1.text().replace("\n", " ").replace("\r", "")
         idg = int(self.dlg_water_quality.calculation.currentIndex())
         imob = self.dlg_water_quality.imob.currentIndex()+1
         number_pesticides = int(self.dlg_water_quality.number_pesticides.text())
@@ -17074,7 +17340,7 @@ class qvfsmod():
     def create_irn_file(self,close=False):
         """Method to create the .irn file"""
         #Inputs
-        maximum = self.dlg_vfsmod_hyetograph.maximum_rainfall.text()
+        maximum = self.dlg_vfsmod_hyetograph.maximum_rainfall.text().replace("\n", " ").replace("\r", "")
         table = self.dlg_vfsmod_hyetograph.tableWidget
         rows = table.rowCount()
         hyetograph = pd.DataFrame(data = {"Time":[table.item(row, 0).text() for row in range(rows)],
@@ -17106,9 +17372,9 @@ class qvfsmod():
     def create_iro_file(self,close = False):
         """Method to create the .iro file"""
         #Inputs
-        width = self.dlg_vfsmod_hydrograph.width.text()
-        length = self.dlg_vfsmod_hydrograph.length.text()
-        peak = self.dlg_vfsmod_hydrograph.peak.text()
+        width = self.dlg_vfsmod_hydrograph.width.text().replace("\n", " ").replace("\r", "")
+        length = self.dlg_vfsmod_hydrograph.length.text().replace("\n", " ").replace("\r", "")
+        peak = self.dlg_vfsmod_hydrograph.peak.text().replace("\n", " ").replace("\r", "")
         table = self.dlg_vfsmod_hydrograph.tableWidget
         rows = table.rowCount()
         hydrograph = pd.DataFrame(data = {"Time":[table.item(row, 0).text() for row in range(rows)],
@@ -17719,9 +17985,9 @@ class qvfsmod():
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.8</b>
+                <b>Version 1.0.12</b>
                 <br>
-                29/01/2026
+                26/02/2026
             """
         elif sys.platform.startswith("darwin") or sys.platform.startswith("linux"): #macOS
             html_text = f"""
@@ -17740,9 +18006,9 @@ class qvfsmod():
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.8</b>
+                <b>Version 1.0.12</b>
                 <br>
-                29/01/2026
+                26/02/2026
             """
         
         
@@ -18863,6 +19129,7 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
             for p in range(number_pesticides):
                 df_conc[f"Pesticide Delivery Ratio Pesticide {p+1}"]=[-1.0]
                 df_conc[f"Leachate depth (m) Pesticide {p+1}"]=[-1.0]
+                df_conc[f"Next event residue remobilization (mg) Pesticide {p+1}"]=[-1.0]
             
     else:
         ruta = str(Path(working_directory+f"/uncertainty/output/uncertainty_{core}.osp"))
@@ -18942,6 +19209,22 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
                         else:
                             return float(i.split("=")[0].split()[0])
             
+            def obtain_result_owq_residue(string,number_pesticide):
+                condition = False
+                for i in lineas_owq:
+                    if i == f" Normalized values by source area:\n":
+                        condition = True
+                    if i.split("=")[-1].rstrip()==" Source Area (input)":
+                        area = float(i.split("=")[0].split()[0])
+                    try:
+                        if i.split("=")[1].rstrip()==string and condition:
+                            if string != " Source Area (input)":
+                                return float(i.split("=")[0].split()[int(number_pesticide)-1])*area
+                            else:
+                                return float(i.split("=")[0].split()[0])
+                    except:
+                        pass  
+            
             #Iterate through all the pesticides
             for p in range(number_pesticides):
                 pesticide_input = obtain_result_owq(" Pesticide input (mi)",p+1)
@@ -18953,6 +19236,7 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
                 
                 df_conc[f"Pesticide Delivery Ratio Pesticide {p+1}"]=pesticide_delivery
                 df_conc[f"Leachate depth (m) Pesticide {p+1}"]=obtain_leachate_depth(p+1)
+                df_conc[f"Next event residue remobilization (mg) Pesticide {p+1}"]=obtain_result_owq_residue(" Next event residue remobilization (mresn, IMOB",p+1)
             
     
     #Add the values of inputs 
@@ -19649,6 +19933,7 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
             for p in range(number_pesticides):
                 df_conc[f"Pesticide Delivery Ratio Pesticide {p+1}"]=[-1.0]
                 df_conc[f"Leachate depth (m) Pesticide {p+1}"]=[-1.0]
+                df_conc[f"Next event residue remobilization (mg) Pesticide {p+1}"]=[-1.0]
 
     else:
         ruta = str(Path(working_directory+f"/sensitivity/output/sensitivity_{core}.osp"))
@@ -19733,6 +20018,23 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
                         else:
                             return float(i.split("=")[0].split()[0])
             
+            def obtain_result_owq_residue(string,number_pesticide):
+                condition = False
+                for i in lineas_owq:
+                    if i == f" Normalized values by source area:\n":
+                        condition = True
+                    if i.split("=")[-1].rstrip()==" Source Area (input)":
+                        area = float(i.split("=")[0].split()[0])
+                    try:
+                        if i.split("=")[1].rstrip()==string and condition:
+                            if string != " Source Area (input)":
+                                return float(i.split("=")[0].split()[int(number_pesticide)-1])*area
+                            else:
+                                return float(i.split("=")[0].split()[0])
+                    except:
+                        pass  
+                             
+            
             #Iterate through all the pesticides
             for p in range(number_pesticides):
                 pesticide_input = obtain_result_owq(" Pesticide input (mi)",p+1)
@@ -19744,6 +20046,7 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
                 
                 df_conc[f"Pesticide Delivery Ratio Pesticide {p+1}"]=pesticide_delivery
                 df_conc[f"Leachate depth (m) Pesticide {p+1}"]=obtain_leachate_depth(p+1)
+                df_conc[f"Next event residue remobilization (mg) Pesticide {p+1}"]=obtain_result_owq_residue(" Next event residue remobilization (mresn, IMOB",p+1)
         
     #Add the values of inputs 
     for k,i in enumerate(dic_data.keys()):
