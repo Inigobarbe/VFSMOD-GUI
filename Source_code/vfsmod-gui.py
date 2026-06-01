@@ -776,7 +776,7 @@ class qvfsmod():
         
         #Enable/disable edition in water quality dialog
         self.enable_disable_water_quality_dialog()
-        self.dlg_water_quality.check_direct.stateChanged.connect(self.enable_disable_water_quality_dialog)
+        self.dlg_water_quality.check_direct_combo.currentIndexChanged.connect(self.enable_disable_water_quality_dialog)
         
         #Add and remove rows for the buffer segment
         self.dlg_buffer_segment.add_row.clicked.connect(self.add_row)
@@ -1665,9 +1665,12 @@ class qvfsmod():
             finite_nse = [nse for nse in self.nashes_bootstraping_sedimentograph if nse != -np.inf]
             inf_count = len([nse for nse in self.nashes_bootstraping_sedimentograph if nse == -np.inf])
         
-        counts, bins, patches = ax1.hist(
-            finite_nse, bins=20, density=True, alpha=0.7, color="lightcoral", edgecolor="black", label="Histogram"
-        )
+        
+        finite_nse = [x for x in finite_nse if not np.isnan(x)]
+        counts, bins = np.histogram(finite_nse, bins=20)
+        probs = counts / counts.sum()
+
+        ax1.bar(bins[:-1], probs, width=np.diff(bins), align='edge',label="Histogram (bin probability)")
 
         # Función acumulada
         if type_calibration == "hydrograph":
@@ -1686,13 +1689,13 @@ class qvfsmod():
         #Vertical line
         try:
             ax1.axvline(x=float(dialog.nash.text()), color='red', linestyle='--', linewidth=1.5)
-            ax2.hlines(y=float(dialog.p_value.text().split(":")[-1]), xmin=float(dialog.nash.text()), xmax=ax2.get_xlim()[1],transform=ax2.get_yaxis_transform(),color='red', linestyle='--', linewidth=1.5)
+            ax2.hlines(y=float(dialog.p_value.text().split(":")[-1]), xmin=float(dialog.nash.text()), xmax=ax2.get_xlim()[1],color='red', linestyle='--', linewidth=1.5)
         except:
             pass
 
         # Etiquetas de los ejes
         ax1.set_xlabel("Nash–Sutcliffe Efficiency")
-        ax1.set_ylabel("Density")
+        ax1.set_ylabel("Bin probability")
         ax2.set_ylabel("Cumulative Probability")
 
 
@@ -1918,9 +1921,11 @@ class qvfsmod():
                 font.setBold(True)
                 getattr(self.dlg_water_quality, f"pesticide_direct_label_{pesticide}").setFont(font)
                 
-                label = QLabel("Kd (L/kg)")
+                if self.dlg_water_quality.check_direct_combo.currentIndex()<2: label = QLabel("Kd (L/kg)")
+                else: label = QLabel("Kf (L^Nf/Kg)")
                 setattr(self.dlg_water_quality, f"label_kd_{pesticide}", label)
-                label = QLabel("Koc (L/kg)")
+                if self.dlg_water_quality.check_direct_combo.currentIndex()<2: label = QLabel("Koc (L/kg)")
+                else: label = QLabel("Nf")
                 setattr(self.dlg_water_quality, f"label_koc_{pesticide}", label)
                 
                 line = QLineEdit()
@@ -2048,6 +2053,11 @@ class qvfsmod():
             #Create variable to know how many pesticides there are
             self.number_pesticides_dialog = number_pesticides
             
+            #Change the name of the variables of sorption if nonlinear option was selected
+            if self.dlg_water_quality.check_direct_combo.currentIndex() == 2: 
+                self.dlg_water_quality.label_4.setText("Kf (L^Nf/Kg)")
+                self.dlg_water_quality.label_5.setText("Nf")
+                    
                 
         except:
             pass
@@ -2091,6 +2101,8 @@ class qvfsmod():
                     getattr(self.dlg_water_quality, f"line_kd_{pesticide}").show()
                     getattr(self.dlg_water_quality, f"line_koc_{pesticide}").show()
                     
+                    
+                    
                     #Rest of the inputs
                     getattr(self.dlg_water_quality, f"pesticide_label_{pesticide}").show()
                     getattr(self.dlg_water_quality, f"mass_label_{pesticide}").show()
@@ -2101,6 +2113,23 @@ class qvfsmod():
                     getattr(self.dlg_water_quality, f"half_life_{pesticide}").show()
                     getattr(self.dlg_water_quality, f"remobilized_label_{pesticide}").show()
                     getattr(self.dlg_water_quality, f"remobilized_{pesticide}").show()
+                
+                
+                for i in range(number_pesticides-1):
+                    #Create widgets
+                    pesticide = i+2
+                    #Change the name of the variables of sorption if nonlinear option was selected
+                    if self.dlg_water_quality.check_direct_combo.currentIndex()==2: 
+                        label_1 = "Kf (L^Nf/Kg)"
+                        label_2 = "Nf"
+                    elif self.dlg_water_quality.check_direct_combo.currentIndex()<2: 
+                        label_1 = "Kd (L/kg)"
+                        label_2 = "Koc (L/kg)"
+                        
+                    getattr(self.dlg_water_quality, f"label_kd_{pesticide}").setText(label_1)
+                    getattr(self.dlg_water_quality, f"label_koc_{pesticide}").setText(label_2)
+                    self.dlg_water_quality.label_4.setText(label_1)
+                    self.dlg_water_quality.label_5.setText(label_2)
                 
                 
                 #Create variable to know how many pesticides there are
@@ -4581,8 +4610,9 @@ class qvfsmod():
                 
                 #Direct input
                 direct = int(self.add_values_dialog(lineas,1,0,self.dlg_water_quality.line_kd_1, True))
-                if direct == 1: self.dlg_water_quality.check_direct.setChecked(False)
-                else: self.dlg_water_quality.check_direct.setChecked(True)
+                if direct == 0: self.dlg_water_quality.check_direct_combo.setCurrentIndex(0)
+                if direct == 1: self.dlg_water_quality.check_direct_combo.setCurrentIndex(1)
+                else: self.dlg_water_quality.check_direct_combo.setCurrentIndex(2)
                 
                 #Obtain number of pesticides
                 number_elements = lineas[1].split(";")[0].split()
@@ -7169,11 +7199,8 @@ class qvfsmod():
             
             #Add legend
             legend = self.ax_calibration_sensitivity.legend(
-                loc="lower center",  # Centrar horizontalmente
-                bbox_to_anchor=(0.9, 1.01),  # Posición justo arriba del gráfico
-                ncol=1,  # Número de columnas en la leyenda
-                frameon=False
-            )
+                    loc="best",
+                    frameon=False)
             legend.get_frame().set_alpha(0)
             
             #Labels
@@ -7324,9 +7351,7 @@ class qvfsmod():
                 
                 #Add legend
                 legend = self.ax.legend(
-                    loc="lower center",  # Centrar horizontalmente
-                    bbox_to_anchor=(0.9, 1.01),  # Posición justo arriba del gráfico
-                    ncol=1,  # Número de columnas en la leyenda
+                    loc="best",
                     frameon=False
                 )
                 legend.get_frame().set_alpha(0)
@@ -7951,9 +7976,7 @@ class qvfsmod():
                 
                 #Add legend
                 legend = self.ax_design.legend(
-                    loc="lower center",  # Centrar horizontalmente
-                    bbox_to_anchor=(0.9, 1.01),  # Posición justo arriba del gráfico
-                    ncol=1,  # Número de columnas en la leyenda
+                    loc="best",
                     frameon=False
                 )
                 legend.get_frame().set_alpha(0)
@@ -15792,7 +15815,7 @@ class qvfsmod():
         """Method to enable/disable widgets in the water quality dialog"""
         try:
             for p in range(self.maximum_number_pesticides_dialog):
-                if self.dlg_water_quality.check_direct.isChecked():
+                if self.dlg_water_quality.check_direct_combo.currentIndex()==0:
                     pesticide = p+1
                     getattr(self.dlg_water_quality, f"line_koc_{pesticide}").setReadOnly(True)
                     getattr(self.dlg_water_quality, f"line_kd_{pesticide}").setReadOnly(False)
@@ -15800,7 +15823,7 @@ class qvfsmod():
                     getattr(self.dlg_water_quality, f"line_kd_{pesticide}").setStyleSheet("background-color: #f0f0f0;")
                     self.dlg_water_quality.line_oc_1.setReadOnly(True)
                     self.dlg_water_quality.line_oc_1.setStyleSheet("background-color: #d9d9d9;")
-                else:
+                elif self.dlg_water_quality.check_direct_combo.currentIndex()==1:
                     pesticide = p+1
                     getattr(self.dlg_water_quality, f"line_koc_{pesticide}").setReadOnly(False)
                     getattr(self.dlg_water_quality, f"line_kd_{pesticide}").setReadOnly(True)
@@ -15808,7 +15831,36 @@ class qvfsmod():
                     getattr(self.dlg_water_quality, f"line_kd_{pesticide}").setStyleSheet("background-color: #d9d9d9;")
                     self.dlg_water_quality.line_oc_1.setReadOnly(False)
                     self.dlg_water_quality.line_oc_1.setStyleSheet("background-color: #f0f0f0;")
-        except:
+                elif self.dlg_water_quality.check_direct_combo.currentIndex()==2:
+                    pesticide = p+1
+                    getattr(self.dlg_water_quality, f"line_koc_{pesticide}").setReadOnly(False)
+                    getattr(self.dlg_water_quality, f"line_kd_{pesticide}").setReadOnly(False)
+                    getattr(self.dlg_water_quality, f"line_koc_{pesticide}").setStyleSheet("background-color: #f0f0f0;")
+                    getattr(self.dlg_water_quality, f"line_kd_{pesticide}").setStyleSheet("background-color: #f0f0f0;")
+                    self.dlg_water_quality.line_oc_1.setReadOnly(True)
+                    self.dlg_water_quality.line_oc_1.setStyleSheet("background-color: #d9d9d9;")
+                    
+                
+            for p in range(self.maximum_number_pesticides_dialog-1):
+                #Create widgets
+                pesticide = p+2
+                #Change the name of the variables of sorption if nonlinear option was selected
+                if self.dlg_water_quality.check_direct_combo.currentIndex()==2: 
+                    label_1 = "Kf (L^Nf/Kg)"
+                    label_2 = "Nf"
+                elif self.dlg_water_quality.check_direct_combo.currentIndex()<2: 
+                    label_1 = "Kd (L/kg)"
+                    label_2 = "Koc (L/kg)"
+                    
+                getattr(self.dlg_water_quality, f"label_kd_{pesticide}").setText(label_1)
+                getattr(self.dlg_water_quality, f"label_koc_{pesticide}").setText(label_2)
+                print("aaaaaaaaa")
+                print(label_1)
+                self.dlg_water_quality.label_4.setText(label_1)
+                self.dlg_water_quality.label_5.setText(label_2)
+                    
+        except Exception as e:
+            print(e)
             pass
             
             
@@ -17160,8 +17212,9 @@ class qvfsmod():
     def create_iwq_file(self, close =False):
         """Mehtod to crete the .iwq file"""
         #Inputs
-        if self.dlg_water_quality.check_direct.isChecked(): direct_input = 0
-        else: direct_input = 1
+        if self.dlg_water_quality.check_direct_combo.currentIndex()==0: direct_input = 0
+        elif self.dlg_water_quality.check_direct_combo.currentIndex()==1: direct_input = 1
+        else: direct_input = 2
         IWQPRO = self.dlg_water_quality.trapping_equation.currentIndex()+1
         a = self.dlg_water_quality.equation_a.text().replace("\n", " ").replace("\r", "")
         b = self.dlg_water_quality.equation_b.text().replace("\n", " ").replace("\r", "")
@@ -17196,12 +17249,19 @@ class qvfsmod():
                 for p in range(number_pesticides-1):
                     linea_dos += f"{getattr(self.dlg_water_quality, f'line_koc_{p+2}').text()} "
                 linea_dos += "                     ; IKD (Kd or Koc) (%OC) (repeat Koc or Kd for j species)"
-            else:
+            elif direct_input == 0:
                 linea_dos = f"{direct_input} {vkd} "
                 for p in range(number_pesticides-1):
                     linea_dos += f"{getattr(self.dlg_water_quality, f'line_kd_{p+2}').text()} "
                 linea_dos += "                     ; IKD (Kd or Koc) (%OC) (repeat Koc or Kd for j species)"
-                    
+            
+            elif direct_input == 2:
+                linea_dos = f"{direct_input} {vkd} {vkoc}"
+                for p in range(number_pesticides-1):
+                    linea_dos += f"{getattr(self.dlg_water_quality, f'line_kd_{p+2}').text()} {getattr(self.dlg_water_quality, f'line_koc_{p+2}').text()}"
+                linea_dos += "                     ; IKD=2 Freundlich: Kf(L^N/Kg) N(-)"
+            
+            
             linea_tres = f"{clay}			; %Clay content in field soil"
             linea_cuatro = f"{idg} IDG"
             
