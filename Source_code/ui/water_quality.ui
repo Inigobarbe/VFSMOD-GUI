@@ -161,7 +161,7 @@ QTableCornerButton::section {
         <x>0</x>
         <y>0</y>
         <width>679</width>
-        <height>976</height>
+        <height>950</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_7">
@@ -1021,10 +1021,22 @@ from last event (mg/m2)</string>
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="check_direct">
-              <property name="text">
-               <string/>
-              </property>
+             <widget class="QComboBox" name="check_direct_combo">
+              <item>
+               <property name="text">
+                <string>Linear isotherm, direct Kd input</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Linear isotherm, Koc + %OC input</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Freundlich isotherm</string>
+               </property>
+              </item>
              </widget>
             </item>
             <item>
@@ -1041,25 +1053,6 @@ from last event (mg/m2)</string>
              </spacer>
             </item>
            </layout>
-          </item>
-          <item row="4" column="0">
-           <widget class="QComboBox" name="check_direct_combo">
-            <item>
-             <property name="text">
-              <string>Linear isotherm, direct Kd input</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Linear isotherm, Koc + %OC input</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Freundlich isotherm</string>
-             </property>
-            </item>
-           </widget>
           </item>
          </layout>
         </widget>

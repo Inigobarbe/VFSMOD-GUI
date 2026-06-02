@@ -4618,8 +4618,10 @@ class qvfsmod():
                 number_elements = lineas[1].split(";")[0].split()
                 if direct == 1:
                     number_pesticides = len(number_elements)-2
-                else:
+                elif direct == 0:
                     number_pesticides = len(number_elements)-1
+                else:
+                    number_pesticides = int((len(number_elements)-1)/2)
                 
                 #Kd
                 if direct == 0: 
@@ -4631,7 +4633,7 @@ class qvfsmod():
                         #Pesticide half life
                         self.add_values_dialog(lineas,1,p+2,getattr(self.dlg_water_quality, f"line_kd_{pesticide}"))
                 #KOC
-                if direct == 1:
+                elif direct == 1:
                     #FIRST PESTICIDE
                     self.add_values_dialog(lineas,1,1,self.dlg_water_quality.line_koc_1)
                     #OC
@@ -4641,6 +4643,17 @@ class qvfsmod():
                         pesticide = p+2
                         #Pesticide half life
                         self.add_values_dialog(lineas,1,p+3,getattr(self.dlg_water_quality, f"line_koc_{pesticide}"))
+                        
+                #Kf
+                elif direct == 2:
+                    #FIRST PESTICIDE
+                    self.add_values_dialog(lineas,1,1,self.dlg_water_quality.line_kd_1)
+                    self.add_values_dialog(lineas,1,2,self.dlg_water_quality.line_koc_1)
+                    #REST OF PESTICIDES
+                    for p in range(number_pesticides-1):
+                        pesticide = p+2
+                        self.add_values_dialog(lineas,1,3+2*p,getattr(self.dlg_water_quality, f"line_kd_{pesticide}"))
+                        self.add_values_dialog(lineas,1,3+2*p+1,getattr(self.dlg_water_quality, f"line_koc_{pesticide}"))
 
                 #Clay content
                 self.add_values_dialog(lineas,2,0,self.dlg_water_quality.line_clay)
@@ -15854,8 +15867,6 @@ class qvfsmod():
                     
                 getattr(self.dlg_water_quality, f"label_kd_{pesticide}").setText(label_1)
                 getattr(self.dlg_water_quality, f"label_koc_{pesticide}").setText(label_2)
-                print("aaaaaaaaa")
-                print(label_1)
                 self.dlg_water_quality.label_4.setText(label_1)
                 self.dlg_water_quality.label_5.setText(label_2)
                     
@@ -17256,9 +17267,9 @@ class qvfsmod():
                 linea_dos += "                     ; IKD (Kd or Koc) (%OC) (repeat Koc or Kd for j species)"
             
             elif direct_input == 2:
-                linea_dos = f"{direct_input} {vkd} {vkoc}"
+                linea_dos = f"{direct_input} {vkd} {vkoc}  "
                 for p in range(number_pesticides-1):
-                    linea_dos += f"{getattr(self.dlg_water_quality, f'line_kd_{p+2}').text()} {getattr(self.dlg_water_quality, f'line_koc_{p+2}').text()}"
+                    linea_dos += f"{getattr(self.dlg_water_quality, f'line_kd_{p+2}').text()} {getattr(self.dlg_water_quality, f'line_koc_{p+2}').text()}  "
                 linea_dos += "                     ; IKD=2 Freundlich: Kf(L^N/Kg) N(-)"
             
             
@@ -17322,7 +17333,7 @@ class qvfsmod():
                     if row == 0:
                         linea_ocho += "                            ; fij molar formation fraction matrix {jxj}"
                     linea_ocho += "\n"
-            linea_nueve = "\n------------------------------------------------------------------\nIWQPRO    : Pesticide trapping: 1=Sabbagh;2= Sabbagh(refit);3=mech.mass bal.;4=Chen\nCSAB(I)   : Coefficients for refitted Sabbagh equation (used when IWQPRO=2)\nIKD       : Sorption type: 0, Kd(L/Kg); 1, Koc (L/Kg)\nKd(j) Koc(j): Sorption coefficient (j species) as distribution Kd (IKD= 0) or Koc (IKD=1) (L/Kg)\n%OC       : Source soil organic carbon, only read when IKD=1 (Koc) (%)\nIDG       : Degradation type: 1: EU-FOCUS k=Kref.k(T).k(theta); 2: US-EPA k=Kref;\n            3: k=Kref.k(T);4: k=Kref.k(1theta; 0: No degradation (no more inputs are read)\nndgday    : no. of days (i) between events (d)\ndgHalf(j) : t0.5, pesticide half-life (d), kref=Ln2/t0.5\nFC        : top soil field capacity (m3/m3). This can be taken from FOCUS R1-R4 scenario\n            parameters used by the PRZM model\ndgPin(j)  : Pin, pesticide mass entering filter for event over source area (mg/m2)\ndgML      : Surface mixing layer thickness (cm, standard= 2cm PRZM)\ndgLD(j)   : lambda, dispersion length of chemical (m). This can be taken as  \n            0.05m from FOCUS-Pearl (Default)\ndgmres0(j): Pesticide residues (i species) on VFS surface (mixing layer) when event starts (mg/m2)\ndgT(i)    : T, daily air temperatures (C) for period between events, PRZM weather\ndgTheta(i): theta, Topsoil daily volumetric moisture (-) for period between events\nIMOB      : Residues remobilization: 1(or none): partial (recomm); 2:full; 3:no remob.\nMj        : Molar mass of compounds (g/mol) (only read when number of compounds is j>1)\nfij       : matrix of molar formation fractions between compounds {jxj} (when number of compounds is j>1)"
+            linea_nueve = "\n------------------------------------------------------------------\nIWQ INPUT FILE — VFSMOD v4.6.2+ Water Quality Parameters\n------------------------------------------------------------------\nLine 1: IWQPRO [CSAB(1..5)]\n  IWQPRO : Pesticide trapping equation:\n           1 = Sabbagh et al. (2009) semi-empirical\n           2 = Sabbagh et al. refitted (user supplies CSAB coefficients)\n           3 = Munoz-Carpena et al. (2015) mechanistic mass balance (DEFAULT)\n           4 = Chen et al. (2017) empirical (California)\n  CSAB(I): 5 coefficients, only read when IWQPRO=2 (on same line)\n\nLine 2: IKD [sorption parameters]\n  IKD=0  : Linear isotherm, direct Kd input\n           Format: 0  Kd                   (Kd in L/Kg)\n  IKD=1  : Linear isotherm, Koc + %OC input\n           Format: 1  Koc  %OC             (Koc in L/Kg, %OC in %)\n  IKD=2  : Freundlich isotherm (NEW in v4.6.2)\n           Format: 2  Kf  N                (Kf in L^N/Kg, N dimensionless)\n           Sorption: s = Kf * C^N\n           Retardation: R = 1 + (rho_b/theta_s) * N * Kf * C^(N-1)\n           Note: Kf and N are evaluated at average event flux concentration C1\n           For multiple compounds: 2  Kf1 N1  Kf2 N2  ...\n\nLine 3: %Clay content in field soil (CCP, %)\n\nLine 4: IDG — Degradation type between events:\n           0 = No degradation\n           1 = EU-FOCUS: k = Kref * f(T) * f(theta)  (RECOMMENDED)\n           2 = US-EPA:   k = Kref\n           3 = k = Kref * f(T)\n           4 = k = Kref * f(theta)\n\nLine 5 (only if IDG > 0): ndgday  dgHalf  FC  dgPin  dgML  dgLD  dgmres0\n  ndgday  : Number of days between runoff events (d), max 365\n  dgHalf  : Pesticide half-life t1/2 (d) at reference T=20C, theta=FC\n            Note: Kref = Ln(2)/dgHalf\n  FC      : VFS topsoil field capacity (m3/m3), e.g. from FOCUS PRZM scenario\n  dgPin   : Total pesticide mass entering VFS per source area (mg/m2)\n\n\n\n\n\n\n     Note: dgmres0 from previous event is added automatically\n  dgML    : Surface mixing layer thickness (cm), standard = 2 cm (PRZM)\n  dgLD    : Longitudinal dispersivity lambda (m), default = 0.05 m (FOCUS-Pearl)\n            Constrained internally to 0.005 <= dgLD <= 0.40 m\n  \ndgmres0 : Pesticide surface residue (dissolved in porewater) at event start\n            (mg/m2); use OWQ output from previous event in a series; = 0 for\n            first event\n\nLine 6 (only if IDG > 0): dgT(i), i=1..ndgday\n  Daily air temperatures (C) for inter-event period (e.g. from PRZM MET file)\n\nLine 7 (only if IDG > 0): dgTheta(i), i=1..ndgday\n  Daily topsoil volumetric water content (-) for inter-event period\n\nLine 8 (optional): IMOB — Residue remobilization scheme:\n           1 = Partial: only dissolved porewater fraction remobilized (DEFAULT)\n           2 = Full: all surface residues remobilized\n           3 = None: no remobilization\n\nFor multiple compounds (IWQ > 1 in .IKW file), Line 5 format is:\n  ndgday  dgHalf1 FC dgPin1 dgML dgLD dgmres01  dgHalf2 dgPin2 dgLD2 dgmres02 ...\n\n------------------------------------------------------------------\nExample — Linear isotherm via Kd (IKD=0):\n  0  10.0                    ; IKD=0, Kd=10 L/Kg\n\nExample — Linear isotherm via Koc (IKD=1):\n  1  1000.  1.               ; IKD=1, Koc=1000 L/Kg, %OC=1%\n  -> Kd = Koc * %OC/100 = 10 L/Kg\n\nExample — Freundlich isotherm (IKD=2):\n  2  8.13  0.85              ; IKD=2, Kf=8.13 L^0.85/Kg, N=0.85\n  -> s = 8.13 * C^0.85 (C in mg/L, s in mg/Kg)\n  -> At C=1 mg/L: Kd_eff = Kf = 8.13 L/Kg\n  -> At C<1 mg/L: Kd_eff > Kf (more sorption than linear)\n  -> At C>1 mg/L: Kd_eff < Kf (less sorption than linear)\n------------------------------------------------------------------"
             
             archivo.write(f"{linea_uno}\n")
             archivo.write(f"{linea_dos}\n")
