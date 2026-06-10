@@ -9,3 +9,27 @@ Traceback (most recent call last):
     getattr(self.dlg_water_quality, f"label_kd_{pesticide}").setText(label_1)
 AttributeError: 'water_quality' object has no attribute 'label_kd_1'
 
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 5657, in <lambda>
+    radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_owq_graph(rb.text()) if checked else None)
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 5678, in update_owq_graph
+    valores = self.data_owq_graph[number_pesticide]
+KeyError: 1
+
+================================================================================
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 5657, in <lambda>
+    radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_owq_graph(rb.text()) if checked else None)
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 5678, in update_owq_graph
+    valores = self.data_owq_graph[number_pesticide]
+KeyError: 1
+
+================================================================================
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 5657, in <lambda>
+    radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_owq_graph(rb.text()) if checked else None)
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 5679, in update_owq_graph
+    valores = self.data_owq_graph[number_pesticide]
+KeyError: 1
+
+================================================================================

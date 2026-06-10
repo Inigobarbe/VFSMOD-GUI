@@ -5198,7 +5198,7 @@ class qvfsmod():
                         area = float(i.split("=")[0].split()[0])
                     if i.split("=")[-1].rstrip()==string and condition:
                         if string != " Source Area (input)":
-                            return float(i.split("=")[0].split()[int(number_pesticide)-1])*area
+                            return float(i.split("=")[0].split()[int(number_pesticide)-1])
                         else:
                             return float(i.split("=")[0].split()[0])
 
@@ -5237,7 +5237,13 @@ class qvfsmod():
 
             soil_profile = obtain_result_owq_2("        Soil profile total mass (mfF mg)",number_pesticide)/source_area
             soil_profile_dissolved = obtain_result_owq_2("   Soil profile dissolved mass (mfFd mg)",number_pesticide)/source_area
+            
+            
             soil_profile_sorbed = obtain_result_owq_2("      Soil profile sorbed mass (mfFp mg)",number_pesticide)/source_area
+            
+            
+            leached_from_mixing_layer = obtain_result_owq(" Pesticide leached from mixing layer (mfleach)",number_pesticide)
+            
             mixing_layer_dissolved = obtain_result_owq_2("  Mixing layer dissolved mass (mfmld mg)",number_pesticide)/source_area
             mixing_layer_sorbed = obtain_result_owq_2("     Mixing layer sorbed mass (mfmlp mg)",number_pesticide)/source_area
             
@@ -5271,13 +5277,13 @@ class qvfsmod():
             self.ax_owq_graph_balance[1].clear()
             
             try:
-                sizes_today = [output_solid, output_liquid, soil_profile_sorbed-mixing_layer_sorbed, 
-                    soil_profile_dissolved-mixing_layer_dissolved,sorbed_mixing_layer_last_event, trapped_in_sediment,mixing_layer_sorbed, mixing_layer_dissolved]  # Proporciones
+                sizes_today = [output_solid, output_liquid, leached_from_mixing_layer, 
+                    sorbed_mixing_layer_last_event, trapped_in_sediment,mixing_layer_sorbed, mixing_layer_dissolved]  # Proporciones
                 
                 #Labels with percentage
                 labels_today = [
                     f'Outflow sorbed ({round(100*output_solid/sum(sizes_today),2)}%)', f'Outflow dissolved ({round(100*output_liquid/sum(sizes_today),2)}%)',
-                    f'Leached sorbed ({round(100*(soil_profile_sorbed-mixing_layer_sorbed)/sum(sizes_today),2)}%)', f'Leached dissolved ({round(100*(soil_profile_dissolved-mixing_layer_dissolved)/sum(sizes_today),2)}%)',
+                    f'Leached from mixing layer ({round(100*(leached_from_mixing_layer)/sum(sizes_today),2)}%)', 
                     f'Sorbed in mixing layer from last event ({round(100*sorbed_mixing_layer_last_event/sum(sizes_today),2)}%)',
                     f'Trapped with sediment ({round(100*trapped_in_sediment/sum(sizes_today),2)}%)',
                     f'Mixing layer sorbed ({round(100*mixing_layer_sorbed/sum(sizes_today),2)}%)', f'Mixing layer dissolved ({round(100*mixing_layer_dissolved/sum(sizes_today),2)}%)'
@@ -5287,10 +5293,9 @@ class qvfsmod():
                 colors = [
                     '#1f77b4',  # Outflow solid (azul claro)
                     '#66b3ff',  # Outflow liquid (azul más claro)
-                    '#2ca02c',  # Infiltrated sorbed (verde claro)
-                    '#145a32',  # Infiltrated dissolved (verde más oscuro)
+                    '#2ca02c',  # Leached from mixing layer (verde claro)
                     "#a569bd",  # Sorbed in mixing layer from last event
-                    '#e74c3c',   # Trapped with sediment (rojo)
+                    '#e74c3c',  # Trapped with sediment (rojo)
                     '#ff7f0e',  # Mixing layer sorbed (naranja)
                     '#d35400',  # Mixing layer dissolved (naranja más oscuro)
                 ]
@@ -5329,8 +5334,8 @@ class qvfsmod():
                 #Legend
                 handles = [mpatches.Patch(color=colors[i], label=labels_today[i]) for i in range(len(labels_today))]
                 
-                handles_first, labels_first = handles[:4], labels_today[:4]
-                handles_second, labels_second = handles[4:], labels_today[4:]
+                handles_first, labels_first = handles[:3], labels_today[:3]
+                handles_second, labels_second = handles[3:], labels_today[3:]
                 
                 self.ax_owq_graph_balance[0].legend_ = None  
 
@@ -5383,8 +5388,7 @@ class qvfsmod():
                 labels_today = [
                     'Outflow sorbed (0%)', 
                     'Outflow dissolved (0%)',
-                    'Leached sorbed (0%)', 
-                    'Leached dissolved (0%)',
+                    'Leached from mixing layer', 
                     'Sorbed in mixing layer from last event (0%)',
                     'Trapped with sediment (0%)',
                     'Mixing layer sorbed (0%)', 
@@ -5394,8 +5398,7 @@ class qvfsmod():
                 colors = [
                     '#1f77b4',  # Outflow solid (azul claro)
                     '#66b3ff',  # Outflow liquid (azul más claro)
-                    '#2ca02c',  # Infiltrated sorbed (verde claro)
-                    '#145a32',  # Infiltrated dissolved (verde más oscuro)
+                    '#2ca02c',  # Leached from mixing layer (verde claro)
                     "#a569bd",  # Sorbed in mixing layer from last event
                     '#e74c3c',  # Trapped with sediment (rojo)
                     '#ff7f0e',  # Mixing layer sorbed (naranja)
@@ -5515,8 +5518,7 @@ class qvfsmod():
                 labels_today = [
                     'Outflow sorbed (0%)', 
                     'Outflow dissolved (0%)',
-                    'Leached sorbed (0%)', 
-                    'Leached dissolved (0%)',
+                    'Leached from mixing layer', 
                     'Sorbed in mixing layer from last event (0%)',
                     'Trapped with sediment (0%)',
                     'Mixing layer sorbed (0%)', 
@@ -5526,8 +5528,7 @@ class qvfsmod():
                 colors = [
                     '#1f77b4',  # Outflow solid (azul claro)
                     '#66b3ff',  # Outflow liquid (azul más claro)
-                    '#2ca02c',  # Infiltrated sorbed (verde claro)
-                    '#145a32',  # Infiltrated dissolved (verde más oscuro)
+                    '#2ca02c',  # Leached from mixing layer (verde claro)
                     "#a569bd",  # Sorbed in mixing layer from last event
                     '#e74c3c',  # Trapped with sediment (rojo)
                     '#ff7f0e',  # Mixing layer sorbed (naranja)
@@ -5625,7 +5626,7 @@ class qvfsmod():
             for i in range(len(lineas)):
                 if lineas[i] == " Huang & van Genuchten (1995) CDE analytical solution\n":
                         pesticide += 1
-                if lineas[i] == "      Z(m)      C(mg/L)      S(mg/mg)\n":
+                if lineas[i] == "      Z(m)   C_dis(mg/L)  S_Fre(mg/mg)\n":
                     valores = []
                     for k in range(i+2,len(lineas)):
                         if len(lineas[k].split())==0 or (float(lineas[k].split()[1])==float(0)) and (float(lineas[k].split()[2])==float(0)):
@@ -18056,9 +18057,9 @@ class qvfsmod():
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.12</b>
+                <b>Version 1.0.14</b>
                 <br>
-                26/02/2026
+                10/06/2026
             """
         elif sys.platform.startswith("darwin") or sys.platform.startswith("linux"): #macOS
             html_text = f"""
@@ -18077,9 +18078,9 @@ class qvfsmod():
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.12</b>
+                <b>Version 1.0.14</b>
                 <br>
-                26/02/2026
+                10/06/2026
             """
         
         
@@ -19261,7 +19262,7 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
                         contador += 1
                     if contador == int(pesticide):
                         condition = True
-                    if lineas_owq[i] == "      Z(m)      C(mg/L)      S(mg/mg)\n" and condition:
+                    if lineas_owq[i] == "      Z(m)   C_dis(mg/L)  S_Fre(mg/mg)\n" and condition:
                         for k in range(i+2,len(lineas_owq)):
                             if len(lineas_owq[k].split())==0 or (float(lineas_owq[k].split()[1])==float(0)) and (float(lineas_owq[k].split()[2])==float(0)):
                                 profundidad_lixiviado = float(lineas_owq[k].split()[0])
@@ -20071,7 +20072,7 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
                         contador += 1
                     if contador == int(pesticide):
                         condition = True
-                    if lineas_owq[i] == "      Z(m)      C(mg/L)      S(mg/mg)\n" and condition:
+                    if lineas_owq[i] == "      Z(m)   C_dis(mg/L)  S_Fre(mg/mg)\n" and condition:
                         for k in range(i+2,len(lineas_owq)):
                             if len(lineas_owq[k].split())==0 or (float(lineas_owq[k].split()[1])==float(0)) and (float(lineas_owq[k].split()[2])==float(0)):
                                 profundidad_lixiviado = float(lineas_owq[k].split()[0])
