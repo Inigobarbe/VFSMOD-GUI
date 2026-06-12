@@ -33,3 +33,25 @@ Traceback (most recent call last):
 KeyError: 1
 
 ================================================================================
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 5658, in <lambda>
+    radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_owq_graph(rb.text()) if checked else None)
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 5679, in update_owq_graph
+    valores = self.data_owq_graph[number_pesticide]
+KeyError: 1
+
+================================================================================
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 5658, in <lambda>
+    radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_owq_graph(rb.text()) if checked else None)
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 5679, in update_owq_graph
+    valores = self.data_owq_graph[number_pesticide]
+KeyError: 2
+
+================================================================================
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 5632, in show_owq_graph
+    if len(lineas[k].split())==0 or (float(lineas[k].split()[1])==float(0)) and (float(lineas[k].split()[2])==float(0)):
+ValueError: could not convert string to float: 'for'
+
+================================================================================

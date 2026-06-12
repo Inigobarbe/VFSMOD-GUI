@@ -5626,7 +5626,7 @@ class qvfsmod():
             for i in range(len(lineas)):
                 if lineas[i] == " Huang & van Genuchten (1995) CDE analytical solution\n":
                         pesticide += 1
-                if lineas[i] == "      Z(m)   C_dis(mg/L)  S_Fre(mg/mg)\n":
+                if lineas[i] == "      Z(m)   C_dis(mg/L)  S_Fre(mg/mg)\n" or lineas[i] =="      Z(m)   C_dis(mg/L)   S_lin(mg/mg)\n":
                     valores = []
                     for k in range(i+2,len(lineas)):
                         if len(lineas[k].split())==0 or (float(lineas[k].split()[1])==float(0)) and (float(lineas[k].split()[2])==float(0)):
@@ -18057,9 +18057,9 @@ class qvfsmod():
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.14</b>
+                <b>Version 1.0.15</b>
                 <br>
-                10/06/2026
+                11/06/2026
             """
         elif sys.platform.startswith("darwin") or sys.platform.startswith("linux"): #macOS
             html_text = f"""
@@ -18078,9 +18078,9 @@ class qvfsmod():
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.14</b>
+                <b>Version 1.0.15</b>
                 <br>
-                10/06/2026
+                11/06/2026
             """
         
         
@@ -19262,7 +19262,7 @@ def save_results_uncertainity_analysis(number_execution,core,working_directory,d
                         contador += 1
                     if contador == int(pesticide):
                         condition = True
-                    if lineas_owq[i] == "      Z(m)   C_dis(mg/L)  S_Fre(mg/mg)\n" and condition:
+                    if (lineas_owq[i] == "      Z(m)   C_dis(mg/L)  S_Fre(mg/mg)\n"or lineas_owq[i] == "      Z(m)   C_dis(mg/L)   S_lin(mg/mg)\n") and condition:
                         for k in range(i+2,len(lineas_owq)):
                             if len(lineas_owq[k].split())==0 or (float(lineas_owq[k].split()[1])==float(0)) and (float(lineas_owq[k].split()[2])==float(0)):
                                 profundidad_lixiviado = float(lineas_owq[k].split()[0])
@@ -20072,7 +20072,7 @@ def save_results_sensitivity_analysis(number_execution,core,working_directory,di
                         contador += 1
                     if contador == int(pesticide):
                         condition = True
-                    if lineas_owq[i] == "      Z(m)   C_dis(mg/L)  S_Fre(mg/mg)\n" and condition:
+                    if (lineas_owq[i] == "      Z(m)   C_dis(mg/L)  S_Fre(mg/mg)\n" or lineas_owq[i]=="      Z(m)   C_dis(mg/L)   S_lin(mg/mg)\n") and condition:
                         for k in range(i+2,len(lineas_owq)):
                             if len(lineas_owq[k].split())==0 or (float(lineas_owq[k].split()[1])==float(0)) and (float(lineas_owq[k].split()[2])==float(0)):
                                 profundidad_lixiviado = float(lineas_owq[k].split()[0])
