@@ -11,7 +11,6 @@ VFSMOD is a physically-based model developed to simulate hydrological processes,
 
 The original VFSMOD model is distributed as a stand-alone Fortran application and has been integrated into several environmental risk assessment and management frameworks in both North America and Europe.
 
-## About VFSMOD
 
 # VFSMOD GUI
 
@@ -58,14 +57,14 @@ VFSMOD GUI can be used for:
 * Environmental risk assessment studies.
 * Evaluation of best management practices (BMPs) for water quality protection.
 
-## Full Documentation
+
 
 Complete information about the VFSMOD model can be found at:
 
 https://abe.ufl.edu/carpena/vfsmod/
 
 
-Installation
+## Installation
 
 Installation packages for both Windows and macOS are available in the VFSMOD_GUI_Distributions folder.
 
@@ -87,15 +86,16 @@ and follow the installation wizard. During the installation process, users will 
 
 Unlike the Windows version, the VFSMOD executable files are automatically installed in the system's Application Support directory:
 
-~/Library/Application Support/
-Documentation
+~/Library/Application Support
+
+## Full Documentation
 
 A file named Documentation.docx is included in the installation directory. This document corresponds to a chapter of the doctoral thesis developed by Iñigo Barberena Ruiz and provides detailed information about the software, its methodology, and its capabilities.
 
 Users are encouraged to consult this document for a comprehensive description of the workflow, calibration procedures, uncertainty analysis, and design tools available in VFSMOD GUI.
 
-## Full Documentation
 
+## Licensing
 VFSMOD by (c) Iñigo Barberena Ruiz and Rafael Muñoz-Carpena is licensed under CC BY-ND 4.0
 
 The model is provided to you as an educational, research, and general application tool under the terms of the Creative Commons license, CC BY-ND 4.0 (Creative Commons Attribution-NoDerivatives 4.0 International). This license requires that reusers give credit to the creator. It allows reusers to copy and distribute the material in any medium or format in unadapted form only, even for commercial purposes.
