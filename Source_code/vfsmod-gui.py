@@ -18057,9 +18057,9 @@ class qvfsmod():
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.15</b>
+                <b>Version 1.0.16</b>
                 <br>
-                11/06/2026
+                15/06/2026
             """
         elif sys.platform.startswith("darwin") or sys.platform.startswith("linux"): #macOS
             html_text = f"""
@@ -18078,9 +18078,9 @@ class qvfsmod():
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.15</b>
+                <b>Version 1.0.16</b>
                 <br>
-                11/06/2026
+                15/06/2026
             """
         
         
