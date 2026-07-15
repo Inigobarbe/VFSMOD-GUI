@@ -27,6 +27,9 @@ The software provides a user-friendly environment that extends the capabilities 
 
 VFSMOD is a physically-based model developed to simulate hydrological processes, sediment transport, and pollutant removal within vegetative filter strips. The model evaluates runoff routing, infiltration, sediment trapping, and contaminant reduction, providing a comprehensive framework for assessing the effectiveness of VFS as a best management practice for reducing non-point source pollution.
 
+Complete information about the VFSMOD model can be found at:
+https://abe.ufl.edu/carpena/vfsmod/
+
 ## Main Features
 
 * User-friendly graphical interface for VFSMOD.
@@ -56,13 +59,6 @@ VFSMOD GUI can be used for:
 * Design of vegetative filter strips.
 * Environmental risk assessment studies.
 * Evaluation of best management practices (BMPs) for water quality protection.
-
-
-
-Complete information about the VFSMOD model can be found at:
-
-https://abe.ufl.edu/carpena/vfsmod/
-
 
 ## Installation
 
