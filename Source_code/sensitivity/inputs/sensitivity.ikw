@@ -1,6 +1,6 @@
 Unit9, g8, u183-91          
  3.87
- 8.655   -1   .5   .8   350   3   0   1
+ 8.655   57   .5   .8   350   3   0   1
  14
  .6182   .4   .052778
  1.2364   .4   .032639
@@ -16,12 +16,11 @@ Unit9, g8, u183-91
  7.4186   .4   .074306
  8.0368   .4   .040972
  8.655   .4   .062346
-3
+ 0
 -------------------------------------
  title
  fwidth
  vl n thetaw cr maxiter npol ielout kpg
  nprop
  sx(iprop), rna(iprop), soa(iprop), iprop=1,nprop
-IWQ= number of pesticides considered (if 0 or not present no pesticides are run).
-
+WQ flag=1 if Pesticides Bayer Option has been chosen
