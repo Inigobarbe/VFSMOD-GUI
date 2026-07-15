@@ -1,6 +1,6 @@
 # VFSMOD GUI
 
-**Written by:** I�igo Barberena Ruiz
+**Written by:** Iñigo Barberena Ruiz
 **Email:** [inigo.barberena@unavarra.es](mailto:inigo.barberena@unavarra.es)
 
 ## Overview
@@ -14,7 +14,7 @@ The original VFSMOD model is distributed as a stand-alone Fortran application an
 
 # VFSMOD GUI
 
-**Written by:** I�igo Barberena Ruiz
+**Written by:** Iñigo Barberena Ruiz
 **Email:** [inigo.barberena@unavarra.es](mailto:inigo.barberena@unavarra.es)
 
 ## Overview
@@ -90,12 +90,12 @@ Unlike the Windows version, the VFSMOD executable files are automatically instal
 
 ## Full Documentation
 
-A file named Documentation.docx is included in the installation directory. This document corresponds to a chapter of the doctoral thesis developed by I�igo Barberena Ruiz and provides detailed information about the software, its methodology, and its capabilities.
+A file named Documentation.docx is included in the installation directory. This document corresponds to a chapter of the doctoral thesis developed by Iñigo Barberena Ruiz and provides detailed information about the software, its methodology, and its capabilities.
 
 Users are encouraged to consult this document for a comprehensive description of the workflow, calibration procedures, uncertainty analysis, and design tools available in VFSMOD GUI.
 
 
 ## Licensing
-VFSMOD by (c) I�igo Barberena Ruiz and Rafael Mu�oz-Carpena is licensed under CC BY-ND 4.0
+VFSMOD by (c) Rafael Muñoz-Carpena, and VFSMOD-GUI by (c) Iñigo Barberena Ruiz and Rafael Muñoz-Carpena are licensed under CC BY-ND 4.0
 
 The model is provided to you as an educational, research, and general application tool under the terms of the Creative Commons license, CC BY-ND 4.0 (Creative Commons Attribution-NoDerivatives 4.0 International). This license requires that reusers give credit to the creator. It allows reusers to copy and distribute the material in any medium or format in unadapted form only, even for commercial purposes.
