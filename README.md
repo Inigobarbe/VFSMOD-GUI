@@ -1,6 +1,6 @@
 # VFSMOD GUI
 
-**Written by:** I�igo Barberena Ruiz
+**Written by:** Iñigo Barberena Ruiz
 **Email:** [inigo.barberena@unavarra.es](mailto:inigo.barberena@unavarra.es)
 
 ## Overview
@@ -14,7 +14,7 @@ The original VFSMOD model is distributed as a stand-alone Fortran application an
 
 # VFSMOD GUI
 
-**Written by:** I�igo Barberena Ruiz
+**Written by:** Iñigo Barberena Ruiz
 **Email:** [inigo.barberena@unavarra.es](mailto:inigo.barberena@unavarra.es)
 
 ## Overview
@@ -26,6 +26,9 @@ The software provides a user-friendly environment that extends the capabilities 
 ## About VFSMOD
 
 VFSMOD is a physically-based model developed to simulate hydrological processes, sediment transport, and pollutant removal within vegetative filter strips. The model evaluates runoff routing, infiltration, sediment trapping, and contaminant reduction, providing a comprehensive framework for assessing the effectiveness of VFS as a best management practice for reducing non-point source pollution.
+
+Complete information about the VFSMOD model can be found at:
+https://abe.ufl.edu/carpena/vfsmod/
 
 ## Main Features
 
@@ -57,13 +60,6 @@ VFSMOD GUI can be used for:
 * Environmental risk assessment studies.
 * Evaluation of best management practices (BMPs) for water quality protection.
 
-
-
-Complete information about the VFSMOD model can be found at:
-
-https://abe.ufl.edu/carpena/vfsmod/
-
-
 ## Installation
 
 Installation packages for both Windows and macOS are available in the VFSMOD_GUI_Distributions folder.
@@ -90,12 +86,12 @@ Unlike the Windows version, the VFSMOD executable files are automatically instal
 
 ## Full Documentation
 
-A file named Documentation.docx is included in the installation directory. This document corresponds to a chapter of the doctoral thesis developed by I�igo Barberena Ruiz and provides detailed information about the software, its methodology, and its capabilities.
+A file named Documentation.docx is included in the installation directory. This document corresponds to a chapter of the doctoral thesis developed by Iñigo Barberena Ruiz and provides detailed information about the software, its methodology, and its capabilities.
 
 Users are encouraged to consult this document for a comprehensive description of the workflow, calibration procedures, uncertainty analysis, and design tools available in VFSMOD GUI.
 
 
 ## Licensing
-VFSMOD by (c) I�igo Barberena Ruiz and Rafael Mu�oz-Carpena is licensed under CC BY-ND 4.0
+VFSMOD by (c) Rafael Muñoz-Carpena, and VFSMOD-GUI by (c) Iñigo Barberena Ruiz and Rafael Muñoz-Carpena are licensed under CC BY-ND 4.0
 
 The model is provided to you as an educational, research, and general application tool under the terms of the Creative Commons license, CC BY-ND 4.0 (Creative Commons Attribution-NoDerivatives 4.0 International). This license requires that reusers give credit to the creator. It allows reusers to copy and distribute the material in any medium or format in unadapted form only, even for commercial purposes.
