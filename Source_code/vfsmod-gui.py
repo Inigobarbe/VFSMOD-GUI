@@ -5343,10 +5343,12 @@ class qvfsmod():
                 legend1 = self.ax_owq_graph_balance[0].legend(
                     handles_first, labels_first,
                     loc='lower center',
-                    bbox_to_anchor=(-0.2, -0.37),  # Ajusta posición
+                    bbox_to_anchor=(-0.22, -0.3),  # Ajusta posición
                     fontsize='small',
                     ncol=1,  # Una columna para mostrar 5 filas
-                    frameon=False,
+                    frameon=True,
+                    facecolor='white',
+                    edgecolor='white',
                     title  = "Residues not to be degraded"
                 )
 
@@ -5360,7 +5362,9 @@ class qvfsmod():
                     bbox_to_anchor=(0.95, -0.37),  # Ajusta posición más a la derecha
                     fontsize='small',
                     ncol=1,  # Una columna para mostrar 2 filas
-                    frameon=False,
+                    frameon=True,
+                    facecolor='white',
+                    edgecolor='white',
                     title = "Residues to be degraded"
                 )
 
@@ -5419,10 +5423,12 @@ class qvfsmod():
                 legend1 = self.ax_owq_graph_balance[0].legend(
                     handles_first, labels_first,
                     loc='lower center',
-                    bbox_to_anchor=(-0.2, -0.37),
+                    bbox_to_anchor=(-0.22, -0.3),
                     fontsize='small',
                     ncol=1,
-                    frameon=False,
+                    frameon=True,
+                    facecolor='white',
+                    edgecolor='white',
                     title="Residues not to be degraded"
                 )
                 self.ax_owq_graph_balance[0].add_artist(legend1)
@@ -5434,7 +5440,9 @@ class qvfsmod():
                     bbox_to_anchor=(0.95, -0.37),
                     fontsize='small',
                     ncol=1,
-                    frameon=False,
+                    frameon=True,
+                    facecolor='white',
+                    edgecolor='white',
                     title="Residues to be degraded"
                 )
                 
@@ -5494,7 +5502,9 @@ class qvfsmod():
                     bbox_to_anchor=(0.6, -0.32),
                     fontsize='small',
                     ncol=1,  # Dos columnas en la leyenda
-                    frameon=False,  # Fondo transparente y sin borde
+                    frameon=True,
+                    facecolor='white',
+                    edgecolor='white',
                     title = "Degraded residues"
                 )
                 
@@ -5549,10 +5559,12 @@ class qvfsmod():
                 legend1 = self.ax_owq_graph_balance[1].legend(
                     handles_first, labels_first,
                     loc='lower center',
-                    bbox_to_anchor=(-0.2, -0.37),
+                    bbox_to_anchor=(-0.22, -0.3),
                     fontsize='small',
                     ncol=1,
-                    frameon=False,
+                    frameon=True,
+                    facecolor='white',
+                    edgecolor='white',
                     title="Residues not to be degraded"
                 )
                 self.ax_owq_graph_balance[1].add_artist(legend1)
@@ -5564,7 +5576,9 @@ class qvfsmod():
                     bbox_to_anchor=(0.95, -0.37),
                     fontsize='small',
                     ncol=1,
-                    frameon=False,
+                    frameon=True,
+                    facecolor='white',
+                    edgecolor='white',
                     title="Residues to be degraded"
                 )
                 
@@ -18057,9 +18071,9 @@ class qvfsmod():
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.17</b>
+                <b>Version 1.0.18</b>
                 <br>
-                15/07/2026
+                23/07/2026
             """
         elif sys.platform.startswith("darwin") or sys.platform.startswith("linux"): #macOS
             html_text = f"""
@@ -18078,9 +18092,9 @@ class qvfsmod():
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.17</b>
+                <b>Version 1.0.18</b>
                 <br>
-                15/07/2026
+                23/07/2026
             """
         
         
