@@ -125,7 +125,7 @@ from ui.user_defined_storm_type_french import user_defined_storm_dialog_french
 #Detection of non expected errors
 LOG_PATH = os.path.join(os.getcwd(), "error_log.txt")
 
-   
+  
 def global_exception_handler(exctype, value, tb):
     tb_str = "".join(traceback.format_exception(exctype, value, tb))
     
@@ -3884,24 +3884,28 @@ class qvfsmod():
     def show_graph_sensitivity_uncertainity(self):
         """Method to add the outputs for the graph visualization"""
         path = self.obtain_direction_vfsmod(self.dlg_base.csv_results_uncertainity.text())
-
         if os.path.exists(path) and os.path.isfile(path):
             with open(path, mode='r', encoding='utf-8') as file:
                 lines = file.read().splitlines()
-            
-            #Obtain output names
-            columns = lines[2].split(",")
-            outputs = []
-            condicion = False
-            for i in columns:
-                if condicion:
-                    outputs.append(i)
-                if i == "Error":
-                    condicion = True
+            if "Uncertainty analysis results" in lines[0]:
+                #Obtain output names
+                columns = lines[2].split(",")
+                outputs = []
+                condicion = False
+                for i in columns:
+                    if condicion:
+                        outputs.append(i)
+                    if i == "Error":
+                        condicion = True
+            elif "sensitivity indexes" in lines[0]:
+                for index in range(len(lines)):
+                    if "Error" in lines[index].split(","):
+                        outputs = [x.replace('\n', '') for x in lines[index].split(",")]
+                        outputs.remove("Error")
+                        break
             
             #Sort outputs alphabetically
             outputs.sort()
-                
             #Obtain the name of the output that was selected previously
             for i in range(self.dlg_base.frame_69.layout().count()):
                 item = self.dlg_base.frame_69.layout().itemAt(i)
@@ -3910,7 +3914,6 @@ class qvfsmod():
                 #Checks if the widget is a QCheckBox and if it is selected.
                 if isinstance(widget, QRadioButton) and widget.isChecked():
                     output = widget.text()
-            
             #Add the outputs
             if len(outputs)>0:
                 if self.dlg_base.frame_69.layout() is not None:
@@ -3918,7 +3921,6 @@ class qvfsmod():
                 else:
                     layout_frame_22 = QVBoxLayout()
                     self.dlg_base.frame_69.setLayout(layout_frame_22)
-
                 # Elimina todos los QRadioButton existentes y cualquier espaciador
                 for i in reversed(range(layout_frame_22.count())):
                     item = layout_frame_22.itemAt(i)
@@ -3937,16 +3939,13 @@ class qvfsmod():
                     radio_button.toggled.connect(lambda checked, rb=radio_button: self.update_graph_uncertainity() if checked else None)
                     layout_frame_22.addWidget(radio_button)
                     outputs_checks.append([opcion,radio_button])
-
                 # Añade el espaciador de nuevo después de los nuevos QRadioButtons
                 spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
                 layout_frame_22.addItem(spacer)
-                
                 #Select one radiobutton
                 for i in outputs_checks:
                     if i[0]==output:
                         i[1].setChecked(True)
-    
     
     def update_graph_uncertainity(self):
         """Mehtod to update uncertainity graph"""
@@ -4011,7 +4010,6 @@ class qvfsmod():
                     #Checks if the widget is a QCheckBox and if it is selected.
                     if isinstance(widget, QRadioButton) and widget.isChecked():
                         output_column = widget.text()
-                
                 y = [float(x) for x in df[output_column] if x!=np.nan]
                 
                 bins = 30
@@ -8891,7 +8889,10 @@ class qvfsmod():
         self.create_folder_sensitivity_analysis()
         
         #Move files to sensitivity analysis folder
-        self.move_files_sensitivity_analysis()
+        if self.move_files_sensitivity_analysis()==0:
+            #Connect again signal
+            self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis_part_one)
+            return
         
         
         #Create dataframe to save the results
@@ -9909,25 +9910,30 @@ class qvfsmod():
                     ikw = os.path.join(os.path.dirname(ruta), ikw)
                 ikw = ikw.rstrip() #take out the line jumps
                 shutil.copyfile(ikw, ruta_pegar)
-        #INP
-        copy_paste("UH","inp")
-        #OUT
-        copy_paste("UH","out")
-        #HYT
-        copy_paste("UH","hyt")
         
-        #IKW
-        copy_paste("VFS","ikw")
-        #ISO
-        copy_paste("VFS","iso")
-        #IGR
-        copy_paste("VFS","igr")
-        #ISD
-        copy_paste("VFS","isd")
-        #IRN
-        copy_paste("VFS","irn")
-        #IRO
-        copy_paste("VFS","iro")
+        
+        operaciones = [
+            ("UH", "inp"),
+            ("UH", "out"),
+            ("UH", "hyt"),
+            ("VFS", "ikw"),
+            ("VFS", "iso"),
+            ("VFS", "igr"),
+            ("VFS", "isd"),
+            ("VFS", "irn"),
+            ("VFS", "iro"),
+        ]
+
+        for origen, destino in operaciones:
+            try:
+                copy_paste(origen, destino)
+
+            except Exception as e:
+                self.warning_message(f"{destino} file is not present in the project")
+                return 0
+        
+        
+        
         #IWQ
         if self.water_quality:
             copy_paste("VFS","iwq")
@@ -18071,9 +18077,9 @@ class qvfsmod():
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.18</b>
+                <b>Version 1.0.19</b>
                 <br>
-                23/07/2026
+                13/08/2026
             """
         elif sys.platform.startswith("darwin") or sys.platform.startswith("linux"): #macOS
             html_text = f"""
@@ -18092,9 +18098,9 @@ class qvfsmod():
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.18</b>
+                <b>Version 1.0.19</b>
                 <br>
-                23/07/2026
+                13/08/2026
             """
         
         

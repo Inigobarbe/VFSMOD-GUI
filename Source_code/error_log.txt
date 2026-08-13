@@ -55,3 +55,15 @@ Traceback (most recent call last):
 ValueError: could not convert string to float: 'for'
 
 ================================================================================
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 8894, in run_sensitivity_analysis_part_one
+    self.move_files_sensitivity_analysis()
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 9915, in move_files_sensitivity_analysis
+    copy_paste("UH","out")
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 9911, in copy_paste
+    shutil.copyfile(ikw, ruta_pegar)
+  File "C:\Users\inigo.barberena\AppData\Local\anaconda3\lib\shutil.py", line 254, in copyfile
+    with open(src, 'rb') as fsrc:
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\vfsmod-gui\\output\\sample.out'
+
+================================================================================
