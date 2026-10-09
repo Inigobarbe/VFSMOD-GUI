@@ -1,2 +1,2 @@
-cd "C:\qvfsmod\Source_code" 
-"C:\qvfsmod\Source_code\executables\vfsm" samplewtp.prj 
+cd "C:\Users\inigo.barberena\OneDrive - UPNA\Tesis\Articulos\Articulo gui vfsmod\Datos_segunda_revision" 
+"C:\qvfsmod\Source_code\executables\vfsm" sample.prj 

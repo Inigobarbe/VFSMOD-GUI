@@ -1,62 +1,64 @@
 File: output\sample.hyt                                UH v3.0.9, 04/2025
 
- SCS  1.9-MIN HYETOGRAPH (25 of  194 steps printed)
+ SCS  0.5-MIN HYETOGRAPH (25 of  674 steps printed)
 
   No.   Time(hr)   Rainfall(mm) Rain30(mm) Eff.rain(mm)
-    1      0.25         0.27      0.00      0.00
-    2      0.53         0.59      0.59      0.00
-    3      0.81         0.95      0.68      0.00
-    4      1.09         1.34      0.74      0.00
-    5      1.37         1.77      0.83      0.00
-    6      1.65         2.27      0.93      0.00
-    7      1.93         2.85      1.08      0.00
-    8      2.21         3.56      1.29      0.00
-    9      2.49         4.50      1.65      0.00
-   10      2.77         5.98      2.41      0.00
-   11      3.05        16.65     12.15      1.13
-   12      3.33        19.62     13.64      2.05
-   13      3.61        20.85      4.20      2.49
-   14      3.89        21.69      2.07      2.81
-   15      4.17        22.35      1.51      3.08
-   16      4.45        22.90      1.21      3.31
-   17      4.73        23.38      1.02      3.51
-   18      5.01        23.80      0.89      3.69
-   19      5.28        24.17      0.80      3.85
-   20      5.56        24.52      0.72      4.01
-   21      5.84        24.83      0.66      4.15
-   25      6.00        25.00      0.63      4.23
+    1      0.25         0.54      0.00      0.00
+    2      0.51         1.14      1.14      0.00
+    3      0.77         1.79      1.25      0.00
+    4      1.03         2.49      1.36      0.00
+    5      1.28         3.27      1.49      0.00
+    6      1.54         4.15      1.66      0.00
+    7      1.80         5.15      1.88      0.00
+    8      2.06         6.33      2.18      0.00
+    9      2.32         7.80      2.64      0.00
+   10      2.58         9.77      3.44      0.01
+   11      2.84        13.10      5.30      0.35
+   12      3.09        35.19     25.42      9.68
+   13      3.35        39.52     26.42     12.39
+   14      3.61        41.73      6.54     13.83
+   15      3.87        43.30      3.77     14.89
+   16      4.13        44.54      2.82     15.74
+   17      4.39        45.59      2.29     16.47
+   18      4.64        46.49      1.95     17.10
+   19      4.90        47.30      1.71     17.67
+   20      5.16        48.03      1.53     18.19
+   21      5.42        48.69      1.39     18.66
+   22      5.68        49.30      1.27     19.10
+   23      5.94        49.87      1.18     19.52
+   25      6.00        50.00      1.16     19.61
 
-    Computed Total Rain =      25.0 mm
-    Actual Total Rain    =      25.0 mm
-    Total Rain Excess    =       4.2 mm
-    raimax30             =      13.7 mm
-    I30                  =      27.4 mm/h
-    Time to ponding      =      2.97 h
-    Rainfall excess time =      3.03 h
+    Computed Total Rain =      50.0 mm
+    Actual Total Rain    =      50.0 mm
+    Total Rain Excess    =      19.6 mm
+    raimax30             =      26.8 mm
+    I30                  =      53.6 mm/h
+    Time to ponding      =      2.48 h
+    Rainfall excess time =      3.52 h
 
 
  RAINFALL ENERGY FACTOR R FOR EROSION CALCULATIONS
 
   a) Foster et al. (1977)
-    E=    1606.040 ft-tonf/acre =    10.760 MJ/ha
-    Volume Runoff=    4.2250 mm; qpeak =    9.5553 mm/h
-    Factors in Rm: Rstorm=   29.4385; Rrunoff=    8.9656
-    Rm (Foster)=   17.8572 N/h
+    E=    8589.550 ft-tonf/acre =    57.550 MJ/ha
+    Volume Runoff=   19.6124 mm; qpeak =  139.0135 mm/h
+    Factors in Rm: Rstorm=  308.5503; Rrunoff=  101.5974
+    Rm (Foster)=  189.8343 N/h
 
   b) Williams (1975)
-    Watershed area=     0.500 ha
-    Volume runoff=   21.1252 m3; qpeak=    0.0133 m3/s
-    Rw (Williams)=    8.8306 N/h
+    Watershed area=     0.015 ha
+    Volume runoff=    2.9026 m3; qpeak=    0.0057 m3/s
+    Rw (Williams)=   61.2454 N/h
 
   c) GLEAMS/ daily CREAMS
-    Rain  = 25.00 mm
-    R_GLM =      7.68 From GLEAMS - Wischmeier
-    R_GLM =   13.0775 N/h,  Converted to Metric
+    Rain  = 50.00 mm
+    R_GLM =     21.88 From GLEAMS - Wischmeier
+    R_GLM =   37.2460 N/h,  Converted to Metric
 
   d) Cooley (1980) - Design Storm 
     a1=   17.9000 b1=    0.4134
-    Rain=    25.000 mm   D=     6.000 hr
-    Rst =     8.248 ft-tonf/acre =    14.038 N/ha
+    Rain=    50.000 mm   D=     6.000 hr
+    Rst =    36.654 ft-tonf/acre =    62.385 N/ha
 
 
  ERODIBILITY K AND PARTICLE SIZE SELECTION
@@ -85,15 +87,15 @@ File: output\sample.hyt                                UH v3.0.9, 04/2025
     20  Sand                   90.    5.   0.01481    0.0325   -0.050   170.0    0.017
     21  Coarse sand            90.    5.   0.00827    0.0325   -0.050   200.0    0.009
 
-  For the selected soil type: Clay                
-     K=     0.037 kg-h/N-m^2   Eng. K=     0.282  % Org Matter=   1.0
-     dp (d50)=       23.00 um
+  For the selected soil type: Silt loam           
+     K=     0.073 kg-h/N-m^2   Eng. K=     0.558  % Org Matter=   1.0
+     dp (d50)=       27.00 um
 
 
  MISCELLANEOUS CALCS:
 
-     SlopeL  =    99.980 m  Beta    =     0.323
-     L-Factor=     1.447    S-Factor=     0.246
+     SlopeL  =    36.954 m  Beta    =     0.669
+     L-Factor=     1.231    S-Factor=     0.569
      C-fact  =      1.00    P-fact  =      1.00
 
 
@@ -102,15 +104,15 @@ File: output\sample.hyt                                UH v3.0.9, 04/2025
   Method                Soil Loss A          Sediment   R-Factor  K-Factor  L-Factor S-Factor C-Factor P-Factor
                     kg/m^2    EngUnits t/ac  Conc g/l   N/ha      kg-N/N-m^2
 --------------------------------------------------------------------------------------------------------------
- Rm (Foster)          0.23          1.05         55.61       17.86    0.037    1.447    0.246    1.000    1.000
- Rw (Williams)        0.12          0.52         27.50        8.83
- Rm (GLEAMS)          0.17          0.77         40.73       13.08
- Rst (Cooley)         0.18          0.82         43.72       14.04
+ Rm (Foster)          9.76         43.52        497.49      189.83    0.073    1.231    0.569    1.000    1.000
+ Rw (Williams)        3.15         14.04        160.50       61.25
+ Rm (GLEAMS)          1.91          8.54         97.61       37.25
+ Rst (Cooley)         3.21         14.30        163.49       62.38
 --------------------------------------------------------------------------------------------------------------
                     kg/m^2    EngUnits t/ac  Conc g/l   N/ha      0.01ton.ac.h/(ac.ft-ton.in)
- PRZM (MUSLE)         0.12          0.52         27.46                0.282
- PRZM (MUSS)          0.09          0.39         20.60                0.282
+ PRZM (MUSLE)         3.14         14.02        160.25                0.558
+ PRZM (MUSS)          5.09         22.72        259.68                0.558
 
 ======================================================================
- Method selected for VFSMOD .isd file:  Williams Rw (MUSLE) 
+ Method selected for VFSMOD .isd file:  PRZM (MUSS)         
 ======================================================================

@@ -67,3 +67,57 @@ Traceback (most recent call last):
 FileNotFoundError: [Errno 2] No such file or directory: 'C:\\vfsmod-gui\\output\\sample.out'
 
 ================================================================================
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12645, in run
+    self.save_results_calibration(self.list_of_inputs,self.list_of_results)
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13831, in save_results_calibration
+    self.delete_files_calibration_single()
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 10349, in delete_files_calibration_single
+    os.remove(i)
+PermissionError: [WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso: 'C:\\Users\\inigo.barberena\\OneDrive - UPNA\\Tesis\\Articulos\\Articulo gui vfsmod\\Datos_segunda_revision\\calibration\\output\\calibration_sensitivity.csv'
+
+================================================================================
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12645, in run
+    self.save_results_calibration(self.list_of_inputs,self.list_of_results)
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13831, in save_results_calibration
+    self.delete_files_calibration_single()
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 10349, in delete_files_calibration_single
+    os.remove(i)
+PermissionError: [WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso: 'C:\\Users\\inigo.barberena\\OneDrive - UPNA\\Tesis\\Articulos\\Articulo gui vfsmod\\Datos_segunda_revision\\calibration\\output\\calibration_sensitivity.csv'
+
+================================================================================
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 12645, in run
+    self.save_results_calibration(self.list_of_inputs,self.list_of_results)
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 13831, in save_results_calibration
+    self.delete_files_calibration_single()
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 10349, in delete_files_calibration_single
+    os.remove(i)
+PermissionError: [WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso: 'C:\\Users\\inigo.barberena\\OneDrive - UPNA\\Tesis\\Articulos\\Articulo gui vfsmod\\Datos_segunda_revision\\calibration\\output\\calibration_sensitivity.csv'
+
+================================================================================
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 8488, in update_progress_dialog_sensitivity_calibration
+    self.run_sensitivity_analysis_calibration_part_two()
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 8979, in run_sensitivity_analysis_calibration_part_two
+    self.udpate_sensitivity_calibration_results()
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 7226, in udpate_sensitivity_calibration_results
+    line_plot = list(range(-1,int(max([mu_star[x]+mu_star_conf[x] for x in range(len(mu_star))]+list(sigma))*1.1)+2))
+MemoryError
+
+================================================================================
+Traceback (most recent call last):
+  File "C:\qvfsmod\Source_code\vfsmod-gui.py", line 8668, in run_sensitivity_analysis_part_one_design
+    self.param_values = sample_fast(self.problem, int(self.dlg_base.trajectories_design.text()), M = FAST_M)
+  File "C:\qvfsmod\Source_code\libraries\SALib\sample\fast_sampler.py", line 87, in sample
+    X = scale_samples(X, problem)
+  File "C:\qvfsmod\Source_code\libraries\SALib\util\__init__.py", line 86, in scale_samples
+    params = _nonuniform_scale_samples(params, bounds, dists)
+  File "C:\qvfsmod\Source_code\libraries\SALib\util\__init__.py", line 189, in _nonuniform_scale_samples
+    raise ValueError(
+ValueError: Triangular distribution bound error: Scale must be
+                    greater than zero; peak on interval [0,1], triangular
+                    start value must be smaller than end value
+
+================================================================================

@@ -48,9 +48,12 @@ from SALib.sample.sobol import sample as sample_sobol
 from SALib.analyze import sobol
 from SALib.sample.morris import sample as sample_morris 
 from SALib.analyze.morris import analyze as analyze_morris
+from SALib.sample.latin import sample as sample_latin
 
 from libraries.SALib.sample.fast_sampler import sample as sample_fast
 from libraries.SALib.analyze.fast import analyze as analyze_fast
+#Interference factor (number of harmonics) of FAST. It must be the same in sample_fast and analyze_fast, otherwise S1 and ST are read at wrong frequencies
+FAST_M = 4
 
 import math
 import os
@@ -1524,50 +1527,68 @@ class qvfsmod():
             
             
             #Obtain the expected length of block for the stationary bootsrapping according to Automatic Block-Length Selection for the Dependent Bootstrap (Dimitris N. Politis1 and Halbert White)
+            #with the correction of Patton, Politis and White (2009)
             def lambda_function(t):
                 if abs(t)>=0 and abs(t)<=0.5:
                     return 1
                 elif abs(t)>=0.5 and abs(t)<=1:
                     return 2*(1-abs(t))
                 else:
-                    0
+                    return 0
 
             def r_function(k):
+                #Sample autocovariance at lag k
                 n = len(observed)
                 average = np.sum(observed)/len(observed)
                 values = 0
                 for i in range(n-abs(k)):
-                    values += (observed[i]-average)/(observed[i+abs(k)]-average)
+                    values += (observed[i]-average)*(observed[i+abs(k)]-average)
                 return values/n
 
 
             def g_function(w):
                 values = 0
-                for i in range(-M,M):
+                for i in range(-M,M+1):
                     values += lambda_function(i/M)*r_function(i)*math.cos(w*i)
                 return values
 
+            n = len(observed)
+            #Maximum block length
+            b_max = math.ceil(min(3*math.sqrt(n), n/3))
 
-            #Calculate G
-            M = int(len(observed)/2)
-            G = 0
-            for i in range(-M,M):
-                G += lambda_function(i/M)*abs(i)*r_function(i)
+            r_0 = r_function(0)
+            if r_0 == 0:
+                #Constant series, there is no dependence
+                b = 1
+            else:
+                #Calculate the lag window M: smallest m such that the autocorrelation is not significant for K_n consecutive lags
+                K_n = max(5, math.ceil(math.sqrt(math.log10(n))))
+                m_max = math.ceil(math.sqrt(n)) + K_n
+                critical_value = 2*math.sqrt(math.log10(n)/n)
+                autocorrelations = [abs(r_function(k)/r_0) if k < n else 0 for k in range(m_max+K_n+1)]
+                m_hat = None
+                for m in range(m_max+1):
+                    if all(autocorrelations[m+k] < critical_value for k in range(1,K_n+1)):
+                        m_hat = m
+                        break
+                if m_hat is None:
+                    m_hat = m_max
+                M = min(max(2*m_hat, 1), m_max, n-1)
 
-            #Calculate D
-            integration_step = 0.1
-            D = 4*(g_function(0)**2)
-            values = 0
-            w = -math.pi
-            while w<math.pi:
-                values += (1+math.cos(w))*(g_function(w)**2)*integration_step
-                w += integration_step
+                #Calculate G
+                G = 0
+                for i in range(-M,M+1):
+                    G += lambda_function(i/M)*abs(i)*r_function(i)
 
-            values = 2*values/math.pi
-            D = D + values
+                #Calculate D (stationary bootstrap)
+                D = 2*(g_function(0)**2)
 
-            #Calculate optimal size of block
-            b = (((2*(G**2))/D)**(1/3))*(len(observed)**(1/3))
+                #Calculate optimal size of block
+                if G == 0 or D == 0:
+                    b = 1
+                else:
+                    b = (((2*(G**2))/D)**(1/3))*(n**(1/3))
+                b = min(b, b_max)
 
             #Calculate probability for geometrical distribution after we calculated the expected length
             p = 1/b
@@ -3832,14 +3853,19 @@ class qvfsmod():
                 if df_original["Error"].iloc[0] == "1":
                     self.warning_message("Base value gave error. \nIndexes can not be calculated.")
                     return
+                #Each value is compared with the base value (not with the previous one), so all values except the base have an index
+                x_relative_base = []
                 relative_sensitivity = []
-                for i in range(len(x_sorted)-1):
+                for xi, yi in zip(x_sorted, y_sorted):
+                    if xi == base_input:
+                        continue
+                    x_relative_base.append(xi)
                     try:
-                        relative_sensitivity.append((y_sorted[i+1]-base_output)/(x_sorted[i+1]-base_input)*(base_input/base_output))
+                        relative_sensitivity.append((yi-base_output)/(xi-base_input)*(base_input/base_output))
                     except ZeroDivisionError:
                         relative_sensitivity.append(np.nan)
                 #Create graph
-                self.ax_oat.plot(x_sorted[:-1], relative_sensitivity, marker='o', linestyle='-', color='b')
+                self.ax_oat.plot(x_relative_base, relative_sensitivity, marker='o', linestyle='-', color='b')
                 #Labels
                 self.ax_oat.set_xlabel(input_column_breaks)
                 self.ax_oat.set_ylabel(f"Base relative sensitivity\n{output_column_breaks}")
@@ -7179,10 +7205,9 @@ class qvfsmod():
                 if np.isnan(x):x = 0
                 if np.isnan(y):y = 0
                 #If the difference between mu and mu star is higher than 5%, then is non-monotonic
-                if abs(mu_star[i]) == 0 and abs(mu_star[i]) == 0:
+                #|mu| is never higher than mu_star, so if mu_star is 0 then mu is also 0 (no effect, considered monotonic)
+                if abs(mu_star[i]) == 0:
                     difference = 0
-                elif abs(mu_star[i]) != 0 and abs(mu_star[i]) == 0:
-                    difference = 1
                 else:
                     difference = (abs(mu_star[i])-abs(mu[i]))/abs(mu_star[i])
                 if difference>0.05:
@@ -7205,7 +7230,7 @@ class qvfsmod():
                             
                             
             #Linea 1:1
-            line_plot = list(range(-1,int(max([mu_star[x]+mu_star_conf[x] for x in range(len(mu_star))]+list(sigma))*1.1)+2))
+            line_plot = [-1,max([mu_star[x]+mu_star_conf[x] for x in range(len(mu_star))]+list(sigma))*1.1+2] #only two points are needed for the straight line (a list of all integers gave MemoryError with very large values)
             self.ax_calibration_sensitivity.plot(line_plot, line_plot, color="red",linestyle="--")
             
             #Threshold line
@@ -7340,10 +7365,9 @@ class qvfsmod():
                     if np.isnan(x):x = 0
                     if np.isnan(y):y = 0
                     #If the difference between mu and mu star is higher than 5%, then is non-monotonic
-                    if abs(mu_star[i]) == 0 and abs(mu_star[i]) == 0:
+                    #|mu| is never higher than mu_star, so if mu_star is 0 then mu is also 0 (no effect, considered monotonic)
+                    if abs(mu_star[i]) == 0:
                         difference = 0
-                    elif abs(mu_star[i]) != 0 and abs(mu_star[i]) == 0:
-                        difference = 1
                     else:
                         difference = (abs(mu_star[i])-abs(mu[i]))/abs(mu_star[i])
                     if difference>0.05:
@@ -7365,7 +7389,7 @@ class qvfsmod():
                             fontweight='bold',fontsize = 10)
                         
                 #Linea 1:1
-                line_plot = list(range(-1,int(max([mu_star[x]+mu_star_conf[x] for x in range(len(mu_star))]+list(sigma))*1.1)+2))
+                line_plot = [-1,max([mu_star[x]+mu_star_conf[x] for x in range(len(mu_star))]+list(sigma))*1.1+2] #only two points are needed for the straight line (a list of all integers gave MemoryError with very large values)
                 self.ax.plot(line_plot, line_plot, color="red",linestyle="--")
                 
                 if max(list(mu_star)+list(sigma))>0:
@@ -7961,10 +7985,9 @@ class qvfsmod():
                     if np.isnan(x):x = 0
                     if np.isnan(y):y = 0
                     #If the difference between mu and mu star is higher than 5%, then is non-monotonic
-                    if abs(mu_star[i]) == 0 and abs(mu_star[i]) == 0:
+                    #|mu| is never higher than mu_star, so if mu_star is 0 then mu is also 0 (no effect, considered monotonic)
+                    if abs(mu_star[i]) == 0:
                         difference = 0
-                    elif abs(mu_star[i]) != 0 and abs(mu_star[i]) == 0:
-                        difference = 1
                     else:
                         difference = (abs(mu_star[i])-abs(mu[i]))/abs(mu_star[i])
                     if difference>0.05:
@@ -7988,7 +8011,7 @@ class qvfsmod():
                    
                         
                 #Linea 1:1
-                line_plot = list(range(-1,int(max([mu_star[x]+mu_star_conf[x] for x in range(len(mu_star))]+list(sigma))*1.1)+2))
+                line_plot = [-1,max([mu_star[x]+mu_star_conf[x] for x in range(len(mu_star))]+list(sigma))*1.1+2] #only two points are needed for the straight line (a list of all integers gave MemoryError with very large values)
                 self.ax_design.plot(line_plot, line_plot, color="red",linestyle="--")
                 
                 
@@ -8554,8 +8577,24 @@ class qvfsmod():
             #Connect signal again
             self.dlg_calibration_sensitivity_hydrograph.accept.clicked.connect(self.run_sensitivity_analysis_calibration_part_one)
             return
-            
+        #Check that the distributions are valid
+        error_distributions = self.check_distributions_sensitivity(self.dic_data)
+        if error_distributions != "":
+            self.warning_message(error_distributions)
+            #Connect signal again
+            self.dlg_calibration_sensitivity_hydrograph.accept.clicked.connect(self.run_sensitivity_analysis_calibration_part_one)
+            return
+
         self.param_values = sample_morris(self.problem, int(self.dlg_calibration_sensitivity_hydrograph.trajectories.text()))
+        #Curve number must be an integer
+        self.round_curve_number_samples()
+        #Check that Morris trajectories are still valid after rounding Curve number
+        error_morris = self.check_morris_steps_curve_number()
+        if error_morris != "":
+            self.warning_message(error_morris)
+            #Connect signal again
+            self.dlg_calibration_sensitivity_hydrograph.accept.clicked.connect(self.run_sensitivity_analysis_calibration_part_one)
+            return
        
         
         #We start obtaining the results
@@ -8614,7 +8653,15 @@ class qvfsmod():
             return
         
         self.vfs_sensitivity_file = self.dlg_base.vfs_file_sensitivity_design.text()
-        
+
+        #Check that the distributions are valid
+        error_distributions = self.check_distributions_sensitivity(self.dic_data)
+        if error_distributions != "":
+            self.warning_message(error_distributions)
+            #Connect again signal
+            self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
+            return
+
         #Create problem variable
         self.problem = {'num_vars': len(self.dic_data),'names': list(self.dic_data.keys()),'bounds': [x[1] for x in self.dic_data.values()],"dists":[x[0] for x in self.dic_data.values()]}
         #Create samples
@@ -8645,8 +8692,19 @@ class qvfsmod():
                 #Connect again signal
                 self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
                 return
-            self.param_values = sample_fast(self.problem, int(self.dlg_base.trajectories_design.text()), M = 1)
-        
+            self.param_values = sample_fast(self.problem, int(self.dlg_base.trajectories_design.text()), M = FAST_M)
+
+        #Curve number must be an integer
+        self.round_curve_number_samples()
+        #Check that Morris trajectories are still valid after rounding Curve number
+        if self.dlg_base.morris_design.isChecked():
+            error_morris = self.check_morris_steps_curve_number()
+            if error_morris != "":
+                self.warning_message(error_morris)
+                #Connect again signal
+                self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
+                return
+
         #We start obtaining the results
         #Create folders of sensitivity analysis
         self.create_folder_sensitivity_analysis_design()
@@ -8832,6 +8890,15 @@ class qvfsmod():
         
         self.vfs_sensitivity_file = self.dlg_base.vfs_file_sensitivity.text()
         
+        #Check that the distributions are valid (OAT does not use distributions)
+        if not self.dlg_base.oat.isChecked():
+            error_distributions = self.check_distributions_sensitivity(self.dic_data)
+            if error_distributions != "":
+                self.warning_message(error_distributions)
+                #Connect again signal
+                self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis_part_one)
+                return
+
         #Create problem variable
         if not self.dlg_base.oat.isChecked():
             self.problem = {'num_vars': len(self.dic_data),'names': list(self.dic_data.keys()),'bounds': [x[1] for x in self.dic_data.values()],"dists":[x[0] for x in self.dic_data.values()]}
@@ -8863,7 +8930,7 @@ class qvfsmod():
                 #Connect again signal
                 self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis_part_one)
                 return
-            self.param_values = sample_fast(self.problem, int(self.dlg_base.trajectories.text()), M = 1)
+            self.param_values = sample_fast(self.problem, int(self.dlg_base.trajectories.text()), M = FAST_M)
         elif self.dlg_base.oat.isChecked():
             #Put OAT input values as the format for the other sensitivity analysis
             lista_de_listas = []
@@ -8881,7 +8948,18 @@ class qvfsmod():
                     lista_general.append(sub)
 
             self.param_values = np.array(lista_general)
-        
+
+        #Curve number must be an integer
+        self.round_curve_number_samples()
+        #Check that Morris trajectories are still valid after rounding Curve number
+        if self.dlg_base.morris.isChecked():
+            error_morris = self.check_morris_steps_curve_number()
+            if error_morris != "":
+                self.warning_message(error_morris)
+                #Connect again signal
+                self.dlg_base.accept.clicked.connect(self.run_sensitivity_analysis_part_one)
+                return
+
         
         
         #We start obtaining the results
@@ -9093,7 +9171,7 @@ class qvfsmod():
                     for i in self.results_sensitivity.columns[len(self.dic_data)+1:]:
                         f.write("----------------------------------------------------------------------" + '\n')
                         f.write(f"{i}" + '\n')
-                        si = analyze_fast(self.problem,np.array(self.results_sensitivity[i]))
+                        si = analyze_fast(self.problem,np.array(self.results_sensitivity[i]), M = FAST_M)
                         for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
                             f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}" + '\n')
                     f.write("----------------------------------------------------------------------" + '\n')
@@ -9250,7 +9328,7 @@ class qvfsmod():
                             #Connect again signal
                             self.dlg_base.accept_design.clicked.connect(self.run_sensitivity_analysis_part_one_design)
                             return
-                        si = analyze_fast(self.problem,np.array(self.results_sensitivity[i], dtype=float))
+                        si = analyze_fast(self.problem,np.array(self.results_sensitivity[i], dtype=float), M = FAST_M)
                         for input_parameter_k,input_parameter in enumerate(self.dic_data.keys()):    
                             f.write(f"{input_parameter}:{si['S1'][input_parameter_k]}_{si['S1_conf'][input_parameter_k]}_{si['ST'][input_parameter_k]}_{si['ST_conf'][input_parameter_k]}" + '\n')
                     f.write("----------------------------------------------------------------------" + '\n')
@@ -9591,17 +9669,20 @@ class qvfsmod():
             #Connect signal again
             self.dlg_base.run_uncertainity.clicked.connect(self.run_uncertainity_analysis_part_one)
             return
-        
-        #We will use the fast sample to obtain randomized samples for each input
-        values = []
-        for parameter in self.dic_data.keys():
-            #Create problem variable
-            self.problem = {'num_vars': 1,'names': [parameter],'bounds': [self.dic_data[parameter][1]],"dists":[self.dic_data[parameter][0]]}
-            #Create samples
-            samples = sample_fast(self.problem, int(self.dlg_base.samples_uncertainity.text()), M = 1)
-            values.append(samples)
-        
-        self.param_values = np.column_stack(values)
+
+        #Check that the distributions are valid
+        error_distributions = self.check_distributions_sensitivity(self.dic_data)
+        if error_distributions != "":
+            self.warning_message(error_distributions)
+            #Connect signal again
+            self.dlg_base.run_uncertainity.clicked.connect(self.run_uncertainity_analysis_part_one)
+            return
+
+        #Latin hypercube sampling: each input is stratified in N intervals of equal probability and the inputs are combined randomly, so they are independent
+        self.problem = {'num_vars': len(self.dic_data),'names': list(self.dic_data.keys()),'bounds': [x[1] for x in self.dic_data.values()],"dists":[x[0] for x in self.dic_data.values()]}
+        self.param_values = sample_latin(self.problem, int(self.dlg_base.samples_uncertainity.text()))
+        #Curve number must be an integer
+        self.round_curve_number_samples()
 
         #We start obtaining the results
         #Create folders of uncertainity analysis
@@ -10577,7 +10658,7 @@ class qvfsmod():
                 distribution = "triang"
                 texto = str(self.dlg_base.table_uncertainity.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-                parameters[-1] = (parameters[-1] - parameters[0])/(parameters[1]-parameters[0])
+                parameters[-1] = (parameters[-1] - parameters[0])/(parameters[1]-parameters[0]) if parameters[1] != parameters[0] else 0 #minimum equal to maximum is warned in check_distributions_sensitivity
             elif str(self.dlg_base.table_uncertainity.item(row, 1).text()) == "Normal truncated":
                 distribution = "truncnorm"
                 texto = str(self.dlg_base.table_uncertainity.item(row, 2).text())
@@ -10632,7 +10713,7 @@ class qvfsmod():
                     distribution = "triang"
                     texto = str(self.dlg_base.table.item(row, 2).text())
                     parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-                    parameters[-1] = (parameters[-1] - parameters[0])/(parameters[1]-parameters[0])
+                    parameters[-1] = (parameters[-1] - parameters[0])/(parameters[1]-parameters[0]) if parameters[1] != parameters[0] else 0 #minimum equal to maximum is warned in check_distributions_sensitivity
                 elif str(self.dlg_base.table.item(row, 1).text()) == "Normal truncated":
                     distribution = "truncnorm"
                     texto = str(self.dlg_base.table.item(row, 2).text())
@@ -10667,7 +10748,7 @@ class qvfsmod():
                 distribution = "triang"
                 texto = str(self.dlg_base.table_2.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-                parameters[-1] = (parameters[-1] - parameters[0])/(parameters[1]-parameters[0])
+                parameters[-1] = (parameters[-1] - parameters[0])/(parameters[1]-parameters[0]) if parameters[1] != parameters[0] else 0 #minimum equal to maximum is warned in check_distributions_sensitivity
             elif str(self.dlg_base.table_2.item(row, 1).text()) == "Normal truncated":
                 distribution = "truncnorm"
                 texto = str(self.dlg_base.table_2.item(row, 2).text())
@@ -10688,7 +10769,54 @@ class qvfsmod():
                 self.update_sensitivity_parameter(name,self.dlg_base.table_2.item(i, 3).text())
         
         return dic_data
-    
+
+    def check_distributions_sensitivity(self,dic_data):
+        """Method to check that the distributions of the parameters are valid for SALib before creating the samples. Returns the error message or an empty string"""
+        errors = []
+        for name, (distribution, parameters) in dic_data.items():
+            if distribution == "triang":
+                #parameters = [minimum, maximum, (peak - minimum)/(maximum - minimum)]
+                minimum, maximum, peak = parameters
+                if minimum >= maximum:
+                    errors.append(f"{name}: the minimum must be lower than the maximum")
+                elif maximum < 0:
+                    errors.append(f"{name}: the maximum of a triangular distribution can not be negative")
+                elif peak < 0 or peak >= 1:
+                    errors.append(f"{name}: the peak must be between the minimum and the maximum (and lower than the maximum)")
+            elif distribution == "unif":
+                if parameters[0] >= parameters[1]:
+                    errors.append(f"{name}: the minimum must be lower than the maximum")
+            elif distribution == "truncnorm":
+                #parameters = [lower bound, upper bound, mean, standard deviation]
+                if parameters[3] <= 0:
+                    errors.append(f"{name}: the standard deviation must be higher than 0")
+                elif parameters[0] >= parameters[1]:
+                    errors.append(f"{name}: the lower bound must be lower than the upper bound")
+        if len(errors) > 0:
+            return "The distribution of these parameters is not valid:\n\n" + "\n".join(errors) + "\n\nPlease correct them and run the analysis again."
+        return ""
+
+    def round_curve_number_samples(self):
+        """Method to round the Curve number of the samples to integer values, because CN must always be an integer"""
+        names = list(self.dic_data.keys())
+        if "Curve number" in names:
+            self.param_values = np.array(self.param_values, dtype=float)
+            k = names.index("Curve number")
+            self.param_values[:, k] = np.round(self.param_values[:, k])
+
+    def check_morris_steps_curve_number(self):
+        """Method to check that, after rounding the Curve number, every step of the Morris trajectories changes one parameter.
+        If the range of CN is too narrow, a step of CN can be rounded to the same integer and Morris can not compute its effect.
+        Returns the error message or an empty string"""
+        num_vars = self.param_values.shape[1]
+        trajectories = self.param_values.reshape(-1, num_vars + 1, num_vars)
+        changed_parameters = (np.diff(trajectories, axis=1) != 0).sum(axis=2)
+        if (changed_parameters == 0).any():
+            return ("The range of Curve number is too narrow for Morris.\n"
+                    "As Curve number is rounded to integer values, some steps of the Morris trajectories do not change it.\n\n"
+                    "Please widen the range of Curve number (at least 2 units) or use Sobol or FAST.")
+        return ""
+
     def update_sensitivity_parameter(self,name,pesticide):
         """When doing sensitivity analysis if we use a parameter of a different pesticide than 1 we have to create the parameter because is not created"""
         pesticide = int(pesticide)
@@ -10724,7 +10852,7 @@ class qvfsmod():
                 distribution = "triang"
                 texto = str(self.dlg_calibration_sensitivity_hydrograph.table.item(row, 2).text())
                 parameters = [float(x.split(":")[-1]) for x in texto.split(",")]
-                parameters[-1] = (parameters[-1] - parameters[0])/(parameters[1]-parameters[0])
+                parameters[-1] = (parameters[-1] - parameters[0])/(parameters[1]-parameters[0]) if parameters[1] != parameters[0] else 0 #minimum equal to maximum is warned in check_distributions_sensitivity
             elif str(self.dlg_calibration_sensitivity_hydrograph.table.item(row, 1).text()) == "Normal truncated":
                 distribution = "truncnorm"
                 texto = str(self.dlg_calibration_sensitivity_hydrograph.table.item(row, 2).text())
@@ -11989,6 +12117,8 @@ class qvfsmod():
                 self.tolerance = float(tolerance)
                 self.save_results_calibration = save_results_calibration
                 self._stop_requested = False
+                self._fase_local = False #CLAUDE: True during Nelder-Mead, disables the 30-window convergence criterion
+                self._reevaluacion_final = False #CLAUDE: True in the final re-evaluation of the best result, disables stop checks
             
             def stop(self):
                 """Method to stop the calibration"""
@@ -11998,7 +12128,7 @@ class qvfsmod():
                 self.ejecuciones = 0 
                 def objetivo(x):
                     #Check if user has requested to stop
-                    if self._stop_requested:
+                    if self._stop_requested and not self._reevaluacion_final: #CLAUDE: the final re-evaluation is always executed
                         raise StopOptimization_user()
                     result = self.execution_calibration_single(x)
                     # Emitir la señal con el número de ejecuciones y el resultado
@@ -12009,7 +12139,7 @@ class qvfsmod():
                         self.best_result["x"] = x
                         self.best_result["result"] = result
                         
-                    if self.ejecuciones == self.max_iterations: #condition of maximum number of iterations to stop the code
+                    if self.ejecuciones == self.max_iterations and not self._reevaluacion_final: #CLAUDE: not in final re-evaluation. Original comment: condition of maximum number of iterations to stop the code
                         raise StopOptimization_iterations()
                     
                     
@@ -12017,8 +12147,8 @@ class qvfsmod():
                     self.list_of_inputs.append(x)
                     self.list_of_results.append(result)
                     
-                    ventana = 30
-                    if len(self.list_of_results)>ventana and abs(min(self.list_of_results[-ventana:])-max(self.list_of_results[-ventana:]))<self.tolerance: #condition of achieving tolerance
+                    ventana = 30 #CLAUDE: this criterion is only applied in the global search (differential evolution)
+                    if not self._fase_local and len(self.list_of_results)>ventana and abs(min(self.list_of_results[-ventana:])-max(self.list_of_results[-ventana:]))<self.tolerance: #condition of achieving tolerance
                         raise StopOptimization_convergence()
                     
                     
@@ -12044,26 +12174,33 @@ class qvfsmod():
                     
                 #Local optimization
                 self.resultado_progress.emit(["Warning", "Running local optimization\n"])
-                res_polish = minimize(objetivo,
-                    self.best_result["x"],
-                    method="Nelder-Mead",
-                    bounds=limites,
-                    options={
-                        "fatol": self.tolerance,
-                        "maxiter": self.max_iterations
-                    })
-                if res_polish.message == "Optimization terminated successfully.":
-                    self.resultado_progress.emit(["Warning","Local optimization finished due to achieving convergence\n"])
-                elif res_polish.message == "Maximum number of iterations has been exceeded.":
-                    self.resultado_progress.emit(["Warning","Maximum iterations in local optimization achieved\n"])
+                self._fase_local = True #CLAUDE: Nelder-Mead uses its own stopping criteria (fatol and maxiter)
+                try: #CLAUDE: the stop exceptions raised by objetivo no longer abort the local search without saving results
+                    res_polish = minimize(objetivo,
+                        self.best_result["x"],
+                        method="Nelder-Mead",
+                        bounds=limites,
+                        options={
+                            "fatol": self.tolerance,
+                            "maxiter": self.max_iterations
+                        })
+                    if res_polish.message == "Optimization terminated successfully.":
+                        self.resultado_progress.emit(["Warning","Local optimization finished due to achieving convergence\n"])
+                    elif res_polish.message == "Maximum number of iterations has been exceeded.":
+                        self.resultado_progress.emit(["Warning","Maximum iterations in local optimization achieved\n"])
                 
-                # Actualizar mejor resultado si mejora
-                if res_polish.fun < self.best_result["result"]:
-                    self.best_result["x"] = res_polish.x
-                    self.best_result["result"] = res_polish.fun
+                    # Actualizar mejor resultado si mejora
+                    if res_polish.fun < self.best_result["result"]:
+                        self.best_result["x"] = res_polish.x
+                        self.best_result["result"] = res_polish.fun
+                except StopOptimization_iterations: #CLAUDE: best result is already saved in self.best_result by objetivo
+                    self.resultado_progress.emit(["Warning","Maximum iterations in local optimization achieved\n"])
+                except StopOptimization_user: #CLAUDE: keep the best result found so far instead of aborting
+                    self.resultado_progress.emit(["Warning","Local optimization stopped by user\n"])
                 
                 #Execute best result to save it
                 self.resultado_progress.emit(["Warning","Adding best result...\n"])
+                self._reevaluacion_final = True #CLAUDE: final re-evaluation cannot be stopped (results are saved from this execution)
                 resultado = objetivo(self.best_result["x"]) 
                 self.list_of_inputs[:-1] #eilminate last one
                 self.list_of_results[:-1]
@@ -12155,6 +12292,8 @@ class qvfsmod():
                 self.tolerance = float(tolerance)
                 self.save_results_calibration = save_results_calibration
                 self._stop_requested = False
+                self._fase_local = False #CLAUDE: True during Nelder-Mead, disables the 30-window convergence criterion
+                self._reevaluacion_final = False #CLAUDE: True in the final re-evaluation of the best result, disables stop checks
             
             def stop(self):
                 """Method to stop the calibration"""
@@ -12164,7 +12303,7 @@ class qvfsmod():
                 self.ejecuciones = 0 
                 def objetivo(x):
                     #Check if user has requested to stop
-                    if self._stop_requested:
+                    if self._stop_requested and not self._reevaluacion_final: #CLAUDE: the final re-evaluation is always executed
                         raise StopOptimization_user()
                     result = self.execution_calibration_sedimentograph(x)
                     # Emitir la señal con el número de ejecuciones y el resultado
@@ -12175,7 +12314,7 @@ class qvfsmod():
                         self.best_result["x"] = x
                         self.best_result["result"] = result
                         
-                    if self.ejecuciones == self.max_iterations: #condition of maximum number of iterations to stop the code
+                    if self.ejecuciones == self.max_iterations and not self._reevaluacion_final: #CLAUDE: not in final re-evaluation. Original comment: condition of maximum number of iterations to stop the code
                         raise StopOptimization_iterations()
                     
                     
@@ -12183,8 +12322,8 @@ class qvfsmod():
                     self.list_of_inputs.append(x)
                     self.list_of_results.append(result)
                     
-                    ventana = 30
-                    if len(self.list_of_results)>ventana and abs(min(self.list_of_results[-ventana:])-max(self.list_of_results[-ventana:]))<self.tolerance: #condition of achieving tolerance
+                    ventana = 30 #CLAUDE: this criterion is only applied in the global search (differential evolution)
+                    if not self._fase_local and len(self.list_of_results)>ventana and abs(min(self.list_of_results[-ventana:])-max(self.list_of_results[-ventana:]))<self.tolerance: #condition of achieving tolerance
                         raise StopOptimization_convergence()
                     
                     
@@ -12207,26 +12346,33 @@ class qvfsmod():
                     return
                 #Local optimization
                 self.resultado_progress.emit(["Warning", "Running local optimization\n"])
-                res_polish = minimize(objetivo,
-                    self.best_result["x"],
-                    method="Nelder-Mead",
-                    bounds=limites,
-                    options={
-                        "fatol": self.tolerance,
-                        "maxiter": self.max_iterations
-                    })
-                if res_polish.message == "Optimization terminated successfully.":
-                    self.resultado_progress.emit(["Warning","Local optimization finished due to achieving convergence\n"])
-                elif res_polish.message == "Maximum number of iterations has been exceeded.":
-                    self.resultado_progress.emit(["Warning","Maximum iterations in local optimization achieved\n"])
+                self._fase_local = True #CLAUDE: Nelder-Mead uses its own stopping criteria (fatol and maxiter)
+                try: #CLAUDE: the stop exceptions raised by objetivo no longer abort the local search without saving results
+                    res_polish = minimize(objetivo,
+                        self.best_result["x"],
+                        method="Nelder-Mead",
+                        bounds=limites,
+                        options={
+                            "fatol": self.tolerance,
+                            "maxiter": self.max_iterations
+                        })
+                    if res_polish.message == "Optimization terminated successfully.":
+                        self.resultado_progress.emit(["Warning","Local optimization finished due to achieving convergence\n"])
+                    elif res_polish.message == "Maximum number of iterations has been exceeded.":
+                        self.resultado_progress.emit(["Warning","Maximum iterations in local optimization achieved\n"])
                 
-                # Actualizar mejor resultado si mejora
-                if res_polish.fun < self.best_result["result"]:
-                    self.best_result["x"] = res_polish.x
-                    self.best_result["result"] = res_polish.fun
+                    # Actualizar mejor resultado si mejora
+                    if res_polish.fun < self.best_result["result"]:
+                        self.best_result["x"] = res_polish.x
+                        self.best_result["result"] = res_polish.fun
+                except StopOptimization_iterations: #CLAUDE: best result is already saved in self.best_result by objetivo
+                    self.resultado_progress.emit(["Warning","Maximum iterations in local optimization achieved\n"])
+                except StopOptimization_user: #CLAUDE: keep the best result found so far instead of aborting
+                    self.resultado_progress.emit(["Warning","Local optimization stopped by user\n"])
                 
                 #Execute best result to save it
                 self.resultado_progress.emit(["Warning","Adding best result...\n"])
+                self._reevaluacion_final = True #CLAUDE: final re-evaluation cannot be stopped (results are saved from this execution)
                 resultado = objetivo(self.best_result["x"]) 
                 self.list_of_inputs[:-1] #eilminate last one
                 self.list_of_results[:-1]
@@ -12511,6 +12657,8 @@ class qvfsmod():
                 self.tolerance = float(tolerance)
                 self.save_results_calibration = save_results_calibration
                 self._stop_requested = False
+                self._fase_local = False #CLAUDE: True during Nelder-Mead, disables the 30-window convergence criterion
+                self._reevaluacion_final = False #CLAUDE: True in the final re-evaluation of the best result, disables stop checks
             
             def stop(self):
                 """Method to stop the calibration"""
@@ -12522,7 +12670,7 @@ class qvfsmod():
                 def objetivo(x):
                     
                     #Check if user has requested to stop
-                    if self._stop_requested:
+                    if self._stop_requested and not self._reevaluacion_final: #CLAUDE: the final re-evaluation is always executed
                         raise StopOptimization_user()
         
                     result = self.execution_calibration_hydrograph(x)
@@ -12534,7 +12682,7 @@ class qvfsmod():
                         self.best_result["x"] = x
                         self.best_result["result"] = result
                         
-                    if self.ejecuciones == self.max_iterations: #condition of maximum number of iterations to stop the code
+                    if self.ejecuciones == self.max_iterations and not self._reevaluacion_final: #CLAUDE: not in final re-evaluation. Original comment: condition of maximum number of iterations to stop the code
                         raise StopOptimization_iterations()
                     
                     
@@ -12542,8 +12690,8 @@ class qvfsmod():
                     self.list_of_inputs.append(x)
                     self.list_of_results.append(result)
                     
-                    ventana = 30
-                    if len(self.list_of_results)>ventana and abs(min(self.list_of_results[-ventana:])-max(self.list_of_results[-ventana:]))<self.tolerance: #condition of achieving tolerance
+                    ventana = 30 #CLAUDE: this criterion is only applied in the global search (differential evolution)
+                    if not self._fase_local and len(self.list_of_results)>ventana and abs(min(self.list_of_results[-ventana:])-max(self.list_of_results[-ventana:]))<self.tolerance: #condition of achieving tolerance
                         raise StopOptimization_convergence()
                     
                     return result   
@@ -12567,27 +12715,33 @@ class qvfsmod():
                 
                 #Local optimization
                 self.resultado_progress.emit(["Warning", "Running local optimization\n"])
-                res_polish = minimize(objetivo,
-                    self.best_result["x"],
-                    method="Nelder-Mead",
-                    bounds=limites,
-                    options={
-                        "fatol": self.tolerance,
-                        "maxiter": self.max_iterations
-                    })
-                if res_polish.message == "Optimization terminated successfully.":
-                    self.resultado_progress.emit(["Warning","Local optimization finished due to achieving convergence\n"])
-                elif res_polish.message == "Maximum number of iterations has been exceeded.":
+                self._fase_local = True #CLAUDE: Nelder-Mead uses its own stopping criteria (fatol and maxiter)
+                try: #CLAUDE: the stop exceptions raised by objetivo no longer abort the local search without saving results
+                    res_polish = minimize(objetivo,
+                        self.best_result["x"],
+                        method="Nelder-Mead",
+                        bounds=limites,
+                        options={
+                            "fatol": self.tolerance,
+                            "maxiter": self.max_iterations
+                        })
+                    if res_polish.message == "Optimization terminated successfully.":
+                        self.resultado_progress.emit(["Warning","Local optimization finished due to achieving convergence\n"])
+                    elif res_polish.message == "Maximum number of iterations has been exceeded.":
+                        self.resultado_progress.emit(["Warning","Maximum iterations in local optimization achieved\n"])
+                
+                    # Actualizar mejor resultado si mejora
+                    if res_polish.fun < self.best_result["result"]:
+                        self.best_result["x"] = res_polish.x
+                        self.best_result["result"] = res_polish.fun
+                except StopOptimization_iterations: #CLAUDE: best result is already saved in self.best_result by objetivo
                     self.resultado_progress.emit(["Warning","Maximum iterations in local optimization achieved\n"])
-                
-                
-                # Actualizar mejor resultado si mejora
-                if res_polish.fun < self.best_result["result"]:
-                    self.best_result["x"] = res_polish.x
-                    self.best_result["result"] = res_polish.fun
+                except StopOptimization_user: #CLAUDE: keep the best result found so far instead of aborting
+                    self.resultado_progress.emit(["Warning","Local optimization stopped by user\n"])
                 
                 #Execute best result to save it
                 self.resultado_progress.emit(["Warning","Adding best result...\n"])
+                self._reevaluacion_final = True #CLAUDE: final re-evaluation cannot be stopped (results are saved from this execution)
                 resultado = objetivo(self.best_result["x"]) 
                 self.list_of_inputs[:-1] #eilminate last one
                 self.list_of_results[:-1]
@@ -12827,7 +12981,7 @@ class qvfsmod():
             diferencias = calibration_df_progress['Discharge'] - data_aligned['Discharge']
             #Calculate squared differenes
             cuadrados_diferencias = diferencias ** 2
-            resultado_total = cuadrados_diferencias.sum()
+            resultado_total = np.sqrt(cuadrados_diferencias.mean()) #CLAUDE: real RMSE (before it was the sum of squared errors)
             return resultado_total
         
         elif self.objective_function == "NSE":
@@ -13002,7 +13156,7 @@ class qvfsmod():
             diferencias = calibration_df_progress['Sediment'] - data_aligned['Sediment']
             #Calculate squared differenes
             cuadrados_diferencias = diferencias ** 2
-            resultado_total = cuadrados_diferencias.sum()
+            resultado_total = np.sqrt(cuadrados_diferencias.mean()) #CLAUDE: real RMSE (before it was the sum of squared errors)
             return resultado_total
         
         elif self.objective_function == "NSE":
@@ -13682,7 +13836,7 @@ class qvfsmod():
             #RMSE
             diferencias = calibration_df_progress.iloc[:,0] - self.data_aligned.iloc[:,0]
             cuadrados_diferencias = diferencias ** 2
-            rmse = cuadrados_diferencias.sum()
+            rmse = np.sqrt(cuadrados_diferencias.mean()) #CLAUDE: real RMSE (before it was the sum of squared errors)
             #IOA
             observed = self.data_aligned.iloc[:,0]
             simulated = calibration_df_progress.iloc[:,0]
@@ -18077,9 +18231,9 @@ class qvfsmod():
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.19</b>
+                <b>Version 1.0.20</b>
                 <br>
-                13/08/2026
+                29/09/2026
             """
         elif sys.platform.startswith("darwin") or sys.platform.startswith("linux"): #macOS
             html_text = f"""
@@ -18098,9 +18252,9 @@ class qvfsmod():
                 <br>
                 Copyright 2024
                 <br>
-                <b>Version 1.0.19</b>
+                <b>Version 1.0.20</b>
                 <br>
-                13/08/2026
+                29/09/2026
             """
         
         
